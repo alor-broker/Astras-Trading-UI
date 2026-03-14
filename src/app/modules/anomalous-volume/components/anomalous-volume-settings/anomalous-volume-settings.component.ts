@@ -44,7 +44,11 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
   protected settings$!: Observable<AnomalousVolumeSettings>;
 
   readonly availableColumns = anomalousVolumeWidgetColumns;
-  readonly timeframeOptions: AnomalousVolumeTimeframe[] = ['1m', '5m', '15m'];
+  readonly timeframeOptions: { value: AnomalousVolumeTimeframe, labelKey: string }[] = [
+    { value: '1m', labelKey: 'timeframeOption1m' },
+    { value: '5m', labelKey: 'timeframeOption5m' },
+    { value: '15m', labelKey: 'timeframeOption15m' }
+  ];
 
   readonly form = this.formBuilder.group({
     instruments: this.formBuilder.nonNullable.control<string[]>([], Validators.required),

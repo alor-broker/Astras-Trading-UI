@@ -1,0 +1,13 @@
+{
+  "instrumentsLabel": "Инструменты",
+  "instrumentsPlaceholder": "Введите тикеры (например: SBER, GAZP, LKOH)",
+  "timeframeLabel": "Таймфрейм",
+  "timeframeOption1m": "1 минута",
+  "timeframeOption5m": "5 минут",
+  "timeframeOption15m": "15 минут",
+  "windowSizeLabel": "Размер окна",
+  "sigmaLabel": "Множитель сигмы",
+  "columnsLabel": "Колонки",
+  "columnsPlaceholder": "Выберите колонки для отображения",
+  "soundAlertLabel": "Звуковое оповещение"
+}

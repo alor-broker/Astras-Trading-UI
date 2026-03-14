@@ -1,0 +1,13 @@
+{
+  "instrumentsLabel": "Գործիքներ",
+  "instrumentsPlaceholder": "Մուտքագրեք տիկերներ (օրինակ՝ SBER, GAZP, LKOH)",
+  "timeframeLabel": "Ժամանակային միջակայք",
+  "timeframeOption1m": "1 րոպե",
+  "timeframeOption5m": "5 րոպե",
+  "timeframeOption15m": "15 րոպե",
+  "windowSizeLabel": "Պատուհանի չափ",
+  "sigmaLabel": "Սիգմայի բազմապատկիչ",
+  "columnsLabel": "Սյունակներ",
+  "columnsPlaceholder": "Ընտրեք ցուցադրվող սյունակները",
+  "soundAlertLabel": "Ձայնային ծանուցում"
+}

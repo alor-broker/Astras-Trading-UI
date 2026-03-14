@@ -1,0 +1,13 @@
+{
+  "instrumentsLabel": "Instruments",
+  "instrumentsPlaceholder": "Enter tickers (e.g. SBER, GAZP, LKOH)",
+  "timeframeLabel": "Timeframe",
+  "timeframeOption1m": "1 minute",
+  "timeframeOption5m": "5 minutes",
+  "timeframeOption15m": "15 minutes",
+  "windowSizeLabel": "Window size",
+  "sigmaLabel": "Sigma multiplier",
+  "columnsLabel": "Columns",
+  "columnsPlaceholder": "Select columns to display",
+  "soundAlertLabel": "Sound alert"
+}

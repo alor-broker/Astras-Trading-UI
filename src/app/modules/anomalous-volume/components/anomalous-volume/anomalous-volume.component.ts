@@ -112,8 +112,20 @@ export class AnomalousVolumeComponent implements OnInit {
     ];
 
     const allColumns: BaseColumnSettings<AnomalousVolumeItem>[] = [
-      { id: 'ticker', displayName: 'Тикер', minWidth: 90 },
-      { id: 'instrument', displayName: 'Инструмент', minWidth: 160 },
+      {
+        id: 'ticker',
+        displayName: 'Тикер',
+        minWidth: 90,
+        sortOrder: null,
+        sortFn: (a, b): number => a.ticker.localeCompare(b.ticker)
+      },
+      {
+        id: 'instrument',
+        displayName: 'Инструмент',
+        minWidth: 160,
+        sortOrder: null,
+        sortFn: (a, b): number => a.instrument.localeCompare(b.instrument)
+      },
       {
         id: 'direction',
         displayName: 'Направление',
@@ -126,34 +138,61 @@ export class AnomalousVolumeComponent implements OnInit {
           filters: directionFilters
         }
       },
-      { id: 'lots', displayName: 'Лоты', minWidth: 90, transformFn: d => formatNumber(d.lots, this.locale, '0.0-0') },
+      {
+        id: 'lots',
+        displayName: 'Лоты',
+        minWidth: 90,
+        transformFn: d => formatNumber(d.lots, this.locale, '0.0-0'),
+        sortOrder: null,
+        sortFn: (a, b): number => a.lots - b.lots
+      },
       {
         id: 'moneyVolume',
         displayName: 'Объём в деньгах',
         minWidth: 140,
-        transformFn: d => formatNumber(d.moneyVolume, this.locale, '0.0-2')
+        transformFn: d => formatNumber(d.moneyVolume, this.locale, '0.0-2'),
+        sortOrder: null,
+        sortFn: (a, b): number => a.moneyVolume - b.moneyVolume
       },
       {
         id: 'changePercent',
         displayName: 'Изменение %',
         minWidth: 120,
         transformFn: d => `${formatNumber(d.changePercent, this.locale, '0.0-2')}%`,
-        classFn: d => d.changePercent >= 0 ? 'positive-color' : 'negative-color'
+        classFn: d => d.changePercent >= 0 ? 'positive-color' : 'negative-color',
+        sortOrder: null,
+        sortFn: (a, b): number => a.changePercent - b.changePercent
       },
       {
         id: 'buyPercent',
         displayName: 'Покупки %',
         minWidth: 120,
-        transformFn: d => `${formatNumber(d.buyPercent, this.locale, '0.0-2')}%`
+        transformFn: d => `${formatNumber(d.buyPercent, this.locale, '0.0-2')}%`,
+        sortOrder: null,
+        sortFn: (a, b): number => a.buyPercent - b.buyPercent
       },
       {
         id: 'sellPercent',
         displayName: 'Продажи %',
         minWidth: 120,
-        transformFn: d => `${formatNumber(d.sellPercent, this.locale, '0.0-2')}%`
+        transformFn: d => `${formatNumber(d.sellPercent, this.locale, '0.0-2')}%`,
+        sortOrder: null,
+        sortFn: (a, b): number => a.sellPercent - b.sellPercent
       },
-      { id: 'date', displayName: 'Дата', minWidth: 120 },
-      { id: 'time', displayName: 'Время выявления', minWidth: 120 }
+      {
+        id: 'date',
+        displayName: 'Дата',
+        minWidth: 120,
+        sortOrder: null,
+        sortFn: (a, b): number => a.detectedAt - b.detectedAt
+      },
+      {
+        id: 'time',
+        displayName: 'Время',
+        minWidth: 120,
+        sortOrder: null,
+        sortFn: (a, b): number => a.detectedAt - b.detectedAt
+      },
     ];
 
     const normalizedSelection = selectedColumns.length > 0

@@ -24,9 +24,9 @@
       <nz-form-item>
         <nz-form-label nzFor="timeframe">{{ t('timeframeLabel') }}</nz-form-label>
         <nz-form-control>
-          <nz-select formControlName="timeframe">
+          <nz-select formControlName="timeframe" [nzShowSearch]="true">
             @for (tf of timeframeOptions; track tf) {
-              <nz-option [nzValue]="tf" [nzLabel]="tf" />
+              <nz-option [nzValue]="tf.value" [nzLabel]="t(tf.labelKey)" />
             }
           </nz-select>
         </nz-form-control>
