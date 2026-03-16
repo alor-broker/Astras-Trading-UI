@@ -14,9 +14,20 @@
             <label nz-radio [nzValue]="'manual'">Ручной список</label>
             <label nz-radio [nzValue]="'dashboard-instrument'">Активный инструмент дашборда</label>
             <label nz-radio [nzValue]="'dashboard-portfolio'">Инструменты портфеля дашборда</label>
+            <label nz-radio [nzValue]="'moex-top-turnover-session'">MOEX: топ по обороту (текущая сессия)</label>
           </nz-radio-group>
         </nz-form-control>
       </nz-form-item>
+
+      @if (sourceMode === 'moex-top-turnover-session') {
+        <nz-form-item>
+          <nz-form-label nzFor="topTurnoverLimit">Количество инструментов</nz-form-label>
+          <nz-form-control>
+            <ats-input-number formControlName="topTurnoverLimit" [step]="1" />
+            <span class="ant-form-text">Диапазон: 1-50, по умолчанию 30</span>
+          </nz-form-control>
+        </nz-form-item>
+      }
 
       @if (sourceMode === 'dashboard-instrument') {
         <nz-form-item>

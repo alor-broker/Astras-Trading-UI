@@ -150,7 +150,8 @@ export class AnomalousVolumeComponent implements OnInit {
         id: 'moneyVolume',
         displayName: 'Объем',
         minWidth: 140,
-        transformFn: d => formatNumber(d.moneyVolume, this.locale, '0.0-2'),
+        transformFn: d => `${formatNumber(Math.round(d.moneyVolume / 1_000_000), this.locale, '0.0-0')}M`,
+        classFn: d => d.direction === 'buy' ? 'buy-color' : d.direction === 'sell' ? 'sell-color' : '',
         sortOrder: null,
         sortFn: (a, b): number => a.moneyVolume - b.moneyVolume
       },
@@ -159,7 +160,7 @@ export class AnomalousVolumeComponent implements OnInit {
         displayName: 'Изменение %',
         minWidth: 120,
         transformFn: d => `${formatNumber(d.changePercent, this.locale, '0.0-2')}%`,
-        classFn: d => d.changePercent >= 0 ? 'positive-color' : 'negative-color',
+        classFn: d => d.changePercent > 0 ? 'positive-color' : d.changePercent < 0 ? 'negative-color' : '',
         sortOrder: null,
         sortFn: (a, b): number => a.changePercent - b.changePercent
       },

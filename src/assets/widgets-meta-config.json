@@ -336,7 +336,7 @@
       }
     },
     "hasInstrumentBind": true,
-    "category": "details",
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "ats-trade",
       "galleryIcon": "ats-trade",
@@ -418,7 +418,7 @@
         "hy": "Բոլոր գործիքները"
       }
     },
-    "category": "details",
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "ats-instruments-search",
       "galleryIcon": "ats-instruments-search",
@@ -1043,7 +1043,7 @@
         "hy": "Անոմալ ծավալներ"
       }
     },
-    "category": "details",
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "alert",
       "galleryIcon": "alert",

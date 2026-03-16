@@ -77,7 +77,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
 
   readonly availableColumns = anomalousVolumeWidgetColumns;
   readonly timeframeOptions: AnomalousVolumeTimeframe[] = ['1m', '5m', '15m'];
-  readonly sourceModeOptions: AnomalousVolumeSourceMode[] = ['manual', 'dashboard-instrument', 'dashboard-portfolio'];
+  readonly sourceModeOptions: AnomalousVolumeSourceMode[] = ['manual', 'dashboard-instrument', 'dashboard-portfolio', 'moex-top-turnover-session'];
 
   readonly instrumentSearchControl = new FormControl<InstrumentKey | null>(null);
   readonly importRawControl = this.formBuilder.nonNullable.control('');
@@ -113,6 +113,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
 
   readonly form = this.formBuilder.group({
     sourceMode: this.formBuilder.nonNullable.control<AnomalousVolumeSourceMode>('manual'),
+    topTurnoverLimit: this.formBuilder.nonNullable.control(30, [Validators.required, Validators.min(1), Validators.max(50)]),
     instruments: this.formBuilder.nonNullable.control<InstrumentKey[]>([]),
     excludeZeroPositions: this.formBuilder.nonNullable.control(true),
     timeframe: this.formBuilder.nonNullable.control<AnomalousVolumeTimeframe>('1m'),
@@ -154,6 +155,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     return {
       ...initialSettings,
       sourceMode: values.sourceMode ?? 'manual',
+      topTurnoverLimit: Math.max(1, Math.min(50, Number(values.topTurnoverLimit ?? 30))),
       instruments: (values.instruments ?? []).slice(0, 50),
       excludeZeroPositions: values.excludeZeroPositions ?? true,
       timeframe: values.timeframe ?? '1m',
@@ -168,6 +170,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     this.form.reset();
 
     this.form.controls.sourceMode.setValue(settings.sourceMode ?? 'manual');
+    this.form.controls.topTurnoverLimit.setValue(settings.topTurnoverLimit ?? 30);
     this.form.controls.instruments.setValue(settings.instruments ?? []);
     this.form.controls.excludeZeroPositions.setValue(settings.excludeZeroPositions ?? true);
     this.form.controls.timeframe.setValue(settings.timeframe ?? '1m');
@@ -311,6 +314,8 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
         return 'Контекст: инструмент';
       case 'dashboard-portfolio':
         return 'Контекст: портфель';
+      case 'moex-top-turnover-session':
+        return 'MOEX: топ по обороту (сессия)';
       case 'manual':
       default:
         return 'Ручной список';

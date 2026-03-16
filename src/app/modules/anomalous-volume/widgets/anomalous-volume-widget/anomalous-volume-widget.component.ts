@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, input } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { WidgetInstance } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
@@ -19,6 +19,9 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { PositionsService } from '../../../../shared/services/positions.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Position } from '../../../../shared/models/positions/position.model';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { QuotesService } from '../../../../shared/services/quotes.service';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 
 @Component({
   selector: 'ats-anomalous-volume-widget',
@@ -36,6 +39,8 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
   private readonly widgetSettingsService = inject(WidgetSettingsService);
   private readonly dashboardContextService = inject(DashboardContextService);
   private readonly positionsService = inject(PositionsService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly quotesService = inject(QuotesService);
 
   shouldShowSettings = false;
 
@@ -59,6 +64,7 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
         ...settings,
         instruments: getValueOrDefault(settings.instruments, []),
         sourceMode: getValueOrDefault(settings.sourceMode, 'manual'),
+        topTurnoverLimit: getValueOrDefault(settings.topTurnoverLimit, 30),
         excludeZeroPositions: getValueOrDefault(settings.excludeZeroPositions, true),
         timeframe: getValueOrDefault(settings.timeframe, '1m'),
         windowSize: getValueOrDefault(settings.windowSize, 30),
@@ -90,6 +96,8 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
         return 'Контекст: инструмент';
       case 'dashboard-portfolio':
         return 'Контекст: портфель';
+      case 'moex-top-turnover-session':
+        return 'MOEX: топ по обороту (сессия)';
       case 'manual':
       default:
         return 'Ручной список';
@@ -127,7 +135,48 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
       );
     }
 
+    if (settings.sourceMode === 'moex-top-turnover-session') {
+      return this.resolveMoexTopTurnoverSettings(settings);
+    }
+
     return of(settings);
+  }
+
+  private resolveMoexTopTurnoverSettings(settings: AnomalousVolumeSettings): Observable<AnomalousVolumeSettings> {
+    const topLimit = Math.max(1, Math.min(50, settings.topTurnoverLimit ?? 30));
+
+    return this.instrumentsService.getInstruments({
+      query: '',
+      limit: 300,
+      exchange: 'MOEX',
+      instrumentGroup: 'TQBR'
+    }).pipe(
+      switchMap((instruments: Instrument[]) => {
+        const requests = instruments.map(i => this.quotesService.getLastQuoteInfo(i.symbol, i.exchange).pipe(
+          map(quote => ({ instrument: i, turnover: (quote?.volume ?? 0) * (quote?.last_price ?? 0) })),
+          catchError(() => of({ instrument: i, turnover: 0 }))
+        ));
+
+        return requests.length > 0 ? forkJoin(requests) : of([]);
+      }),
+      map(items => {
+        const topInstruments = items
+          .filter(x => x.turnover > 0)
+          .sort((a, b) => b.turnover - a.turnover)
+          .slice(0, topLimit)
+          .map(x => ({
+            exchange: x.instrument.exchange,
+            symbol: x.instrument.symbol,
+            instrumentGroup: x.instrument.instrumentGroup
+          }));
+
+        return {
+          ...settings,
+          instruments: topInstruments.length > 0 ? topInstruments : settings.instruments
+        };
+      }),
+      catchError(() => of(settings))
+    );
   }
 
   private toUniqueInstruments(primary: InstrumentKey[], fallback: InstrumentKey[]): InstrumentKey[] {
