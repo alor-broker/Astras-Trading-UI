@@ -157,30 +157,34 @@ export class AnomalousVolumeService {
       return;
     }
 
-    const dedupId = `${instrumentId}_${settings.timeframe}_${candle.time}`;
+    const detectedAt = this.normalizeTimestampMs(candle.time);
+    const dedupId = `${instrumentId}_${settings.timeframe}_${detectedAt}`;
     if (this.dedup.has(dedupId)) {
       return;
     }
 
     this.dedup.add(dedupId);
     const item = this.toItem(state, candle, threshold, std);
+    if (item == null) {
+      return;
+    }
+
     const next = [item, ...this.items$.value].slice(0, 500);
     this.items$.next(next);
   }
 
-  private toItem(state: InstrumentRuntime, candle: CandleExt, threshold: number, std: number): AnomalousVolumeItem {
-    const date = new Date(candle.time);
+  private toItem(state: InstrumentRuntime, candle: CandleExt, threshold: number, std: number): AnomalousVolumeItem | null {
+    const detectedAt = this.normalizeTimestampMs(candle.time);
+    const date = new Date(detectedAt);
     const fallbackBuyVolume = candle.close > candle.open ? candle.volume : 0;
     const fallbackSellVolume = candle.close < candle.open ? candle.volume : 0;
-    const fallbackNeutral = candle.close === candle.open;
-
     const buyVolume = candle.buyVolume ?? fallbackBuyVolume;
     const sellVolume = candle.sellVolume ?? fallbackSellVolume;
 
     let buyPercent = 50;
     let sellPercent = 50;
 
-    if (buyVolume > 0 || sellVolume > 0 || fallbackNeutral) {
+    if (buyVolume > 0 || sellVolume > 0) {
       const total = buyVolume + sellVolume;
       buyPercent = total > 0 ? (buyVolume / total) * 100 : 50;
       sellPercent = total > 0 ? (sellVolume / total) * 100 : 50;
@@ -188,8 +192,12 @@ export class AnomalousVolumeService {
 
     const hasDeltaData = buyVolume > 0 || sellVolume > 0;
     const direction = hasDeltaData
-      ? (buyVolume > sellVolume ? 'buy' : (sellVolume > buyVolume ? 'sell' : 'neutral'))
-      : (candle.close > candle.open ? 'buy' : (candle.close < candle.open ? 'sell' : 'neutral'));
+      ? (buyVolume > sellVolume ? 'buy' : (sellVolume > buyVolume ? 'sell' : null))
+      : (candle.close > candle.open ? 'buy' : (candle.close < candle.open ? 'sell' : null));
+
+    if (direction == null) {
+      return null;
+    }
 
     const lots = Math.max(1, Math.round(candle.volume / Math.max(1, state.lotSize)));
     const moneyVolume = candle.close * candle.volume;
@@ -208,9 +216,13 @@ export class AnomalousVolumeService {
       sellPercent,
       date: date.toLocaleDateString('ru-RU'),
       time: date.toLocaleTimeString('ru-RU'),
-      detectedAt: candle.time,
+      detectedAt,
       sigmaScore
     };
+  }
+
+  private normalizeTimestampMs(timestamp: number): number {
+    return timestamp < 1_000_000_000_000 ? timestamp * 1000 : timestamp;
   }
 
   private mapTimeframe(timeframe: AnomalousVolumeTimeframe): TimeframeValue {

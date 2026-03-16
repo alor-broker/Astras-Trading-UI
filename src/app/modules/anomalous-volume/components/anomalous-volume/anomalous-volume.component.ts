@@ -3,7 +3,11 @@ import { AsyncPipe, formatNumber } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TableConfig } from '../../../../shared/models/table-config.model';
-import { BaseColumnSettings, FilterType } from '../../../../shared/models/settings/table-settings.model';
+import {
+  BaseColumnSettings,
+  DefaultTableFilters,
+  FilterType
+} from '../../../../shared/models/settings/table-settings.model';
 import { AnomalousVolumeItem } from '../../models/anomalous-volume-item.model';
 import { AnomalousVolumeService } from '../../services/anomalous-volume.service';
 import { AnomalousVolumeSettings } from '../../models/anomalous-volume-settings.model';
@@ -34,6 +38,8 @@ export class AnomalousVolumeComponent implements OnInit {
   readonly tableData$ = new BehaviorSubject<AnomalousVolumeItem[]>([]);
   readonly isLoading$ = new BehaviorSubject<boolean>(true);
   readonly contentSize$ = new BehaviorSubject<{ width: number, height: number }>({ width: 0, height: 0 });
+  private readonly sourceItems$ = new BehaviorSubject<AnomalousVolumeItem[]>([]);
+  private activeDirectionFilter: 'buy' | 'sell' | null = null;
 
   ngOnInit(): void {
     this.anomalousVolumeService.watch(this.settings())
@@ -43,10 +49,32 @@ export class AnomalousVolumeComponent implements OnInit {
       )
       .subscribe((items: AnomalousVolumeItem[]) => {
         this.tableConfig$.next(this.createTableConfig(this.settings().anomalousVolumeColumns ?? []));
-        this.tableData$.next(items);
+        this.sourceItems$.next(items);
+        this.applyLocalFilter();
         this.isLoading$.next(false);
-        this.processSound(items);
+        this.processSound(this.sourceItems$.value);
       });
+  }
+
+  applyFilter(filters: DefaultTableFilters): void {
+    const rawDirection = filters['direction'];
+
+    if (Array.isArray(rawDirection)) {
+      const selected = rawDirection.find(v => v === 'buy' || v === 'sell');
+      this.activeDirectionFilter = (selected ?? null) as 'buy' | 'sell' | null;
+    } else if (rawDirection === 'buy' || rawDirection === 'sell') {
+      this.activeDirectionFilter = rawDirection;
+    } else if (typeof rawDirection === 'string') {
+      const selected = rawDirection
+        .split(';')
+        .map(x => x.trim())
+        .find(v => v === 'buy' || v === 'sell');
+      this.activeDirectionFilter = (selected ?? null) as 'buy' | 'sell' | null;
+    } else {
+      this.activeDirectionFilter = null;
+    }
+
+    this.applyLocalFilter();
   }
 
   containerSizeChanged(entries: ResizeObserverEntry[]): void {
@@ -107,8 +135,7 @@ export class AnomalousVolumeComponent implements OnInit {
   private createTableConfig(selectedColumns: string[]): TableConfig<AnomalousVolumeItem> {
     const directionFilters = [
       { text: 'Покупка', value: 'buy' },
-      { text: 'Продажа', value: 'sell' },
-      { text: 'Нейтрально', value: 'neutral' }
+      { text: 'Продажа', value: 'sell' }
     ];
 
     const allColumns: BaseColumnSettings<AnomalousVolumeItem>[] = [
@@ -130,7 +157,7 @@ export class AnomalousVolumeComponent implements OnInit {
         id: 'direction',
         displayName: 'Направление',
         minWidth: 110,
-        transformFn: d => d.direction === 'buy' ? 'Покупка' : d.direction === 'sell' ? 'Продажа' : 'Нейтрально',
+        transformFn: d => d.direction === 'buy' ? 'Покупка' : 'Продажа',
         classFn: d => `direction-${d.direction}`,
         filterData: {
           filterName: 'direction',
@@ -217,5 +244,16 @@ export class AnomalousVolumeComponent implements OnInit {
             : null
       }
     };
+  }
+
+  private applyLocalFilter(): void {
+    const data = this.sourceItems$.value;
+
+    if (this.activeDirectionFilter == null) {
+      this.tableData$.next(data);
+      return;
+    }
+
+    this.tableData$.next(data.filter(x => x.direction === this.activeDirectionFilter));
   }
 }

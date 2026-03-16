@@ -1,4 +1,4 @@
-export type AnomalyDirection = 'buy' | 'sell' | 'neutral';
+export type AnomalyDirection = 'buy' | 'sell';
 
 export interface AnomalousVolumeItem {
   id: string;

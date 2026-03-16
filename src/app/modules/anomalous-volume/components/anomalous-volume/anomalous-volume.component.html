@@ -5,6 +5,7 @@
 >
   @if (tableConfig$ | async; as tableConfig) {
     <ats-infinite-scroll-table
+      (filterApplied)="applyFilter($event)"
       [tableConfig]="tableConfig"
       [data]="(tableData$ | async) ?? []"
       [isLoading]="(isLoading$ | async) ?? true"
