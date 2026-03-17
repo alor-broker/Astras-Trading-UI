@@ -7,7 +7,8 @@ import {
 } from "./invest-ideas-service-typings";
 import {
   Observable,
-  of
+  of,
+  map
 } from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
@@ -43,7 +44,36 @@ export class InvestIdeasService {
         params
       }
     ).pipe(
+      map(response => {
+        response.list = response.list.map(idea => ({
+          ...idea,
+          body: this.sanitizeHtmlContent(idea.body)
+        }));
+
+        return response;
+      }),
       catchHttpError<IdeasPagedResponse | null>(null, this.errorHandlerService)
     );
+  }
+
+  private sanitizeHtmlContent(html: string): string {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    const brElements = tempDiv.querySelectorAll('br');
+    brElements.forEach(br => {
+      br.replaceWith('\n');
+    });
+
+    const pElements = tempDiv.querySelectorAll('p');
+    pElements.forEach(p => {
+      p.replaceWith(p.textContent + '\n');
+    });
+
+    let cleanText = tempDiv.textContent || '';
+
+    cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
+
+    return cleanText.trim();
   }
 }
