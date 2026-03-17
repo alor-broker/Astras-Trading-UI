@@ -14,6 +14,7 @@ import {
 } from '../models/anomalous-volume-settings.model';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { HistoryService } from '../../../shared/services/history.service';
+import { LocalStorageService } from '../../../shared/services/local-storage.service';
 
 type CandleExt = Candle & {
   buyVolume?: number;
@@ -34,18 +35,23 @@ export class AnomalousVolumeService {
   private readonly candlesService = inject(CandlesService);
   private readonly instrumentsService = inject(InstrumentsService);
   private readonly historyService = inject(HistoryService);
+  private readonly localStorageService = inject(LocalStorageService);
 
   private readonly items$ = new BehaviorSubject<AnomalousVolumeItem[]>([]);
   private readonly reset$ = new Subject<void>();
   private readonly dedup = new Set<string>();
   private readonly runtime = new Map<string, InstrumentRuntime>();
+  private readonly storageKeyPrefix = 'anomalous-volume-items';
+  private readonly maxItems = 500;
+  private activeStorageKey = `${this.storageKeyPrefix}:default`;
 
   watch(settings: AnomalousVolumeSettings): Observable<AnomalousVolumeItem[]> {
-    this.resetInternal();
+    this.activeStorageKey = this.getStorageKey(settings);
+    this.resetInternal(false);
+    this.restoreItems(settings);
 
     const instruments = [...(settings.instruments ?? [])].slice(0, settings.maxInstruments ?? 50);
     if (instruments.length === 0) {
-      this.items$.next([]);
       return this.items$.asObservable();
     }
 
@@ -75,11 +81,18 @@ export class AnomalousVolumeService {
     return this.items$.asObservable();
   }
 
-  resetInternal(): void {
+  resetInternal(clearItems = true): void {
     this.reset$.next();
     this.runtime.clear();
-    this.dedup.clear();
-    this.items$.next([]);
+
+    if (clearItems) {
+      this.dedup.clear();
+      this.items$.next([]);
+      this.persistItems([]);
+      return;
+    }
+
+    this.rebuildDedup();
   }
 
   private startStreams(settings: AnomalousVolumeSettings, instruments: InstrumentKey[]): void {
@@ -157,20 +170,60 @@ export class AnomalousVolumeService {
       return;
     }
 
-    const detectedAt = this.normalizeTimestampMs(candle.time);
-    const dedupId = `${instrumentId}_${settings.timeframe}_${detectedAt}`;
+    const dedupId = this.buildDedupId(settings.timeframe, `${key.exchange}_${key.symbol}_${candle.time}`);
     if (this.dedup.has(dedupId)) {
       return;
     }
 
-    this.dedup.add(dedupId);
     const item = this.toItem(state, candle, threshold, std);
     if (item == null) {
       return;
     }
 
-    const next = [item, ...this.items$.value].slice(0, 500);
+    this.dedup.add(this.buildDedupId(settings.timeframe, item.id));
+
+    const next = [item, ...this.items$.value]
+      .sort((a, b) => b.detectedAt - a.detectedAt)
+      .slice(0, this.maxItems);
     this.items$.next(next);
+    this.persistItems(next);
+  }
+
+  private restoreItems(settings: AnomalousVolumeSettings): void {
+    const storedItems = this.localStorageService.getItem<AnomalousVolumeItem[]>(this.activeStorageKey) ?? [];
+    const normalized = storedItems
+      .filter((item): item is AnomalousVolumeItem =>
+        item != null
+        && typeof item.id === 'string'
+        && typeof item.detectedAt === 'number'
+      )
+      .sort((a, b) => b.detectedAt - a.detectedAt)
+      .slice(0, this.maxItems);
+
+    this.items$.next(normalized);
+    this.rebuildDedup(settings.timeframe);
+    this.persistItems(normalized);
+  }
+
+  private persistItems(items: AnomalousVolumeItem[]): void {
+    this.localStorageService.setItem(this.activeStorageKey, items.slice(0, this.maxItems));
+  }
+
+  private rebuildDedup(timeframe?: AnomalousVolumeTimeframe): void {
+    this.dedup.clear();
+
+    const tf = timeframe ?? '1m';
+    for (const item of this.items$.value) {
+      this.dedup.add(this.buildDedupId(tf, item.id));
+    }
+  }
+
+  private buildDedupId(timeframe: AnomalousVolumeTimeframe, itemId: string): string {
+    return `${timeframe}_${itemId}`;
+  }
+
+  private getStorageKey(settings: AnomalousVolumeSettings): string {
+    return `${this.storageKeyPrefix}:${settings.guid ?? 'default'}:${settings.timeframe ?? '1m'}`;
   }
 
   private toItem(state: InstrumentRuntime, candle: CandleExt, threshold: number, std: number): AnomalousVolumeItem | null {

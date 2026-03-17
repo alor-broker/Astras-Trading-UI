@@ -40,6 +40,8 @@ export class AnomalousVolumeComponent implements OnInit {
   readonly contentSize$ = new BehaviorSubject<{ width: number, height: number }>({ width: 0, height: 0 });
   private readonly sourceItems$ = new BehaviorSubject<AnomalousVolumeItem[]>([]);
   private activeDirectionFilter: 'buy' | 'sell' | null = null;
+  private activeSortColumnId = 'time';
+  private activeSortDirection: string | null = 'descend';
 
   ngOnInit(): void {
     this.anomalousVolumeService.watch(this.settings())
@@ -143,14 +145,16 @@ export class AnomalousVolumeComponent implements OnInit {
         id: 'ticker',
         displayName: 'Тикер',
         minWidth: 90,
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('ticker'),
+        sortChangeFn: (direction): void => this.updateSorting('ticker', direction),
         sortFn: (a, b): number => a.ticker.localeCompare(b.ticker)
       },
       {
         id: 'instrument',
         displayName: 'Инструмент',
         minWidth: 160,
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('instrument'),
+        sortChangeFn: (direction): void => this.updateSorting('instrument', direction),
         sortFn: (a, b): number => a.instrument.localeCompare(b.instrument)
       },
       {
@@ -170,7 +174,8 @@ export class AnomalousVolumeComponent implements OnInit {
         displayName: 'Лоты',
         minWidth: 90,
         transformFn: d => formatNumber(d.lots, this.locale, '0.0-0'),
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('lots'),
+        sortChangeFn: (direction): void => this.updateSorting('lots', direction),
         sortFn: (a, b): number => a.lots - b.lots
       },
       {
@@ -179,7 +184,8 @@ export class AnomalousVolumeComponent implements OnInit {
         minWidth: 140,
         transformFn: d => `${formatNumber(Math.round(d.moneyVolume / 1_000_000), this.locale, '0.0-0')}M`,
         classFn: d => d.direction === 'buy' ? 'buy-color' : d.direction === 'sell' ? 'sell-color' : '',
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('moneyVolume'),
+        sortChangeFn: (direction): void => this.updateSorting('moneyVolume', direction),
         sortFn: (a, b): number => a.moneyVolume - b.moneyVolume
       },
       {
@@ -188,7 +194,8 @@ export class AnomalousVolumeComponent implements OnInit {
         minWidth: 120,
         transformFn: d => `${formatNumber(d.changePercent, this.locale, '0.0-2')}%`,
         classFn: d => d.changePercent > 0 ? 'positive-color' : d.changePercent < 0 ? 'negative-color' : '',
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('changePercent'),
+        sortChangeFn: (direction): void => this.updateSorting('changePercent', direction),
         sortFn: (a, b): number => a.changePercent - b.changePercent
       },
       {
@@ -196,7 +203,8 @@ export class AnomalousVolumeComponent implements OnInit {
         displayName: 'Покупки %',
         minWidth: 120,
         transformFn: d => `${formatNumber(d.buyPercent, this.locale, '0.0-2')}%`,
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('buyPercent'),
+        sortChangeFn: (direction): void => this.updateSorting('buyPercent', direction),
         sortFn: (a, b): number => a.buyPercent - b.buyPercent
       },
       {
@@ -204,21 +212,24 @@ export class AnomalousVolumeComponent implements OnInit {
         displayName: 'Продажи %',
         minWidth: 120,
         transformFn: d => `${formatNumber(d.sellPercent, this.locale, '0.0-2')}%`,
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('sellPercent'),
+        sortChangeFn: (direction): void => this.updateSorting('sellPercent', direction),
         sortFn: (a, b): number => a.sellPercent - b.sellPercent
       },
       {
         id: 'date',
         displayName: 'Дата',
         minWidth: 120,
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('date'),
+        sortChangeFn: (direction): void => this.updateSorting('date', direction),
         sortFn: (a, b): number => a.detectedAt - b.detectedAt
       },
       {
         id: 'time',
         displayName: 'Время',
         minWidth: 120,
-        sortOrder: null,
+        sortOrder: this.getColumnSortOrder('time'),
+        sortChangeFn: (direction): void => this.updateSorting('time', direction),
         sortFn: (a, b): number => a.detectedAt - b.detectedAt
       },
     ];
@@ -250,10 +261,65 @@ export class AnomalousVolumeComponent implements OnInit {
     const data = this.sourceItems$.value;
 
     if (this.activeDirectionFilter == null) {
-      this.tableData$.next(data);
+      this.tableData$.next(this.applySorting(data));
       return;
     }
 
-    this.tableData$.next(data.filter(x => x.direction === this.activeDirectionFilter));
+    this.tableData$.next(this.applySorting(data.filter(x => x.direction === this.activeDirectionFilter)));
+  }
+
+  private updateSorting(columnId: string, direction: string | null): void {
+    this.activeSortColumnId = direction == null ? '' : columnId;
+    this.activeSortDirection = direction;
+    this.tableConfig$.next(this.createTableConfig(this.settings().anomalousVolumeColumns ?? []));
+    this.applyLocalFilter();
+  }
+
+  private getColumnSortOrder(columnId: string): string | null {
+    if (this.activeSortColumnId !== columnId) {
+      return null;
+    }
+
+    return this.activeSortDirection;
+  }
+
+  private applySorting(items: AnomalousVolumeItem[]): AnomalousVolumeItem[] {
+    const sorted = [...items];
+
+    if (this.activeSortDirection == null) {
+      return sorted;
+    }
+
+    const directionFactor = this.activeSortDirection === 'ascend' ? 1 : -1;
+    const comparator = this.getComparatorByColumnId(this.activeSortColumnId);
+    if (comparator == null) {
+      return sorted;
+    }
+
+    return sorted.sort((a, b) => comparator(a, b) * directionFactor);
+  }
+
+  private getComparatorByColumnId(columnId: string): ((a: AnomalousVolumeItem, b: AnomalousVolumeItem) => number) | null {
+    switch (columnId) {
+      case 'ticker':
+        return (a, b): number => a.ticker.localeCompare(b.ticker);
+      case 'instrument':
+        return (a, b): number => a.instrument.localeCompare(b.instrument);
+      case 'lots':
+        return (a, b): number => a.lots - b.lots;
+      case 'moneyVolume':
+        return (a, b): number => a.moneyVolume - b.moneyVolume;
+      case 'changePercent':
+        return (a, b): number => a.changePercent - b.changePercent;
+      case 'buyPercent':
+        return (a, b): number => a.buyPercent - b.buyPercent;
+      case 'sellPercent':
+        return (a, b): number => a.sellPercent - b.sellPercent;
+      case 'date':
+      case 'time':
+        return (a, b): number => a.detectedAt - b.detectedAt;
+      default:
+        return null;
+    }
   }
 }
