@@ -196,6 +196,22 @@
           <nz-switch formControlName="soundAlertEnabled" />
         </nz-form-control>
       </nz-form-item>
+
+      <nz-form-item class="one-row">
+        <nz-form-label nzFor="showLargeTrades">Крупные сделки из ленты</nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName="showLargeTrades" />
+        </nz-form-control>
+      </nz-form-item>
+
+      @if (form.controls.showLargeTrades.value) {
+        <nz-form-item>
+          <nz-form-label nzFor="largeTradeMinVolume">Минимальный объём крупной сделки</nz-form-label>
+          <nz-form-control>
+            <ats-input-number formControlName="largeTradeMinVolume" [step]="1" />
+          </nz-form-control>
+        </nz-form-item>
+      }
     </form>
   </ng-container>
 </ats-widget-settings>

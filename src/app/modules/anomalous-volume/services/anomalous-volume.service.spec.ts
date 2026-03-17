@@ -5,6 +5,7 @@ import { CandlesService } from '../../instruments/services/candles.service';
 import { InstrumentsService } from '../../instruments/services/instruments.service';
 import { HistoryService } from '../../../shared/services/history.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
+import { AllTradesService } from '../../../shared/services/all-trades.service';
 import { AnomalousVolumeSettings } from '../models/anomalous-volume-settings.model';
 import { AnomalousVolumeItem } from '../models/anomalous-volume-item.model';
 
@@ -22,12 +23,15 @@ describe('AnomalousVolumeService', () => {
     windowSize: 30,
     sigmaMultiplier: 2.5,
     soundAlertEnabled: true,
+    showLargeTrades: true,
+    largeTradeMinVolume: 10000,
     maxInstruments: 50,
     anomalousVolumeColumns: ['ticker', 'time']
   };
 
   const oldItem: AnomalousVolumeItem = {
     id: 'MOEX_SBER_1000',
+    eventType: 'anomaly',
     ticker: 'SBER',
     instrument: 'Сбербанк',
     direction: 'buy',
@@ -77,6 +81,12 @@ describe('AnomalousVolumeService', () => {
         {
           provide: LocalStorageService,
           useValue: localStorageSpy
+        },
+        {
+          provide: AllTradesService,
+          useValue: {
+            getNewTradesSubscription: jasmine.createSpy('getNewTradesSubscription').and.returnValue(of(null))
+          }
         }
       ]
     });

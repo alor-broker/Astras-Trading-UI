@@ -120,6 +120,8 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     windowSize: this.formBuilder.nonNullable.control(30, [Validators.required, Validators.min(5), Validators.max(200)]),
     sigmaMultiplier: this.formBuilder.nonNullable.control(2.5, [Validators.required, Validators.min(0.1), Validators.max(10)]),
     soundAlertEnabled: this.formBuilder.nonNullable.control(true),
+    showLargeTrades: this.formBuilder.nonNullable.control(true),
+    largeTradeMinVolume: this.formBuilder.nonNullable.control(10000, [Validators.required, Validators.min(1)]),
     anomalousVolumeColumns: this.formBuilder.nonNullable.control<string[]>(
       anomalousVolumeWidgetColumns.map(c => c.id)
     )
@@ -162,6 +164,8 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
       windowSize: Number(values.windowSize ?? 30),
       sigmaMultiplier: Number(values.sigmaMultiplier ?? 2.5),
       soundAlertEnabled: values.soundAlertEnabled ?? true,
+      showLargeTrades: values.showLargeTrades ?? true,
+      largeTradeMinVolume: Number(values.largeTradeMinVolume ?? 10000),
       anomalousVolumeColumns: values.anomalousVolumeColumns ?? anomalousVolumeWidgetColumns.map(c => c.id)
     };
   }
@@ -177,6 +181,8 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     this.form.controls.windowSize.setValue(settings.windowSize ?? 30);
     this.form.controls.sigmaMultiplier.setValue(settings.sigmaMultiplier ?? 2.5);
     this.form.controls.soundAlertEnabled.setValue(settings.soundAlertEnabled ?? true);
+    this.form.controls.showLargeTrades.setValue(settings.showLargeTrades ?? true);
+    this.form.controls.largeTradeMinVolume.setValue(settings.largeTradeMinVolume ?? 10000);
     this.form.controls.anomalousVolumeColumns.setValue(
       settings.anomalousVolumeColumns?.length
         ? settings.anomalousVolumeColumns

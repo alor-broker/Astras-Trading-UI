@@ -14,12 +14,15 @@ export interface AnomalousVolumeSettings extends WidgetSettings {
   windowSize: number;
   sigmaMultiplier: number;
   soundAlertEnabled: boolean;
+  showLargeTrades: boolean;
+  largeTradeMinVolume: number;
   maxInstruments: number;
   anomalousVolumeTable?: TableDisplaySettings;
   anomalousVolumeColumns: string[];
 }
 
 export const anomalousVolumeWidgetColumns: BaseColumnId[] = [
+  { id: 'eventType', displayName: 'Тип события', isDefault: true },
   { id: 'ticker', displayName: 'Тикер', isDefault: true },
   { id: 'instrument', displayName: 'Инструмент', isDefault: true },
   { id: 'direction', displayName: 'Направление', isDefault: true },

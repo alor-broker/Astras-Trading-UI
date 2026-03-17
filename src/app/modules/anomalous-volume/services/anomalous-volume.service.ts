@@ -15,6 +15,8 @@ import {
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { HistoryService } from '../../../shared/services/history.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
+import { AllTradesService } from '../../../shared/services/all-trades.service';
+import { AllTradesItem } from '../../../shared/models/all-trades.model';
 
 type CandleExt = Candle & {
   buyVolume?: number;
@@ -36,6 +38,7 @@ export class AnomalousVolumeService {
   private readonly instrumentsService = inject(InstrumentsService);
   private readonly historyService = inject(HistoryService);
   private readonly localStorageService = inject(LocalStorageService);
+  private readonly allTradesService = inject(AllTradesService);
 
   private readonly items$ = new BehaviorSubject<AnomalousVolumeItem[]>([]);
   private readonly reset$ = new Subject<void>();
@@ -138,6 +141,22 @@ export class AnomalousVolumeService {
           })
         )
         .subscribe();
+
+      if (settings.showLargeTrades) {
+        this.allTradesService.getNewTradesSubscription(key, 100)
+          .pipe(
+            takeUntil(this.reset$),
+            catchError(() => of(null as AllTradesItem | null)),
+            tap((trade: AllTradesItem | null) => {
+              if (trade == null) {
+                return;
+              }
+
+              this.processLargeTrade(key, trade, settings);
+            })
+          )
+          .subscribe();
+      }
     }
   }
 
@@ -182,6 +201,55 @@ export class AnomalousVolumeService {
 
     this.dedup.add(this.buildDedupId(settings.timeframe, item.id));
 
+    this.pushItem(item);
+  }
+
+  private processLargeTrade(key: InstrumentKey, trade: AllTradesItem, settings: AnomalousVolumeSettings): void {
+    const minVolume = Math.max(1, settings.largeTradeMinVolume ?? 10000);
+    if (trade.qty < minVolume) {
+      return;
+    }
+
+    const sideRaw = String(trade.side ?? '').toLowerCase();
+    const direction = sideRaw.startsWith('b') ? 'buy' : (sideRaw.startsWith('s') ? 'sell' : null);
+    if (direction == null) {
+      return;
+    }
+
+    const instrumentId = this.toInstrumentId(key);
+    const state = this.runtime.get(instrumentId);
+    if (state == null) {
+      return;
+    }
+
+    const detectedAt = this.normalizeTimestampMs(trade.timestamp);
+    const item: AnomalousVolumeItem = {
+      id: `${key.exchange}_${key.symbol}_trade_${trade.id}_${detectedAt}`,
+      eventType: 'large-trade',
+      ticker: key.symbol,
+      instrument: state.title,
+      direction,
+      lots: Math.max(1, Math.round(trade.qty / Math.max(1, state.lotSize))),
+      moneyVolume: trade.price * trade.qty,
+      changePercent: 0,
+      buyPercent: direction === 'buy' ? 100 : 0,
+      sellPercent: direction === 'sell' ? 100 : 0,
+      date: new Date(detectedAt).toLocaleDateString('ru-RU'),
+      time: new Date(detectedAt).toLocaleTimeString('ru-RU'),
+      detectedAt,
+      sigmaScore: 0
+    };
+
+    const dedupId = this.buildDedupId(settings.timeframe, item.id);
+    if (this.dedup.has(dedupId)) {
+      return;
+    }
+
+    this.dedup.add(dedupId);
+    this.pushItem(item);
+  }
+
+  private pushItem(item: AnomalousVolumeItem): void {
     const next = [item, ...this.items$.value]
       .sort((a, b) => b.detectedAt - a.detectedAt)
       .slice(0, this.maxItems);
@@ -259,6 +327,7 @@ export class AnomalousVolumeService {
 
     return {
       id: `${state.key.exchange}_${state.key.symbol}_${candle.time}`,
+      eventType: 'anomaly',
       ticker: state.key.symbol,
       instrument: state.title,
       direction,

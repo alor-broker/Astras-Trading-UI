@@ -70,6 +70,8 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
         windowSize: getValueOrDefault(settings.windowSize, 30),
         sigmaMultiplier: getValueOrDefault(settings.sigmaMultiplier, 2.5),
         soundAlertEnabled: getValueOrDefault(settings.soundAlertEnabled, true),
+        showLargeTrades: getValueOrDefault(settings.showLargeTrades, true),
+        largeTradeMinVolume: getValueOrDefault(settings.largeTradeMinVolume, 10000),
         maxInstruments: getValueOrDefault(settings.maxInstruments, 50),
         anomalousVolumeColumns: getValueOrDefault(
           settings.anomalousVolumeColumns,

@@ -59,8 +59,11 @@ describe('AnomalousVolumeComponent', () => {
     windowSize: 30,
     sigmaMultiplier: 2.5,
     soundAlertEnabled: false,
+    showLargeTrades: true,
+    largeTradeMinVolume: 10000,
     maxInstruments: 50,
     anomalousVolumeColumns: [
+      'eventType',
       'ticker',
       'instrument',
       'lots',
@@ -76,6 +79,7 @@ describe('AnomalousVolumeComponent', () => {
   const items: AnomalousVolumeItem[] = [
     {
       id: '1',
+      eventType: 'anomaly',
       ticker: 'VTBR',
       instrument: 'ВТБ',
       direction: 'sell',
@@ -91,6 +95,7 @@ describe('AnomalousVolumeComponent', () => {
     },
     {
       id: '2',
+      eventType: 'anomaly',
       ticker: 'SBER',
       instrument: 'Сбербанк',
       direction: 'buy',
@@ -106,6 +111,7 @@ describe('AnomalousVolumeComponent', () => {
     },
     {
       id: '3',
+      eventType: 'anomaly',
       ticker: 'GAZP',
       instrument: 'Газпром',
       direction: 'buy',
@@ -172,6 +178,7 @@ describe('AnomalousVolumeComponent', () => {
 
   it('должен корректно сортировать все sortable-колонки', () => {
     const checks: { column: string, read: (x: AnomalousVolumeItem) => string | number }[] = [
+      { column: 'eventType', read: x => x.eventType },
       { column: 'ticker', read: x => x.ticker },
       { column: 'instrument', read: x => x.instrument },
       { column: 'lots', read: x => x.lots },

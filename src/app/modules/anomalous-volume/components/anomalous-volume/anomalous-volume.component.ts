@@ -142,6 +142,15 @@ export class AnomalousVolumeComponent implements OnInit {
 
     const allColumns: BaseColumnSettings<AnomalousVolumeItem>[] = [
       {
+        id: 'eventType',
+        displayName: 'Тип события',
+        minWidth: 140,
+        transformFn: d => d.eventType === 'large-trade' ? 'Крупная сделка' : 'Аномальный объём',
+        sortOrder: this.getColumnSortOrder('eventType'),
+        sortChangeFn: (direction): void => this.updateSorting('eventType', direction),
+        sortFn: (a, b): number => a.eventType.localeCompare(b.eventType)
+      },
+      {
         id: 'ticker',
         displayName: 'Тикер',
         minWidth: 90,
@@ -182,7 +191,7 @@ export class AnomalousVolumeComponent implements OnInit {
         id: 'moneyVolume',
         displayName: 'Объем',
         minWidth: 140,
-        transformFn: d => `${formatNumber(Math.round(d.moneyVolume / 1_000_000), this.locale, '0.0-0')}M`,
+        transformFn: d => this.formatMoneyVolume(d.moneyVolume),
         classFn: d => d.direction === 'buy' ? 'buy-color' : d.direction === 'sell' ? 'sell-color' : '',
         sortOrder: this.getColumnSortOrder('moneyVolume'),
         sortChangeFn: (direction): void => this.updateSorting('moneyVolume', direction),
@@ -301,6 +310,8 @@ export class AnomalousVolumeComponent implements OnInit {
 
   private getComparatorByColumnId(columnId: string): ((a: AnomalousVolumeItem, b: AnomalousVolumeItem) => number) | null {
     switch (columnId) {
+      case 'eventType':
+        return (a, b): number => a.eventType.localeCompare(b.eventType);
       case 'ticker':
         return (a, b): number => a.ticker.localeCompare(b.ticker);
       case 'instrument':
@@ -321,5 +332,13 @@ export class AnomalousVolumeComponent implements OnInit {
       default:
         return null;
     }
+  }
+
+  private formatMoneyVolume(value: number): string {
+    if (value < 1_000_000) {
+      return `${formatNumber(Math.round(value / 1_000), this.locale, '0.0-0')}K`;
+    }
+
+    return `${formatNumber(Math.round(value / 1_000_000), this.locale, '0.0-0')}M`;
   }
 }
