@@ -66,8 +66,8 @@ export class InvestIdeasService {
     });
 
     const pElements = tempDiv.querySelectorAll('p');
-    pElements.forEach(p => {
-      p.replaceWith(p.textContent + '\n');
+    pElements.forEach((p, index) => {
+      p.replaceWith(p.textContent + '\n'.repeat(index < 1 ? index : 2));
     });
 
     let cleanText = tempDiv.textContent || '';

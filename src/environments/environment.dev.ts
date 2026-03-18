@@ -10,7 +10,7 @@ export const environment = {
   remoteSettingsStorageUrl: 'https://astras-dev.alor.ru/identity/v5/UserSettings',
   teamlyDatabaseUrl: 'https://astras-dev.alor.ru/teamly/api/v1/ql/content-database/content',
   alorIconsStorageUrl: 'https://storage.alorbroker.ru/icon/',
-  investIdeasApiUrl: 'https://astras.alor.ru/cmsapi/v1/site/marketReview/invest-ideas',
+  investIdeasApiUrl: 'https://api.dev.alor.ru/cmsapi/v1/site/marketReview/invest-ideas',
   logging: {
     console: {
       minLevel: 'trace'
