@@ -224,7 +224,7 @@
         "initialSettings": {
           "showPortfolioDynamics": true,
           "showNews": true,
-          "showIdeas": false,
+          "showIdeas": true,
           "displayTrendsForMarket": ["FOND"],
           "ignoreTrendsForBoards": ["FQBR"],
           "marketTrendsSectors": [
