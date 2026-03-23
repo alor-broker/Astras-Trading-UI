@@ -67,7 +67,7 @@ export class DeviceNetworkService {
   private async checkInternetReachability(): Promise<boolean> {
     try {
       await firstValueFrom(
-        this.httpClient.head(this.environmentService.apiUrl, { observe: 'response' })
+        this.httpClient.get<number>(`${this.environmentService.apiUrl}/md/v2/time`)
       );
       return true;
     } catch (e: any) {
