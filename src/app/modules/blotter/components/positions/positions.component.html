@@ -5,7 +5,14 @@
       nzNotFoundImage="simple" />
   </ng-template>
   <div
-    *ngrxLet="{ positions: tableData$, contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, portfolioTotalCost: portfolioTotalCost$} as td"
+    *ngrxLet="{
+    positions: tableData$,
+    contentSize: contentSize$,
+    tableConfig: tableConfig$,
+    settings: settings$,
+    portfolioTotalCost: portfolioTotalCost$,
+    user: userContext.getUser(),
+    } as td"
     class="table-container"
     nzResizeObserver
     (nzResizeObserve)="containerSizeChanged($event)"
@@ -32,9 +39,9 @@
           cdkDropList
           cdkDropListOrientation="horizontal"
           >
-          @if (showPositionActions(td.settings)) {
+          @if (showPositionActions(td.settings, td.user)) {
             <th nzWidth="45px">
-              @if (getClosablePositions(td.positions); as closablePositions) {
+              @if (getClosablePositions(td.positions, td.user); as closablePositions) {
                 @if (closablePositions.length > 0) {
                   <a
                     (click)="$event.preventDefault(); $event.stopPropagation()"
@@ -97,10 +104,10 @@
             (click)="rowClick(pos)"
             (contextmenu)="openContextMenu($event, contextMenu, pos)"
             >
-            @if (showPositionActions(td.settings)) {
+            @if (showPositionActions(td.settings, td.user)) {
               <td>
                 <div class="d-flex flex-row flex-no-wrap flex-gap-5">
-                  @if (canClosePosition(pos)) {
+                  @if (canClosePosition(pos, td.user)) {
                     <a
                       (click)="$event.preventDefault(); $event.stopPropagation()"
                       (nzOnConfirm)="closePosition(pos)"
@@ -116,7 +123,7 @@
                     </a>
                   }
 
-                  @if (canReversePosition(pos)) {
+                  @if (canReversePosition(pos, td.user)) {
                     <a
                       (click)="$event.preventDefault(); $event.stopPropagation()"
                       (nzOnConfirm)="reversePosition(pos)"
