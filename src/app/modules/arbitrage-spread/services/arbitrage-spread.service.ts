@@ -13,6 +13,7 @@ import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../shared/services/orders/order-command.service";
+import {MarginOrderConfirmationService} from "../../../shared/services/orders/margin-order-notification.service";
 
 @Injectable()
 export class ArbitrageSpreadService {
@@ -20,6 +21,7 @@ export class ArbitrageSpreadService {
   private readonly quotesService = inject(QuotesService);
   private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
   private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly marginOrderConfirmationService = inject(MarginOrderConfirmationService);
 
   private readonly spreadsKey = 'arbitration-spreads';
   private readonly spreads$ = new BehaviorSubject<ArbitrageSpread[]>([]);
@@ -206,50 +208,68 @@ export class ArbitrageSpreadService {
   }
 
   buySpread(spread: ArbitrageSpread, volume = 1, side: Side = Side.Buy): Observable<OrderCommandResult | null> {
-    return this.orderCommandService.submitMarketOrder(
-      {
-        instrument: spread.firstLeg.instrument,
-        side: side,
-        quantity: spread.firstLeg.quantity * volume
-      },
-      spread.firstLeg.portfolio.portfolio
-    )
-      .pipe(
-        switchMap((order) => {
-          if (!order.isSuccess) {
-            return of(null);
-          }
+    const portfolios = [
+      spread.firstLeg.portfolio,
+      spread.secondLeg.portfolio
+    ];
 
-          return this.orderCommandService.submitMarketOrder(
-            {
-              instrument: spread.secondLeg.instrument,
-              side: side === Side.Sell ? Side.Buy : Side.Sell,
-              quantity: spread.secondLeg.quantity * volume
-            },
-            spread.secondLeg.portfolio.portfolio
+    if(spread.isThirdLeg) {
+      portfolios.push(spread.thirdLeg.portfolio);
+    }
+
+    return this.marginOrderConfirmationService.checkWithConfirmationMultiple(
+      portfolios
+    ).pipe(
+      switchMap(isConfirmed => {
+        return this.orderCommandService.submitMarketOrder(
+          {
+            instrument: spread.firstLeg.instrument,
+            side: side,
+            quantity: spread.firstLeg.quantity * volume,
+            allowMargin: isConfirmed ?? undefined
+          },
+          spread.firstLeg.portfolio.portfolio
+        )
+          .pipe(
+            switchMap((order) => {
+              if (!order.isSuccess) {
+                return of(null);
+              }
+
+              return this.orderCommandService.submitMarketOrder(
+                {
+                  instrument: spread.secondLeg.instrument,
+                  side: side === Side.Sell ? Side.Buy : Side.Sell,
+                  quantity: spread.secondLeg.quantity * volume,
+                  allowMargin: isConfirmed ?? undefined
+                },
+                spread.secondLeg.portfolio.portfolio
+              );
+            }),
+            switchMap((order: OrderCommandResult | null) => {
+              if (!order) {
+                return of(null);
+              }
+
+              if (!spread.isThirdLeg) {
+                return of(order);
+              }
+
+              return this.orderCommandService.submitMarketOrder(
+                {
+                  instrument: spread.thirdLeg.instrument,
+                  side: spread.thirdLeg.side === Side.Buy
+                    ? side
+                    : side === Side.Sell ? Side.Buy : Side.Sell,
+                  quantity: spread.thirdLeg.quantity * volume,
+                  allowMargin: isConfirmed ?? undefined
+                },
+                spread.thirdLeg.portfolio.portfolio
+              );
+            })
           );
-        }),
-        switchMap((order: OrderCommandResult | null) => {
-          if (!order) {
-            return of(null);
-          }
-
-          if (!spread.isThirdLeg) {
-            return of(order);
-          }
-
-          return this.orderCommandService.submitMarketOrder(
-            {
-              instrument: spread.thirdLeg.instrument,
-              side: spread.thirdLeg.side === Side.Buy
-                ? side
-                : side === Side.Sell ? Side.Buy : Side.Sell,
-              quantity: spread.thirdLeg.quantity * volume
-            },
-            spread.thirdLeg.portfolio.portfolio
-          );
-        })
-      );
+      })
+    );
   }
 
   openSpreadModal(spread?: ArbitrageSpread | null): void {

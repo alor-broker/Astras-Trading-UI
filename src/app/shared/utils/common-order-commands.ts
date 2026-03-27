@@ -6,7 +6,8 @@ export class CommonOrderCommands {
   static closePositionByMarket(
     position: Position,
     targetInstrumentBoard: string | null,
-    orderCommandService: OrderCommandService
+    orderCommandService: OrderCommandService,
+    allowMargin?: boolean
   ): void {
     if ((position.qtyTFutureBatch ?? 0) === 0) {
       return;
@@ -18,6 +19,7 @@ export class CommonOrderCommands {
           ...position.targetInstrument,
           instrumentGroup: targetInstrumentBoard
         },
+        allowMargin
       },
       position.ownedPortfolio.portfolio
     ).subscribe();

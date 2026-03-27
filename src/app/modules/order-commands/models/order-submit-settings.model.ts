@@ -7,4 +7,5 @@ export interface OrderSubmitSettings extends WidgetSettings, InstrumentKey {
   limitOrderPriceMoveSteps: number[];
   showVolumePanel?: boolean;
   workingVolumes: number[];
+  skipMarginOrderConfirmation?: boolean;
 }

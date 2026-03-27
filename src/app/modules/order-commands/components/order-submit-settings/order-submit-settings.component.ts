@@ -68,6 +68,7 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
     instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
     enableLimitOrdersFastEditing: this.formBuilder.nonNullable.control(false),
     limitOrderPriceMoveSteps: this.formBuilder.nonNullable.array([]),
+    skipMarginOrderConfirmation: this.formBuilder.nonNullable.control(false),
     showVolumePanel: this.formBuilder.nonNullable.control(false),
     workingVolumes: this.formBuilder.nonNullable.array([]),
   });
@@ -163,6 +164,7 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
       defaultOrderType: initialSettings.defaultOrderType,
       symbol: formValue.instrument?.symbol ?? '',
       exchange: formValue.instrument?.exchange ?? '',
+      skipMarginOrderConfirmation: (formValue.enableLimitOrdersFastEditing ?? false) && (formValue.skipMarginOrderConfirmation ?? false),
       limitOrderPriceMoveSteps: formValue.limitOrderPriceMoveSteps?.map((x: number) => Number(x)),
       workingVolumes: formValue.workingVolumes?.map((x: number) => Number(x)),
     };
@@ -184,6 +186,7 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
     this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
 
     this.form.controls.enableLimitOrdersFastEditing.setValue(settings.enableLimitOrdersFastEditing ?? false);
+    this.form.controls.skipMarginOrderConfirmation.setValue(settings.skipMarginOrderConfirmation ?? false);
     const sortedSteps = [...settings.limitOrderPriceMoveSteps].sort((a, b) => a - b);
     for (const step of sortedSteps) {
       this.form.controls.limitOrderPriceMoveSteps.push(this.createLimitOrderPriceMoveStepControl(step));

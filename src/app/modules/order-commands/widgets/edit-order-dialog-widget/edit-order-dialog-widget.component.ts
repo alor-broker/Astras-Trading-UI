@@ -22,6 +22,7 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {AsyncPipe} from '@angular/common';
+import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 @Component({
   selector: 'ats-edit-order-dialog-widget',
@@ -29,6 +30,7 @@ import {AsyncPipe} from '@angular/common';
   styleUrls: ['./edit-order-dialog-widget.component.less'],
   providers: [
     CommonParametersService,
+    MarginOrderConfirmationService,
     ConfirmableOrderCommandsService
   ],
   imports: [

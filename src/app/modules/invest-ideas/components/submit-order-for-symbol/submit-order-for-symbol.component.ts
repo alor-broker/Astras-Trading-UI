@@ -13,6 +13,7 @@ import {
 } from "../../../order-commands/components/order-forms/market-order-form/market-order-form.component";
 import {toObservable} from "@angular/core/rxjs-interop";
 import {MarketOrderConfig} from "../../../../shared/models/orders/orders-config.model";
+import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 @Component({
   selector: 'ats-submit-order-for-symbol',
@@ -26,6 +27,7 @@ import {MarketOrderConfig} from "../../../../shared/models/orders/orders-config.
   styleUrl: './submit-order-for-symbol.component.less',
   providers: [
     CommonParametersService,
+    MarginOrderConfirmationService,
     ConfirmableOrderCommandsService
   ]
 })

@@ -49,6 +49,7 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
 import {AsyncPipe} from '@angular/common';
+import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 @Component({
   selector: 'ats-orders-basket',
@@ -78,6 +79,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   private readonly widgetSettingsService = inject(WidgetSettingsService);
   private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
   private readonly evaluationService = inject(EvaluationService);
+  private readonly marginOrderConfirmationService = inject(MarginOrderConfirmationService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -162,7 +164,13 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       take(1),
       filter(() => this.form?.valid ?? false),
       tap(() => this.processing$.next(true)),
-      switchMap(settings => {
+      mapWith(
+        settings => this.marginOrderConfirmationService.checkWithConfirmation({
+        exchange: settings.exchange,
+        portfolio: settings.portfolio
+      }),
+        (source, output) => ({settings: source, isConfirmed: output})),
+      switchMap(x => {
         const orders: NewLimitOrder[] = [];
 
         (this.form.value.items ?? []).forEach((item: any) => {
@@ -170,13 +178,14 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
             side: Side.Buy,
             instrument: item.instrumentKey as InstrumentKey,
             quantity: item.quantity as number,
-            price: item.price as number
+            price: item.price as number,
+            allowMargin: x.isConfirmed ?? undefined
           });
         });
 
         if (orders.length > 0) {
           return forkJoin([
-              ...orders.map(o => this.orderCommandService.submitLimitOrder(o, settings.portfolio).pipe(take(1)))
+              ...orders.map(o => this.orderCommandService.submitLimitOrder(o, x.settings.portfolio).pipe(take(1)))
             ]
           );
         }
