@@ -45,4 +45,5 @@ export interface ForwardRisksView {
   portfolioEvaluation: string;
 
   derivativesDebt: string;
+  hasDerivativesDebt: boolean;
 }

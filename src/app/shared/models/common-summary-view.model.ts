@@ -21,4 +21,5 @@ export interface CommonSummaryView {
     commission: string;
 
     derivativesDebt: string;
+    hasDerivativesDebt: boolean;
 }
