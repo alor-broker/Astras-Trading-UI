@@ -1,15 +1,15 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NetworkIndicatorComponent } from './network-indicator.component';
-import { NetworkStatusService } from '../../../../shared/services/network-status.service';
-import { BehaviorSubject, } from 'rxjs';
-import { NetworkStatus } from '../../../../shared/models/enums/network-status.model';
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {NetworkIndicatorComponent} from './network-indicator.component';
+import {NetworkStatusService} from '../../../../shared/services/network-status.service';
+import {BehaviorSubject,} from 'rxjs';
+import {NetworkStatus} from '../../../../shared/models/enums/network-status.model';
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {provideHttpClient} from "@angular/common/http";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 describe('NetworkIndicatorComponent', () => {
   let component: NetworkIndicatorComponent;
@@ -19,10 +19,14 @@ describe('NetworkIndicatorComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         NetworkIndicatorComponent,
-        TranslocoTestsModule.getModule()
-      ],
-      declarations: [
-        ...ngZorroMockComponents
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          NzTypographyComponent,
+        ),
+        MockDirectives(
+          NzTooltipDirective,
+          NzIconDirective
+        )
       ],
       providers: [
         {

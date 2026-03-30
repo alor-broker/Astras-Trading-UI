@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { filter, map, switchMap } from 'rxjs/operators';
@@ -35,6 +35,14 @@ import { TerminalSettingsService } from "../../shared/services/terminal-settings
 
 @Injectable()
 export class DashboardsEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+  private readonly dashboardService = inject(ManageDashboardsService);
+  private readonly marketService = inject(MarketService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   initDashboards$ = createEffect(
     () => {
       return this.actions$.pipe(
@@ -220,15 +228,4 @@ export class DashboardsEffects {
       dispatch: false
     }
   );
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly store: Store,
-    private readonly dashboardService: ManageDashboardsService,
-    private readonly marketService: MarketService,
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { catchHttpError } from "../../utils/observable-helper";
 import { HttpClient } from "@angular/common/http";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
@@ -19,16 +19,13 @@ import { startWith } from "rxjs/operators";
   providedIn: 'root'
 })
 export class OrdersGroupService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly eventBusService = inject(EventBusService);
+
   private readonly orderGroupsUrl = this.environmentService.apiUrl + '/commandapi/api/orderGroups';
   private orderGroups$?: Observable<OrdersGroup[]>;
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly eventBusService: EventBusService
-  ) {
-  }
 
   getAllOrderGroups(): Observable<OrdersGroup[]> {
     this.orderGroups$ ??= this.eventBusService.subscribe(event => event.key === GroupCreatedEventKey)

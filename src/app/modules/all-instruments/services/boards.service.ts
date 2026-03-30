@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
@@ -10,13 +10,11 @@ import { Board } from "../model/boards.model";
   providedIn: 'root'
 })
 export class BoardsService {
-  private readonly url = this.environmentService.apiUrl + '/md/v2/boards';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) { }
+  private readonly url = this.environmentService.apiUrl + '/md/v2/boards';
 
   getAllBoards(): Observable<Board[] | null> {
     return this.http.get<Board[]>(this.url)

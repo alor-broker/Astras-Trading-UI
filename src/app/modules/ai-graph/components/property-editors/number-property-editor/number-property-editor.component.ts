@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, DestroyRef, OnChanges, SimpleChanges, inject } from '@angular/core';
 import {PropertyEditorBaseComponent} from "../property-editor-base";
 import {NumberPropertyEditorConfig} from "../../../models/property-editor.model";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
@@ -23,16 +23,12 @@ import {InputNumberComponent} from "../../../../../shared/components/input-numbe
     styleUrl: './number-property-editor.component.less'
 })
 export class NumberPropertyEditorComponent extends PropertyEditorBaseComponent<NumberPropertyEditorConfig> implements OnChanges {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   protected readonly form = this.formBuilder.group({
     property: this.formBuilder.control<number | null>(null)
   });
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.config.currentValue != null || changes.config.firstChange) {

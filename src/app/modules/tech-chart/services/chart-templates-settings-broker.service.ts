@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { RemoteStorageService } from "../../../shared/services/settings-broker/remote-storage.service";
 import {
   combineLatest,
@@ -27,13 +27,10 @@ export interface SavedTemplate extends ChartTemplate {
   providedIn: 'root'
 })
 export class ChartTemplatesSettingsBrokerService {
-  private savedTemplates$: Observable<SavedTemplate[]> | null = null;
+  private readonly remoteStorageService = inject(RemoteStorageService);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
 
-  constructor(
-    private readonly remoteStorageService: RemoteStorageService,
-    private readonly applicationMetaService: ApplicationMetaService
-  ) {
-  }
+  private savedTemplates$: Observable<SavedTemplate[]> | null = null;
 
   private get groupKey(): string {
     return 'tv-chart-templates';

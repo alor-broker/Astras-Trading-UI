@@ -1,10 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { InstantNotificationsFormComponent } from './instant-notifications-form.component';
-import { Store } from "@ngrx/store";
-import { of } from "rxjs";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {InstantNotificationsFormComponent} from './instant-notifications-form.component';
+import {Store} from "@ngrx/store";
+import {of} from "rxjs";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzDividerComponent} from "ng-zorro-antd/divider";
 
 describe('InstantNotificationsFormComponent', () => {
   let component: InstantNotificationsFormComponent;
@@ -12,10 +16,17 @@ describe('InstantNotificationsFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestsModule.getModule()],
-      declarations: [
+      imports: [
         InstantNotificationsFormComponent,
-        ...ngZorroMockComponents
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          NzDividerComponent
+        ),
+        MockDirectives(
+          NzIconDirective,
+          NzTooltipDirective,
+        )
       ],
       providers: [
         {
@@ -26,7 +37,7 @@ describe('InstantNotificationsFormComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(InstantNotificationsFormComponent);
     component = fixture.componentInstance;

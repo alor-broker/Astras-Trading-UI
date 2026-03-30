@@ -1,0 +1,49 @@
+﻿@import 'theme-mixin';
+
+.themeMixin({
+  .ant-input-affix-wrapper {
+    &-focused {
+      background-color: transparent;
+    }
+  }
+
+  .ant-input {
+    &-focused {
+      background-color: transparent;
+    }
+  }
+
+  .ant-select-focused {
+    .ant-select-selector {
+      background-color: transparent;
+    }
+  }
+
+  .ant-picker {
+    &-focused {
+      background-color: transparent;
+    }
+  }
+
+  .ant-radio-group {
+    .ant-radio-button-wrapper {
+      user-select: none;
+      &:first-child {
+        border-radius: @control-border-radius 0 0 @control-border-radius;
+      }
+
+      &:last-child {
+        border-radius: 0 @control-border-radius @control-border-radius 0;
+      }
+    }
+  }
+});
+
+.ant-input-affix-wrapper,
+.ant-input,
+.ant-select-selector,
+.ant-picker,
+.ant-radio-button-wrapper
+{
+  box-shadow: none !important;
+}

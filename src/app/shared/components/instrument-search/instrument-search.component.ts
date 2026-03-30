@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
+import { Component, ElementRef, input, OnDestroy, OnInit, output, viewChild, inject } from '@angular/core';
 import {SearchFilter} from '../../../modules/instruments/models/search-filter.model';
 import {
   NzAutocompleteComponent,
@@ -9,87 +9,72 @@ import {
 import {InstrumentsService} from '../../../modules/instruments/services/instruments.service';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {debounceTime, map, switchMap} from 'rxjs/operators';
-import {
-  ControlValueAccessor,
-  FormControl,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
-} from '@angular/forms';
+import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {InstrumentKey} from '../../models/instruments/instrument-key.model';
 import {Instrument} from '../../models/instruments/instrument.model';
 import {DeviceService} from "../../services/device.service";
-import { toInstrumentKey } from "../../utils/instruments";
-import { Exchange } from "../../../../generated/graphql.types";
-import { TranslocoDirective } from "@jsverse/transloco";
-import {
-  NzInputDirective,
-  NzInputGroupComponent
-} from "ng-zorro-antd/input";
-import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
-import {
-  AsyncPipe,
-  NgForOf,
-  NgIf
-} from "@angular/common";
-import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import { NzTagComponent } from "ng-zorro-antd/tag";
-import { NzIconDirective } from "ng-zorro-antd/icon";
+import {toInstrumentKey} from "../../utils/instruments";
+import {Exchange} from "../../../../generated/graphql.types";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {AsyncPipe} from "@angular/common";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {NzTagComponent} from "ng-zorro-antd/tag";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 @Component({
-    selector: 'ats-instrument-search',
-    templateUrl: './instrument-search.component.html',
-    styleUrls: ['./instrument-search.component.less'],
-    imports: [
-        TranslocoDirective,
-        NzInputGroupComponent,
-        NzInputDirective,
-        NzAutocompleteTriggerDirective,
-        ReactiveFormsModule,
-        NzTooltipDirective,
-        NgIf,
-        NzTypographyComponent,
-        NzAutocompleteComponent,
-        AsyncPipe,
-        NzAutocompleteOptionComponent,
-        NgForOf,
-        NzTagComponent,
-        NzIconDirective
-    ],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: InstrumentSearchComponent
-        }
-    ]
+  selector: 'ats-instrument-search',
+  templateUrl: './instrument-search.component.html',
+  styleUrls: ['./instrument-search.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzInputGroupComponent,
+    NzInputDirective,
+    NzAutocompleteTriggerDirective,
+    ReactiveFormsModule,
+    NzTooltipDirective,
+    NzTypographyComponent,
+    NzAutocompleteComponent,
+    AsyncPipe,
+    NzAutocompleteOptionComponent,
+    NzTagComponent,
+    NzIconDirective
+  ],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: InstrumentSearchComponent
+    }
+  ]
 })
 export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  @ViewChild('searchInput')
-  searchInput?: ElementRef<HTMLInputElement>;
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly deviceService = inject(DeviceService);
 
-  @Input()
-  optionsBoxWidth?: number;
+  readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
-  @Input()
-  exchange?: string;
+  readonly optionsBoxWidth = input<number>();
 
-  @Input()
-  showHelpTooltip = true;
+  readonly exchange = input<string | null>(null);
+
+  readonly showHelpTooltip = input(true);
 
   filteredInstruments$: Observable<Instrument[]> = of([]);
   selectedValue?: InstrumentKey | null;
-  @Output()
-  instrumentSelected = new EventEmitter<InstrumentKey | null>();
+  readonly instrumentSelected = output<InstrumentKey | null>();
 
   isMobile$!: Observable<boolean>;
   searchControl = new FormControl<string | null>(null);
   private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
   private touched = false;
 
-  constructor(
-    private readonly instrumentsService: InstrumentsService,
-    private readonly deviceService: DeviceService
-  ) {
+  get isExchangeSpecified(): boolean {
+    const exchange = this.exchange();
+    return exchange != null
+      && exchange.length > 0
+      && (exchange as Exchange) !== Exchange.United;
   }
 
   ngOnInit(): void {
@@ -119,7 +104,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     };
 
     filter.exchange = this.isExchangeSpecified
-      ? this.exchange
+      ? this.exchange() ?? undefined
       : '';
 
     if (value.includes(':')) {
@@ -139,12 +124,6 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     }
 
     this.filter$.next(filter);
-  }
-
-  get isExchangeSpecified(): boolean {
-    return this.exchange != null
-      && this.exchange.length > 0
-      && (this.exchange as Exchange) !== Exchange.United;
   }
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentKey): void {
@@ -182,7 +161,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   }
 
   setFocus(): void {
-    setTimeout(() => this.searchInput?.nativeElement.focus());
+    setTimeout(() => this.searchInput()?.nativeElement.focus());
   }
 
   private emitValue(value: InstrumentKey | null): void {

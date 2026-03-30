@@ -1,8 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  DOCUMENT
-} from '@angular/core';
+import { Injectable, DOCUMENT, inject } from '@angular/core';
 
 import {
   distinctUntilChanged,
@@ -31,14 +27,14 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ScalperHotKeyCommandService {
+  private readonly document = inject<Document>(DOCUMENT);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   public readonly commands$: Observable<ScalperCommand>;
   public readonly modifiers$: Observable<ModifierKeys>;
   private readonly inputs = ['INPUT', 'TEXTAREA'];
 
-  constructor(
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly terminalSettingsService: TerminalSettingsService,
-  ) {
+  constructor() {
     this.commands$ = this.getCommandsStream();
     this.modifiers$ = this.getModifierKeysStream();
   }

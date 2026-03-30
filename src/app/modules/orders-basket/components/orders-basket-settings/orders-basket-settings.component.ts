@@ -1,30 +1,43 @@
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
+import {OrdersBasketSettings} from "../../models/orders-basket-settings.model";
 import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import { OrdersBasketSettings } from "../../models/orders-basket-settings.model";
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { Observable } from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { FormBuilder } from "@angular/forms";
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {Observable} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 
 @Component({
-    selector: 'ats-orders-basket-settings',
-    templateUrl: './orders-basket-settings.component.html',
-    styleUrls: ['./orders-basket-settings.component.less'],
-    standalone: false
+  selector: 'ats-orders-basket-settings',
+  templateUrl: './orders-basket-settings.component.html',
+  styleUrls: ['./orders-basket-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    NzSwitchComponent
+  ]
 })
 export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<OrdersBasketSettings> implements OnInit {
-  @Input({ required: true })
-  guid!: string;
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
 
-  @Output()
-  settingsChange = new EventEmitter<void>();
+  readonly settingsChange = output<void>();
 
   readonly form = this.formBuilder.group({
     showPresetsPanel: this.formBuilder.nonNullable.control<boolean | null>(false)
@@ -32,13 +45,16 @@ export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<O
 
   protected settings$!: Observable<OrdersBasketSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get canSave(): boolean {

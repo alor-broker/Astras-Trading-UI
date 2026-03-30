@@ -12,18 +12,16 @@ describe('YieldCurveChartParametersComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
+    imports: [
         TranslocoTestsModule.getModule(),
-        ...FormsTesting.getTestingModules(),
-        NzTooltipModule
-      ],
-      declarations: [
-        YieldCurveChartParametersComponent,
-      ],
-      providers: [
+        ...FormsTesting.getMocks(),
+        NzTooltipModule,
+        YieldCurveChartParametersComponent
+    ],
+    providers: [
         ...commonTestProviders
-      ]
-    });
+    ]
+});
     fixture = TestBed.createComponent(YieldCurveChartParametersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

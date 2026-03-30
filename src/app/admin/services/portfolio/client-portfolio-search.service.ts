@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import {
@@ -16,11 +16,8 @@ import {
   providedIn: 'root'
 })
 export class ClientPortfolioSearchService {
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly environmentService: EnvironmentService
-  ) {
-  }
+  private readonly httpClient = inject(HttpClient);
+  private readonly environmentService = inject(EnvironmentService);
 
   checkPortfolioAccess(portfolio: PortfolioKey): Observable<boolean> {
     return this.httpClient.get<unknown>(

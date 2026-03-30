@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {EnvironmentService} from "../../../shared/services/environment.service";
 import {HttpClient} from "@angular/common/http";
 import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
@@ -13,14 +13,11 @@ export interface QueryResponse {
   providedIn: 'root'
 })
 export class LLMService {
-  private readonly baseUrl = `${this.environmentService.apiUrl}/aichat/openrouter`;
+  private readonly httpClient = inject(HttpClient);
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly environmentService: EnvironmentService,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
+  private readonly baseUrl = `${this.environmentService.apiUrl}/aichat/openrouter`;
 
   sendQuery(query: string): Observable<QueryResponse | null> {
     return this.httpClient.post<QueryResponse>(

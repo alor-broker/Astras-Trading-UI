@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
   Observable,
@@ -31,15 +31,12 @@ interface RemoteStorageItem {
   providedIn: 'root'
 })
 export class RemoteStorageService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly baseUrl = this.environmentService.remoteSettingsStorageUrl;
   private readonly serviceName = 'Astras';
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
 
   getRecord(key: string, retryCount = 3): Observable<GetRecordResult> {
     return this.httpClient.get<RemoteStorageItem>(

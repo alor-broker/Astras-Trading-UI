@@ -18,6 +18,19 @@ describe('NumberPropertyEditorComponent', () => {
 
     fixture = TestBed.createComponent(NumberPropertyEditorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'config',
+      {
+        label: 'label',
+        applyValueCallback: () => {},
+        initialValue: null,
+        validation: {
+          required: false,
+          allowNegative: true,
+          allowDecimal: true
+        }
+      }
+    );
     fixture.detectChanges();
   });
 

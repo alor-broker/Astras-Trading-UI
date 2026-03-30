@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { z } from 'zod/v3'
-import { AdditionalInformation, AdditionalInformationFilterInput, AdditionalInformationSortInput, Amortization, AmortizationFilterInput, AmortizationSortInput, ApplyPolicy, BasicInformation, BasicInformationFilterInput, BasicInformationSortInput, BoardInformation, BoardInformationFilterInput, BoardInformationSortInput, Bond, BondAmortizationsArgs, BondCouponsArgs, BondOffersArgs, BondEventType, BondEventTypeOperationFilterInput, BondFilterInput, BondSortInput, BondVolumes, BondVolumesFilterInput, BondVolumesSortInput, BondYield, BondYieldFilterInput, BondYieldSortInput, BondsConnection, BondsEdge, BooleanOperationFilterInput, CostEstimate, CostEstimateFilterInput, CostEstimateSortInput, Coupon, CouponFilterInput, CouponSortInput, CouponType, CouponTypeOperationFilterInput, CurrenciesConnection, CurrenciesEdge, Currency, CurrencyFilterInput, CurrencyInformation, CurrencyInformationFilterInput, CurrencyInformationSortInput, CurrencySortInput, DateTimeOperationFilterInput, DecimalOperationFilterInput, Derivative, DerivativeFilterInput, DerivativeSortInput, DerivativesConnection, DerivativesEdge, Dividend, DividendFilterInput, DividendSortInput, DividendsAggregateInfo, DividendsAggregateInfoFilterInput, DividendsAggregateInfoSortInput, Exchange, ExchangeOperationFilterInput, FinancialAttributes, FinancialAttributesFilterInput, FinancialAttributesSortInput, InitialMargin, InitialMarginFilterInput, InitialMarginSortInput, Instrument, InstrumentModelFilterInput, InstrumentModelSortInput, InstrumentsConnection, InstrumentsEdge, IntOperationFilterInput, ListFilterInputTypeOfAmortizationFilterInput, ListFilterInputTypeOfCouponFilterInput, ListFilterInputTypeOfDividendFilterInput, ListFilterInputTypeOfOfferFilterInput, ListFilterInputTypeOfValuePerQuarterFilterInput, ListFilterInputTypeOfValuePerYearFilterInput, LongOperationFilterInput, MainIndicators, MainIndicatorsFilterInput, MainIndicatorsSortInput, Market, MarketOperationFilterInput, NetIncome, NetIncomeFilterInput, NullableOfCouponTypeOperationFilterInput, Offer, OfferFilterInput, OfferSortInput, Other, PageInfo, Profitability, ProfitabilityFilterInput, ProfitabilitySortInput, Sales, SalesFilterInput, SortEnumType, Stock, StockDividendsArgs, StockFilterInput, StockSortInput, StocksConnection, StocksEdge, StringOperationFilterInput, Swap, SwapFilterInput, SwapSortInput, SwapsConnection, SwapsEdge, Trading, TradingDetails, TradingDetailsFilterInput, TradingDetailsSortInput, TradingFilterInput, TradingSortInput, ValuePerQuarter, ValuePerQuarterFilterInput, ValuePerYear, ValuePerYearFilterInput } from './graphql.types'
+import { AdditionalInformation, AdditionalInformationFilterInput, AdditionalInformationSortInput, Amortization, AmortizationFilterInput, AmortizationSortInput, ApplyPolicy, BasicInformation, BasicInformationFilterInput, BasicInformationSortInput, BoardInformation, BoardInformationFilterInput, BoardInformationSortInput, Bond, BondAmortizationsArgs, BondCouponsArgs, BondOffersArgs, BondEventType, BondEventTypeOperationFilterInput, BondFilterInput, BondSortInput, BondVolumes, BondVolumesFilterInput, BondVolumesSortInput, BondYield, BondYieldFilterInput, BondYieldSortInput, BondsConnection, BondsEdge, BooleanOperationFilterInput, CostEstimate, CostEstimateFilterInput, CostEstimateSortInput, Coupon, CouponFilterInput, CouponSortInput, CouponType, CouponTypeOperationFilterInput, CurrenciesConnection, CurrenciesEdge, Currency, CurrencyFilterInput, CurrencyInformation, CurrencyInformationFilterInput, CurrencyInformationSortInput, CurrencySortInput, DateTimeOperationFilterInput, DecimalOperationFilterInput, Derivative, DerivativeFilterInput, DerivativeSortInput, DerivativesConnection, DerivativesEdge, Dividend, DividendFilterInput, DividendSortInput, DividendsAggregateInfo, DividendsAggregateInfoFilterInput, DividendsAggregateInfoSortInput, Exchange, ExchangeOperationFilterInput, FinancialAttributes, FinancialAttributesFilterInput, FinancialAttributesSortInput, InitialMargin, InitialMarginFilterInput, InitialMarginSortInput, Instrument, InstrumentModelFilterInput, InstrumentModelSortInput, InstrumentsConnection, InstrumentsEdge, IntOperationFilterInput, ListFilterInputTypeOfAmortizationFilterInput, ListFilterInputTypeOfCouponFilterInput, ListFilterInputTypeOfDividendFilterInput, ListFilterInputTypeOfOfferFilterInput, ListFilterInputTypeOfTradingPeriodFilterInput, ListFilterInputTypeOfValuePerQuarterFilterInput, ListFilterInputTypeOfValuePerYearFilterInput, LongOperationFilterInput, MainIndicators, MainIndicatorsFilterInput, MainIndicatorsSortInput, Market, MarketOperationFilterInput, NetIncome, NetIncomeFilterInput, NullableOfCouponTypeOperationFilterInput, Offer, OfferFilterInput, OfferSortInput, Other, PageInfo, Profitability, ProfitabilityFilterInput, ProfitabilitySortInput, Sales, SalesFilterInput, SortEnumType, Stock, StockDividendsArgs, StockFilterInput, StockSortInput, StocksConnection, StocksEdge, StringOperationFilterInput, Swap, SwapFilterInput, SwapSortInput, SwapsConnection, SwapsEdge, Trading, TradingDetails, TradingDetailsFilterInput, TradingDetailsSortInput, TradingFilterInput, TradingPeriod, TradingPeriodFilterInput, TradingSortInput, ValuePerQuarter, ValuePerQuarterFilterInput, ValuePerYear, ValuePerYearFilterInput } from './graphql.types'
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -99,16 +99,16 @@ export function AmortizationSortInputSchema(): z.ZodObject<Properties<Amortizati
 export function BasicInformationSchema(): z.ZodObject<Properties<BasicInformation>> {
   return z.object({
     __typename: z.literal('BasicInformation').optional(),
-    complexProductCategory: z.string(),
-    description: z.string(),
+    complexProductCategory: z.string().nullish(),
+    description: z.string().nullish(),
     exchange: ExchangeSchema,
-    fullDescription: z.string(),
+    fullDescription: z.string().nullish(),
     fullName: z.string().nullish(),
     gicsSector: z.string().nullish(),
     market: MarketSchema,
     readableType: z.string().nullish(),
     sector: z.string().nullish(),
-    shortName: z.string(),
+    shortName: z.string().nullish(),
     symbol: z.string(),
     type: z.string().nullish()
   })
@@ -734,6 +734,7 @@ export function FinancialAttributesSchema(): z.ZodObject<Properties<FinancialAtt
     cfiCode: z.string(),
     currency: z.string().nullish(),
     isin: z.string().nullish(),
+    tradingPeriods: z.array(z.lazy(() => TradingPeriodSchema())).nullish(),
     tradingStatus: z.number(),
     tradingStatusInfo: z.string().nullish()
   })
@@ -746,6 +747,7 @@ export function FinancialAttributesFilterInputSchema(): z.ZodObject<Properties<F
     currency: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     isin: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     or: z.array(z.lazy(() => FinancialAttributesFilterInputSchema())).nullish(),
+    tradingPeriods: z.lazy(() => ListFilterInputTypeOfTradingPeriodFilterInputSchema().nullish()),
     tradingStatus: z.lazy(() => IntOperationFilterInputSchema().nullish()),
     tradingStatusInfo: z.lazy(() => StringOperationFilterInputSchema().nullish())
   })
@@ -906,6 +908,15 @@ export function ListFilterInputTypeOfOfferFilterInputSchema(): z.ZodObject<Prope
     any: z.boolean().nullish(),
     none: z.lazy(() => OfferFilterInputSchema().nullish()),
     some: z.lazy(() => OfferFilterInputSchema().nullish())
+  })
+}
+
+export function ListFilterInputTypeOfTradingPeriodFilterInputSchema(): z.ZodObject<Properties<ListFilterInputTypeOfTradingPeriodFilterInput>> {
+  return z.object({
+    all: z.lazy(() => TradingPeriodFilterInputSchema().nullish()),
+    any: z.boolean().nullish(),
+    none: z.lazy(() => TradingPeriodFilterInputSchema().nullish()),
+    some: z.lazy(() => TradingPeriodFilterInputSchema().nullish())
   })
 }
 
@@ -1348,6 +1359,23 @@ export function TradingFilterInputSchema(): z.ZodObject<Properties<TradingFilter
     maxFor52Weeks: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     minFor52Weeks: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     or: z.array(z.lazy(() => TradingFilterInputSchema())).nullish()
+  })
+}
+
+export function TradingPeriodSchema(): z.ZodObject<Properties<TradingPeriod>> {
+  return z.object({
+    __typename: z.literal('TradingPeriod').optional(),
+    finish: z.string().nullish(),
+    start: z.string().nullish()
+  })
+}
+
+export function TradingPeriodFilterInputSchema(): z.ZodObject<Properties<TradingPeriodFilterInput>> {
+  return z.object({
+    and: z.array(z.lazy(() => TradingPeriodFilterInputSchema())).nullish(),
+    finish: z.lazy(() => DateTimeOperationFilterInputSchema().nullish()),
+    or: z.array(z.lazy(() => TradingPeriodFilterInputSchema())).nullish(),
+    start: z.lazy(() => DateTimeOperationFilterInputSchema().nullish())
   })
 }
 

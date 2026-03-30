@@ -1,0 +1,67 @@
+{
+  "title": "Գործառնությունների պատմություն",
+  "loadMore": "Բեռնել ավելին",
+  "empty": "Պատմությունը դատարկ է",
+  "filters": {
+    "typePlaceholder": "Գործառնության տեսակ",
+    "dateFromPlaceholder": "Ամսաթիվ սկսած",
+    "dateToPlaceholder": "Ամսաթիվ մինչև",
+    "reset": "Վերակայել"
+  },
+  "filterGroups": {
+    "moneymove": "Դրամական միջոցների շարժ",
+    "operation": "Գործառնություններ"
+  },
+  "filterOptions": {
+    "input": "Մուտքագրում",
+    "withdraw": "Ելքագրում",
+    "transfer": "Փոխանցում",
+    "dividends": "Շահաբաժիններ",
+    "coupons": "Կտրոններ",
+    "taxes": "Հարկեր",
+    "commissions": "Միջնորդավճարներ",
+    "moneymove_others": "Այլ",
+    "money_withdrawal": "Դրամական միջոցների ելքագրում",
+    "money_input": "Հաշվի համալրում",
+    "services": "Ծառայություններ",
+    "securities": "Արժեթղթերով",
+    "orders": "Հայտեր",
+    "security": "Անվտանգություն",
+    "operation_others": "Այլ"
+  },
+  "type": {
+    "money_input": "Հաշվի համալրում",
+    "money_withdrawal": "Դրամական միջոցների ելքագրում",
+    "money_between_accounts": "Փոխանցում հաշիվների միջև",
+    "money_between_subportfolios": "Փոխանցում ենթապորտֆելների միջև",
+    "money_between_agreements": "Փոխանցում պայմանագրերի միջև",
+    "trade": "Գործարք",
+    "input": "Մուտքագրում",
+    "withdraw": "Ելքագրում",
+    "transfer": "Փոխանցում",
+    "dividends": "Շահաբաժիններ",
+    "coupons": "Կտրոններ",
+    "taxes": "Հարկեր",
+    "commissions": "Միջնորդավճարներ",
+    "services": "Ծառայություններ",
+    "securities": "Արժեթղթերով",
+    "orders": "Հայտեր",
+    "security": "Անվտանգություն",
+    "others": "Այլ"
+  },
+  "status": {
+    "executed": "Կատարված է",
+    "resolved": "Կատարված է",
+    "sent": "Գումարը ուղարկված է",
+    "canceled": "Չեղարկված է",
+    "refused": "Մերժված է",
+    "process": "Մշակման փուլում",
+    "executing": "Կատարման փուլում",
+    "overdue": "Ժամկետանց"
+  },
+  "columns": {
+    "operation": "Գործառնություն",
+    "amount": "Գումար",
+    "status": "Կարգավիճակ"
+  }
+}

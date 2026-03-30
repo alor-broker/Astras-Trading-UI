@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -12,33 +12,63 @@ import {
   take,
   tap,
 } from "rxjs";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { PushNotificationsService } from "../../services/push-notifications.service";
-import { PriceSparkSubscription, PushSubscriptionType } from "../../models/push-notifications.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { LessMore } from "../../../../shared/models/enums/less-more.model";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CommonParametersService } from "../../../order-commands/services/common-parameters.service";
-import { QuotesService } from "../../../../shared/services/quotes.service";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {PushNotificationsService} from "../../services/push-notifications.service";
+import {PriceSparkSubscription, PushSubscriptionType} from "../../models/push-notifications.model";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {inputNumberValidation} from "../../../../shared/utils/validation-options";
+import {filter, map} from "rxjs/operators";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {CommonParametersService} from "../../../order-commands/services/common-parameters.service";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzDividerComponent} from 'ng-zorro-antd/divider';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzRadioComponent, NzRadioGroupComponent} from 'ng-zorro-antd/radio';
+import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-setup-instrument-notifications',
-    templateUrl: './setup-instrument-notifications.component.html',
-    styleUrls: ['./setup-instrument-notifications.component.less'],
-    standalone: false
+  selector: 'ats-setup-instrument-notifications',
+  templateUrl: './setup-instrument-notifications.component.html',
+  styleUrls: ['./setup-instrument-notifications.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzSpinComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    NzDividerComponent,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzRadioGroupComponent,
+    NzRadioComponent,
+    InputNumberComponent,
+    NzTypographyComponent,
+    AsyncPipe
+  ]
 })
 export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy {
+  private readonly pushNotificationsService = inject(PushNotificationsService);
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly quoteService = inject(QuotesService);
+  private readonly instrumentService = inject(InstrumentsService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   isNotificationsAllowed$!: Observable<boolean>;
   currentInstrumentSubscriptions$!: Observable<PriceSparkSubscription[]>;
 
@@ -55,40 +85,24 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   });
 
   readonly isLoading$ = new BehaviorSubject(false);
+  readonly refresh$ = new BehaviorSubject(null);
+
   readonly lessMore = LessMore;
   instrument$!: Observable<Instrument>;
-  private readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
-  private readonly refresh$ = new BehaviorSubject(null);
-
-  constructor(
-    private readonly pushNotificationsService: PushNotificationsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly quoteService: QuotesService,
-    private readonly instrumentService: InstrumentsService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
-
-  @Input()
-  set instrumentKey(value: InstrumentKey | null) {
-    this.instrumentKey$.next(value);
-  }
-
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     price?: number;
-  } | null = null;
+  } | null>(null);
 
-  @Input()
-  set active(value: boolean) {
-    if (value) {
-      this.refresh$.next(null);
-    }
-  }
+  readonly instrumentKey = input<InstrumentKey | null>(null);
+
+  readonly active = input<boolean>(false);
+
+  private readonly instrumentKeyChanges$ = toObservable(this.instrumentKey).pipe(shareReplay(1));
+
+  private readonly activeChanges$ = toObservable(this.active);
 
   ngOnDestroy(): void {
-    this.instrumentKey$.complete();
+    this.isLoading$.complete();
     this.refresh$.complete();
   }
 
@@ -111,10 +125,16 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
       )
       .subscribe(() => this.refresh$.next(null));
 
+    this.activeChanges$.pipe(
+      filter(x => x),
+      takeUntilDestroyed(this.destroyRef)
+    )
+      .subscribe(() => this.refresh$.next(null));
+
     combineLatest({
-      initialValues: of(this.initialValues),
+      initialValues: of(this.initialValues()),
       commonParameters: this.commonParametersService.parameters$,
-      instrumentKey: this.instrumentKey$
+      instrumentKey: this.instrumentKeyChanges$
     }).pipe(
       filter(x => x.instrumentKey != null),
       mapWith(
@@ -124,16 +144,16 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
             selectedPrice: source.commonParameters.price ?? source.initialValues?.price,
             lastPrice: lastPrice ?? 0
           }
-          )
+        )
       ),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe(({ selectedPrice, lastPrice }) => {
-        this.newPriceChangeSubscriptionForm.controls.price.setValue(selectedPrice ?? 0);
-        this.newPriceChangeSubscriptionForm.controls.priceCondition.setValue((selectedPrice != null && selectedPrice > lastPrice)
-          ? LessMore.More
-          : LessMore.Less
-        );
-      });
+    ).subscribe(({selectedPrice, lastPrice}) => {
+      this.newPriceChangeSubscriptionForm.controls.price.setValue(selectedPrice ?? 0);
+      this.newPriceChangeSubscriptionForm.controls.priceCondition.setValue((selectedPrice != null && selectedPrice > lastPrice)
+        ? LessMore.More
+        : LessMore.Less
+      );
+    });
   }
 
   cancelSubscription(id: string): void {
@@ -145,7 +165,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   }
 
   addSubscription(): void {
-    this.instrumentKey$.pipe(
+    this.instrumentKeyChanges$.pipe(
       take(1),
       filter((x): x is InstrumentKey => !!x),
       switchMap((instrumentKey: InstrumentKey) => {
@@ -184,7 +204,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
         filter(x => x),
         delay(0), // Needs to prevent ExpressionChangedAfterItHasBeenChecked error
         switchMap(() => this.refresh$),
-        switchMap(() => this.instrumentKey$),
+        switchMap(() => this.instrumentKeyChanges$),
         tap(() => this.isLoading$.next(true)),
         mapWith(instrumentKey => {
             if (!instrumentKey) {
@@ -208,7 +228,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   }
 
   private initInstrument(): void {
-    this.instrument$ = this.instrumentKey$.pipe(
+    this.instrument$ = this.instrumentKeyChanges$.pipe(
       filter((i): i is InstrumentKey => !!i),
       switchMap(instrumentKey => this.instrumentService.getInstrument(instrumentKey)),
       filter((i): i is Instrument => !!i),

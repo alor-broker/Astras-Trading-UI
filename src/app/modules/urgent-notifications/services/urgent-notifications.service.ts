@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
@@ -27,12 +27,9 @@ export interface Notification {
   providedIn: 'root'
 })
 export class UrgentNotificationsService {
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly environmentService: EnvironmentService
-  ) {
-  }
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly environmentService = inject(EnvironmentService);
 
   getNotifications(): Observable<NotificationsResponse | null> {
     if (this.environmentService.cmsUrl == null || this.environmentService.cmsUrl == '') {

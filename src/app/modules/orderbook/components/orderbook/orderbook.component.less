@@ -1,36 +1,56 @@
 @import "theme-mixin";
 
 .themeMixin({
-  .volumes {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
+  ats-order-book {
+    .volumes {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
 
-    span {
-      padding: 0 10px;
+      span {
+        padding: 0 10px;
+      }
+
+      .ask-volume {
+        color: @sell-color;
+        background-color: fade(@sell-color, 20%);
+      }
+
+      .bid-volume {
+        color: @buy-color;
+        background-color: fade(@buy-color-background-light, 20%);
+      }
     }
 
-    .ask-volume {
-      color: @sell-color;
-      background-color: fade(@sell-color, 20%);
-    }
+    .value-wrapper {
+      position: relative;
 
-    .bid-volume {
-      color: @buy-color;
-      background-color: fade(@buy-color-background-light, 20%);
+      .value {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+
+        &.red {
+          color: @sell-color
+        }
+      }
     }
   }
+});
 
-  .value-wrapper {
-    position: relative;
+.themeMixin({
+  &.mobile {
+    ats-order-book {
+      .ant-table {
+        .ant-table-tbody {
+          .ant-table-row {
+            height: 28px;
 
-    .value {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-
-      &.red {
-        color: @sell-color
+            .ant-btn {
+              min-height: 25px;
+            }
+          }
+        }
       }
     }
   }

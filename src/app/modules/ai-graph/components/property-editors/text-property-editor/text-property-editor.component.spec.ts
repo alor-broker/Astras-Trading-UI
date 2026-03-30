@@ -18,6 +18,17 @@ describe('TextPropertyEditorComponent', () => {
 
     fixture = TestBed.createComponent(TextPropertyEditorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'config',
+      {
+        label: 'label',
+        applyValueCallback: () => {},
+        initialValue: null,
+        validation: {
+
+        }
+      }
+    );
     fixture.detectChanges();
   });
 

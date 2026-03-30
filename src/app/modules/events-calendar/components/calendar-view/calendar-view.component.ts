@@ -1,68 +1,50 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {NzCalendarComponent} from "ng-zorro-antd/calendar";
-import {
-  BehaviorSubject,
-  distinctUntilChanged,
-  Observable,
-  shareReplay,
-  switchMap,
-  tap
-} from "rxjs";
+import { AfterViewInit, Component, DestroyRef, input, LOCALE_ID, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
+import {NzCalendarComponent, NzDateFullCellDirective} from "ng-zorro-antd/calendar";
+import {BehaviorSubject, distinctUntilChanged, Observable, shareReplay, switchMap, tap} from "rxjs";
 import {CalendarEvent, CalendarEvents} from "../../models/events-calendar.model";
 import {EventsCalendarService} from "../../services/events-calendar.service";
 import {addMonths, endOfMonth, getISOStringDate, startOfDay, startOfMonth} from "../../../../shared/utils/datetime";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { MarketService } from "../../../../shared/services/market.service";
-import {
-  CurrencySettings
-} from "../../../../shared/models/market-settings.model";
-import { map } from "rxjs/operators";
-import {
-  formatCurrency,
-  getCurrencyFormat
-} from "../../../../shared/utils/formatters";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {MarketService} from "../../../../shared/services/market.service";
+import {CurrencySettings} from "../../../../shared/models/market-settings.model";
+import {map} from "rxjs/operators";
+import {formatCurrency, getCurrencyFormat} from "../../../../shared/utils/formatters";
+import {LetDirective} from '@ngrx/component';
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {NzDescriptionsComponent, NzDescriptionsItemComponent} from 'ng-zorro-antd/descriptions';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {AsyncPipe, DatePipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-calendar-view',
-    templateUrl: './calendar-view.component.html',
-    styleUrls: ['./calendar-view.component.less'],
-    standalone: false
+  selector: 'ats-calendar-view',
+  templateUrl: './calendar-view.component.html',
+  styleUrls: ['./calendar-view.component.less'],
+  imports: [
+    LetDirective,
+    NzCalendarComponent,
+    NzDateFullCellDirective,
+    NzPopoverDirective,
+    NzDescriptionsComponent,
+    TranslocoDirective,
+    NzDescriptionsItemComponent,
+    AsyncPipe,
+    DatePipe
+  ]
 })
 export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
-  private readonly symbols$ = new BehaviorSubject<string[]>([]);
+  private readonly service = inject(EventsCalendarService);
+  private readonly marketService = inject(MarketService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly locale = inject(LOCALE_ID);
 
-  @Input()
-  set symbols(value: string[]) {
-    this.symbols$.next(value);
-  }
-
-  @ViewChild('startPeriodCalendar') startPeriodCalendarComp?: NzCalendarComponent;
-  @ViewChild('endPeriodCalendar') endPeriodCalendarComp?: NzCalendarComponent;
-
+  readonly symbols = input<string[]>([]);
+  readonly startPeriodCalendarComp = viewChild<NzCalendarComponent>('startPeriodCalendar');
+  readonly endPeriodCalendarComp = viewChild<NzCalendarComponent>('endPeriodCalendar');
   events$ = new BehaviorSubject<CalendarEvents>({});
   selectedDate$ = new BehaviorSubject<Date>(new Date());
   selectedDateEvents$ = new BehaviorSubject<CalendarEvent | null>(null);
-
   currencySettings$!: Observable<CurrencySettings>;
-
-  constructor(
-    private readonly service: EventsCalendarService,
-    private readonly marketService: MarketService,
-    private readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID)
-    private readonly locale: string
-  ) {
-  }
+  private readonly symbolsChanges$ = toObservable(this.symbols);
 
   ngOnInit(): void {
     this.currencySettings$ = this.marketService.getMarketSettings().pipe(
@@ -78,10 +60,10 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(
         distinctUntilChanged((prev, curr) => prev.toString() === curr.toString()),
         tap(date => this.changeCalendarsDate(date)),
-        switchMap(() => this.symbols$),
+        switchMap(() => this.symbolsChanges$),
         switchMap(symbols => this.service.getEvents({
-            dateFrom: getISOStringDate(startOfMonth(this.startPeriodCalendarComp!.activeDate.nativeDate)),
-            dateTo: getISOStringDate(endOfMonth(this.endPeriodCalendarComp!.activeDate.nativeDate)),
+            dateFrom: getISOStringDate(startOfMonth(this.startPeriodCalendarComp()!.activeDate.nativeDate)),
+            dateTo: getISOStringDate(endOfMonth(this.endPeriodCalendarComp()!.activeDate.nativeDate)),
             symbols
           })
         ),
@@ -93,7 +75,6 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.symbols$.complete();
     this.events$.complete();
     this.selectedDateEvents$.complete();
   }
@@ -103,8 +84,8 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeCalendarsDate(date: Date): void {
-    this.startPeriodCalendarComp?.writeValue(date);
-    this.endPeriodCalendarComp?.writeValue(addMonths(date, 1));
+    this.startPeriodCalendarComp()?.writeValue(date);
+    this.endPeriodCalendarComp()?.writeValue(addMonths(date, 1));
   }
 
   getDateEvents(date: Date, events: CalendarEvents): CalendarEvent | null {
@@ -115,10 +96,10 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isShowDate(date: Date, isLeftCalendar = true): boolean {
     if (isLeftCalendar) {
-      return date.getMonth() === this.startPeriodCalendarComp?.activeDate.getMonth();
+      return date.getMonth() === this.startPeriodCalendarComp()?.activeDate.getMonth();
     }
 
-    return date.getMonth() === this.endPeriodCalendarComp?.activeDate.getMonth();
+    return date.getMonth() === this.endPeriodCalendarComp()?.activeDate.getMonth();
   }
 
   selectEvent(date: Date, events: CalendarEvents): void {

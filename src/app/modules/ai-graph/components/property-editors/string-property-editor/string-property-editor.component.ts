@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, DestroyRef, OnChanges, SimpleChanges, inject } from '@angular/core';
 import {StringPropertyEditorConfig} from "../../../models/property-editor.model";
 import {PropertyEditorBaseComponent} from "../property-editor-base";
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -23,16 +23,12 @@ import {NzInputDirective} from "ng-zorro-antd/input";
     styleUrl: './string-property-editor.component.less'
 })
 export class StringPropertyEditorComponent extends PropertyEditorBaseComponent<StringPropertyEditorConfig> implements OnChanges {
+  protected readonly formBuilder = inject(FormBuilder);
+  protected readonly destroyRef = inject(DestroyRef);
+
   protected readonly form = this.formBuilder.group({
     property: this.formBuilder.control<string | null>(null)
   });
-
-  constructor(
-    protected readonly formBuilder: FormBuilder,
-    protected readonly destroyRef: DestroyRef,
-  ) {
-    super();
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.config.currentValue != null || changes.config.firstChange) {

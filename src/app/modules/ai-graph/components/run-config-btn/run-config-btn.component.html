@@ -1,6 +1,6 @@
 <button
   (click)="run()"
-  [disabled]="config == null"
+  [disabled]="config() == null"
   [nzLoading]="currentStatus.status === Statuses.Loading"
   nz-button
   nzType="primary"

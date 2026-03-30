@@ -1,4 +1,4 @@
-import {Inject, Injectable, DOCUMENT} from '@angular/core';
+import { Injectable, DOCUMENT, inject } from '@angular/core';
 
 import {
   BehaviorSubject,
@@ -21,17 +21,14 @@ import {HttpContextTokens} from "../constants/http.constants";
   providedIn: 'root',
 })
 export class ThemeService {
+  private readonly document = inject<Document>(DOCUMENT);
+  private readonly terminalSettings = inject(TerminalSettingsService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly httpClient = inject(HttpClient);
+
   private currentTheme?: ThemeType | null;
   private themeSettings$?: Observable<ThemeSettings>;
   private readonly styleLinkClassName = 'theme';
-
-  constructor(
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly terminalSettings: TerminalSettingsService,
-    private readonly localStorageService: LocalStorageService,
-    private readonly httpClient: HttpClient
-  ) {
-  }
 
   subscribeToThemeChanges(): Subscription {
     return this.getThemeSettings().pipe(

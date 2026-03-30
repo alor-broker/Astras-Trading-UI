@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { RemoteStorageService } from "./remote-storage.service";
 import { ApplicationMetaService } from "../application-meta.service";
 import {
@@ -23,18 +23,15 @@ import { WidgetSettingsDesktopMigrationManager } from "../../../modules/settings
   providedIn: 'root'
 })
 export class WidgetsSettingsBrokerService {
+  private readonly remoteStorageService = inject(RemoteStorageService);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly widgetSettingsDesktopMigrationManager = inject(WidgetSettingsDesktopMigrationManager);
+
   private readonly saveRequestDelay = 100;
   private readonly saveRequests = new Map<string, {
     source: BehaviorSubject<WidgetSettings>;
     stream$: Observable<boolean>;
   }>();
-
-  constructor(
-    private readonly remoteStorageService: RemoteStorageService,
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly widgetSettingsDesktopMigrationManager: WidgetSettingsDesktopMigrationManager
-  ) {
-  }
 
   private get groupKey(): string {
     return 'widget-settings';

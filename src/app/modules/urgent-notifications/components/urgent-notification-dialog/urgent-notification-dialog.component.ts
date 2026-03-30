@@ -1,13 +1,5 @@
+import { Component, DestroyRef, OnInit, TemplateRef, ViewEncapsulation, viewChild, inject } from '@angular/core';
 import {
-  Component,
-  DestroyRef,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-  ViewEncapsulation,
-} from '@angular/core';
-import {
-  NzNotificationComponent,
   NzNotificationService
 } from "ng-zorro-antd/notification";
 import {
@@ -45,26 +37,19 @@ import { ExternalLinkComponent } from "../../../../shared/components/external-li
   encapsulation: ViewEncapsulation.None
 })
 export class UrgentNotificationDialogComponent implements OnInit {
-  @ViewChild(TemplateRef, {static: false})
-  template?: TemplateRef<{
-    $implicit: NzNotificationComponent;
-    data: { link: string | null, text: string };
-  }>;
+  private readonly urgentNotificationsService = inject(UrgentNotificationsService);
+  private readonly nzNotificationService = inject(NzNotificationService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly template = viewChild.required(TemplateRef);
 
   private readonly readNotificationsStorageKey = 'readUrgentNotifications';
 
   private readonly poolIntervalSec = 60;
 
   private readonly openedNotifications = new Set<string>();
-
-  constructor(
-    private readonly urgentNotificationsService: UrgentNotificationsService,
-    private readonly nzNotificationService: NzNotificationService,
-    private readonly localStorageService: LocalStorageService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     timer(10_000, this.poolIntervalSec * 1000).pipe(
@@ -105,7 +90,7 @@ export class UrgentNotificationDialogComponent implements OnInit {
           newNotifications.forEach((notification) => {
             const nzNotification = this.nzNotificationService.warning(
               translator(['notificationTitle']),
-              this.template!,
+              this.template(),
               {
                 nzKey: notification.id.toString(),
                 nzDuration: 0,

@@ -1,40 +1,21 @@
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { MarketTrendsSettings } from "../../models/market-trends-settings.model";
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {MarketTrendsSettings} from "../../models/market-trends-settings.model";
 
-import { Observable } from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from "@angular/forms";
-import {
-  NzMarks,
-  NzSliderComponent
-} from "ng-zorro-antd/slider";
-import {
-  ExtendedFilter,
-  MarketSector
-} from "../../../../shared/models/market-typings.model";
-import {
-  NzColDirective,
-  NzRowDirective
-} from "ng-zorro-antd/grid";
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from "ng-zorro-antd/form";
-import { SharedModule } from "../../../../shared/shared.module";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
+import {Observable} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
+import {NzMarks, NzSliderComponent} from "ng-zorro-antd/slider";
+import {ExtendedFilter, MarketSector} from "../../../../shared/models/market-typings.model";
+import {NzColDirective, NzRowDirective} from "ng-zorro-antd/grid";
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
+import {AsyncPipe} from "@angular/common";
 
 @Component({
   selector: 'ats-market-trends-settings',
@@ -47,14 +28,21 @@ import { WidgetSettingsComponent } from "../../../../shared/components/widget-se
     NzRowDirective,
     NzSliderComponent,
     ReactiveFormsModule,
-    SharedModule,
     TranslocoDirective,
-    WidgetSettingsComponent
+    WidgetSettingsComponent,
+    NzSelectComponent,
+    AsyncPipe,
+    NzOptionComponent
   ],
   templateUrl: './market-trends-settings.component.html',
   styleUrl: './market-trends-settings.component.less'
 })
 export class MarketTrendsSettingsComponent extends WidgetSettingsBaseComponent<MarketTrendsSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly validation = {
     itemsCount: {
       min: 5,
@@ -90,13 +78,16 @@ export class MarketTrendsSettingsComponent extends WidgetSettingsBaseComponent<M
   protected readonly allExtendedFilters = Object.keys(ExtendedFilter)
     .map(s => ExtendedFilter[s as keyof typeof ExtendedFilter]);
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

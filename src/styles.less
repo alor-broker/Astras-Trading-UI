@@ -3,6 +3,8 @@
 @import 'modal';
 @import 'tutorial';
 @import "form";
+@import "inputs";
+@import "descriptions";
 @import "litegraph";
 @import 'flex-utils';
 @import 'spacing-utils';
@@ -16,6 +18,13 @@
 @import 'interactions-utils';
 @import 'display-utils';
 @import 'opacity-utils';
+@import 'border-utils';
+@import 'mobile';
+
+:root {
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+}
 
 html {
   height: 100%;
@@ -35,12 +44,32 @@ html.mobile {
     position: fixed;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
+
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
   }
 
   .ant-popover {
     .ant-popover-inner-content {
       width: 100%;
     }
+  }
+
+  .ant-modal-wrap {
+    padding-top: var(--safe-area-top) !important;
+  }
+
+  .ant-message {
+    top: calc(24px + var(--safe-area-top)) !important;
+  }
+
+  .ant-notification-topRight,
+  .ant-notification-topLeft {
+    top: calc(24px + var(--safe-area-top)) !important;
+  }
+
+  .ant-drawer-content-wrapper {
+    top: var(--safe-area-top) !important;
   }
 }
 

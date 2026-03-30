@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   FeedbackMeta,
@@ -23,16 +23,13 @@ import { LocalStorageCommonConstants } from "../../../shared/constants/local-sto
   providedIn: 'root'
 })
 export class FeedbackService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly localStorage = inject(LocalStorageService);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   unansweredFeedbackRemoved$ = new Subject();
   private readonly baseUrl = this.environmentService.apiUrl + '/astras';
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly localStorage: LocalStorageService,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
 
   setLastFeedbackCheck(): void {
     const meta = this.getSavedFeedbackMeta() ?? {};

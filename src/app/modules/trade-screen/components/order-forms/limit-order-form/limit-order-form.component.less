@@ -1,0 +1,40 @@
+@import "theme-mixin";
+@import "buy-sell-button-mixin";
+
+.themeMixin({
+  :host {
+    .buy-button,
+    .sell-button {
+      color: @heading-color;
+    }
+
+    .buy-button {
+      background-color: fade(@buy-color, 15%);
+      border-color: @buy-color;
+
+      &[disabled] {
+        color: @btn-disable-color;
+        border-color: @btn-disable-border;
+        background-color: @btn-disable-bg;
+      }
+    }
+
+    .sell-button {
+      background-color: fade(@sell-color, 15%);
+      border-color: @sell-color;
+
+      &[disabled] {
+        color: @btn-disable-color;
+        border-color: @btn-disable-border;
+        background-color: @btn-disable-bg;
+      }
+    }
+
+    .evaluation-hint {
+      padding: 2px 4px 2px 4px;
+      background-color: @descriptions-bg;
+      border: 1px solid @border-color-base;
+      border-radius: @border-radius-base;
+    }
+  }
+});

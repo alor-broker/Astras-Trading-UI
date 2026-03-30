@@ -1,0 +1,26 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    ::ng-deep .ant-form-item-label > label {
+      color: @heading-color;
+      font-weight: @font-weight-bold;
+    }
+  }
+});
+
+:host {
+  display: block;
+}
+
+.saved-requisites-item {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+

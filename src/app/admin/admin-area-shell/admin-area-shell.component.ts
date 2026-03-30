@@ -1,13 +1,6 @@
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
-  Component,
-  Inject,
-  OnDestroy,
-  OnInit,
-  Optional
-} from '@angular/core';
-import {
-  AREA_HOOK,
-  AreaHook
+  AREA_HOOK
 } from "../../shared/services/hook/area/area-hook-token";
 import { AdminAuthContextService } from "../services/auth/admin-auth-context.service";
 import { RouterOutlet } from "@angular/router";
@@ -21,12 +14,8 @@ import { RouterOutlet } from "@angular/router";
     ]
 })
 export class AdminAreaShellComponent implements OnInit, OnDestroy {
-  constructor(
-    private readonly adminAuthContextService: AdminAuthContextService,
-    @Inject(AREA_HOOK) @Optional()
-    private readonly areaHooks: AreaHook[] | null,
-  ) {
-  }
+  private readonly adminAuthContextService = inject(AdminAuthContextService);
+  private readonly areaHooks = inject(AREA_HOOK, { optional: true });
 
   ngOnDestroy(): void {
     this.destroyHooks();

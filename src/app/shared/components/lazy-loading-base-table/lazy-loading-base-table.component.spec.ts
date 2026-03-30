@@ -10,8 +10,7 @@ import { BaseColumnSettings } from "../../models/settings/table-settings.model";
 
 @Component({
     selector: 'ats-test-comp',
-    template: '',
-    standalone: false
+    template: ''
 })
 class TestComponent extends LazyLoadingBaseTableComponent<any, any> {
   protected allColumns: BaseColumnSettings<any>[] = [];
@@ -26,8 +25,10 @@ class TestComponent extends LazyLoadingBaseTableComponent<any, any> {
 }
 
 @Component({
-    template: '<ats-test-comp></ats-test-comp>',
-    standalone: false
+  imports: [
+    TestComponent
+  ],
+  template: '<ats-test-comp />'
 })
 class TestWrapperComponent {}
 
@@ -41,17 +42,15 @@ describe('LazyLoadingBaseTableComponent', () => {
     settingsServiceSpy = jasmine.createSpyObj('WidgetSettingsService', ['updateSettings']);
 
     TestBed.configureTestingModule({
-      declarations: [
-        TestComponent,
-        TestWrapperComponent
-      ],
-      providers: [
+    imports: [TestComponent,
+        TestWrapperComponent],
+    providers: [
         {
-          provide: WidgetSettingsService,
-          useValue: settingsServiceSpy
+            provide: WidgetSettingsService,
+            useValue: settingsServiceSpy
         }
-      ]
-    });
+    ]
+});
 
     hostFixture = TestBed.createComponent(TestWrapperComponent);
     component = hostFixture.debugElement.query(By.directive(TestComponent)).componentInstance;

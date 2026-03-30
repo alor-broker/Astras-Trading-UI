@@ -29,7 +29,9 @@
       "galleryOrder": 1,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "order-book",
@@ -66,9 +68,12 @@
       "galleryIcon": "ats-orderbook",
       "ribbonIcon": "ats-orderbook",
       "enabled": true,
-      "galleryOrder": 2
+      "galleryOrder": 2,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "scalper-order-book",
@@ -101,7 +106,9 @@
       "galleryOrder": 3,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "light-chart",
@@ -139,9 +146,11 @@
       "ribbonIcon": "sliders",
       "enabled": true,
       "galleryOrder": 4,
-      "showOrderButtons": true
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "tech-chart",
@@ -178,9 +187,12 @@
       "galleryIcon": "fund",
       "ribbonIcon": "fund",
       "enabled": true,
-      "galleryOrder": 5
+      "galleryOrder": 5,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "blotter",
@@ -216,9 +228,12 @@
       "galleryIcon": "ats-portfolio",
       "ribbonIcon": "ats-portfolio",
       "enabled": true,
-      "galleryOrder": 6
+      "galleryOrder": 6,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "instrument-info",
@@ -255,9 +270,12 @@
       "galleryIcon": "ats-instrument-info",
       "ribbonIcon": "ats-instrument-info",
       "enabled": true,
-      "galleryOrder": 7
+      "galleryOrder": 7,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "news",
@@ -293,9 +311,12 @@
       "galleryIcon": "read",
       "ribbonIcon": "read",
       "enabled": true,
-      "galleryOrder": 8
+      "galleryOrder": 8,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "all-trades",
@@ -332,9 +353,12 @@
       "galleryIcon": "ats-trade",
       "ribbonIcon": "ats-trade",
       "enabled": true,
-      "galleryOrder": 9
+      "galleryOrder": 9,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "exchange-rate",
@@ -370,9 +394,12 @@
       "galleryIcon": "ats-exchange-rate",
       "ribbonIcon": "ats-exchange-rate",
       "enabled": true,
-      "galleryOrder": 10
+      "galleryOrder": 10,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "all-instruments",
@@ -408,9 +435,12 @@
       "galleryIcon": "ats-instruments-search",
       "ribbonIcon": "ats-instruments-search",
       "enabled": true,
-      "galleryOrder": 11
+      "galleryOrder": 11,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "order-submit",
@@ -451,12 +481,17 @@
         "default": "Order",
         "translations": {
           "ru": "Заявка",
-          "en": "Order"
+          "en": "Order",
+          "hy": "Հայտի ձևակերպում"
         }
       },
-      "galleryOrder": 12
+      "galleryOrder": 12,
+      "selectableForQuickAccessPanel": true,
+      "isOrderWidget": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "orders-basket",
@@ -492,9 +527,12 @@
       "galleryIcon": "calculator",
       "ribbonIcon": "calculator",
       "enabled": true,
-      "galleryOrder": 13
+      "galleryOrder": 13,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "treemap",
@@ -530,9 +568,12 @@
       "galleryIcon": "layout",
       "ribbonIcon": "layout",
       "enabled": true,
-      "galleryOrder": 14
+      "galleryOrder": 14,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "ribbon",
@@ -563,7 +604,9 @@
       "galleryOrder": 15,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "events-calendar",
@@ -599,9 +642,12 @@
       "galleryIcon": "calendar",
       "ribbonIcon": "calendar",
       "enabled": true,
-      "galleryOrder": 16
+      "galleryOrder": 16,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "option-board",
@@ -637,9 +683,12 @@
       "galleryIcon": "table",
       "ribbonIcon": "table",
       "enabled": true,
-      "galleryOrder": 17
+      "galleryOrder": 17,
+      "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "arbitrage-spread",
@@ -671,7 +720,10 @@
       "galleryOrder": 18,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "portfolio-summary",
@@ -702,7 +754,9 @@
       "galleryOrder": 19,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "instruments-correlation",
@@ -734,7 +788,10 @@
       "galleryOrder": 20,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main","admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "bond-screener",
@@ -766,7 +823,10 @@
       "galleryOrder": 21,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main","admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "mobile-home-screen",
@@ -778,14 +838,20 @@
       }
     },
     "widgetName": {
-      "default": ""
+      "default": "Home Screen",
+      "translations": {
+        "ru": "Домашний экран",
+        "en": "Home Screen",
+        "hy": "Գլխավոր էջ"
+      }
     },
     "category": "positionsTradesOrders",
     "mobileMeta": {
       "galleryIcon": "home",
       "ribbonIcon": "home",
       "enabled": true,
-      "galleryOrder": 0
+      "galleryOrder": 0,
+      "selectableForQuickAccessPanel": true
     }
   },
   {
@@ -819,11 +885,13 @@
       "galleryOrder": 50,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "invest-ideas",
-    "isDemoOnly": true,
     "definition": {
       "adapter": "application",
       "config": {
@@ -852,7 +920,10 @@
       "galleryOrder": 22,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "portfolio-charts",
@@ -884,7 +955,9 @@
       "galleryOrder": 23,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "market-trends",
@@ -919,7 +992,38 @@
     "baseSettings": {
       "availableExtendedFilters": []
     },
-    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
+    "typeId": "trade-screen",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "MobileOrderWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Trade",
+      "translations": {
+        "ru": "Торговля",
+        "en": "Trade",
+        "hy": "Առևտուր"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "positionsTradesOrders",
+    "mobileMeta": {
+      "galleryIcon": "shopping-cart",
+      "ribbonIcon": "shopping-cart",
+      "enabled": true,
+      "galleryOrder": 25,
+      "selectableForQuickAccessPanel": true,
+      "isOrderWidget": true
+    }
   },
   {
     "typeId": "admin-clients",
@@ -951,6 +1055,10 @@
       "galleryOrder": 100,
       "enabled": true
     },
-    "hideOnDashboardType": ["desktop", "mobile", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "desktop",
+      "mobile",
+      "admin-selected-portfolio"
+    ]
   }
 ]

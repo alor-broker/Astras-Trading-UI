@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
   Observable,
@@ -16,13 +16,10 @@ export interface CurrencyPair {
   providedIn: 'root'
 })
 export class ExchangeRateService {
-  private readonly baseUrl = this.environmentService.apiUrl + '/md/v2/Securities';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient
-  ) {
-  }
+  private readonly baseUrl = this.environmentService.apiUrl + '/md/v2/Securities';
 
   getCurrencyPairs(): Observable<CurrencyPair[]> {
     return this.http.get<CurrencyPair[]>(`${this.baseUrl}/currencyPairs`).pipe(

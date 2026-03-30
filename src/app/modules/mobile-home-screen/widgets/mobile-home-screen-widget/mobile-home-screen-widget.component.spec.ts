@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {MobileHomeScreenWidgetComponent} from './mobile-home-screen-widget.component';
-import {MockComponents, MockModule, MockProvider} from "ng-mocks";
+import {MockComponents, MockProvider} from "ng-mocks";
 import {
   MobileHomeScreenContentComponent
 } from "../../components/mobile-home-screen-content/mobile-home-screen-content.component";
@@ -9,9 +9,9 @@ import {WidgetSettingsService} from "../../../../shared/services/widget-settings
 import {EMPTY} from 'rxjs';
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
-import {SharedModule} from "../../../../shared/shared.module";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
 
 describe('MobileHomeScreenWidgetComponent', () => {
   let component: MobileHomeScreenWidgetComponent;
@@ -22,9 +22,9 @@ describe('MobileHomeScreenWidgetComponent', () => {
       imports: [
         MobileHomeScreenWidgetComponent,
         MockComponents(
-          MobileHomeScreenContentComponent
-        ),
-        MockModule(SharedModule)
+          MobileHomeScreenContentComponent,
+          WidgetSkeletonComponent
+        )
       ],
       providers: [
         MockProvider(
@@ -52,12 +52,15 @@ describe('MobileHomeScreenWidgetComponent', () => {
 
     fixture = TestBed.createComponent(MobileHomeScreenWidgetComponent);
     component = fixture.componentInstance;
-    component.widgetInstance = {
-      instance: {
-        guid: 'guid'
-      } as Widget,
-      widgetMeta: {widgetName: {}} as WidgetMeta
-    };
+    fixture.componentRef.setInput(
+      'widgetInstance',
+      {
+        instance: {
+          guid: 'guid'
+        } as Widget,
+        widgetMeta: {widgetName: {}} as WidgetMeta
+      }
+    );
 
     fixture.detectChanges();
   });

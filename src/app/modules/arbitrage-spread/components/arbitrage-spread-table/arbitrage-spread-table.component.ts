@@ -1,17 +1,63 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from "rxjs";
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import { ArbitrageSpreadService } from "../../services/arbitrage-spread.service";
-import { ArbitrageSpread } from "../../models/arbitrage-spread.model";
-import { Side } from "../../../../shared/models/enums/side.model";
+import { Component, OnInit, inject } from '@angular/core';
+import {Observable} from "rxjs";
+import {BaseColumnSettings} from "../../../../shared/models/settings/table-settings.model";
+import {ArbitrageSpreadService} from "../../services/arbitrage-spread.service";
+import {ArbitrageSpread} from "../../models/arbitrage-spread.model";
+import {Side} from "../../../../shared/models/enums/side.model";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {
+  NzCellAlignDirective,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTbodyComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from 'ng-zorro-antd/table';
+import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzWaveDirective} from 'ng-zorro-antd/core/wave';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzFormControlComponent, NzFormItemComponent} from 'ng-zorro-antd/form';
+import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
+import {FormsModule} from '@angular/forms';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {AsyncPipe, DecimalPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-arbitrage-spread',
-    templateUrl: './arbitrage-spread-table.component.html',
-    styleUrls: ['./arbitrage-spread-table.component.less'],
-    standalone: false
+  selector: 'ats-arbitrage-spread',
+  templateUrl: './arbitrage-spread-table.component.html',
+  styleUrls: ['./arbitrage-spread-table.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzTableComponent,
+    TableRowHeightDirective,
+    NzTheadComponent,
+    NzTrDirective,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzCellAlignDirective,
+    NzButtonComponent,
+    NzWaveDirective,
+    NzTooltipDirective,
+    NzIconDirective,
+    NzTbodyComponent,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    InputNumberComponent,
+    FormsModule,
+    NzEmptyComponent,
+    AsyncPipe,
+    DecimalPipe
+  ]
 })
 export class ArbitrageSpreadTableComponent implements OnInit {
+  private readonly service = inject(ArbitrageSpreadService);
+
   items$?: Observable<ArbitrageSpread[]>;
 
   tableInnerWidth = 1000;
@@ -19,17 +65,14 @@ export class ArbitrageSpreadTableComponent implements OnInit {
   volumes: Record<string, number> = {};
 
   listOfColumns: BaseColumnSettings<ArbitrageSpread>[] = [
-    { id: 'symbols', displayName: 'Инструменты', width: 140 },
-    { id: 'buySpread', displayName: 'Рыночная раздвижка на покупку', width: 100 },
-    { id: 'sellSpread', displayName: 'Рыночная раздвижка на продажу', width: 100 },
-    { id: 'volume', displayName: 'Объём заявки', width: 60 },
-    { id: 'operation', displayName: 'Операция', width: 140 },
+    {id: 'symbols', displayName: 'Инструменты', width: 140},
+    {id: 'buySpread', displayName: 'Рыночная раздвижка на покупку', width: 100},
+    {id: 'sellSpread', displayName: 'Рыночная раздвижка на продажу', width: 100},
+    {id: 'volume', displayName: 'Объём заявки', width: 60},
+    {id: 'operation', displayName: 'Операция', width: 140},
   ];
 
-  constructor(
-    private readonly service: ArbitrageSpreadService,
-  ) {
-  }
+  getAbs = Math.abs;
 
   ngOnInit(): void {
     this.items$ = this.service.getSpreadsSubscription();
@@ -64,8 +107,6 @@ export class ArbitrageSpreadTableComponent implements OnInit {
   isVolumeValid(spreadId: string): boolean {
     return !!this.volumes[spreadId];
   }
-
-  getAbs = Math.abs;
 
   volumeChange(value: number, spreadId: string): void {
     this.volumes[spreadId] = value;

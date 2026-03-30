@@ -18,6 +18,17 @@ describe('DatePropertyEditorComponent', () => {
 
     fixture = TestBed.createComponent(DatePropertyEditorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'config',
+      {
+        label: 'label',
+        applyValueCallback: () => {},
+        initialValue: null,
+        validation: {
+
+        }
+      }
+    );
     fixture.detectChanges();
   });
 

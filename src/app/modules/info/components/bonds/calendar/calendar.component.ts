@@ -1,24 +1,17 @@
-import {
-  Component,
-  Input
-} from '@angular/core';
-import { Bond } from "../../../../../../generated/graphql.types";
-import { NzTableModule } from "ng-zorro-antd/table";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
-import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import {
-  CurrencyPipe,
-  NgClass,
-  PercentPipe
-} from "@angular/common";
-import { TableRowHeightDirective } from "../../../../../shared/directives/table-row-height.directive";
-import { isBefore } from "date-fns";
+import {Component, input} from '@angular/core';
+import {Bond} from "../../../../../../generated/graphql.types";
+import {NzTableModule} from "ng-zorro-antd/table";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {CurrencyPipe, PercentPipe} from "@angular/common";
+import {TableRowHeightDirective} from "../../../../../shared/directives/table-row-height.directive";
+import {isBefore} from "date-fns";
 
 @Component({
-    selector: 'ats-calendar',
-    templateUrl: './calendar.component.html',
-    styleUrls: ['./calendar.component.less'],
+  selector: 'ats-calendar',
+  templateUrl: './calendar.component.html',
+  styleUrls: ['./calendar.component.less'],
   imports: [
     NzTableModule,
     TranslocoDirective,
@@ -26,13 +19,11 @@ import { isBefore } from "date-fns";
     NzTypographyComponent,
     CurrencyPipe,
     TableRowHeightDirective,
-    NgClass,
     PercentPipe
-  ]
+]
 })
 export class CalendarComponent {
-  @Input({required: true})
-  bond!: Bond;
+  readonly bond = input.required<Bond>();
 
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString();

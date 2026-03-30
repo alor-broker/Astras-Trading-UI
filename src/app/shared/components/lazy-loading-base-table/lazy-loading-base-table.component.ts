@@ -4,8 +4,7 @@ import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { BehaviorSubject } from "rxjs";
 
 @Component({
-    template: '',
-    standalone: false
+    template: ''
 })
 export abstract class LazyLoadingBaseTableComponent<
   T extends Record<string, any>,
@@ -22,7 +21,9 @@ export abstract class LazyLoadingBaseTableComponent<
   protected pagination: P | null = null;
 
   constructor(
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly settingsService: WidgetSettingsService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, destroyRef);

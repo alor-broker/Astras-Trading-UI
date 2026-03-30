@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { JoyrideService } from 'ngx-joyride';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { LocalStorageDesktopConstants } from "../../../shared/constants/local-storage.constants";
@@ -13,11 +13,9 @@ interface Profile {
   providedIn: 'root'
 })
 export class OnboardingService {
-  constructor(
-    private readonly joyride: JoyrideService,
-    private readonly localStorage: LocalStorageService,
-    private readonly translatorService: TranslatorService
-  ) {}
+  private readonly joyride = inject(JoyrideService);
+  private readonly localStorage = inject(LocalStorageService);
+  private readonly translatorService = inject(TranslatorService);
 
   start(): void {
     if (!this.getIsCompleted()) {

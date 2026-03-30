@@ -1,7 +1,12 @@
 import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {CommonParametersService} from "../../../services/common-parameters.service";
-import {BehaviorSubject, Subject, take} from "rxjs";
+import {
+  BehaviorSubject,
+  EMPTY,
+  Subject,
+  take
+} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
@@ -13,16 +18,18 @@ import {NewMarketOrder} from "../../../../../shared/models/orders/new-order.mode
 import {toInstrumentKey} from "../../../../../shared/utils/instruments";
 import {MarketOrderFormComponent} from "./market-order-form.component";
 import {QuotesService} from "../../../../../shared/services/quotes.service";
-import {EvaluationService} from "../../../../../shared/services/evaluation.service";
-import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
-import { TestData } from "../../../../../shared/utils/testing/test-data";
-import { InstrumentBoardSelectMockComponent } from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
-import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
-import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
-import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
-import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
+import {TranslocoTestsModule} from "../../../../../shared/utils/testing/translocoTestsModule";
+import {TestData} from "../../../../../shared/utils/testing/test-data";
+import {commonTestProviders} from "../../../../../shared/utils/testing/common-test-providers";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {provideAnimations} from "@angular/platform-browser/animations";
+import {
+  InstrumentBoardSelectMockComponent
+} from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
+import {OrderEvaluationComponent} from "../../order-evaluation/order-evaluation.component";
+import {MockComponent} from "ng-mocks";
+import {GraphQlService} from "../../../../../shared/services/graph-ql.service";
+import {TerminalSettingsService} from "../../../../../shared/services/terminal-settings.service";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -77,19 +84,11 @@ describe('MarketOrderFormComponent', () => {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...FormsTesting.getTestingModules(),
-        InstrumentBoardSelectMockComponent,
-        InputNumberComponent,
-        BuySellButtonsComponent
-      ],
-      declarations: [
         MarketOrderFormComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-order-evaluation',
-          inputs: ['evaluationProperties']
-        }),
+        InstrumentBoardSelectMockComponent
       ],
       providers: [
+        provideAnimations(),
         {
           provide: CommonParametersService,
           useValue: {
@@ -120,13 +119,22 @@ describe('MarketOrderFormComponent', () => {
           }
         },
         {
-          provide: EvaluationService,
+          provide: GraphQlService,
           useValue: {
-            evaluateOrder: jasmine.createSpy('evaluateOrder').and.returnValue(new Subject())
+            queryForSchema: jasmine.createSpy('queryForSchema').and.returnValue(EMPTY)
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(EMPTY)
           }
         },
         ...commonTestProviders
       ]
+    }).overrideComponent(MarketOrderFormComponent, {
+      remove: {imports: [OrderEvaluationComponent]},
+      add: {imports: [MockComponent(OrderEvaluationComponent)]}
     })
       .compileComponents();
   });
@@ -134,17 +142,50 @@ describe('MarketOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MarketOrderFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    fixture.componentRef.setInput(
+      'marketOrderConfig',
+      {
+        unsupportedFields: {}
+      }
+    );
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput(
+      'instrument',
+      getDefaultInstrument()
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      getDefaultPortfolio()
+    );
+
+    fixture.componentRef.setInput(
+      'activated',
+      true
+    );
+
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', async () => {
-    component.instrument = getDefaultInstrument();
-    component.portfolioKey = getDefaultPortfolio();
-    component.activated = true;
+  it('should show form errors', fakeAsync(() => {
+    fixture.componentRef.setInput(
+      'instrument',
+      getDefaultInstrument()
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      getDefaultPortfolio()
+    );
+
+    fixture.componentRef.setInput(
+      'activated',
+      true
+    );
+
     fixture.detectChanges();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
@@ -171,23 +212,33 @@ describe('MarketOrderFormComponent', () => {
       (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({onlySelf: false});
 
       fixture.detectChanges();
+      tick();
 
-      await fixture.whenStable().then(() => {
-        const errorElement = getValidationErrorElement(control);
+      const errorElement = getValidationErrorElement(control);
 
-        expect(errorElement).not.toBeNull();
+      expect(errorElement).not.toBeNull();
 
-        if ((testCase.expectedError ?? '')) {
-          expect(errorElement?.textContent).toEqual(testCase.expectedError);
-        }
-      });
+      if ((testCase.expectedError ?? '')) {
+        expect(errorElement?.textContent).toEqual(testCase.expectedError);
+      }
     }
-  });
+  }));
 
   it('should disable submission', () => {
-      component.instrument = getDefaultInstrument();
-      component.portfolioKey = getDefaultPortfolio();
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        getDefaultInstrument()
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        getDefaultPortfolio()
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       component.form.controls.quantity.setValue(-1);
@@ -197,33 +248,61 @@ describe('MarketOrderFormComponent', () => {
     }
   );
 
-  it('should set initial values', async () => {
+  it('should set initial values', fakeAsync(() => {
       const initialValues = {
         quantity: 2
       };
 
-      component.initialValues = initialValues;
-      component.instrument = getDefaultInstrument();
-      component.portfolioKey = getDefaultPortfolio();
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'initialValues',
+        initialValues
+      );
+
+      fixture.componentRef.setInput(
+        'instrument',
+        getDefaultInstrument()
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        getDefaultPortfolio()
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
+
       fixture.detectChanges();
 
-      await fixture.whenStable().then(() => {
-        const expectedValue = {
-          quantity: initialValues.quantity
-        };
+      tick();
 
-        expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
-      });
+      const expectedValue = {
+        quantity: initialValues.quantity
+      };
+
+      expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
     }
-  );
+  ));
 
   it('should update evaluation', fakeAsync(() => {
       const instrument = getDefaultInstrument();
       const portfolio = getDefaultPortfolio();
-      component.instrument = instrument;
-      component.portfolioKey = portfolio;
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        instrument
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
+
       fixture.detectChanges();
 
       tick(1000);
@@ -260,9 +339,20 @@ describe('MarketOrderFormComponent', () => {
   it('should pass correct order to service', fakeAsync(() => {
       const instrument = getDefaultInstrument();
       const portfolio = getDefaultPortfolio();
-      component.instrument = instrument;
-      component.portfolioKey = portfolio;
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        instrument
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       const expectedOrder: NewMarketOrder = {

@@ -12,17 +12,17 @@ describe('SsoCallbackPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SsoCallbackPageComponent],
-      providers: [
+    imports: [SsoCallbackPageComponent],
+    providers: [
         provideRouter([]),
         {
-          provide: ClientAuthContextService,
-          useValue: {
-            setRefreshToken: jasmine.createSpy('setRefreshToken').and.callThrough()
-          }
+            provide: ClientAuthContextService,
+            useValue: {
+                setRefreshToken: jasmine.createSpy('setRefreshToken').and.callThrough()
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(SsoCallbackPageComponent);

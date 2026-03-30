@@ -1,25 +1,21 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {
-  combineLatest,
-  Observable,
-  take
-} from "rxjs";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { WatchlistCollectionService } from "../../services/watchlist-collection.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { map } from "rxjs/operators";
-import { WatchlistType } from "../../models/watchlist.model";
-import { NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
+import { Component, ElementRef, input, model, OnInit, viewChild, inject } from '@angular/core';
+import {combineLatest, Observable, take} from "rxjs";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {map} from "rxjs/operators";
+import {WatchlistType} from "../../models/watchlist.model";
+import {NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzMenuDirective, NzMenuItemComponent, NzSubMenuComponent} from 'ng-zorro-antd/menu';
+import {NzModalComponent, NzModalContentDirective} from 'ng-zorro-antd/modal';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {AsyncPipe} from '@angular/common';
 
 interface MenuItem {
   title: string;
@@ -29,27 +25,46 @@ interface MenuItem {
 }
 
 @Component({
-    selector: 'ats-add-to-watchlist-menu',
-    templateUrl: './add-to-watchlist-menu.component.html',
-    styleUrl: './add-to-watchlist-menu.component.less',
-    standalone: false
+  selector: 'ats-add-to-watchlist-menu',
+  templateUrl: './add-to-watchlist-menu.component.html',
+  styleUrl: './add-to-watchlist-menu.component.less',
+  imports: [
+    TranslocoDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzSubMenuComponent,
+    NzModalComponent,
+    NzModalContentDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzInputDirective,
+    NzButtonComponent,
+    NzIconDirective,
+    AsyncPipe
+  ]
 })
 export class AddToWatchlistMenuComponent implements OnInit {
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly formBuilder = inject(FormBuilder);
+
   menuItems$!: Observable<MenuItem[]>;
 
   showNewListDialog = false;
 
-  @Input()
-  itemToAdd: InstrumentKey | null = null;
+  readonly itemToAdd = model<InstrumentKey | null>(null);
 
-  @Input()
-  allowAddToNewList = true;
+  readonly allowAddToNewList = input(true);
 
-  @ViewChild(NzDropdownMenuComponent)
-  menuRef: NzDropdownMenuComponent | null = null;
+  readonly menuRef = viewChild(NzDropdownMenuComponent);
 
-  @ViewChild('titleInput')
-  titleInputEl?: ElementRef<HTMLInputElement>;
+  readonly titleInputEl = viewChild<ElementRef<HTMLInputElement>>('titleInput');
 
   readonly newListForm = this.formBuilder.group({
     title: this.formBuilder.nonNullable.control(
@@ -61,23 +76,17 @@ export class AddToWatchlistMenuComponent implements OnInit {
     )
   });
 
-  constructor(
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly translatorService: TranslatorService,
-    private readonly formBuilder: FormBuilder
-  ) {
-  }
-
   ngOnInit(): void {
     this.menuItems$ = this.getMenuItems();
   }
 
   selectItem(item: MenuItem): void {
-    if (item.itemId == null || this.itemToAdd == null) {
+    const itemToAdd = this.itemToAdd();
+    if (item.itemId == null || itemToAdd == null) {
       return;
     }
 
-    this.watchlistCollectionService.addItemsToList(item.itemId, [this.itemToAdd]);
+    this.watchlistCollectionService.addItemsToList(item.itemId, [itemToAdd]);
   }
 
   addItemToNewList(): void {
@@ -85,7 +94,9 @@ export class AddToWatchlistMenuComponent implements OnInit {
       return;
     }
 
-    if (this.itemToAdd == null) {
+    const itemToAdd = this.itemToAdd();
+
+    if (itemToAdd == null) {
       return;
     }
 
@@ -107,7 +118,7 @@ export class AddToWatchlistMenuComponent implements OnInit {
       this.watchlistCollectionService.createNewList(
         newListTitle,
         [
-          this.itemToAdd!
+          itemToAdd
         ]
       );
 
@@ -117,7 +128,7 @@ export class AddToWatchlistMenuComponent implements OnInit {
 
   afterNewListDialogOpen(): void {
     setTimeout(() => {
-      this.titleInputEl?.nativeElement.focus();
+      this.titleInputEl()?.nativeElement.focus();
     });
   }
 
@@ -158,7 +169,7 @@ export class AddToWatchlistMenuComponent implements OnInit {
           });
         }
 
-        if (this.allowAddToNewList) {
+        if (this.allowAddToNewList()) {
           menu.push({
             title: x.translator(['addToNewList']),
             selectItem: () => {

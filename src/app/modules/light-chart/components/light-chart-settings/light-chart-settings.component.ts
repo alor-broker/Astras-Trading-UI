@@ -1,35 +1,63 @@
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {Observable, take} from "rxjs";
+import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
+import {LightChartWidgetSettings, TimeFrameDisplayMode} from '../../models/light-chart-settings.model';
+import {DeviceService} from "../../../../shared/services/device.service";
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {TimeframeValue} from "../../models/light-chart.models";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InstrumentSearchComponent} from '../../../../shared/components/instrument-search/instrument-search.component';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {RemoveSelectTitlesDirective} from '../../../../shared/directives/remove-select-titles.directive';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
 import {
-  FormBuilder,
-  Validators
-} from '@angular/forms';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  Observable,
-  take
-} from "rxjs";
-import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  LightChartSettings,
-  TimeFrameDisplayMode
-} from '../../models/light-chart-settings.model';
-import { DeviceService } from "../../../../shared/services/device.service";
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { TimeframeValue } from "../../models/light-chart.models";
+  InstrumentBoardSelectComponent
+} from '../../../../shared/components/instrument-board-select/instrument-board-select.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-light-chart-settings',
-    templateUrl: './light-chart-settings.component.html',
-    styleUrls: ['./light-chart-settings.component.less'],
-    standalone: false
+  selector: 'ats-light-chart-settings',
+  templateUrl: './light-chart-settings.component.html',
+  styleUrls: ['./light-chart-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzFormLabelComponent,
+    InstrumentSearchComponent,
+    NzInputDirective,
+    NzSelectComponent,
+    RemoveSelectTitlesDirective,
+    NzOptionComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    InstrumentBoardSelectComponent,
+    AsyncPipe
+  ]
 })
-export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
+export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartWidgetSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly deviceService = inject(DeviceService);
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly form = this.formBuilder.group({
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
     timeFrame: this.formBuilder.nonNullable.control(TimeframeValue.Day, Validators.required),
@@ -41,16 +69,18 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
   readonly allTimeFrames = Object.values(TimeframeValue);
   timeFrameDisplayModes = TimeFrameDisplayMode;
   deviceInfo$!: Observable<any>;
-  protected settings$!: Observable<LightChartSettings>;
+  protected settings$!: Observable<LightChartWidgetSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly deviceService: DeviceService,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {
@@ -81,13 +111,13 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     }
   }
 
-  protected getUpdatedSettings(initialSettings: LightChartSettings): Partial<LightChartSettings> {
-    const formValue = this.form.value as Partial<LightChartSettings & { instrument: InstrumentKey }>;
+  protected getUpdatedSettings(initialSettings: LightChartWidgetSettings): Partial<LightChartWidgetSettings> {
+    const formValue = this.form.value as Partial<LightChartWidgetSettings & { instrument: InstrumentKey }>;
     const newSettings = {
       ...formValue,
       symbol: formValue.instrument?.symbol,
       exchange: formValue.instrument?.exchange
-    } as LightChartSettings & { instrument?: InstrumentKey };
+    } as LightChartWidgetSettings & { instrument?: InstrumentKey };
 
     newSettings.availableTimeFrames = this.sortTimeFrames(newSettings.availableTimeFrames ?? []);
 
@@ -98,7 +128,7 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     return newSettings;
   }
 
-  protected setCurrentFormValues(settings: LightChartSettings): void {
+  protected setCurrentFormValues(settings: LightChartWidgetSettings): void {
     this.form.reset();
 
     this.form.controls.instrument.setValue({

@@ -8,6 +8,46 @@
       padding: 10px;
     }
 
+
+    .home-action-button.ant-btn {
+      height: auto;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border-color: @border-color-base;
+      background: transparent;
+      color: @heading-color;
+
+      &:hover,
+      &:focus {
+        color: @heading-color;
+        border-color: fade(@primary-color, 45%);
+        background: fade(@primary-color, 6%);
+      }
+
+      &:active {
+        background: fade(@primary-color, 10%);
+      }
+    }
+
+    .home-action-icon {
+      color: @primary-color;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .home-action-label {
+      text-align: left;
+      white-space: normal;
+      line-height: 1.2;
+      color: @heading-color;
+    }
+
     .section-header {
       color: @heading-color;
       font-size: 1.25rem;

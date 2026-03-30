@@ -10,8 +10,13 @@ import {
   of
 } from "rxjs";
 import { ArbitrageSpreadService } from "../../services/arbitrage-spread.service";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {NzModalComponent} from "ng-zorro-antd/modal";
+import {
+  ArbitrageSpreadManageComponent
+} from "../../components/arbitrage-spread-manage/arbitrage-spread-manage.component";
+import {NzButtonComponent} from "ng-zorro-antd/button";
 
 describe('ArbitrageSpreadModalWidgetComponent', () => {
   let component: ArbitrageSpreadModalWidgetComponent;
@@ -19,29 +24,33 @@ describe('ArbitrageSpreadModalWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        ArbitrageSpreadModalWidgetComponent,
-        ...ngZorroMockComponents
-      ],
-      imports: [TranslocoTestsModule.getModule()],
-      providers: [
+    imports: [
+      TranslocoTestsModule.getModule(),
+      ArbitrageSpreadModalWidgetComponent,
+      MockComponents(
+        NzModalComponent,
+        ArbitrageSpreadManageComponent,
+        NzButtonComponent
+      )
+    ],
+    providers: [
         {
-          provide: ModalService,
-          useValue: {
-            shouldShowExtensionModal$: new BehaviorSubject(false),
-            extensionParams$: of(null),
-            closeSpreadModal: jasmine.createSpy('closeSpreadModal').and.callThrough(),
-          }
+            provide: ModalService,
+            useValue: {
+                shouldShowExtensionModal$: new BehaviorSubject(false),
+                extensionParams$: of(null),
+                closeSpreadModal: jasmine.createSpy('closeSpreadModal').and.callThrough(),
+            }
         },
         {
-          provide: ArbitrageSpreadService,
-          useValue: {
-            editSpread: jasmine.createSpy('editSpread').and.callThrough(),
-            addSpread: jasmine.createSpy('addSpread').and.callThrough(),
-          }
+            provide: ArbitrageSpreadService,
+            useValue: {
+                editSpread: jasmine.createSpy('editSpread').and.callThrough(),
+                addSpread: jasmine.createSpy('addSpread').and.callThrough(),
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(ArbitrageSpreadModalWidgetComponent);

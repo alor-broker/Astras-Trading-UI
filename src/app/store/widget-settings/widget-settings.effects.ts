@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { map } from "rxjs/operators";
@@ -12,6 +12,9 @@ import {
 
 @Injectable()
 export class WidgetSettingsEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+
   settingsUpdated$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(
@@ -27,9 +30,4 @@ export class WidgetSettingsEffects {
       map(([, settings]) => WidgetSettingsEventsActions.updated({ settings }))
     );
   });
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly store: Store) {
-  }
 }

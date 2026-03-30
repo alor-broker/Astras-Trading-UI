@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  OnDestroy
-} from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
   forkJoin,
@@ -41,6 +38,8 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/messaging';
 import { LoggerService } from "../../../shared/services/logging/logger.service";
 import { DeviceHelper } from "../../../shared/utils/device-helper";
+import { Capacitor } from '@capacitor/core';
+import { FirebaseMessaging } from '@capacitor-firebase/messaging';
 import isSupported = firebase.messaging.isSupported;
 
 export type MessagingStatus = NotificationPermission | 'not-supported';
@@ -61,7 +60,22 @@ interface MessagingState {
   providedIn: 'root'
 })
 export class PushNotificationsService implements OnDestroy {
-  private readonly messaging = firebase.messaging(firebase.initializeApp(environment.firebase));
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly loggerService = inject(LoggerService);
+
+  private webMessaging: firebase.messaging.Messaging | null = null;
+
+  private getWebMessaging(): firebase.messaging.Messaging {
+    if(this.webMessaging == null) {
+      const app = firebase.initializeApp(environment.firebase);
+      this.webMessaging = firebase.messaging(app);
+    }
+
+    return this.webMessaging;
+  }
 
   private readonly baseUrl = this.environmentService.apiUrl + '/commandapi/observatory/subscriptions';
 
@@ -74,15 +88,6 @@ export class PushNotificationsService implements OnDestroy {
   private messages$?: Observable<MessagePayload>;
 
   private messagingState$: Observable<MessagingState> | null = null;
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly translatorService: TranslatorService,
-    private readonly loggerService: LoggerService
-  ) {
-  }
 
   subscribeToOrdersExecute(portfolios: {
     portfolio: string;
@@ -107,7 +112,7 @@ export class PushNotificationsService implements OnDestroy {
         }),
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         tap(r => {
-          if (!!r) {
+          if (r) {
             this.subscriptionsUpdatedSub.next(PushSubscriptionType.OrderExecute);
           }
         })
@@ -128,7 +133,7 @@ export class PushNotificationsService implements OnDestroy {
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         take(1),
         tap(r => {
-          if (!!r) {
+          if (r) {
             this.subscriptionsUpdatedSub.next(PushSubscriptionType.PriceSpark);
           }
         })
@@ -139,7 +144,29 @@ export class PushNotificationsService implements OnDestroy {
     this.messages$ ??= this.initFCM().pipe(
       switchMap(() => {
           return new Observable<MessagePayload>(subscriber => {
-            this.messaging.onMessage(value => subscriber.next(value));
+            if (Capacitor.isNativePlatform()) {
+              const listenerPromise = FirebaseMessaging.addListener('notificationReceived', (event) => {
+                const message: MessagePayload = {
+                  messageId: event.notification.id ?? '',
+                  data: event.notification.data as { body?: string },
+                  notification: {
+                    title: event.notification.title,
+                    body: event.notification.body,
+                    image: event.notification.image
+                  },
+                  from: '',
+                  collapseKey: ''
+                };
+                subscriber.next(message);
+              });
+
+              return (): void => {
+                listenerPromise.then(listener => listener.remove());
+              };
+            } else {
+              const unsubscribe = this.getWebMessaging().onMessage(value => subscriber.next(value));
+              return (): void => unsubscribe();
+            }
           });
         }
       ),
@@ -175,7 +202,7 @@ export class PushNotificationsService implements OnDestroy {
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         take(1),
         tap(r => {
-          if (!!r) {
+          if (r) {
             this.subscriptionsUpdatedSub.next(null);
           }
         })
@@ -194,7 +221,43 @@ export class PushNotificationsService implements OnDestroy {
 
   private getMessagingState(): Observable<MessagingState> {
     if (this.messagingState$ == null) {
-      if (window.Notification == null || !isSupported()) {
+      if (Capacitor.isNativePlatform()) {
+        this.messagingState$ = from(FirebaseMessaging.requestPermissions()).pipe(
+          switchMap(permission => {
+            const status = permission.receive === 'granted' ? 'granted' : 'denied';
+            this.loggerService.info(`Push permission: ${status}`);
+
+            if (status !== 'granted') {
+              return of({
+                permission: status as MessagingStatus,
+                swToken: null
+              });
+            }
+
+            return from(FirebaseMessaging.getToken()).pipe(
+              catchError(e => {
+                this.loggerService.warn(this.formatLogMessage(`Unable to get FCM token. Details: ${e}`));
+                return of(null);
+              }),
+              map(result => {
+                const t = result?.token;
+                if (t != null && t.length > 0) {
+                  return {
+                    permission: status as MessagingStatus,
+                    swToken: t
+                  };
+                }
+
+                return {
+                  permission: status as MessagingStatus,
+                  swToken: null
+                };
+              })
+            );
+          }),
+          shareReplay(1)
+        );
+      } else if (window.Notification == null || !isSupported()) {
         this.messagingState$ = of({
           permission: 'not-supported' as MessagingStatus,
           swToken: null
@@ -230,7 +293,7 @@ export class PushNotificationsService implements OnDestroy {
               });
             }
 
-            return from(this.messaging.getToken()).pipe(
+            return from(this.getWebMessaging().getToken()).pipe(
               catchError(e => {
                 this.loggerService.warn(this.formatLogMessage(`Unable to get FCM token. Details: ${e}`));
                 return of(null);

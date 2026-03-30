@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import {Trade, TradeResponse} from "../models/trades/trade.model";
@@ -15,12 +15,9 @@ import {formatISO} from "date-fns";
   providedIn: 'root'
 })
 export class TradesHistoryService {
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandler: ErrorHandlerService
-  ) {
-  }
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   getTradesHistoryForPortfolio(
     exchange: string,

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 
@@ -15,6 +15,10 @@ import {
 
 @Injectable()
 export class WidgetsLocalStateEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly store = inject(Store);
+
   loadRecords$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(WidgetsLocalStateInternalActions.init),
@@ -43,11 +47,4 @@ export class WidgetsLocalStateEffects {
     {
       dispatch: false
     });
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly localStorageService: LocalStorageService,
-    private readonly store: Store
-  ) {
-  }
 }

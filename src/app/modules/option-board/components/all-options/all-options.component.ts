@@ -3,24 +3,68 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  Input,
+  inject,
+  input,
   OnDestroy,
   OnInit,
-  QueryList,
-  ViewChildren
+  viewChildren
 } from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap, timer} from "rxjs";
-import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  shareReplay,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
+import {
+  OptionBoardDataContext,
+  OptionsSelection
+} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
-import {InstrumentOptions, Option, OptionParameters, UnderlyingAsset} from "../../models/option-board.model";
-import {filter, map, startWith} from "rxjs/operators";
+import {
+  InstrumentOptions,
+  Option,
+  OptionParameters,
+  UnderlyingAsset
+} from "../../models/option-board.model";
+import {
+  filter,
+  map
+} from "rxjs/operators";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {dateDiffInDays} from "../../../../shared/utils/datetime";
-import {mapWith} from "../../../../shared/utils/observable-helper";
+import {
+  mapWith,
+  withRefresh
+} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+  CdkVirtualScrollViewport
+} from "@angular/cdk/scrolling";
+import {
+  takeUntilDestroyed,
+  toObservable
+} from "@angular/core/rxjs-interop";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {
+  AsyncPipe,
+  DatePipe,
+  DecimalPipe
+} from '@angular/common';
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {OptionPreviewComponent} from '../option-preview/option-preview.component';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 interface OptionDisplay extends Option {
   displayValue: string;
@@ -45,35 +89,67 @@ interface LayoutSizes {
 }
 
 @Component({
-    selector: 'ats-all-options',
-    templateUrl: './all-options.component.html',
-    styleUrls: ['./all-options.component.less'],
-    standalone: false
+  selector: 'ats-all-options',
+  templateUrl: './all-options.component.html',
+  styleUrls: ['./all-options.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzSpinComponent,
+    NzEmptyComponent,
+    NzResizeObserverDirective,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualForOf,
+    NzPopoverDirective,
+    NzTypographyComponent,
+    OptionPreviewComponent,
+    NzIconDirective,
+    NzTooltipDirective,
+    AsyncPipe,
+    DecimalPipe,
+    DatePipe
+]
 })
 export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly rowHeight = 30;
+
   readonly isLoading$ = new BehaviorSubject(false);
 
-  @Input({required: true})
-  dataContext!: OptionBoardDataContext;
+  readonly dataContext = input.required<OptionBoardDataContext>();
 
-  @ViewChildren(CdkVirtualScrollViewport)
-  bodyScrollContainerQuery!: QueryList<CdkVirtualScrollViewport>;
+  readonly bodyScrollContainerQuery = viewChildren<CdkVirtualScrollViewport>(CdkVirtualScrollViewport);
 
-  @ViewChildren('header')
-  headerContainerQuery!: QueryList<ElementRef<HTMLElement>>;
+  readonly headerContainerQuery = viewChildren<ElementRef<HTMLElement>>('header');
 
   activeLang$!: Observable<string>;
+
   optionsMatrix$!: Observable<OptionsMatrix>;
+
   currentPriceYPosition$!: Observable<number | null>;
+
   readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
+
+  private readonly optionBoardService = inject(OptionBoardService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly bodyScrollContainerQueryChanges$ = toObservable(this.bodyScrollContainerQuery);
+
+  private readonly headerContainerQueryChanges$ = toObservable(this.headerContainerQuery);
+
   private bodyScroll$!: Observable<CdkVirtualScrollViewport>;
+
   private readonly defaultLayoutSizes: LayoutSizes = {
     priceColumnWidth: 50,
     optionCellWidth: 50
   };
 
   readonly layoutSizes$ = new BehaviorSubject<LayoutSizes>(this.defaultLayoutSizes);
+
   private readonly optionDisplayParameterMap = new Map<OptionParameters, (option: Option) => string>([
     [OptionParameters.Price, (option: Option): string => option.calculations.price.toString()],
     [OptionParameters.Delta, (option: Option): string => MathHelper.round(option.calculations.delta, 2).toString()],
@@ -84,13 +160,6 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     [OptionParameters.Ask, (option: Option): string => option.ask.toString()],
     [OptionParameters.Bid, (option: Option): string => option.bid.toString()]
   ]);
-
-  constructor(
-    private readonly optionBoardService: OptionBoardService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngAfterViewInit(): void {
     this.setBodyScrollContainer();
@@ -131,7 +200,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateOptionSelection(option: OptionDisplay, underlyingAsset: UnderlyingAsset): void {
-    this.dataContext.updateOptionSelection(option, underlyingAsset);
+    this.dataContext().updateOptionSelection(option, underlyingAsset);
   }
 
   isOptionSelected(option: OptionDisplay, selectedOptions: OptionsSelection | null): boolean {
@@ -145,26 +214,20 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   private initMatrixStream(): void {
     const afterRefreshActions: ((matrix: OptionsMatrix) => void)[] = [];
 
-    const refreshTimer$ = timer(0, 60000).pipe(
-      // for some reasons timer pipe is not completed in optionsMatrix$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
-      // so we need to add takeUntil condition for this stream separately
-      takeUntilDestroyed(this.destroyRef)
-    );
-
     this.optionsMatrix$ = combineLatest([
-      this.dataContext.settings$,
-      this.dataContext.selectedSide$
+      this.dataContext().settings$,
+      this.dataContext().selectedSide$
     ]).pipe(
       tap(() => {
         afterRefreshActions.push((x) => this.scrollToPrice(x));
       }),
-      mapWith(() => refreshTimer$, source => source),
+      withRefresh(60000, this.applicationStatusService.isActive$),
       tap(() => this.isLoading$.next(true)),
       switchMap(([settings, optionSide]) =>
         this.optionBoardService.getInstrumentOptions(settings.symbol, settings.exchange, optionSide)
       ),
       mapWith(
-        () => this.dataContext.selectedParameter$,
+        () => this.dataContext().selectedParameter$,
         (options, parameter) => ({options, parameter})
       ),
       tap(() => this.isLoading$.next(true)),
@@ -207,18 +270,16 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setBodyScrollContainer(): void {
-    this.bodyScroll$ = this.bodyScrollContainerQuery.changes.pipe(
-      map(x => x.first as CdkVirtualScrollViewport | undefined),
-      startWith(this.bodyScrollContainerQuery.first),
+    this.bodyScroll$ = this.bodyScrollContainerQueryChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((x): x is CdkVirtualScrollViewport => !!x),
       shareReplay(1)
     );
   }
 
   private initHorizontalScrollSync(): void {
-    const header$ = this.headerContainerQuery.changes.pipe(
-      map(x => x.first as ElementRef<HTMLElement> | undefined),
-      startWith(this.bodyScrollContainerQuery.first),
+    const header$ = this.headerContainerQueryChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((x): x is ElementRef<HTMLElement> => !!x),
       map(x => x.nativeElement),
       shareReplay(1)
@@ -363,7 +424,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     const mapper = this.optionDisplayParameterMap.get(displayParameter);
-    if (!!mapper) {
+    if (mapper) {
       optionDisplay.displayValue = mapper(optionDisplay);
     }
 
@@ -394,7 +455,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         setTimeout(() => {
-          if (!!(strikeIndex ?? 0)) {
+          if (strikeIndex ?? 0) {
             const viewPortSize = bodyScroll.measureViewportSize('vertical');
             const visibleItemsCount = viewPortSize / this.rowHeight;
             const centerCorrection = Math.floor(visibleItemsCount / 2) - 1;

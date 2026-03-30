@@ -15,16 +15,13 @@ import {TimezoneDisplayOption} from "../../../../../shared/models/enums/timezone
 import {NZ_I18N, ru_RU} from "ng-zorro-antd/i18n";
 import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
 import {LessMore} from "../../../../../shared/models/enums/less-more.model";
-import { registerLocaleData } from "@angular/common";
+import {registerLocaleData} from "@angular/common";
 import localeRu from '@angular/common/locales/ru';
-import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
-import { TestData } from "../../../../../shared/utils/testing/test-data";
-import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
-import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
-import { NzDatePickerModule } from "ng-zorro-antd/date-picker";
-import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
+import {TranslocoTestsModule} from "../../../../../shared/utils/testing/translocoTestsModule";
+import {TestData} from "../../../../../shared/utils/testing/test-data";
+import {commonTestProviders} from "../../../../../shared/utils/testing/common-test-providers";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {provideNoopAnimations} from "@angular/platform-browser/animations";
 
 describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
@@ -90,15 +87,10 @@ describe('StopOrderFormComponent', () => {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...FormsTesting.getTestingModules(),
-        NzDatePickerModule,
-        InputNumberComponent,
-        BuySellButtonsComponent
-      ],
-      declarations: [
         StopOrderFormComponent
       ],
       providers: [
+        provideNoopAnimations(),
         {provide: NZ_I18N, useValue: ru_RU},
         {provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy},
         {
@@ -133,19 +125,47 @@ describe('StopOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(StopOrderFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput(
+      'instrument',
+      getDefaultInstrument()
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      getDefaultPortfolio()
+    );
+
+    fixture.componentRef.setInput(
+      'activated',
+      true
+    );
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
   it('should show form errors', fakeAsync(() => {
-    component.instrument = getDefaultInstrument();
-    component.portfolioKey = getDefaultPortfolio();
-    component.activated = true;
+    fixture.componentRef.setInput(
+      'instrument',
+      getDefaultInstrument()
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      getDefaultPortfolio()
+    );
+
+    fixture.componentRef.setInput(
+      'activated',
+      true
+    );
+    fixture.detectChanges();
     component.form.controls.withLimit.setValue(true);
     fixture.detectChanges();
+    tick();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
       {
@@ -199,9 +219,20 @@ describe('StopOrderFormComponent', () => {
   }));
 
   it('should disable submission', () => {
-      component.instrument = getDefaultInstrument();
-      component.portfolioKey = getDefaultPortfolio();
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        getDefaultInstrument()
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        getDefaultPortfolio()
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       component.form.controls.triggerPrice.setValue(null);
@@ -221,10 +252,25 @@ describe('StopOrderFormComponent', () => {
         }
       };
 
-      component.initialValues = initialValues;
-      component.instrument = getDefaultInstrument();
-      component.portfolioKey = getDefaultPortfolio();
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'initialValues',
+        initialValues
+      );
+      fixture.componentRef.setInput(
+        'instrument',
+        getDefaultInstrument()
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        getDefaultPortfolio()
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
+
       fixture.detectChanges();
       tick();
 
@@ -243,9 +289,20 @@ describe('StopOrderFormComponent', () => {
   it('should pass correct order to service (StopMarketOrder)', fakeAsync(() => {
       const instrument = getDefaultInstrument();
       const portfolio = getDefaultPortfolio();
-      component.instrument = instrument;
-      component.portfolioKey = portfolio;
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        instrument
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       const expectedOrder: NewStopMarketOrder = {
@@ -277,9 +334,21 @@ describe('StopOrderFormComponent', () => {
   it('should pass correct order to service (StopLimitOrder)', fakeAsync(() => {
       const instrument = getDefaultInstrument();
       const portfolio = getDefaultPortfolio();
-      component.instrument = instrument;
-      component.portfolioKey = portfolio;
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        instrument
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
+
       fixture.detectChanges();
 
       const expectedOrder: NewStopLimitOrder = {

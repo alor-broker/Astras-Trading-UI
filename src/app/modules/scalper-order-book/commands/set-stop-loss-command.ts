@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Position } from "../../../shared/models/positions/position.model";
 import { CommandBase } from "./command-base";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
@@ -34,14 +31,9 @@ export interface SetStopLossCommandArgs {
 
 @Injectable()
 export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
-  constructor(
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly ordersDialogService: OrdersDialogService,
-    private readonly notification: ScalperOrderBookInstantTranslatableNotificationsService,
-  ) {
-    super();
-  }
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly notification = inject(ScalperOrderBookInstantTranslatableNotificationsService);
 
   execute(args: SetStopLossCommandArgs): void {
     if (args.currentPosition == null || args.currentPosition.qtyTFutureBatch === 0 || !args.currentPosition.avgPrice) {

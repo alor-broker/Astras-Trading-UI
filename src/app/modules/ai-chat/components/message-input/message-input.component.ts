@@ -1,49 +1,45 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, input, model, output, viewChild} from '@angular/core';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {FormsModule} from '@angular/forms';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 
 export interface OutcomingMessage {
   text: string;
 }
 
 @Component({
-    selector: 'ats-message-input',
-    templateUrl: './message-input.component.html',
-    styleUrls: ['./message-input.component.less'],
-    standalone: false
+  selector: 'ats-message-input',
+  templateUrl: './message-input.component.html',
+  styleUrls: ['./message-input.component.less'],
+  imports: [
+    NzInputDirective,
+    FormsModule,
+    NzButtonComponent,
+    NzIconDirective
+  ]
 })
 export class MessageInputComponent {
-  @ViewChild('inputElement', { static: true })
-  inputElement!: ElementRef<HTMLTextAreaElement>;
+  readonly inputElement = viewChild.required<ElementRef<HTMLTextAreaElement>>('inputElement');
 
-  @Input()
-  atsDisabled = false;
+  readonly atsDisabled = input(false);
 
-  @Input()
-  text = '';
+  readonly text = model('');
 
-  @Input()
-  messagePlaceholder = '';
+  readonly messagePlaceholder = input('');
 
-  @Input()
-  messageMaxLength = 2000;
+  readonly messageMaxLength = input(2000);
 
-  @Output()
-  send = new EventEmitter<OutcomingMessage>();
+  readonly send = output<OutcomingMessage>();
 
   sendMessage(): void {
-    if (this.text.length > 0) {
+    if (this.text().length > 0) {
       this.send.emit({
-        text: this.text
+        text: this.text()
       });
 
       this.setText('');
-      this.inputElement.nativeElement.blur();
+      this.inputElement().nativeElement.blur();
     }
   }
 
@@ -52,13 +48,16 @@ export class MessageInputComponent {
   }
 
   private setText(text: string): void {
-    this.text = text.slice(0, this.messageMaxLength);
+    this.text.set(text.slice(0, this.messageMaxLength()));
 
-    if (this.inputElement.nativeElement.value !== this.text) {
-      this.inputElement.nativeElement.value = this.text;
+    const textValue = this.text();
+
+    const inputElement = this.inputElement();
+    if (inputElement.nativeElement.value !== textValue) {
+      inputElement.nativeElement.value = textValue;
     }
 
-    this.inputElement.nativeElement.style.height = 'auto';
-    this.inputElement.nativeElement.style.height = this.inputElement.nativeElement.scrollHeight + 'px';
+    inputElement.nativeElement.style.height = 'auto';
+    inputElement.nativeElement.style.height = inputElement.nativeElement.scrollHeight + 'px';
   }
 }

@@ -1,66 +1,31 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  LOCALE_ID,
-  OnInit
-} from '@angular/core';
-import {
-  FetchPolicy,
-  GraphQlService
-} from "../../../../../shared/services/graph-ql.service";
-import { TranslatorService } from "../../../../../shared/services/translator.service";
-import {
-  combineLatest,
-  defer,
-  Observable,
-  shareReplay,
-  switchMap,
-  tap,
-  timer
-} from "rxjs";
-import {
-  Query,
-  Stock
-} from "../../../../../../generated/graphql.types";
-import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
-import {
-  Modify,
-  ZodPropertiesOf
-} from "../../../../../shared/utils/graph-ql/zod-helper";
-import {
-  object,
-  ZodObject
-} from "zod/v3";
-import { StockSchema } from "../../../../../../generated/graphql.schemas";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import {
-  Descriptor,
-  DescriptorsGroup
-} from "../../../models/instrument-descriptors.model";
-import {
-  NzTabComponent,
-  NzTabsComponent
-} from "ng-zorro-antd/tabs";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { LetDirective } from "@ngrx/component";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
-import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
-import { DescriptorFiller } from "../../../utils/descriptor-filler";
-import { RisksComponent } from "../../common/risks/risks.component";
-import { FinanceComponent } from "../finance/finance.component";
-import { DividendsComponent } from "../dividends/dividends.component";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { mapWith } from "../../../../../shared/utils/observable-helper";
-import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
-import { DividendsChartComponent } from "../dividends-chart/dividends-chart.component";
-import {
-  NzCollapseComponent,
-  NzCollapsePanelComponent
-} from "ng-zorro-antd/collapse";
+import {Component, DestroyRef, inject, LOCALE_ID, OnInit} from '@angular/core';
+import {FetchPolicy, GraphQlService} from "../../../../../shared/services/graph-ql.service";
+import {TranslatorService} from "../../../../../shared/services/translator.service";
+import {combineLatest, Observable, shareReplay, switchMap, tap} from "rxjs";
+import {Query, Stock} from "../../../../../../generated/graphql.types";
+import {InstrumentInfoBaseComponent} from "../../instrument-info-base/instrument-info-base.component";
+import {Modify, ZodPropertiesOf} from "../../../../../shared/utils/graph-ql/zod-helper";
+import {object, ZodObject} from "zod/v3";
+import {StockSchema} from "../../../../../../generated/graphql.schemas";
+import {filter, map} from "rxjs/operators";
+import {Descriptor, DescriptorsGroup} from "../../../models/instrument-descriptors.model";
+import {NzTabComponent, NzTabsComponent} from "ng-zorro-antd/tabs";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {LetDirective} from "@ngrx/component";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {DescriptorsListComponent} from "../../descriptors-list/descriptors-list.component";
+import {DescriptorFiller} from "../../../utils/descriptor-filler";
+import {RisksComponent} from "../../common/risks/risks.component";
+import {FinanceComponent} from "../finance/finance.component";
+import {DividendsComponent} from "../dividends/dividends.component";
+import {withRefresh} from "../../../../../shared/utils/observable-helper";
+import {REFRESH_TIMEOUT_MS} from "../../../constants/info.constants";
+import {DividendsChartComponent} from "../dividends-chart/dividends-chart.component";
+import {NzCollapseComponent, NzCollapsePanelComponent} from "ng-zorro-antd/collapse";
+import {SectionsListComponent} from "../../sections-list/sections-list.component";
+import {SectionComponent} from "../../section/section.component";
+import {ApplicationStatusService} from "../../../../../shared/services/application-status.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 type StockResponse = Modify<
   Query,
@@ -75,7 +40,7 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
 });
 
 @Component({
-    selector: 'ats-stock-info',
+  selector: 'ats-stock-info',
   imports: [
     TranslocoDirective,
     NzTabComponent,
@@ -88,24 +53,27 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
     DividendsChartComponent,
     NzCollapseComponent,
     NzCollapsePanelComponent,
-    NzTabsComponent
+    NzTabsComponent,
+    SectionsListComponent,
+    SectionComponent
   ],
-    templateUrl: './stock-info.component.html',
-    styleUrl: './stock-info.component.less'
+  templateUrl: './stock-info.component.html',
+  styleUrl: './stock-info.component.less'
 })
 export class StockInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Stock | null>;
 
-  descriptors!: Observable<DescriptorsGroup[] | null>;
+  descriptors$!: Observable<DescriptorsGroup[] | null>;
 
-  constructor(
-    private readonly graphQlService: GraphQlService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID)
-    private readonly locale: string,
-    private readonly destroyRef: DestroyRef) {
-    super();
-  }
+  private readonly graphQlService = inject(GraphQlService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly locale = inject(LOCALE_ID);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.initDataStream();
@@ -113,15 +81,9 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
   }
 
   private initDataStream(): void {
-    const refreshTimer$ = defer(() => {
-      return timer(0, REFRESH_TIMEOUT_MS).pipe(
-        takeUntilDestroyed(this.destroyRef)
-      );
-    });
-
-    this.info$ = this.targetInstrumentKey$.pipe(
+    this.info$ = this.instrumentKeyChanges$.pipe(
       filter(i => i != null),
-      mapWith(() => refreshTimer$, (source,) => source),
+      withRefresh(REFRESH_TIMEOUT_MS, this.applicationStatusService.isActive$),
       tap(() => this.setLoading(true)),
       switchMap(i => {
         return this.graphQlService.queryForSchema<StockResponse>(
@@ -137,12 +99,13 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
         );
       }),
       tap(() => this.setLoading(false)),
+      takeUntilDestroyed(this.destroyRef),
       shareReplay(1)
     );
   }
 
   private initDescriptors(): void {
-    this.descriptors = combineLatest({
+    this.descriptors$ = combineLatest({
       info: this.info$,
       translator: this.translatorService.getTranslator('info/descriptors-list')
     }).pipe(

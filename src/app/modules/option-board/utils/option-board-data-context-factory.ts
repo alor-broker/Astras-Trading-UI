@@ -1,4 +1,4 @@
-﻿import { Injectable } from "@angular/core";
+﻿import { Injectable, inject } from "@angular/core";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import {
   BehaviorSubject,
@@ -26,9 +26,7 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
   providedIn: 'root'
 })
 export class OptionBoardDataContextFactory {
-  constructor(private readonly widgetSettingsService: WidgetSettingsService) {
-
-  }
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
 
   static getParametersKey(option: OptionKey): string {
     return `${option.exchange}:${option.symbol}`;
@@ -43,6 +41,7 @@ export class OptionBoardDataContextFactory {
     const optionsSelection$ = new BehaviorSubject<OptionsSelection[]>([]);
     const currentSelection$ = this.getCurrentSelection(settings$, optionsSelection$);
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const factory = this;
 
     return {
@@ -115,7 +114,7 @@ export class OptionBoardDataContextFactory {
       };
 
       const currentOptionSelection = currentSelectionForInstrument.selectedOptions.find(x => x.symbol === option.symbol);
-      if (!!currentOptionSelection) {
+      if (currentOptionSelection) {
         currentSelectionForInstrument.selectedOptions = [
           ...currentSelectionForInstrument.selectedOptions.filter(x => x.symbol !== option.symbol)
         ];

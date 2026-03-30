@@ -1,15 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, input, OnDestroy, output, viewChildren, inject } from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {
   IContextMenuOptions,
@@ -34,44 +23,42 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {SideMenuTitleDirective} from "../../directives/side-menu-title.directive";
 import {SideMenuContentDirective} from "../../directives/side-menu-content.directive";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {filter, map, startWith} from "rxjs/operators";
+import {filter, map} from "rxjs/operators";
 import {RunConfigBtnComponent} from "../run-config-btn/run-config-btn.component";
 import {RunStatus} from "../../models/run-results.model";
 import {RunResultsComponent} from "../run-results/run-results.component";
 import {NodePropertiesEditorComponent} from "../node-properties-editor/node-properties-editor.component";
-import { CanvasMouseEvent } from "node_modules/@comfyorg/litegraph/dist/types/events";
+import {CanvasMouseEvent} from "node_modules/@comfyorg/litegraph/dist/types/events";
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-graph-editor',
-    imports: [
-        NzResizeObserverDirective,
-        LetDirective,
-        SideMenuComponent,
-        NzIconDirective,
-        SideMenuTitleDirective,
-        SideMenuContentDirective,
-        TranslocoDirective,
-        RunConfigBtnComponent,
-        RunResultsComponent,
-        NodePropertiesEditorComponent
-    ],
-    templateUrl: './graph-editor.component.html',
-    styleUrl: './graph-editor.component.less'
+  selector: 'ats-graph-editor',
+  imports: [
+    NzResizeObserverDirective,
+    LetDirective,
+    SideMenuComponent,
+    NzIconDirective,
+    SideMenuTitleDirective,
+    SideMenuContentDirective,
+    TranslocoDirective,
+    RunConfigBtnComponent,
+    RunResultsComponent,
+    NodePropertiesEditorComponent
+  ],
+  templateUrl: './graph-editor.component.html',
+  styleUrl: './graph-editor.component.less'
 })
 export class GraphEditorComponent implements AfterViewInit, OnDestroy {
-  @Input()
-  initialConfig: GraphConfig | null = null;
+  private readonly translatorService = inject(TranslatorService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  @Output()
-  updateConfig = new EventEmitter<GraphConfig>();
+  readonly initialConfig = input<GraphConfig | null>(null);
 
-  @ViewChildren('canvas')
-  canvasQuery!: QueryList<ElementRef<HTMLCanvasElement>>;
+  readonly updateConfig = output<GraphConfig>();
 
+  readonly canvasQuery = viewChildren<ElementRef<HTMLCanvasElement>>('canvas');
   protected nodeToEdit: NodeBase | null = null;
-
   protected runStatus: RunStatus | null = null;
-
   protected containerSize$ = new BehaviorSubject<{
     css: ContentSize;
     canvas: ContentSize;
@@ -85,14 +72,10 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   });
 
   protected currentConfig: GraphConfig | null = null;
-  protected isRunMenuVisible = false;
-  private graphCanvas?: LGraphCanvas;
 
-  constructor(
-    private readonly translatorService: TranslatorService,
-    private readonly cdr: ChangeDetectorRef
-  ) {
-  }
+  protected isRunMenuVisible = false;
+  private readonly canvasQueryChanges$ = toObservable(this.canvasQuery);
+  private graphCanvas?: LGraphCanvas;
 
   ngOnDestroy(): void {
     this.containerSize$.complete();
@@ -103,9 +86,8 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.canvasQuery.changes.pipe(
-      map(x => x.first as ElementRef<HTMLCanvasElement> | undefined),
-      startWith(this.canvasQuery.first),
+    this.canvasQueryChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((x): x is ElementRef<HTMLCanvasElement> => !!x),
       map(x => x.nativeElement),
       take(1)
@@ -194,8 +176,9 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
       }
     };
 
-    if (this.initialConfig != null) {
-      graph.configure(this.fromConfig(this.initialConfig), false);
+    const initialConfig = this.initialConfig();
+    if (initialConfig != null) {
+      graph.configure(this.fromConfig(initialConfig), false);
     }
 
     this.currentConfig = this.toConfig(graph.asSerialisable());
@@ -267,7 +250,7 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   private showNodePropertiesEditor(node: NodeBase): void {
-    if(!node.pinned) {
+    if (!node.pinned) {
       this.nodeToEdit = node;
       this.isRunMenuVisible = false;
       this.cdr.markForCheck();

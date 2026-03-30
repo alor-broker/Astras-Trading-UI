@@ -20,7 +20,7 @@ export class DescriptorFiller {
   }): Descriptor[] {
     const descriptors: Descriptor[] = [{
       id: 'shortName',
-      formattedValue: input.basicInformation.shortName
+      formattedValue: input.basicInformation.shortName ?? ''
     },
       {
         id: 'exchange',
@@ -49,7 +49,7 @@ export class DescriptorFiller {
     descriptors.push(
       {
         id: 'description',
-        formattedValue: input.basicInformation.fullDescription,
+        formattedValue: input.basicInformation.fullDescription ?? '',
         customStyles: {
           'font-size': '8pt'
         }

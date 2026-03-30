@@ -22,10 +22,12 @@ describe('NewsDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NewsDialogComponent);
     component = fixture.componentInstance;
-
-    component.newsItem = {
-      id: ''
-    } as NewsListItem;
+    fixture.componentRef.setInput(
+      'newsItem',
+      {
+        id: ''
+      } as NewsListItem
+    );
 
     fixture.detectChanges();
   });

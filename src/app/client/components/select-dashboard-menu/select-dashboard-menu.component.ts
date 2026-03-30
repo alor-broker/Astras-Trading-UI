@@ -1,14 +1,5 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  Observable,
-  take
-} from 'rxjs';
+import { Component, effect, input, OnInit, output, inject } from '@angular/core';
+import {Observable, take} from 'rxjs';
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Dashboard} from "../../../shared/models/dashboard/dashboard.model";
 import {NzModalService} from "ng-zorro-antd/modal";
@@ -18,7 +9,7 @@ import {mapWith} from "../../../shared/utils/observable-helper";
 import {map} from "rxjs/operators";
 import {DashboardTitleHelper} from "../../../modules/dashboard/utils/dashboard-title.helper";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe} from "@angular/common";
 import {NzMenuDirective, NzMenuDividerDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 import {EditableStringComponent} from "../../../shared/components/editable-string/editable-string.component";
 import {NzButtonComponent} from "ng-zorro-antd/button";
@@ -27,28 +18,31 @@ import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-z
 import {NzInputDirective} from "ng-zorro-antd/input";
 
 @Component({
-    selector: 'ats-select-dashboard-menu',
-    templateUrl: './select-dashboard-menu.component.html',
-    styleUrls: ['./select-dashboard-menu.component.less'],
-    imports: [
-        TranslocoDirective,
-        NgIf,
-        AsyncPipe,
-        NzMenuDirective,
-        NgForOf,
-        NzMenuItemComponent,
-        EditableStringComponent,
-        NzButtonComponent,
-        NzIconDirective,
-        NzMenuDividerDirective,
-        ReactiveFormsModule,
-        NzFormDirective,
-        NzFormItemComponent,
-        NzFormControlComponent,
-        NzInputDirective
-    ]
+  selector: 'ats-select-dashboard-menu',
+  templateUrl: './select-dashboard-menu.component.html',
+  styleUrls: ['./select-dashboard-menu.component.less'],
+  imports: [
+    TranslocoDirective,
+    AsyncPipe,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    EditableStringComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    NzMenuDividerDirective,
+    ReactiveFormsModule,
+    NzFormDirective,
+    NzFormItemComponent,
+    NzFormControlComponent,
+    NzInputDirective
+  ]
 })
 export class SelectDashboardMenuComponent implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly dashboardService = inject(ManageDashboardsService);
+  private readonly modal = inject(NzModalService);
+  private readonly translatorService = inject(TranslatorService);
+
   readonly validationOptions = {
     title: {
       minLength: 1,
@@ -69,23 +63,17 @@ export class SelectDashboardMenuComponent implements OnInit {
 
   allDashboards$!: Observable<Dashboard[]>;
 
-  @Output()
-  hideMenu = new EventEmitter();
+  readonly hideMenu = output();
 
-  @Output()
-  isNewDashboardFocused = new EventEmitter<boolean>();
+  readonly isNewDashboardFocused = output<boolean>();
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly dashboardService: ManageDashboardsService,
-    private readonly modal: NzModalService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
+  readonly visibilityChange = input<boolean>();
 
-  @Input()
-  set visibilityChange(value: boolean) {
-    this.newDashboardForm.reset();
+  constructor() {
+    effect(() => {
+      this.visibilityChange();
+      this.newDashboardForm.reset();
+    });
   }
 
   checkInputComplete(event: KeyboardEvent): void {
@@ -100,7 +88,7 @@ export class SelectDashboardMenuComponent implements OnInit {
         t: translator,
         allDashboards
       })),
-      map(({ t, allDashboards }) => allDashboards.map(d => ({
+      map(({t, allDashboards}) => allDashboards.map(d => ({
         ...d,
         title: DashboardTitleHelper.getDisplayTitle(d, t)
       })))
@@ -126,7 +114,7 @@ export class SelectDashboardMenuComponent implements OnInit {
     ).subscribe(t => {
       this.modal.confirm({
         nzTitle: t(['removeConfirmationTitle']),
-        nzContent: t(['removeConfirmationMessage'], { title: dashboard.title }),
+        nzContent: t(['removeConfirmationMessage'], {title: dashboard.title}),
         nzOkText: t(['confirmButtonText']),
         nzOkType: 'primary',
         nzOkDanger: true,
@@ -142,7 +130,7 @@ export class SelectDashboardMenuComponent implements OnInit {
     ).subscribe(t => {
       this.modal.confirm({
         nzTitle: t(['actionConfirmationTitle']),
-        nzContent: t(['copyConfirmationMessage'], { title: dashboard.title }),
+        nzContent: t(['copyConfirmationMessage'], {title: dashboard.title}),
         nzOkText: t(['confirmButtonText']),
         nzOkType: 'primary',
         nzOkDanger: true,

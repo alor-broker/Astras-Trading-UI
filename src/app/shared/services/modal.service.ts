@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { NewFeedback } from '../../modules/feedback/models/feedback.model';
 import { ReleaseMeta } from '../../modules/application-meta/models/application-release.model';
@@ -11,6 +11,8 @@ import {
   providedIn: 'root'
 })
 export class ModalService {
+  private readonly nzModalService = inject(NzModalService);
+
   private readonly shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
   shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
   private readonly shouldShowVoteModal = new BehaviorSubject<boolean>(false);
@@ -22,11 +24,6 @@ export class ModalService {
   private readonly applicationUpdatedParams = new BehaviorSubject<ReleaseMeta | null>(null);
   applicationUpdatedParams$ = this.applicationUpdatedParams.asObservable();
   shouldShowApplicationUpdatedModal$ = this.shouldShowApplicationUpdatedModal.asObservable();
-
-  constructor(
-    private readonly nzModalService: NzModalService
-  ) {
-  }
 
   openTerminalSettingsModal(): void {
     this.shouldShowTerminalSettingsModal.next(true);

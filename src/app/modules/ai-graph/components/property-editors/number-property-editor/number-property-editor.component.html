@@ -6,13 +6,12 @@
         </nz-form-label>
         <nz-form-control
           [nzErrorTip]="error">
-          <ats-input-number
-            formControlName="property"
+          <ats-input-number formControlName="property"
             placeholder="0"
             [allowDecimal]="config.validation.allowDecimal"
             [allowNegative]="config.validation.allowNegative"
             [step]="config.validation.step ?? 1"
-          ></ats-input-number>
+           />
           <ng-template #error let-control>
             @if (control.errors?.['required']) {
               <span>{{ t('validationErrors.emptyFieldError') }}</span>

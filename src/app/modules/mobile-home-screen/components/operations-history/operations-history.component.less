@@ -1,0 +1,81 @@
+@import "theme-mixin";
+@import "buy-sell-button-mixin";
+
+.themeMixin({
+  :host {
+    .history-list {
+      ::ng-deep {
+        .history-item {
+          .item-icon {
+            &.success {
+              color: @success-color;
+              background: fade(@success-color, 10%);
+            }
+
+            &.error {
+              color: @error-color;
+              background: fade(@error-color, 10%);
+            }
+
+            &.warning {
+              color: @warning-color;
+              background: fade(@warning-color, 10%);
+            }
+
+            &.processing {
+              color: @processing-color;
+              background: fade(@processing-color, 10%);
+            }
+
+            &.default {
+              color: @text-color-secondary;
+              background: fade(@text-color, 5%);
+            }
+          }
+
+          .ant-list-item-meta-title {
+            margin-bottom: 8px;
+          }
+
+          .ant-list-item-meta-description {
+            font-size: @font-size-base;
+          }
+
+        }
+      }
+    }
+  }
+});
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+
+  ::ng-deep .ant-list-items {
+    padding: 0;
+
+    .ant-list-item {
+      padding: 8px 0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .item-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-size: 18px;
+      }
+    }
+  }
+}

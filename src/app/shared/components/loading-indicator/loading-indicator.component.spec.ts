@@ -1,7 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LoadingIndicatorComponent } from './loading-indicator.component';
-import { ngZorroMockComponents } from "../../utils/testing/ng-zorro-component-mocks";
+import {LoadingIndicatorComponent} from './loading-indicator.component';
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 describe('LoadingIndicatorComponent', () => {
   let component: LoadingIndicatorComponent;
@@ -10,12 +12,17 @@ describe('LoadingIndicatorComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         LoadingIndicatorComponent,
-        ...ngZorroMockComponents
+        MockComponents(
+          NzSpinComponent
+        ),
+        MockDirectives(
+          NzIconDirective
+        )
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

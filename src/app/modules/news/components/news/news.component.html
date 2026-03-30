@@ -16,30 +16,28 @@
 
   <div>
     <nz-tabs nzSize="small" #tabSet>
-      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.All)" (nzSelect)="newsSectionChange(newsSectionEnum.All)"></nz-tab>
-      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Portfolio)" (nzSelect)="newsSectionChange(newsSectionEnum.Portfolio)"></nz-tab>
-      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Symbol)" (nzSelect)="newsSectionChange(newsSectionEnum.Symbol)"></nz-tab>
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.All)" (nzSelect)="newsSectionChange(newsSectionEnum.All)" />
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Portfolio)" (nzSelect)="newsSectionChange(newsSectionEnum.Portfolio)" />
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Symbol)" (nzSelect)="newsSectionChange(newsSectionEnum.Symbol)" />
     </nz-tabs>
   </div>
   <div class="table-container"
        *ngrxLet="{ isLoading: isLoading$, newsListItems: tableData$, contentSize: contentSize$} as vm"
     nzResizeObserver
     (nzResizeObserve)="containerSizeChanged($event)">
-    <ats-infinite-scroll-table
-      [tableContainerHeight]="vm.contentSize?.height ?? 0"
+    <ats-infinite-scroll-table [tableContainerHeight]="vm.contentSize?.height ?? 0"
       [tableContainerWidth]="vm.contentSize?.width ?? 0"
       [data]="vm.newsListItems"
       [isLoading]="vm.isLoading"
       [tableConfig]="tableConfig$ | async"
       (scrolled)="scrolled()"
       (rowClick)="rowClick($event)"
-    ></ats-infinite-scroll-table>
+     />
   </div>
 </div>
 
-<ats-news-dialog [newsItem]="selectedNewsListItem"></ats-news-dialog>
-<ats-news-filters
-  [isVisible]="isAllFiltersVisible"
+<ats-news-dialog [newsItem]="selectedNewsListItem" />
+<ats-news-filters [isVisible]="isAllFiltersVisible"
   (closed)="applyAllFilters($event)"
   [currentFilters]="(settings$ | async)?.allNewsFilters"
-></ats-news-filters>
+ />

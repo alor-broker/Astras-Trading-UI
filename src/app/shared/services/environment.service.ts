@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from "../../../environments/environment";
 import { LocalStorageService } from "./local-storage.service";
 
 export enum LogLevel {
   trace = 'trace',
+  debug = 'debug',
   info = 'info',
   warn = 'warn',
   error = 'error'
@@ -45,7 +46,10 @@ export interface ExternalLinksConfig {
   providedIn: 'root'
 })
 export class EnvironmentService {
-  constructor(private readonly localStorageService: LocalStorageService) {
+  private readonly localStorageService = inject(LocalStorageService);
+
+  get production(): boolean {
+    return environment.production;
   }
 
   get apiUrl(): string {

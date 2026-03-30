@@ -1,10 +1,10 @@
-<nz-input-group [nzSuffix]="suffixTmp" nzCompact>
+<nz-input-wrapper [nzAllowClear]="allowClear()">
   <input
     #inputElement
     nz-input
     (mousedown)="$event.stopPropagation()"
-    [placeholder]="placeholder"
-    [readOnly]="readonly"
+    [placeholder]="placeholder()"
+    [readOnly]="readonly()"
     (blur)="atsBlur.emit()"
     autocomplete="off"
     inputmode="decimal"
@@ -14,8 +14,9 @@
     (keydown.enter)="atsEnter.emit()"
     (wheel)="processWheel($event)"
   />
-</nz-input-group>
 
-<ng-template #suffixTmp>
-  <ng-container *ngTemplateOutlet="suffix"></ng-container>
-</ng-template>
+  @let suffixRef = suffix();
+  @if(suffixRef != null) {
+    <ng-container nzInputSuffix *ngTemplateOutlet="suffixRef" />
+  }
+</nz-input-wrapper>

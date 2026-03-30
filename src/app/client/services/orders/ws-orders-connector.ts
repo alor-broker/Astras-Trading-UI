@@ -1,10 +1,7 @@
-﻿import {
-  Inject,
-  Injectable,
-  OnDestroy
-} from "@angular/core";
+﻿import { Injectable, OnDestroy, inject } from "@angular/core";
 import {
   BehaviorSubject,
+  combineLatest,
   distinctUntilChanged,
   filter,
   interval,
@@ -24,10 +21,7 @@ import {
   map,
   takeWhile,
 } from "rxjs/operators";
-import {
-  webSocket,
-  WebSocketSubject
-} from "rxjs/webSocket";
+import { WebSocketSubject } from "rxjs/webSocket";
 import {
   RXJS_WEBSOCKET_CTOR,
   WsOptions
@@ -36,7 +30,8 @@ import { EnvironmentService } from "../../../shared/services/environment.service
 import { ApiTokenProviderService } from "../../../shared/services/auth/api-token-provider.service";
 import { LoggerService } from "../../../shared/services/logging/logger.service";
 import { GuidGenerator } from "../../../shared/utils/guid";
-import { isOnline$ } from "../../../shared/utils/network";
+import {ApplicationStatusService} from "../../../shared/services/application-status.service";
+import { DeviceNetworkService } from "../../../shared/services/device-network.service";
 
 export interface CommandRequest {
   opcode: string;
@@ -73,6 +68,13 @@ interface WsRequestMessage {
   providedIn: 'root'
 })
 export class WsOrdersConnector implements OnDestroy {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly apiTokenProviderService = inject(ApiTokenProviderService);
+  private readonly logger = inject(LoggerService);
+  private readonly webSocketFactory = inject(RXJS_WEBSOCKET_CTOR);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+  private readonly deviceNetworkService = inject(DeviceNetworkService);
+
   private readonly isConnected$ = new BehaviorSubject<boolean>(false);
   private socketState: SocketState | null = null;
 
@@ -82,14 +84,6 @@ export class WsOrdersConnector implements OnDestroy {
   };
 
   private readonly lastRequestDelayMSec$ = new BehaviorSubject<number | null>(null);
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly apiTokenProviderService: ApiTokenProviderService,
-    private readonly logger: LoggerService,
-    @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket
-  ) {
-  }
 
   get lastOrderDelayMSec$(): Observable<number> {
     return this.lastRequestDelayMSec$.pipe(
@@ -173,13 +167,13 @@ export class WsOrdersConnector implements OnDestroy {
       url: this.environmentService.cwsUrl,
       openObserver: {
         next: () => {
-          this.logger.trace(this.toLoggerMessage('Connection open'));
+          this.logger.info(this.toLoggerMessage('Connection open'));
           this.isConnected$.next(true);
         }
       },
       closeObserver: {
         next: (event: CloseEvent) => {
-          this.logger.warn(
+          this.logger.debug(
             this.toLoggerMessage('Connection closed'),
             JSON.stringify({
               code: event.code,
@@ -270,7 +264,6 @@ export class WsOrdersConnector implements OnDestroy {
   private sendMessageWithAuthorization<T extends WsRequestMessage>(request: T, socketState: SocketState): Observable<WsResponseMessage> {
     socketState.authorizationCheck$ ??= this.getCurrentAccessToken().pipe(
         distinctUntilChanged(),
-        filter(x => !!x),
         switchMap(t => this.sendBaseMessage(
             {
               guid: GuidGenerator.newGuid(),
@@ -292,7 +285,7 @@ export class WsOrdersConnector implements OnDestroy {
   }
 
   private getSocketState(): SocketState {
-    if (!!this.socketState) {
+    if (this.socketState) {
       return this.socketState;
     }
 
@@ -317,21 +310,24 @@ export class WsOrdersConnector implements OnDestroy {
   }
 
   private initReconnectOnDisconnection(state: SocketState): void {
-    if (!!state.offlineSub) {
+    if (state.offlineSub) {
       return;
     }
 
-    state.offlineSub =
-      isOnline$().pipe(
-        filter(() => !this.isStateValid(state)),
-        filter(isOnline => isOnline),
-      ).subscribe(() => {
-        this.reconnect(state);
-      });
+    state.offlineSub = combineLatest({
+        isOnline: this.deviceNetworkService.isOnline$,
+        isAppActive: this.applicationStatusService.isActive$
+      }
+    ).pipe(
+      filter(() => !this.isStateValid(state)),
+      filter(x => x.isOnline && x.isAppActive),
+    ).subscribe(() => {
+      this.reconnect(state);
+    });
   }
 
   private reconnect(socketState: SocketState): void {
-    if (socketState.reconnectSub) {
+    if (socketState.reconnectSub || !this.applicationStatusService.isActive) {
       return;
     }
 
@@ -342,7 +338,7 @@ export class WsOrdersConnector implements OnDestroy {
           socketState.reconnectSub?.unsubscribe();
           socketState.reconnectSub = null;
         }),
-        tap(attempt => this.logger.warn(this.toLoggerMessage(`Reconnection attempt #${attempt + 1}`)))
+        tap(attempt => this.logger.debug(this.toLoggerMessage(`Reconnection attempt #${attempt + 1}`)))
       );
 
     socketState.reconnectSub = reconnection$.subscribe(() => {

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, input, inject } from '@angular/core';
 import { SearchResultItem } from "../../utils/search-instrument-store";
 import {
   NzColDirective,
@@ -29,7 +24,7 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 import { InstrumentBadgeDisplayComponent } from "../../../../shared/components/instrument-badge-display/instrument-badge-display.component";
 import { LetDirective } from "@ngrx/component";
 import {
-  NzDropDownDirective,
+  NzDropdownDirective,
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import {
@@ -41,45 +36,39 @@ import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
     selector: 'ats-search-results-list',
-    imports: [
-        NzRowDirective,
-        NzColDirective,
-        CdkVirtualScrollViewport,
-        CdkVirtualForOf,
-        CdkFixedSizeVirtualScroll,
-        TruncatedTextComponent,
-        NzButtonComponent,
-        NzIconDirective,
-        InstrumentBadgeDisplayComponent,
-        LetDirective,
-        NzDropDownDirective,
-        NzDropdownMenuComponent,
-        NzMenuDirective,
-        NzMenuItemComponent,
-        NzTooltipDirective,
-        TranslocoDirective
-    ],
+  imports: [
+    NzRowDirective,
+    NzColDirective,
+    CdkVirtualScrollViewport,
+    CdkVirtualForOf,
+    CdkFixedSizeVirtualScroll,
+    TruncatedTextComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    InstrumentBadgeDisplayComponent,
+    LetDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzTooltipDirective,
+    TranslocoDirective,
+    NzDropdownDirective
+  ],
     templateUrl: './search-results-list.component.html',
     styleUrl: './search-results-list.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchResultsListComponent implements OnInit {
-  @Input({required: true})
-  items: SearchResultItem[] = [];
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
 
-  @Input()
-  itemSize = 40;
+  readonly items = input.required<SearchResultItem[]>();
 
-  @Input()
-  height = 200;
+  readonly itemSize = input(40);
+
+  readonly height = input(200);
 
   availableInstrumentGroups$!: Observable<string[]>;
-
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly dashboardContextService: DashboardContextService
-  ) {
-  }
 
   ngOnInit(): void {
     const isBadgesEnabled$ = this.terminalSettingsService.getSettings().pipe(

@@ -1,2 +1,4 @@
-<ng-content></ng-content>
-<ats-panel-resize-handler *ngIf="canResize"></ats-panel-resize-handler>
+<ng-content />
+@if (canResize()) {
+  <ats-panel-resize-handler />
+}

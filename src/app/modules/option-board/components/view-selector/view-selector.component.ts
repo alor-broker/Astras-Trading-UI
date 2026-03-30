@@ -1,10 +1,8 @@
 import {
   Component,
-  ContentChildren,
-  EventEmitter,
-  Input,
-  Output,
-  QueryList
+  input,
+  output,
+  contentChildren
 } from '@angular/core';
 import { ViewSelectorItemComponent } from "../view-selector-item/view-selector-item.component";
 import { NgTemplateOutlet } from "@angular/common";
@@ -14,7 +12,7 @@ import {
 } from "ng-zorro-antd/radio";
 import { FormsModule } from "@angular/forms";
 import {
-  NzDropDownDirective,
+  NzDropdownDirective,
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import {
@@ -26,31 +24,27 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
 
 @Component({
     selector: 'ats-view-selector',
-    imports: [
-        NzRadioGroupComponent,
-        FormsModule,
-        NzRadioComponent,
-        NgTemplateOutlet,
-        NzDropdownMenuComponent,
-        NzMenuDirective,
-        NzMenuItemComponent,
-        NzButtonComponent,
-        NzDropDownDirective,
-        NzIconDirective
-    ],
+  imports: [
+    NzRadioGroupComponent,
+    FormsModule,
+    NzRadioComponent,
+    NgTemplateOutlet,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    NzDropdownDirective
+  ],
     templateUrl: './view-selector.component.html',
     styleUrl: './view-selector.component.less'
 })
 export class ViewSelectorComponent {
-  @Input()
-  layout: 'row' | 'menu' = 'row';
+  readonly layout = input<'row' | 'menu'>('row');
 
-  @ContentChildren(ViewSelectorItemComponent)
-  items!: QueryList<ViewSelectorItemComponent>;
+  readonly items = contentChildren(ViewSelectorItemComponent);
 
-  @Input()
-  selectedView: string | null = null;
+  readonly selectedView = input<string | null>(null);
 
-  @Output()
-  selectionChange = new EventEmitter<string>();
+  readonly selectionChange = output<string>();
 }

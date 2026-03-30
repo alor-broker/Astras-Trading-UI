@@ -29,6 +29,14 @@ describe('WidgetSettingsComponent', () => {
     });
     fixture = TestBed.createComponent(WidgetSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'canSave',
+      true
+    );
+    fixture.componentRef.setInput(
+      'canCopy',
+      true
+    );
     fixture.detectChanges();
   });
 

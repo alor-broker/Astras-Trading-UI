@@ -4,6 +4,7 @@ import { LogLevel } from "../environment.service";
 export abstract class LoggerBase {
   private readonly levelPriorities = [
     LogLevel.trace,
+    LogLevel.debug,
     LogLevel.info,
     LogLevel.warn,
     LogLevel.error

@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {BehaviorSubject, Observable, of, take} from 'rxjs';
 import {ModalService} from 'src/app/shared/services/modal.service';
 import {TerminalSettings} from "../../../../shared/models/terminal-settings/terminal-settings.model";
@@ -8,41 +8,36 @@ import { GlobalLoadingIndicatorService } from "../../../../shared/services/globa
 import { GuidGenerator } from "../../../../shared/utils/guid";
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from "ng-zorro-antd/modal";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {TerminalSettingsModule} from "../../terminal-settings.module";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {NzButtonComponent} from "ng-zorro-antd/button";
+import {TerminalSettingsComponent} from "../../components/terminal-settings/terminal-settings.component";
 
 @Component({
     selector: 'ats-terminal-settings-widget',
     templateUrl: './terminal-settings-widget.component.html',
     styleUrls: ['./terminal-settings-widget.component.less'],
-    imports: [
-        NzModalComponent,
-        TranslocoDirective,
-        TerminalSettingsModule,
-        AsyncPipe,
-        NzModalFooterDirective,
-        NgIf,
-        NzModalContentDirective,
-        NzButtonComponent
-    ]
+  imports: [
+    NzModalComponent,
+    TranslocoDirective,
+    AsyncPipe,
+    NzModalFooterDirective,
+    NzModalContentDirective,
+    NzButtonComponent,
+    TerminalSettingsComponent
+  ]
 })
 export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
-  @Input()
-  hiddenSections: string[] = [];
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+  private readonly modalService = inject(ModalService);
+
+  readonly hiddenSections = input<string[]>([]);
 
   settingsFormValue: TerminalSettings | null = null;
   isVisible$: Observable<boolean> = of(false);
   selectedTab = TabNames.usefulLinks;
   isLoading$ = new BehaviorSubject(false);
   private initialSettingsFormValue!: TerminalSettings;
-
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
-    private readonly modalService: ModalService
-  ) {
-  }
 
   get isSettingsHasChanges(): boolean {
     return !!this.settingsFormValue &&

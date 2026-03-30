@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 import { Observable } from "rxjs";
@@ -10,9 +10,7 @@ import { SubscriptionsDataFeedService } from "../../../shared/services/subscript
   providedIn: 'root'
 })
 export class CandlesService {
-  constructor(
-    private readonly subscriptionDatafeedService: SubscriptionsDataFeedService
-  ) { }
+  private readonly subscriptionDatafeedService = inject(SubscriptionsDataFeedService);
 
   getInstrumentLastCandle(instrument: InstrumentKey, timeFrame: TimeframeValue): Observable<Candle> {
     const request: BarsRequest = {

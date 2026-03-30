@@ -28,7 +28,7 @@ import { TranslocoDirective } from "@jsverse/transloco";
     ]
 })
 export class DividendsComponent {
-  dividends = input<Dividend[]>([]);
+  readonly dividends = input<Dividend[]>([]);
 
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString();

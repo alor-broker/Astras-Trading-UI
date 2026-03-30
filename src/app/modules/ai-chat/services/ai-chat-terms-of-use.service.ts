@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   HttpClient,
   HttpContext
@@ -20,14 +20,11 @@ import { HttpContextTokens } from "../../../shared/constants/http.constants";
   providedIn: 'root'
 })
 export class AiChatTermsOfUseService {
-  private content$: Observable<string> | null = null;
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly translatorService = inject(TranslatorService);
 
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
+  private content$: Observable<string> | null = null;
 
   getContent(): Observable<string> {
     this.content$ ??= this.translatorService.getLangChanges().pipe(

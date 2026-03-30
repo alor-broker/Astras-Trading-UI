@@ -1,15 +1,9 @@
-import {
-  Component,
-  model,
-  OnInit,
-  output
-} from '@angular/core';
+import { Component, model, OnInit, output, inject } from '@angular/core';
 import {
   forkJoin,
   Observable,
   of,
-  switchMap,
-  timer
+  switchMap
 } from "rxjs";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import { LetDirective } from "@ngrx/component";
@@ -31,6 +25,8 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { Idea } from "../../services/invest-ideas-service-typings";
 import { InvestIdeasDetailsDialogComponent } from "../invest-ideas-details-dialog/invest-ideas-details-dialog.component";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
+import {createRefresh} from "../../../../shared/utils/observable-helper";
 
 @Component({
   selector: 'ats-invest-ideas-carousel',
@@ -49,23 +45,22 @@ import { InvestIdeasDetailsDialogComponent } from "../invest-ideas-details-dialo
   styleUrl: './invest-ideas-carousel.component.less'
 })
 export class InvestIdeasCarouselComponent implements OnInit {
+  private readonly investIdeasService = inject(InvestIdeasService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
   ideas$!: Observable<Idea[]>;
 
   instrumentSelected = output<InstrumentKey>();
 
-  protected selectedIdea = model<Idea | null>(null);
+  protected readonly selectedIdea = model<Idea | null>(null);
 
   private readonly refreshInterval = 600_000;
 
-  constructor(
-    private readonly investIdeasService: InvestIdeasService,
-    private readonly translatorService: TranslatorService,
-    private readonly instrumentsService: InstrumentsService
-  ) {
-  }
-
   ngOnInit(): void {
-    this.ideas$ = timer(0, this.refreshInterval).pipe(
+    this.ideas$ = createRefresh(this.refreshInterval, this.applicationStatusService.isActive$)
+      .pipe(
       switchMap(() => this.investIdeasService.getIdeas(
         {
           pageNum: 1,

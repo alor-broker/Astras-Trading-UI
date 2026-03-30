@@ -1,15 +1,5 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
-import { NewsSection } from "../../models/news.model";
+import { AfterViewInit, Component, DestroyRef, input, OnDestroy, OnInit, output, viewChild, inject } from '@angular/core';
+import {NewsSection} from "../../models/news.model";
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -24,31 +14,34 @@ import {
   tap,
   withLatestFrom,
 } from "rxjs";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {NewsFilters, NewsSettings} from "../../models/news-settings.model";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {PositionsService} from "../../../../shared/services/positions.service";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {filter, startWith} from "rxjs/operators";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TableConfig} from "../../../../shared/models/table-config.model";
 import {
-  NewsFilters,
-  NewsSettings
-} from "../../models/news-settings.model";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { PositionsService } from "../../../../shared/services/positions.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+  LazyLoadingBaseTableComponent
+} from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
+import {NewsListItem, NewsService} from "../../../../shared/services/news.service";
+import {PagedResult} from "../../../../shared/models/paging-model";
+import {NzTabComponent, NzTabsComponent} from "ng-zorro-antd/tabs";
+import {NavigationStackService} from "../../../../shared/services/navigation-stack.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {LetDirective} from '@ngrx/component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 import {
-  filter,
-  startWith
-} from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { LazyLoadingBaseTableComponent } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
-import {
-  NewsListItem,
-  NewsService
-} from "../../../../shared/services/news.service";
-import { PagedResult } from "../../../../shared/models/paging-model";
-import {
-  NzTabsComponent
-} from "ng-zorro-antd/tabs";
-import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+  InfiniteScrollTableComponent,
+  TableDataRow
+} from '../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component';
+import {NewsDialogComponent} from '../news-dialog/news-dialog.component';
+import {NewsFiltersComponent} from '../news-filters/news-filters.component';
+import {AsyncPipe} from '@angular/common';
 
 interface NewsListState {
   filter: NewsFilters;
@@ -62,15 +55,34 @@ interface NewsListState {
   selector: 'ats-news',
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.less'],
-  standalone: false
+  imports: [
+    TranslocoDirective,
+    NzButtonComponent,
+    NzIconDirective,
+    NzTabsComponent,
+    NzTabComponent,
+    LetDirective,
+    NzResizeObserverDirective,
+    InfiniteScrollTableComponent,
+    NewsDialogComponent,
+    NewsFiltersComponent,
+    AsyncPipe
+  ]
 })
 export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilters> implements AfterViewInit, OnInit, OnDestroy {
-  @Input({required: true}) guid!: string;
+  private readonly newsService = inject(NewsService);
+  private readonly translatorService = inject(TranslatorService);
+  protected readonly widgetSettingsService: WidgetSettingsService;
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly positionsService = inject(PositionsService);
+  private readonly navigationStackService = inject(NavigationStackService);
+  protected readonly destroyRef: DestroyRef;
 
-  @Output() sectionChange = new EventEmitter<NewsSection>();
+  readonly guid = input.required<string>();
 
-  @ViewChild('tabSet')
-  tabSet?: NzTabsComponent;
+  readonly sectionChange = output<NewsSection>();
+
+  readonly tabSet = viewChild<NzTabsComponent>('tabSet');
 
   readonly newsSectionEnum = NewsSection;
 
@@ -84,8 +96,8 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
       transformFn: (data: NewsListItem): string => {
         const date = new Date(data.publishDate);
         const displayDate = date.toDateString() == new Date().toDateString()
-          ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-          : `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+          ? date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})
+          : `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}`;
 
         return `[${displayDate}] ${data.header}`;
       }
@@ -100,33 +112,32 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
 
   protected settings$!: Observable<NewsSettings>;
 
-  constructor(
-    private readonly newsService: NewsService,
-    private readonly translatorService: TranslatorService,
-    protected readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly positionsService: PositionsService,
-    private readonly navigationStackService: NavigationStackService,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const widgetSettingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(widgetSettingsService, destroyRef);
+
+    this.widgetSettingsService = widgetSettingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngAfterViewInit(): void {
     this.selectedSection$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(selectedTab => {
-      if(
+      const tabSet = this.tabSet();
+      if (
         selectedTab === NewsSection.Portfolio
-        && this.tabSet != null
-        && (this.tabSet.nzSelectedIndex ?? -1) !== 1) {
-        setTimeout(() => this.tabSet?.setSelectedIndex(1));
+        && tabSet != null
+        && (tabSet.nzSelectedIndex ?? -1) !== 1) {
+        setTimeout(() => tabSet.setSelectedIndex(1));
       }
     });
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
+    this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid())
       .pipe(
         shareReplay(1),
         takeUntilDestroyed(this.destroyRef)
@@ -140,14 +151,14 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
       filter(state => state.widgetTarget.typeId === 'news'),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(state => {
-      if(state.widgetTarget.parameters?.section === 'portfolio') {
+      if (state.widgetTarget.parameters?.section === 'portfolio') {
         setTimeout(() => this.newsSectionChange(NewsSection.Portfolio), 250);
       }
     });
   }
 
-  rowClick(newsItem: NewsListItem): void {
-    this.selectedNewsListItem = newsItem;
+  rowClick(row: TableDataRow): void {
+    this.selectedNewsListItem = row as NewsListItem;
   }
 
   scrolled(): void {
@@ -167,7 +178,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   applyAllFilters(filters: NewsFilters | null): void {
     this.isAllFiltersVisible = false;
     this.widgetSettingsService.updateSettings<NewsSettings>(
-      this.guid,
+      this.guid(),
       {
         allNewsFilters: filters
       }
@@ -331,7 +342,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   private createFiltersStream(): void {
     this.selectedSection$.pipe(
       switchMap(section => {
-        if(section === NewsSection.All) {
+        if (section === NewsSection.All) {
           return this.settings$.pipe(
             map(s => s.allNewsFilters),
             distinctUntilChanged((previous, current) => previous === current),

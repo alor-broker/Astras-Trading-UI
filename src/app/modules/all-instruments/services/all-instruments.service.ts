@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, take } from "rxjs";
 import { FetchPolicy, GraphQlService } from "../../../shared/services/graph-ql.service";
 import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
@@ -19,9 +19,7 @@ import { map } from "rxjs/operators";
   providedIn: 'root'
 })
 export class AllInstrumentsService {
-  constructor(
-    private readonly graphQlService: GraphQlService
-  ) {}
+  private readonly graphQlService = inject(GraphQlService);
 
   getInstruments(
     columnIds: string[],

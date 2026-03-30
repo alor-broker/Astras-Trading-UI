@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ActivityTrackerService } from "./activity-tracker.service";
 import {
   combineLatest,
@@ -28,16 +25,12 @@ import {
   providedIn: 'any'
 })
 export class SessionTrackService {
-  private trackingSubscription?: Subscription;
+  private readonly activityTrackerService = inject(ActivityTrackerService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly sessionContext = inject<SessionContext>(SESSION_CONTEXT);
+  private readonly instantNotificationService = inject(SessionInstantTranslatableNotificationsService);
 
-  constructor(
-    private readonly activityTrackerService: ActivityTrackerService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    @Inject(SESSION_CONTEXT)
-    private readonly sessionContext: SessionContext,
-    private readonly instantNotificationService: SessionInstantTranslatableNotificationsService
-  ) {
-  }
+  private trackingSubscription?: Subscription;
 
   startTracking(): void {
     this.stopTracking();

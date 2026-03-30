@@ -3,9 +3,8 @@
   class="container"
   (nzResizeObserve)="containerSizeChanged($event)"
   nzResizeObserver
->
-  <ats-infinite-scroll-table
-    (filterApplied)="applyFilter($event)"
+  >
+  <ats-infinite-scroll-table (filterApplied)="applyFilter($event)"
     (rowClick)="rowClick($event)"
     (scrolled)="scrolled()"
     (orderColumnChange)="changeColumnOrder($event)"
@@ -17,19 +16,21 @@
     [tableContainerWidth]="td.contentSize?.width || 0"
     (rowContextMenu)="openContextMenu($event.event, contextMenu, $event.row)"
     #table
-  ></ats-infinite-scroll-table>
+   />
 
   <div
     class="export-button-container"
     *transloco="let t"
     (nzResizeObserve)="exportBtnSizeChange($event)"
     nzResizeObserver
-  >
-    <button nz-button nzType="link" *ngIf="(td.tableData?.length ?? 0) > 0" (click)="exportToFile()">
-      <i nz-icon nzType="download"></i>
-      {{t('exportToFile')}}
-    </button>
+    >
+    @if (td.tableData.length > 0) {
+      <button nz-button nzType="link" (click)="exportToFile()">
+        <i nz-icon nzType="download"></i>
+        {{t('exportToFile')}}
+      </button>
+    }
   </div>
 
-  <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+  <ats-add-to-watchlist-menu #contextMenu />
 </div>

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {Observable, of, take} from 'rxjs';
 import {EvaluationBaseProperties, QuantityEvaluationProperties} from '../models/evaluation-base-properties.model';
 import {EvaluationRequest} from '../models/evaluation-request.model';
@@ -12,14 +12,11 @@ import { EnvironmentService } from "./environment.service";
   providedIn: 'root'
 })
 export class EvaluationService {
-  private readonly url = this.environmentService.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/estimate';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
+  private readonly url = this.environmentService.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/estimate';
 
   evaluateOrder(baseRequest: EvaluationBaseProperties): Observable<Evaluation | null> {
     return this.http.post<Evaluation>(this.url, {

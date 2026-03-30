@@ -1,14 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BondScreenerWidgetComponent } from './bond-screener-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
-import { Widget } from "../../../../shared/models/dashboard/widget.model";
-import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {BondScreenerWidgetComponent} from './bond-screener-widget.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {of} from "rxjs";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {NzTabComponent, NzTabsComponent} from "ng-zorro-antd/tabs";
+import {BondScreenerComponent} from "../../components/bond-screener/bond-screener.component";
+import {YieldCurveChartComponent} from "../../components/yield-curve-chart/yield-curve-chart.component";
+import {BondScreenerSettingsComponent} from "../../components/bond-screener-settings/bond-screener-settings.component";
 
 describe('BondScreenerWidgetComponent', () => {
   let component: BondScreenerWidgetComponent;
@@ -16,24 +21,18 @@ describe('BondScreenerWidgetComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        BondScreenerWidgetComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-bond-screener',
-          inputs: ['guid']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-bond-screener-settings',
-          inputs: ['guid']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-yield-curve-chart',
-          inputs: ['guid']
-        }),
-        widgetSkeletonMock
-      ],
       imports: [
-        TranslocoTestsModule.getModule()
+        TranslocoTestsModule.getModule(),
+        BondScreenerWidgetComponent,
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          NzTabsComponent,
+          NzTabComponent,
+          BondScreenerComponent,
+          YieldCurveChartComponent,
+          BondScreenerSettingsComponent
+        )
       ],
       providers: [
         {
@@ -55,16 +54,20 @@ describe('BondScreenerWidgetComponent', () => {
     fixture = TestBed.createComponent(BondScreenerWidgetComponent);
     component = fixture.componentInstance;
 
-    component.widgetInstance = {
-      instance: {
-        guid: 'guid'
-      } as Widget,
-      widgetMeta: {
-        widgetName: {
-          translations: {}
-        }
-      } as WidgetMeta
-    };
+    fixture.componentRef.setInput(
+      'widgetInstance',
+      {
+        instance: {
+          guid: 'guid'
+        } as Widget,
+        widgetMeta: {
+          widgetName: {
+            translations: {}
+          }
+        } as WidgetMeta
+      }
+    );
+
     fixture.detectChanges();
   });
 

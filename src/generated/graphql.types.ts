@@ -120,13 +120,13 @@ export enum ApplyPolicy {
 
 export interface BasicInformation {
   /** Требуемая категория для осуществления торговли инструментом */
-  complexProductCategory: Scalars['String']['output'];
+  complexProductCategory?: Maybe<Scalars['String']['output']>;
   /** Краткое описание инструмента */
-  description: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
   /** Биржа */
   exchange: Exchange;
   /** Полное описание инструмента */
-  fullDescription: Scalars['String']['output'];
+  fullDescription?: Maybe<Scalars['String']['output']>;
   /** Полное имя эмитента */
   fullName?: Maybe<Scalars['String']['output']>;
   /** Сектор деятельности эмитента по стандарту GICS */
@@ -138,7 +138,7 @@ export interface BasicInformation {
   /** Сектор деятельности эмитента */
   sector?: Maybe<Scalars['String']['output']>;
   /** Краткое наименование инструмента */
-  shortName: Scalars['String']['output'];
+  shortName?: Maybe<Scalars['String']['output']>;
   /** Тикер (Код финансового инструмента) */
   symbol: Scalars['String']['output'];
   /** Тип финансового инструмента */
@@ -909,6 +909,8 @@ export interface FinancialAttributes {
   currency?: Maybe<Scalars['String']['output']>;
   /** Идентификатор ценной бумаги согласно стандарту ISO 6166 */
   isin?: Maybe<Scalars['String']['output']>;
+  /** Ближайшие периоды торговли инструмента */
+  tradingPeriods?: Maybe<Array<TradingPeriod>>;
   /** Торговый статус инструмента */
   tradingStatus: Scalars['Int']['output'];
   /** Описание торгового статуса инструмента */
@@ -924,6 +926,8 @@ export interface FinancialAttributesFilterInput {
   /** Идентификатор ценной бумаги согласно стандарту ISO 6166 */
   isin?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<FinancialAttributesFilterInput>>;
+  /** Ближайшие периоды торговли инструмента */
+  tradingPeriods?: InputMaybe<ListFilterInputTypeOfTradingPeriodFilterInput>;
   /** Торговый статус инструмента */
   tradingStatus?: InputMaybe<IntOperationFilterInput>;
   /** Описание торгового статуса инструмента */
@@ -1092,6 +1096,13 @@ export interface ListFilterInputTypeOfOfferFilterInput {
   any?: InputMaybe<Scalars['Boolean']['input']>;
   none?: InputMaybe<OfferFilterInput>;
   some?: InputMaybe<OfferFilterInput>;
+}
+
+export interface ListFilterInputTypeOfTradingPeriodFilterInput {
+  all?: InputMaybe<TradingPeriodFilterInput>;
+  any?: InputMaybe<Scalars['Boolean']['input']>;
+  none?: InputMaybe<TradingPeriodFilterInput>;
+  some?: InputMaybe<TradingPeriodFilterInput>;
 }
 
 export interface ListFilterInputTypeOfValuePerQuarterFilterInput {
@@ -1739,6 +1750,22 @@ export interface TradingFilterInput {
   /** Минимальная цена актива за 52 недели */
   minFor52Weeks?: InputMaybe<DecimalOperationFilterInput>;
   or?: InputMaybe<Array<TradingFilterInput>>;
+}
+
+export interface TradingPeriod {
+  /** Окончание торгового периода */
+  finish?: Maybe<Scalars['DateTime']['output']>;
+  /** Начало торгового периода */
+  start?: Maybe<Scalars['DateTime']['output']>;
+}
+
+export interface TradingPeriodFilterInput {
+  and?: InputMaybe<Array<TradingPeriodFilterInput>>;
+  /** Окончание торгового периода */
+  finish?: InputMaybe<DateTimeOperationFilterInput>;
+  or?: InputMaybe<Array<TradingPeriodFilterInput>>;
+  /** Начало торгового периода */
+  start?: InputMaybe<DateTimeOperationFilterInput>;
 }
 
 export interface TradingSortInput {

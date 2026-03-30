@@ -1,7 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {AsyncPipe, NgIf} from "@angular/common";
-import {SharedModule} from "../../../../shared/shared.module";
+import {AsyncPipe} from "@angular/common";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Observable} from "rxjs";
@@ -9,39 +8,38 @@ import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-sett
 import {GraphsListComponent} from "../../components/graphs-list/graphs-list.component";
 import {AiGraphsSettings} from "../../models/ai-graphs-settings.model";
 import {AiGraphEditorDialogComponent} from "../ai-graph-editor-dialog/ai-graph-editor-dialog.component";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
-    selector: 'ats-ai-graphs-widget',
-    imports: [
-        AsyncPipe,
-        NgIf,
-        SharedModule,
-        TranslocoDirective,
-        GraphsListComponent,
-        AiGraphEditorDialogComponent
-    ],
-    templateUrl: './ai-graphs-widget.component.html',
-    styleUrl: './ai-graphs-widget.component.less'
+  selector: 'ats-ai-graphs-widget',
+  imports: [
+    AsyncPipe,
+    TranslocoDirective,
+    GraphsListComponent,
+    AiGraphEditorDialogComponent,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent
+  ],
+  templateUrl: './ai-graphs-widget.component.html',
+  styleUrl: './ai-graphs-widget.component.less'
 })
 export class AiGraphsWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly widgetInstance = input.required<WidgetInstance>();
+
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<AiGraphsSettings>;
 
-  constructor(private readonly widgetSettingsService: WidgetSettingsService) {
-  }
-
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<AiGraphsSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'AiGraphsSettings',
       settings => ({
         ...settings

@@ -11,8 +11,7 @@ export interface PropertyEditorConfig<T = unknown> {
   initialValue: T | null;
 }
 
-export interface BooleanPropertyEditorConfig extends PropertyEditorConfig<boolean> {
-}
+export type BooleanPropertyEditorConfig = PropertyEditorConfig<boolean>;
 
 export interface NumberPropertyEditorConfig extends PropertyEditorConfig<number> {
   validation: NumberValueValidationOptions;

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {Observable, take} from "rxjs";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
@@ -13,14 +13,11 @@ import {PortfolioItemsModelHelper} from "../../utils/portfolio-item-models-helpe
   providedIn: 'root'
 })
 export class OrderDetailsService {
-  private readonly ordersUrl = `${this.environmentService.apiUrl}/md/v2/clients`;
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
+  private readonly ordersUrl = `${this.environmentService.apiUrl}/md/v2/clients`;
 
   getLimitOrderDetails(orderId: string, portfolioKey: PortfolioKey): Observable<Order | null> {
     return this.httpClient.get<OrderResponse>(`${this.ordersUrl}/${portfolioKey.exchange}/${portfolioKey.portfolio}/orders/${orderId}`).pipe(

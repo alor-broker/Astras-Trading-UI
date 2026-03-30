@@ -40,7 +40,7 @@
                 </div>
               </div>
             } @empty {
-              <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphGraphsList.emptyListMessage')"></nz-empty>
+              <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphGraphsList.emptyListMessage')" />
             }
           </div>
         </nz-spin>
@@ -49,17 +49,16 @@
         <form nz-form>
           <nz-form-control
             [nzErrorTip]="t('validationErrors.stringInputLength', {min: 1, max: validationOptions.graphTitle.max}) ">
-            <nz-input-group [nzAddOnAfter]="suffixButton" nzSearch>
-              <input [formControl]="newGraphTitleControl"
-                     [placeholder]="t('aiGraphGraphsList.newGraphTitlePlaceholder')" nz-input
-                     type="text"/>
-              <ng-template #suffixButton>
-                <nz-space-compact>
+            <nz-space-compact [style.width.%]="100">
+              <input
+                [formControl]="newGraphTitleControl"
+                [placeholder]="t('aiGraphGraphsList.newGraphTitlePlaceholder')" nz-input
+                type="text"/>
+
                   @if(vm.templates.length > 0) {
                     <button
                       (click)="$event.preventDefault()"
                       [disabled]="newGraphTitleControl.invalid"
-                      nzSearch
                       nz-button
                       nz-dropdown
                       nzTrigger="hover"
@@ -70,6 +69,7 @@
                     >
                       <span nz-icon nzTheme="outline" nzType="copy"></span>
                     </button>
+
                     <nz-dropdown-menu #templatesMenu="nzDropdownMenu">
                       <ng-container *transloco="let t; scope: 'ai-graph/graph-templates'">
                         <ul nz-menu>
@@ -89,7 +89,6 @@
                   <button
                     (click)="addGraph(); $event.preventDefault()"
                     [disabled]="newGraphTitleControl.invalid"
-                    nzSearch
                     nz-button
                     nzType="primary"
                     nz-tooltip
@@ -98,9 +97,7 @@
                   >
                     <span nz-icon nzTheme="outline" nzType="plus"></span>
                   </button>
-                </nz-space-compact>
-              </ng-template>
-            </nz-input-group>
+            </nz-space-compact>
           </nz-form-control>
         </form>
       </div>

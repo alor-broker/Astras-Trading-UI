@@ -1,11 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NotificationButtonComponent } from './notification-button.component';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { NzDropDownModule } from "ng-zorro-antd/dropdown";
-import { NotificationsService } from "../../services/notifications.service";
-import { of } from "rxjs";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {NotificationButtonComponent} from './notification-button.component';
+import {NotificationsService} from "../../services/notifications.service";
+import {of} from "rxjs";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzBadgeComponent} from "ng-zorro-antd/badge";
+import {NzPopoverDirective} from "ng-zorro-antd/popover";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NotificationsListComponent} from "../notifications-list/notifications-list.component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('NotificationButtonComponent', () => {
   let component: NotificationButtonComponent;
@@ -13,13 +17,18 @@ describe('NotificationButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         NotificationButtonComponent,
-        ...ngZorroMockComponents
-      ],
-      imports:[
-        NoopAnimationsModule,
-        NzDropDownModule
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          NzBadgeComponent,
+          NzButtonComponent,
+          NotificationsListComponent
+        ),
+        MockDirectives(
+          NzPopoverDirective,
+          NzIconDirective
+        )
       ],
       providers: [
         {
@@ -30,7 +39,7 @@ describe('NotificationButtonComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

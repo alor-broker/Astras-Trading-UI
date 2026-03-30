@@ -13,7 +13,7 @@ import {
   tap,
   TeardownLogic
 } from "rxjs";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Trade } from "../../../shared/models/trades/trade.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import {
@@ -92,8 +92,7 @@ class TradesState {
     this.drawnTrades.forEach(t => {
       try {
         t.remove();
-      } catch {
-      }
+      } catch { /* empty */ }
     });
 
     this.drawnTrades.clear();
@@ -108,19 +107,15 @@ class TradesState {
 
 @Injectable()
 export class TradesDisplayExtension extends BaseExtension {
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly tradesHistoryService = inject(TradesHistoryService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly marketService = inject(MarketService);
+
   private tradesState: TradesState | null = null;
   private initTimezoneChangeSub: Subscription | null = null;
   private initTradesDisplaySub: Subscription | null = null;
-
-  constructor(
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly tradesHistoryService: TradesHistoryService,
-    private readonly translatorService: TranslatorService,
-    private readonly marketService: MarketService
-  ) {
-    super();
-  }
 
   update(context: ChartContext): void {
     this.apply(context);

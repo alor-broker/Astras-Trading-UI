@@ -17,7 +17,7 @@
                     @if (instrument | async; as instrumentInfo) {
                       <div class="d-flex flex-column align-items-center flex-gap-5 symbol">
                         <ats-instrument-icon [symbol]="instrumentInfo.symbol" size="large"
-                                             shape="rounded-square"></ats-instrument-icon>
+                                             shape="rounded-square" />
                         <span nz-typography nzEllipsis class="heading-color">{{ instrumentInfo.shortName }}</span>
                       </div>
                     }
@@ -29,13 +29,13 @@
         }
       </nz-carousel>
     } @else {
-      <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('investIdeas.noItemsToDisplayMessage')"></nz-empty>
+      <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('investIdeas.noItemsToDisplayMessage')" />
     }
   </div>
 
   <ng-template #loading>
-    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
+    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }" />
   </ng-template>
 
-  <ats-idea-details [(displayIdea)]="selectedIdea"></ats-idea-details>
+  <ats-idea-details [(displayIdea)]="selectedIdea" />
 </ng-container>

@@ -1,0 +1,67 @@
+<div *transloco="let t; scope: 'money-operations'" class="pt-4">
+  @switch (step()) {
+    @case (steps.Selection) {
+      <div class="d-flex flex-column flex-gap-10">
+        <button (click)="selectSubtype('card')" class="option-card" nz-button nzType="default">
+          <div class="d-flex align-items-center flex-gap-10">
+            <nz-icon class="primary-color fs-5" nzTheme="outline" nzType="credit-card"/>
+            <span>{{ t('moneyOperations.cardTitle') }}</span>
+          </div>
+        </button>
+
+        <button (click)="selectSubtype('sbp')" class="option-card" nz-button nzType="default">
+          <div class="d-flex align-items-center flex-gap-10">
+            <nz-icon class="primary-color fs-5" nzTheme="outline" nzType="swap"/>
+            <span>{{ t('moneyOperations.sbpTitle') }}</span>
+          </div>
+        </button>
+      </div>
+    }
+    @case (steps.Amount) {
+      <div class="d-flex flex-column flex-gap-10">
+        <button (click)="back()" class="d-flex align-items-center" nz-button nzType="text">
+          <nz-icon nzTheme="outline" nzType="arrow-left"/>
+          <span>{{ t('moneyOperations.back') }}</span>
+        </button>
+
+        <form (ngSubmit)="submitPrepare()" [formGroup]="form" class="p-0" nz-form nzLayout="vertical">
+          <nz-form-item>
+            <nz-form-label nzRequired>{{ t('moneyOperations.depositAmountLabel') }}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('moneyOperations.amountError')">
+              <ats-input-number [allowDecimal]="true"
+                [allowNegative]="false"
+                [placeholder]="'100'"
+                [step]="0.01"
+                formControlName="amount"
+               />
+            </nz-form-control>
+          </nz-form-item>
+
+          <button [disabled]="!form.valid" [nzLoading]="isLoading()" nz-button nzBlock nzType="primary">
+            {{ t('moneyOperations.continue') }}
+          </button>
+        </form>
+      </div>
+    }
+    @case (steps.Confirm) {
+      <div class="d-flex flex-column flex-gap-10">
+        <button (click)="back()" class="d-flex align-items-center" nz-button nzType="text">
+          <nz-icon nzTheme="outline" nzType="arrow-left"/>
+          <span>{{ t('moneyOperations.back') }}</span>
+        </button>
+
+        <div class="p-0">
+          <h3 class="mb-8 heading-color">{{ t('moneyOperations.confirmTitle') }}</h3>
+          <div class="d-flex justify-content-between flex-gap-10 text-color px-0 py-4">
+            <span>{{ t('moneyOperations.depositAmountLabel') }}</span>
+            <span>{{ form.controls.amount.value }} RUB</span>
+          </div>
+        </div>
+
+        <button (click)="submitCreate()" [nzLoading]="isLoading()" nz-button nzBlock nzType="primary">
+          {{ t('moneyOperations.pay') }}
+        </button>
+      </div>
+    }
+  }
+</div>

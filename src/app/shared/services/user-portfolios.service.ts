@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {filter, Observable, shareReplay} from "rxjs";
 import {PortfolioExtended} from "../models/user/portfolio-extended.model";
 import {Store} from "@ngrx/store";
@@ -10,10 +10,9 @@ import { PortfoliosFeature } from "../../store/portfolios/portfolios.reducer";
   providedIn: 'root'
 })
 export class UserPortfoliosService {
-  private allPortfolios: Observable<PortfolioExtended[]> | null = null;
+  private readonly store = inject(Store);
 
-  constructor(private readonly store: Store) {
-  }
+  private allPortfolios: Observable<PortfolioExtended[]> | null = null;
 
   getPortfolios(): Observable<PortfolioExtended[]> {
     this.allPortfolios ??= this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(

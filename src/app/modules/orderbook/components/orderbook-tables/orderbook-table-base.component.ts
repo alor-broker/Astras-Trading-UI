@@ -1,121 +1,68 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnInit
-} from '@angular/core';
-import { OrderBook } from "../../models/orderbook.model";
-import { OrderbookSettings } from "../../models/orderbook-settings.model";
-import {
-  filter,
-  Observable,
-  of,
-  shareReplay,
-  take
-} from "rxjs";
-import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { CurrentOrder } from "../../models/orderbook-view-row.model";
-import { OrderbookService } from "../../services/orderbook.service";
-import { map } from 'rxjs/operators';
-import {
-  getTypeByCfi,
-  toInstrumentKey
-} from '../../../../shared/utils/instruments';
-import { InstrumentType } from '../../../../shared/models/enums/instrument-type.model';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
-import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
-import { OrderType } from "../../../../shared/models/orders/order.model";
-
-interface ExtendedOrderbookSettings {
-  widgetSettings: OrderbookSettings;
-  instrument: Instrument;
-}
+import {Component, DestroyRef, input, OnInit, output} from '@angular/core';
+import {OrderBook} from "../../models/orderbook.model";
+import {CurrentOrder} from "../../models/orderbook-view-row.model";
+import {OrderbookService} from "../../services/orderbook.service";
+import {NumberDisplayFormat} from '../../../../shared/models/enums/number-display-format';
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {ThemeSettings} from '../../../../shared/models/settings/theme-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import {OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
+import {OrderType} from "../../../../shared/models/orders/order.model";
+import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
-    template: '',
-    standalone: false
+  template: ''
 })
 export abstract class OrderbookTableBaseComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
-  @Input({required: true})
-  guid!: string;
 
-  @Input()
-  ob: OrderBook | null = null;
+  readonly ob = input<OrderBook | null>(null);
 
-  settings$!: Observable<ExtendedOrderbookSettings>;
-  shouldShowYield$: Observable<boolean> = of(false);
+  readonly volumeDisplayFormat = input<NumberDisplayFormat>(NumberDisplayFormat.Default);
+
+  readonly showYield = input<boolean>(false);
+
+  readonly priceDisplayFormat = input<{
+    showPriceWithZeroPadding: boolean;
+    priceStep?: number;
+  }>({
+    showPriceWithZeroPadding: false,
+    priceStep: 1,
+  });
+
+  readonly rowSelected = output<{price: number, side: Side}>();
+
+  protected readonly Side = Side;
+
   private themeSettings?: ThemeSettings;
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly widgetsSharedDataService: WidgetsSharedDataService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     private readonly ordersDialogService: OrdersDialogService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     private readonly service: OrderbookService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     private readonly themeService: ThemeService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     private readonly destroyRef: DestroyRef
   ) {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
-      mapWith(
-        settings => this.instrumentsService.getInstrument(settings),
-        (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedOrderbookSettings)
-      ),
-      filter(x => !!(x.instrument as Instrument | null)),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-
-    this.shouldShowYield$ = this.settings$.pipe(
-      map(settings => {
-        return settings.widgetSettings.showYieldForBonds && getTypeByCfi(settings.instrument.cfiCode) === InstrumentType.Bond;
-      }),
-      shareReplay()
-    );
-
     this.themeService.getThemeSettings().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(s => this.themeSettings = s);
   }
 
-  newLimitOrder(event: MouseEvent, price: number, quantity?: number): void {
+  newLimitOrder(event: MouseEvent, price: number, side: Side): void {
     event.stopPropagation();
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      if (settings.widgetSettings.useOrderWidget ?? false) {
-        this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>('selectedPrice', {
-          price,
-          badgeColor: settings.widgetSettings.badgeColor!
-        });
-      }
-      else {
-        this.ordersDialogService.openNewOrderDialog({
-          instrumentKey: toInstrumentKey(settings.widgetSettings),
-          initialValues: {
-            orderType:OrderFormType.Limit,
-            price,
-            quantity: quantity ?? 1
-          }
-        });
-      }
-    });
+    this.rowSelected.emit({price, side});
   }
 
   updateOrderPrice(order: CurrentOrder, price: number): void {
-    if(order.type !== OrderType.Limit && order.type !== OrderType.StopMarket && order.type !== OrderType.StopLimit) {
+    if (order.type !== OrderType.Limit && order.type !== OrderType.StopMarket && order.type !== OrderType.StopLimit) {
       return;
     }
 
@@ -140,34 +87,33 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
   }
 
   getBidStyle(value: number): Record<string, string> | null {
-    if (!this.themeSettings || !this.ob) {
+    const ob = this.ob();
+    if (!this.themeSettings || !ob) {
       return null;
     }
 
-    const size = 100 * (value / this.ob.maxVolume);
+    const size = 100 * (value / ob.maxVolume);
     return {
       background: `linear-gradient(270deg, ${this.themeSettings.themeColors.buyColorBackground} ${size}% , rgba(0,0,0,0) ${size}%)`,
     };
   }
 
   getAskStyle(value: number): Record<string, string> | null {
-    if (!this.themeSettings || !this.ob) {
+    const ob = this.ob();
+    if (!this.themeSettings || !ob) {
       return null;
     }
 
-    const size = 100 * (value / this.ob.maxVolume);
+    const size = 100 * (value / ob.maxVolume);
     return {
       background: `linear-gradient(90deg, ${this.themeSettings.themeColors.sellColorBackground} ${size}%, rgba(0,0,0,0) ${size}%)`,
     };
   }
 
-  getTrackKey(index: number): number {
-    return index;
-  }
-
-  getPriceDecimalSymbolsCount(settings: ExtendedOrderbookSettings): number | null {
-    return settings.widgetSettings.showPriceWithZeroPadding === true
-      ? MathHelper.getPrecision(settings.instrument.minstep)
+  getPriceDecimalSymbolsCount(): number | null {
+    const priceDisplayFormat = this.priceDisplayFormat();
+    return priceDisplayFormat.showPriceWithZeroPadding
+      ? MathHelper.getPrecision(priceDisplayFormat.priceStep ?? 1)
       : null;
   }
 }

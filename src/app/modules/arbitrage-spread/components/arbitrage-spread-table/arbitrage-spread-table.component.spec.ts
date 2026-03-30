@@ -1,13 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ArbitrageSpreadTableComponent } from './arbitrage-spread-table.component';
-import { ArbitrageSpreadService } from "../../services/arbitrage-spread.service";
-import { of } from "rxjs";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
-import { NzTableModule } from "ng-zorro-antd/table";
-import { NzEmptyModule } from "ng-zorro-antd/empty";
-import { NzTooltipModule } from "ng-zorro-antd/tooltip";
+import {ArbitrageSpreadTableComponent} from './arbitrage-spread-table.component';
+import {ArbitrageSpreadService} from "../../services/arbitrage-spread.service";
+import {of} from "rxjs";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {MockComponents} from "ng-mocks";
+import {NzTableComponent, NzTbodyComponent, NzTheadComponent} from "ng-zorro-antd/table";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzFormControlComponent, NzFormItemComponent} from "ng-zorro-antd/form";
+import {InputNumberComponent} from "../../../../shared/components/input-number/input-number.component";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
 
 describe('ArbitrageSpreadTableComponent', () => {
   let component: ArbitrageSpreadTableComponent;
@@ -15,12 +18,19 @@ describe('ArbitrageSpreadTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ArbitrageSpreadTableComponent],
       imports: [
         TranslocoTestsModule.getModule(),
-        NzTableModule,
-        NzEmptyModule,
-        NzTooltipModule
+        ArbitrageSpreadTableComponent,
+        MockComponents(
+          NzTableComponent,
+          NzTheadComponent,
+          NzButtonComponent,
+          NzTbodyComponent,
+          NzFormItemComponent,
+          NzFormControlComponent,
+          InputNumberComponent,
+          NzEmptyComponent
+        )
       ],
       providers: [
         {
@@ -32,9 +42,9 @@ describe('ArbitrageSpreadTableComponent', () => {
           }
         },
         ...commonTestProviders
-  ]
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ArbitrageSpreadTableComponent);
     component = fixture.componentInstance;

@@ -1,54 +1,58 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { NewsSettings } from '../../models/news-settings.model';
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { Observable, of, switchMap } from "rxjs";
-import { SettingsHelper } from "../../../../shared/utils/settings-helper";
-import { NewsSection } from "../../models/news.model";
-import { map } from "rxjs/operators";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { Component, input, OnInit, inject } from '@angular/core';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {NewsSettings} from '../../models/news-settings.model';
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {Observable, of, switchMap} from "rxjs";
+import {SettingsHelper} from "../../../../shared/utils/settings-helper";
+import {NewsSection} from "../../models/news.model";
+import {map} from "rxjs/operators";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {WidgetsHelper} from "../../../../shared/utils/widgets";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
+import {NewsComponent} from '../../components/news/news.component';
+import {NewsSettingsComponent} from '../../components/news-settings/news-settings.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-news-widget',
-    templateUrl: './news-widget.component.html',
-    styleUrls: ['./news-widget.component.less'],
-    standalone: false
+  selector: 'ats-news-widget',
+  templateUrl: './news-widget.component.html',
+  styleUrls: ['./news-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    NewsComponent,
+    NewsSettingsComponent,
+    AsyncPipe
+  ]
 })
 export class NewsWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly translatorService = inject(TranslatorService);
+
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<NewsSettings>;
   showBadge$!: Observable<boolean>;
   widgetTitle$: Observable<string> = of('');
   titleText!: string;
 
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
-
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -57,7 +61,7 @@ export class NewsWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<NewsSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'NewsSettings',
       settings => ({
         ...settings,
@@ -69,7 +73,7 @@ export class NewsWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
-    this.titleText = WidgetsHelper.getWidgetName(this.widgetInstance.widgetMeta.widgetName, this.translatorService.getActiveLang());
+    this.titleText = WidgetsHelper.getWidgetName(this.widgetInstance().widgetMeta.widgetName, this.translatorService.getActiveLang());
   }
 
   sectionChange(section: NewsSection): void {

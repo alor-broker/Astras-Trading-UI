@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  Input,
-  OnInit
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, input, inject } from '@angular/core';
 import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 import {
   combineLatest,
@@ -34,18 +28,14 @@ import { LetDirective } from "@ngrx/component";
     ]
 })
 export class InstrumentBadgeDisplayComponent implements OnInit {
-  @Input({required: true})
-  instrumentKey!: InstrumentKey;
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly instrumentKey = input.required<InstrumentKey>();
 
   selectedInstruments$!: Observable<InstrumentGroups>;
   badgesColors$!: Observable<string[]>;
-
-  constructor(
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.selectedInstruments$ = combineLatest([
@@ -84,12 +74,13 @@ export class InstrumentBadgeDisplayComponent implements OnInit {
   }
 
   private isBadgeApplicable(selectedInstrument: InstrumentKey): boolean {
-    return this.instrumentKey.symbol === selectedInstrument.symbol
-      && this.instrumentKey.exchange === selectedInstrument.exchange
+    const instrumentKey = this.instrumentKey();
+    return instrumentKey.symbol === selectedInstrument.symbol
+      && instrumentKey.exchange === selectedInstrument.exchange
       && (
-        this.instrumentKey.instrumentGroup == null
+        instrumentKey.instrumentGroup == null
         || selectedInstrument.instrumentGroup == null
-        || this.instrumentKey.instrumentGroup === selectedInstrument.instrumentGroup
+        || instrumentKey.instrumentGroup === selectedInstrument.instrumentGroup
       );
   }
 }

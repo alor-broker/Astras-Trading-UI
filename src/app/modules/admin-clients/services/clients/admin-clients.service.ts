@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from "rxjs";
 import {
   ClientsSearchFilter,
@@ -17,14 +17,11 @@ import { Market } from "../../../../../generated/graphql.types";
   providedIn: 'root'
 })
 export class AdminClientsService {
-  private readonly baseUrl = this.environmentService.apiUrl;
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly environmentService = inject(EnvironmentService);
 
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly environmentService: EnvironmentService
-  ) {
-  }
+  private readonly baseUrl = this.environmentService.apiUrl;
 
   searchClients(
     filters: ClientsSearchFilter | null,

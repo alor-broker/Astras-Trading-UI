@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InstrumentBoardSelectComponent } from './instrument-board-select.component';
 import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
 import { Subject } from 'rxjs';
-import { ComponentHelpers } from "../../utils/testing/component-helpers";
+import {FormsTesting} from "../../utils/testing/forms-testing";
 
 describe('InstrumentBoardSelectComponent', () => {
   let component: InstrumentBoardSelectComponent;
@@ -11,19 +11,19 @@ describe('InstrumentBoardSelectComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        InstrumentBoardSelectComponent,
-        ComponentHelpers.mockComponent({ selector: 'nz-select', inputs: ['ngModel', 'nzPlaceHolder'] })
-      ],
-      providers: [
+    imports: [
+      InstrumentBoardSelectComponent,
+      ...FormsTesting.getMocks()
+    ],
+    providers: [
         {
-          provide: InstrumentsService,
-          useValue: {
-            getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
-          }
+            provide: InstrumentsService,
+            useValue: {
+                getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
+            }
         }
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(InstrumentBoardSelectComponent);

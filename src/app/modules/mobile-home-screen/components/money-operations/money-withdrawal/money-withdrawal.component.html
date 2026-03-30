@@ -1,0 +1,71 @@
+<div class="pt-4" *transloco="let t; scope: 'money-operations'">
+  @if (savedRequisites().length > 0) {
+    <div class="mb-12">
+      <h3 class="saved-requisites__title mb-8">{{ t('moneyOperations.savedRequisitesTitle') }}</h3>
+      @for (req of savedRequisites(); track req.id; let i = $index) {
+        <div class="mb-8">
+          <button
+            type="button"
+            class="saved-requisites-item primary-color"
+            (click)="applyRequisites(req)"
+          >
+            {{ i + 1 }}. {{ req.bic }} {{ req.bankName }}, {{ t('moneyOperations.accountShort') }} {{ req.settlementAccount }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="submit()" class="p-0">
+    <nz-form-item>
+      <nz-form-label nzRequired>{{t('moneyOperations.recipientLabel')}}</nz-form-label>
+      <nz-form-control [nzErrorTip]="t('moneyOperations.requiredError')">
+        <input nz-input formControlName="recipient" [placeholder]="t('moneyOperations.recipientPlaceholder')" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label nzRequired>{{t('moneyOperations.bikLabel')}}</nz-form-label>
+      <nz-form-control [nzErrorTip]="t('moneyOperations.bikError')">
+        <input nz-input formControlName="bic" [placeholder]="t('moneyOperations.bikPlaceholder')" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label nzRequired>{{t('moneyOperations.bankNameLabel')}}</nz-form-label>
+      <nz-form-control [nzErrorTip]="t('moneyOperations.requiredError')">
+        <input nz-input formControlName="bankName" [placeholder]="t('moneyOperations.bankNamePlaceholder')" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label nzRequired>{{t('moneyOperations.loroAccountLabel')}}</nz-form-label>
+      <nz-form-control [nzErrorTip]="t('moneyOperations.accountError')">
+        <input nz-input formControlName="loroAccount" [placeholder]="t('moneyOperations.accountPlaceholder')" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label nzRequired>{{t('moneyOperations.settlementAccountLabel')}}</nz-form-label>
+      <nz-form-control [nzErrorTip]="t('moneyOperations.accountError')">
+        <input nz-input formControlName="settlementAccount" [placeholder]="t('moneyOperations.accountPlaceholder')" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label nzRequired>{{t('moneyOperations.withdrawAmountLabel')}}</nz-form-label>
+      <nz-form-control [nzErrorTip]="t('moneyOperations.amountError')">
+        <ats-input-number [allowDecimal]="true"
+          [allowNegative]="false"
+          [placeholder]="'100'"
+          [step]="0.01"
+          formControlName="amount"
+         />
+      </nz-form-control>
+    </nz-form-item>
+
+    <button nz-button nzType="primary" nzBlock [nzLoading]="isLoading()" [disabled]="!form.valid">
+      {{t('moneyOperations.withdrawAction')}}
+    </button>
+  </form>
+</div>

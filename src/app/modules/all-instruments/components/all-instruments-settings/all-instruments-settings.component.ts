@@ -1,12 +1,5 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-} from '@angular/core';
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   allInstrumentsColumns,
@@ -20,14 +13,37 @@ import { WidgetSettingsBaseComponent } from "../../../../shared/components/widge
 import { Observable } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
+import { WidgetSettingsComponent } from '../../../../shared/components/widget-settings/widget-settings.component';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzFormDirective, NzFormItemComponent, NzFormControlComponent, NzFormLabelComponent } from 'ng-zorro-antd/form';
+import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
+import { NzSelectComponent, NzOptionComponent } from 'ng-zorro-antd/select';
 
 @Component({
     selector: 'ats-all-instruments-settings',
     templateUrl: './all-instruments-settings.component.html',
     styleUrls: ['./all-instruments-settings.component.less'],
-    standalone: false
+    imports: [
+      WidgetSettingsComponent,
+      TranslocoDirective,
+      FormsModule,
+      NzFormDirective,
+      ReactiveFormsModule,
+      NzRowDirective,
+      NzFormItemComponent,
+      NzColDirective,
+      NzFormControlComponent,
+      NzFormLabelComponent,
+      NzSelectComponent,
+      NzOptionComponent
+    ]
 })
 export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent<AllInstrumentsSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly form = this.formBuilder.group({
     allInstrumentsColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
   });
@@ -36,13 +52,16 @@ export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent
 
   protected settings$!: Observable<AllInstrumentsSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Actions,
   createEffect,
@@ -11,6 +11,8 @@ import { TerminalSettingsInternalActions } from "./terminal-settings.actions";
 
 @Injectable()
 export class TerminalSettingsEffects {
+  private readonly actions$ = inject(Actions);
+
   initSettings$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TerminalSettingsInternalActions.init),
@@ -38,7 +40,4 @@ export class TerminalSettingsEffects {
       })
     );
   });
-
-  constructor(private readonly actions$: Actions) {
-  }
 }

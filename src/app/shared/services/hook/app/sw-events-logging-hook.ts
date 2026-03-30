@@ -1,4 +1,4 @@
-﻿import { Injectable } from "@angular/core";
+﻿import { Injectable, inject } from "@angular/core";
 import { AppHook } from "./app-hook-token";
 import { Subscription } from "rxjs";
 import { SwUpdate } from "@angular/service-worker";
@@ -6,13 +6,10 @@ import { LoggerService } from "../../logging/logger.service";
 
 @Injectable()
 export class SwEventsLoggingHook implements AppHook {
-  private subscription: Subscription | null = null;
+  private readonly swUpdates = inject(SwUpdate);
+  private readonly loggerService = inject(LoggerService);
 
-  constructor(
-    private readonly swUpdates: SwUpdate,
-    private readonly loggerService: LoggerService
-  ) {
-  }
+  private subscription: Subscription | null = null;
 
   onDestroy(): void {
     this.subscription?.unsubscribe();

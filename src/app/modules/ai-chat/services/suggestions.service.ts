@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   HttpClient,
   HttpContext
@@ -24,12 +24,9 @@ interface Suggestion {
   providedIn: 'root'
 })
 export class SuggestionsService {
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly translatorService = inject(TranslatorService);
 
   getSuggestions(): Observable<string[] | null> {
     const allSuggestions$ = this.httpClient.get<Suggestion[]>(

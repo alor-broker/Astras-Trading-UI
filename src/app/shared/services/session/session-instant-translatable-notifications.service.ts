@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BaseTranslatorService } from "../base-translator.service";
 import { InstantNotificationsService } from "../instant-notifications.service";
 import { TranslatorService } from "../translator.service";
@@ -10,14 +10,18 @@ import { NzNotificationDataOptions } from "ng-zorro-antd/notification";
 })
 export class SessionInstantTranslatableNotificationsService
 extends BaseTranslatorService {
+  private readonly notificationsService = inject(InstantNotificationsService);
+  protected readonly translatorService: TranslatorService;
+
   protected translationsPath = 'shared/session-notifications';
   private lastWarningId?: string;
 
-  constructor(
-    private readonly notificationsService: InstantNotificationsService,
-    protected readonly translatorService: TranslatorService
-  ) {
+  constructor() {
+    const translatorService = inject(TranslatorService);
+
     super(translatorService);
+
+    this.translatorService = translatorService;
   }
 
   endOfSession(): void {

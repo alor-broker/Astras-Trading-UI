@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   distinctUntilChanged,
   Observable,
@@ -30,13 +30,10 @@ import { isInstrumentEqual } from "../../../shared/utils/settings-helper";
   providedIn: 'root'
 })
 export class ScalperOrderBookDataProvider {
-  constructor(
-    private readonly settingsReadService: ScalperOrderBookSettingsReadService,
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-  ) {
-  }
+  private readonly settingsReadService = inject(ScalperOrderBookSettingsReadService);
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
 
   public getOrderBookPortfolio(): Observable<PortfolioKey> {
     return this.currentDashboardService.selectedPortfolio$;

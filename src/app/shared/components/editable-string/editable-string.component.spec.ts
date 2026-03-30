@@ -18,6 +18,7 @@ describe('EditableStringComponent', () => {
 
     fixture = TestBed.createComponent(EditableStringComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('content', 'test');
     fixture.detectChanges();
   });
 

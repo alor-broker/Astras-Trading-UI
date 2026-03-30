@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, DestroyRef, OnChanges, SimpleChanges, inject } from '@angular/core';
 import {PropertyEditorBaseComponent} from "../property-editor-base";
 import {BooleanPropertyEditorConfig} from "../../../models/property-editor.model";
 import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
@@ -23,16 +23,12 @@ import {NzSwitchComponent} from "ng-zorro-antd/switch";
     styleUrl: './boolean-property-editor.component.less'
 })
 export class BooleanPropertyEditorComponent extends PropertyEditorBaseComponent<BooleanPropertyEditorConfig> implements OnChanges {
+  protected readonly formBuilder = inject(FormBuilder);
+  protected readonly destroyRef = inject(DestroyRef);
+
   protected readonly form = this.formBuilder.group({
     property: this.formBuilder.control<boolean>(false)
   });
-
-  constructor(
-    protected readonly formBuilder: FormBuilder,
-    protected readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.config.currentValue != null || changes.config.firstChange) {

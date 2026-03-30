@@ -1,4 +1,4 @@
-﻿import {Injectable} from "@angular/core";
+﻿import { Injectable, inject } from "@angular/core";
 import {
   distinct,
   filter,
@@ -20,15 +20,12 @@ import {
 
 @Injectable()
 export class TranslationHook implements AreaHook {
-  private langChangeSubscription?: Subscription;
+  private readonly terminalSettings = inject(TerminalSettingsService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly localeService = inject(LocaleService);
+  private readonly nzI18nService = inject(NzI18nService);
 
-  constructor(
-    private readonly terminalSettings: TerminalSettingsService,
-    private readonly translatorService: TranslatorService,
-    private readonly localeService: LocaleService,
-    private readonly nzI18nService: NzI18nService
-  ) {
-  }
+  private langChangeSubscription?: Subscription;
 
   onDestroy(): void {
     this.langChangeSubscription?.unsubscribe();

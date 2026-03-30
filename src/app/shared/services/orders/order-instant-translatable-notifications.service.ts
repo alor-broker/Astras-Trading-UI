@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { InstantNotificationsService } from "../instant-notifications.service";
 import { TranslatorService } from "../translator.service";
 import { BaseTranslatorService } from "../base-translator.service";
@@ -11,13 +11,17 @@ import { OrderCommandResult } from "../../models/orders/new-order.model";
 })
 export class OrderInstantTranslatableNotificationsService
   extends BaseTranslatorService {
+  private readonly notificationsService = inject(InstantNotificationsService);
+  protected readonly translatorService: TranslatorService;
+
   protected translationsPath = 'shared/orders-notifications';
 
-  constructor(
-    private readonly notificationsService: InstantNotificationsService,
-    protected readonly translatorService: TranslatorService
-  ) {
+  constructor() {
+    const translatorService = inject(TranslatorService);
+
     super(translatorService);
+
+    this.translatorService = translatorService;
   }
 
   orderCreated(orderNumber: string): void {

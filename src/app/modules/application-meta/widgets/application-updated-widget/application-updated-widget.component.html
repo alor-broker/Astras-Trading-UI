@@ -1,4 +1,4 @@
-<ng-container *ngIf="currentVersion$ | async as currentVersion">
+@if (currentVersion$ | async; as currentVersion) {
   <nz-modal
     *transloco="let tAppMeta; scope: 'application-meta/application-updated-widget'"
     (nzOnCancel)="handleClose()"
@@ -6,27 +6,24 @@
     nzClassName="application-updated-modal"
     [nzVisible]="isVisible$ | async"
     [nzFooter]="null"
-  >
+    >
     <ng-template #header>
       <div class="header">{{currentVersion.id}}</div>
     </ng-template>
     <ng-container *nzModalContent>
       <p>
-      <span>
-        {{currentVersion.summary}}
-      </span>
+        <span>
+          {{currentVersion.summary}}
+        </span>
       </p>
-
-      <nz-divider class="mb-5 mt-10"></nz-divider>
-
+      <nz-divider class="mb-5 mt-10" />
       <div class="scrollable show-scroll">
-
         <nz-collapse nzGhost nzExpandIconPosition="end">
           <nz-collapse-panel
             [nzHeader]="collapseHeader"
             [(nzActive)]="isProblemCollapseActive"
             [nzShowArrow]="false"
-          >
+            >
             <p>
               <span [nzType]="'warning'" nz-typography>
                 {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsWarning')}}
@@ -46,30 +43,30 @@
               <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep3')}}</span>
               <br/>
               <span [nzType]="'secondary'" nz-typography>
-            {{tAppMeta('applicationMetaApplicationUpdatedWidget.clearSiteDataText')}}
-          </span>
+                {{tAppMeta('applicationMetaApplicationUpdatedWidget.clearSiteDataText')}}
+              </span>
             </div>
           </nz-collapse-panel>
-
           <ng-template #collapseHeader>
             <span class="problem-title">
               ! {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsLabel')}}
-              <span *ngIf="isProblemCollapseActive; else collapseOpenedIcon" nz-icon nzType="caret-up" nzTheme="outline"></span>
-
-              <ng-template #collapseOpenedIcon>
+              @if (isProblemCollapseActive) {
+                <span nz-icon nzType="caret-up" nzTheme="outline"></span>
+              } @else {
                 <span nz-icon nzType="caret-down" nzTheme="outline"></span>
-              </ng-template>
+              }
             </span>
           </ng-template>
         </nz-collapse>
-
-        <p *ngFor="let line of currentVersion.description.split('\n')">
-        <span>
-          {{line}}
-        </span>
-        </p>
+        @for (line of currentVersion.description.split('\n'); track line) {
+          <p>
+            <span>
+              {{line}}
+            </span>
+          </p>
+        }
       </div>
     </ng-container>
   </nz-modal>
-</ng-container>
+}
 

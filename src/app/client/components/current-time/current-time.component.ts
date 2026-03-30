@@ -1,8 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import {
   asyncScheduler,
@@ -12,30 +8,27 @@ import {
   subscribeOn,
   timer
 } from "rxjs";
-import { CommonModule } from "@angular/common";
 import { TimezoneDisplayOption } from "../../../shared/models/enums/timezone-display-option";
 import { TerminalSettings } from "../../../shared/models/terminal-settings/terminal-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { mapWith } from "../../../shared/utils/observable-helper";
 import { TZDate } from "@date-fns/tz";
+import {AsyncPipe, DatePipe} from "@angular/common";
 
 @Component({
   selector: 'ats-current-time',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
   templateUrl: './current-time.component.html',
+  imports: [
+    AsyncPipe,
+    DatePipe
+  ],
   styleUrl: './current-time.component.less'
 })
 export class CurrentTimeComponent implements OnInit {
-  time$!: Observable<Date>;
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  time$!: Observable<Date>;
 
   ngOnInit(): void {
     const timezone$ = this.terminalSettingsService.getSettings().pipe(

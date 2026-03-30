@@ -4,8 +4,14 @@
   (swipeLeft)="move(null, 'right')"
   (swipeRight)="move(null, 'left')"
 >
-  <div (nzResizeObserve)="checkScroll()" cdkScrollable class="items" nzResizeObserver>
-    <ng-content></ng-content>
+  <div
+    (nzResizeObserve)="checkScroll()"
+    cdkScrollable
+    class="items"
+    nzResizeObserver
+    [style]="{'column-gap': `${spaceBetween()}px`}"
+  >
+    <ng-content />
   </div>
 
   @if(showScrollButtons() && (hasScroll$ | async)) {

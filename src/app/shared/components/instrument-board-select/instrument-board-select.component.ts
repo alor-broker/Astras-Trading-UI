@@ -1,58 +1,41 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR
-} from '@angular/forms';
-import {
-  BehaviorSubject,
-  distinctUntilChanged,
-  Observable,
-  of,
-  switchMap
-} from 'rxjs';
-import { isInstrumentEqual } from "../../utils/settings-helper";
+import { Component, input, OnInit, inject } from '@angular/core';
+import {InstrumentsService} from '../../../modules/instruments/services/instruments.service';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {distinctUntilChanged, Observable, of, switchMap} from 'rxjs';
+import {isInstrumentEqual} from "../../utils/settings-helper";
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {AsyncPipe} from '@angular/common';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-instrument-board-select',
-    templateUrl: './instrument-board-select.component.html',
-    styleUrls: ['./instrument-board-select.component.less'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: InstrumentBoardSelectComponent
-        }
-    ],
-    standalone: false
+  selector: 'ats-instrument-board-select',
+  templateUrl: './instrument-board-select.component.html',
+  styleUrls: ['./instrument-board-select.component.less'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: InstrumentBoardSelectComponent
+    }
+  ],
+  imports: [
+    NzSelectComponent,
+    FormsModule,
+    NzOptionComponent,
+    AsyncPipe
+  ]
 })
-export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class InstrumentBoardSelectComponent implements OnInit, ControlValueAccessor {
+  private readonly instrumentsService = inject(InstrumentsService);
+
   currentValue: string | null = null;
   availableBoards$!: Observable<string[]>;
-  @Input()
-  placeholder?: string;
-
-  private readonly instrument$ = new BehaviorSubject<{ symbol: string, exchange: string } | null>(null);
-
-  constructor(private readonly instrumentsService: InstrumentsService) {
-  }
-
-  @Input({required: true})
-  set instrument(value: { symbol: string, exchange: string } | null) {
-    this.instrument$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.instrument$.complete();
-  }
+  readonly placeholder = input<string>();
+  readonly instrument = input<{ symbol: string, exchange: string } | null>(null);
+  private readonly instrumentChanges$ = toObservable(this.instrument);
 
   ngOnInit(): void {
-    this.availableBoards$ = this.instrument$.pipe(
+    this.availableBoards$ = this.instrumentChanges$.pipe(
       distinctUntilChanged((previous, current) => isInstrumentEqual(previous, current)),
       switchMap(instrument => {
         if (!instrument) {

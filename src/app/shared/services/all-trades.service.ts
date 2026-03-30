@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
   AllTradesFilters,
@@ -18,14 +18,12 @@ import { EnvironmentService } from "./environment.service";
   providedIn: 'root'
 })
 export class AllTradesService {
-  private readonly allTradesUrl = this.environmentService.apiUrl + '/md/v2/Securities';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService) {
-  }
+  private readonly allTradesUrl = this.environmentService.apiUrl + '/md/v2/Securities';
 
   public getTradesList(
     instrumentKey: InstrumentKey,

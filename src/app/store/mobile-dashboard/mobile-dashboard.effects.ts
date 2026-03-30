@@ -1,4 +1,4 @@
-import {Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { filter, map, switchMap, } from 'rxjs/operators';
@@ -27,6 +27,12 @@ import { Widget } from "../../shared/models/dashboard/widget.model";
 
 @Injectable()
 export class MobileDashboardEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+  private readonly dashboardService = inject(ManageDashboardsService);
+  private readonly marketService = inject(MarketService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+
   initMobileDashboard$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(MobileDashboardInternalActions.init),
@@ -154,13 +160,4 @@ export class MobileDashboardEffects {
       }))
     );
   });
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly store: Store,
-    private readonly dashboardService: ManageDashboardsService,
-    private readonly marketService: MarketService,
-    private readonly userPortfoliosService: UserPortfoliosService
-  ) {
-  }
 }

@@ -18,6 +18,14 @@ describe('BooleanPropertyEditorComponent', () => {
 
     fixture = TestBed.createComponent(BooleanPropertyEditorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'config',
+      {
+        label: 'label',
+        applyValueCallback: () => {},
+        initialValue: null
+      }
+    );
     fixture.detectChanges();
   });
 

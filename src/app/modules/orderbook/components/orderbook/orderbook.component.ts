@@ -1,34 +1,42 @@
+import {ChangeDetectionStrategy, Component, inject, input, OnInit, output, ViewEncapsulation} from '@angular/core';
+import {BehaviorSubject, filter, Observable, of, shareReplay, switchMap} from 'rxjs';
+import {OrderbookService} from '../../services/orderbook.service';
+import {ChartData, OrderBook} from '../../models/orderbook.model';
+import {map, startWith} from 'rxjs/operators';
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {ColumnsOrder} from '../../models/orderbook-settings.model';
+import {OrderbookChartComponent} from '../orderbook-chart/orderbook-chart.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {AsyncPipe, DecimalPipe} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewEncapsulation
-} from '@angular/core';
+  OrderbookTableVolumesAtTheEdgesComponent
+} from '../orderbook-tables/orderbook-table-volumes-at-the-edges/orderbook-table-volumes-at-the-edges.component';
 import {
-  BehaviorSubject,
-  Observable,
-  of,
-  shareReplay,
-  switchMap
-} from 'rxjs';
-import { OrderbookService } from '../../services/orderbook.service';
-import {
-  ChartData,
-  OrderBook
-} from '../../models/orderbook.model';
-import {
-  map,
-  startWith
-} from 'rxjs/operators';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import {
-  ColumnsOrder,
-  OrderbookSettings
-} from '../../models/orderbook-settings.model';
+  OrderbookTableVolumesAtTheMiddleComponent
+} from '../orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component';
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {NumberDisplayFormat} from "../../../../shared/models/enums/number-display-format";
+import {toObservable} from "@angular/core/rxjs-interop";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {getTypeByCfi} from "../../../../shared/utils/instruments";
+import {InstrumentType} from "../../../../shared/models/enums/instrument-type.model";
+import { Side } from "../../../../shared/models/enums/side.model";
+
+export interface OrderbookComponentSettings {
+  targetInstrument: InstrumentKey;
+  display: {
+    depth?: number;
+    showChart: boolean;
+    showTable: boolean;
+    showYieldForBonds: boolean;
+    showVolume?: boolean;
+    columnsOrder?: ColumnsOrder;
+    volumeDisplayFormat?: NumberDisplayFormat;
+    showPriceWithZeroPadding?: boolean;
+    showSpread?: boolean;
+  };
+}
 
 interface Size {
   width: string;
@@ -41,46 +49,58 @@ interface SpreadDiffData {
   colorRatio: number;
 }
 
+type InstrumentExtended = Instrument & { isBond: boolean };
+
 @Component({
-    selector: 'ats-order-book',
-    templateUrl: './orderbook.component.html',
-    styleUrls: ['./orderbook.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: 'ats-order-book',
+  templateUrl: './orderbook.component.html',
+  styleUrls: ['./orderbook.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  imports: [
+    OrderbookChartComponent,
+    TranslocoDirective,
+    OrderbookTableVolumesAtTheEdgesComponent,
+    OrderbookTableVolumesAtTheMiddleComponent,
+    AsyncPipe,
+    DecimalPipe
+]
 })
 export class OrderBookComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
+  readonly settings = input.required<OrderbookComponentSettings>();
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly NumberDisplayFormat = NumberDisplayFormat;
 
   ob$: Observable<OrderBook | null> = of(null);
+
   spreadDiffData$: Observable<SpreadDiffData | null> = of(null);
+
   columnsOrderEnum = ColumnsOrder;
-  settings$!: Observable<OrderbookSettings>;
+
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({
     width: '100%',
     height: '100%',
   });
 
+  readonly rowSelected = output<{price: number, side: Side}>();
+
+  protected targetInstrument$!: Observable<InstrumentExtended>;
+
+  private readonly settingsChanges$ = toObservable(this.settings).pipe(
+    shareReplay(1)
+  );
+
+  private readonly service = inject(OrderbookService);
+
+  private readonly instrumentsService = inject(InstrumentsService);
+
   private readonly minSpreadDiffPercentForColorChange = 0.3;
+
   private readonly maxSpreadDiffPercentForColorChange = 1;
 
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly service: OrderbookService
-  ) {
-  }
-
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
-
-    this.ob$ = this.settings$.pipe(
-      switchMap(settings => this.service.getOrderBook(settings)),
+    this.ob$ = this.settingsChanges$.pipe(
+      switchMap(settings => this.service.getOrderBook(settings.targetInstrument, settings.display.depth ?? 10)),
       startWith(<OrderBook>{
         rows: [],
         maxVolume: 1,
@@ -91,7 +111,18 @@ export class OrderBookComponent implements OnInit {
         bidVolumes: 0,
         askVolumes: 0,
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
+    );
+
+    this.targetInstrument$ = this.settingsChanges$.pipe(
+      switchMap(s => this.instrumentsService.getInstrument(s.targetInstrument)),
+      filter(instrument => instrument !== null),
+      map(instrument => ({
+          ...instrument,
+          isBond: getTypeByCfi(instrument.cfiCode) === InstrumentType.Bond
+        })
+      ),
+      shareReplay(1)
     );
 
     this.spreadDiffData$ = this.ob$.pipe(

@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, OnChanges, SimpleChanges, input} from '@angular/core';
 import {StringPropertyEditorComponent} from "../string-property-editor/string-property-editor.component";
 import {NodeBase} from "../../../graph/nodes/node-base";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -30,8 +30,7 @@ import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
     styleUrl: './prompt-property-editor.component.less'
 })
 export class PromptPropertyEditorComponent extends StringPropertyEditorComponent implements OnChanges {
-  @Input({required: true})
-  targetNode!: NodeBase;
+  readonly targetNode = input.required<NodeBase>();
 
   availableInputs: string[] = [];
 

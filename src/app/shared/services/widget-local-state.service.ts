@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { RecordContent } from "../../store/widgets-local-state/widgets-local-state.model";
 import {
   Observable,
@@ -21,8 +21,7 @@ import { WidgetsLocalStateServicesActions } from "../../store/widgets-local-stat
   providedIn: 'root'
 })
 export class WidgetLocalStateService {
-  constructor(private readonly store: Store) {
-  }
+  private readonly store = inject(Store);
 
   getStateRecord<T extends RecordContent>(
     widgetGuid: string,

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Observable,
   take
@@ -18,14 +18,11 @@ import { addDaysUnix } from "../utils/datetime";
   providedIn: 'root'
 })
 export class HistoryService {
-  private readonly url = this.environmentService.apiUrl + '/md/v2/history';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandler: ErrorHandlerService
-  ) {
-  }
+  private readonly url = this.environmentService.apiUrl + '/md/v2/history';
 
   getLastTwoCandles(instrumentKey: InstrumentKey): Observable<{ cur: Candle, prev: Candle } | null> {
     return this.getHistory(

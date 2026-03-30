@@ -1,16 +1,5 @@
-import {
-  Component,
-  Inject,
-  Input,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable
-} from 'rxjs';
+import { Component, input, LOCALE_ID, OnInit, inject } from '@angular/core';
+import {combineLatest, Observable} from 'rxjs';
 import {
   CostEstimate,
   DividendsAggregateInfo,
@@ -19,68 +8,44 @@ import {
   Stock,
   Trading
 } from "../../../../../../generated/graphql.types";
-import {
-  Descriptor,
-  DescriptorsGroup
-} from "../../../models/instrument-descriptors.model";
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../../shared/services/translator.service";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { LetDirective } from "@ngrx/component";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
-import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
-import {
-  CurrencyPipe,
-  formatNumber,
-  formatPercent
-} from "@angular/common";
-import { FinanceBarChartComponent } from "../finance-bar-chart/finance-bar-chart.component";
+import {Descriptor, DescriptorsGroup} from "../../../models/instrument-descriptors.model";
+import {TranslatorFn, TranslatorService} from "../../../../../shared/services/translator.service";
+import {filter, map} from "rxjs/operators";
+import {LetDirective} from "@ngrx/component";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {DescriptorsListComponent} from "../../descriptors-list/descriptors-list.component";
+import {CurrencyPipe, formatNumber, formatPercent} from "@angular/common";
+import {FinanceBarChartComponent} from "../finance-bar-chart/finance-bar-chart.component";
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-finance',
-    templateUrl: './finance.component.html',
-    styleUrls: ['./finance.component.less'],
-    imports: [
-        LetDirective,
-        NzEmptyComponent,
-        DescriptorsListComponent,
-        FinanceBarChartComponent
-    ]
+  selector: 'ats-finance',
+  templateUrl: './finance.component.html',
+  styleUrls: ['./finance.component.less'],
+  imports: [
+    LetDirective,
+    NzEmptyComponent,
+    DescriptorsListComponent,
+    FinanceBarChartComponent
+  ]
 })
-export class FinanceComponent implements OnInit, OnDestroy {
-  readonly stockInfo$ = new BehaviorSubject<Stock | null>(null);
+export class FinanceComponent implements OnInit {
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+
   descriptors$!: Observable<DescriptorsGroup[]>;
-
+  readonly stockInfo = input.required<Stock>();
   private readonly currencyPipe = new CurrencyPipe(this.locale);
-
-  constructor(
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string
-  ) {
-  }
-
-  @Input({required: true})
-  set stockInfo(value: Stock) {
-    this.stockInfo$.next(value);
-  };
+  protected readonly stockInfoChanges$ = toObservable(this.stockInfo);
 
   ngOnInit(): void {
     this.descriptors$ = combineLatest({
-      stockInfo: this.stockInfo$,
+      stockInfo: this.stockInfoChanges$,
       translator: this.translatorService.getTranslator('info/descriptors-list')
     }).pipe(
       filter(x => x.stockInfo != null),
       map(x => this.getDescriptors(x.stockInfo!, x.translator))
     );
-  }
-
-  ngOnDestroy(): void {
-    this.stockInfo$.complete();
   }
 
   private getDescriptors(stock: Stock, translator: TranslatorFn): DescriptorsGroup[] {

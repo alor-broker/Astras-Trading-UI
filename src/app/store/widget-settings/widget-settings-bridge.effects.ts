@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Actions,
   createEffect
@@ -30,6 +30,10 @@ import {WidgetSettingsStreams} from "./widget-settings.streams";
 
 @Injectable()
 export class WidgetSettingsBridgeEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+  private readonly dashboardContextService = inject(DashboardContextService);
+
   newInstrumentSelected$ = createEffect(() => {
     const dashboardSettingsUpdate$ = this.dashboardContextService.selectedDashboard$.pipe(
       filter(d => !!d.instrumentsSelection),
@@ -46,7 +50,7 @@ export class WidgetSettingsBridgeEffects {
           .map(s => ({
               guid: s.guid,
               groupKey:  s.badgeColor ?? defaultBadgeColor,
-              instrumentKey: (<any>s) as InstrumentKey
+              instrumentKey: s as unknown as InstrumentKey
             }))
           .filter(s => !InstrumentEqualityComparer.equals(d.instrumentsSelection![s.groupKey]!, s.instrumentKey));
         return {
@@ -78,7 +82,7 @@ export class WidgetSettingsBridgeEffects {
         const dashboardWidgetGuids = d.items.map(x => x.guid);
         const settingsToUpdate = settings
           .filter(s => dashboardWidgetGuids.includes(s.guid))
-          .filter(s => !PortfolioKeyEqualityComparer.equals(d.selectedPortfolio, (<any>s) as PortfolioKey));
+          .filter(s => !PortfolioKeyEqualityComparer.equals(d.selectedPortfolio, s as unknown as PortfolioKey));
 
         return {
           settingsToUpdate,
@@ -114,11 +118,4 @@ export class WidgetSettingsBridgeEffects {
         }),
       );
   });
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly store: Store,
-    private readonly dashboardContextService: DashboardContextService
-  ) {
-  }
 }

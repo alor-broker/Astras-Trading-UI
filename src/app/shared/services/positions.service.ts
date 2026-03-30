@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Observable,
   take
@@ -16,12 +16,12 @@ import {PortfolioKey} from "../models/portfolio-key.model";
   providedIn: 'root'
 })
 export class PositionsService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly url: string;
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
+  constructor() {
     this.url = this.environmentService.apiUrl + '/md/v2/clients';
   }
 

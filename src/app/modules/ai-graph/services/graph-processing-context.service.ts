@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { NewsService } from "../../../shared/services/news.service";
 import { LLMService } from "./llm.service";
 import { PositionsService } from "../../../shared/services/positions.service";
@@ -29,23 +29,19 @@ export interface ProcessingDataContext {
   providedIn: 'root'
 })
 export class GraphProcessingContextService {
-  private dataContext$: Observable<ProcessingDataContext> | null = null;
+  readonly newsService = inject(NewsService);
+  readonly llmService = inject(LLMService);
+  readonly positionsService = inject(PositionsService);
+  readonly quotesService = inject(QuotesService);
+  readonly translatorService = inject(TranslatorService);
+  readonly historyService = inject(HistoryService);
+  readonly portfolioSummaryService = inject(PortfolioSummaryService);
+  readonly clientReportsService = inject(ClientReportsService);
+  readonly tradesHistoryService = inject(TradesHistoryService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
 
-  constructor(
-    readonly newsService: NewsService,
-    readonly llmService: LLMService,
-    readonly positionsService: PositionsService,
-    readonly quotesService: QuotesService,
-    readonly translatorService: TranslatorService,
-    readonly historyService: HistoryService,
-    readonly portfolioSummaryService: PortfolioSummaryService,
-    readonly clientReportsService: ClientReportsService,
-    readonly tradesHistoryService: TradesHistoryService,
-    // Internal services. Use only to fill context
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly userPortfoliosService: UserPortfoliosService
-  ) {
-  }
+  private dataContext$: Observable<ProcessingDataContext> | null = null;
 
   get dataContext(): Observable<ProcessingDataContext> {
     if (this.dataContext$ == null) {

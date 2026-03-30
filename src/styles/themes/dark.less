@@ -2,6 +2,13 @@
 @import './base';
 @import './dark-shared-colors';
 
+@primary-color: #F19330;
+
+@border-radius-base: 4px;
+@btn-border-radius-base: @border-radius-base + 2;
+@btn-border-radius-sm: @btn-border-radius-base;
+@control-border-radius: @btn-border-radius-base;
+
 @font-size-base: 12px;
 @font-size-lg: @font-size-base + 2px;
 @font-weight-bold: 500;
@@ -10,6 +17,7 @@
 @height-base: 28px;
 @height-lg: 32px;
 @height-sm: 22px;
+@input-height-mobile: 35px;
 
 // header layout
 @layout-header-color: #E2E5E9;
@@ -25,6 +33,19 @@
 @mobile-background-gradient: linear-gradient(66deg, #0F1621 40%, @mobile-body-background-gradient-middle 60%, #19202C 85%);
 
 @tutorial-background: #272E3B;
+
+// Input
+@input-bg: #2A313B;
+@input-disabled-bg: fade(@input-bg, 55%);
+@input-border-color: transparent;
+@input-placeholder-color: fade(@text-color, 60%);
+
+// Select
+@select-background: @input-bg;
+@select-border-color: transparent;
+
+// TimePicker
+@picker-bg: @input-bg;
 
 // ----components----
 @title-icon-color: #00bbff;
@@ -103,5 +124,4 @@
 @widget-padding: 10px;
 @gridster-item-resizable-handler-width: 5px;
 // ----------------------
-
 

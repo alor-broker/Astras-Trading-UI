@@ -2,5 +2,7 @@
   "agreementDynamicsTitle": "Динамика по договору",
   "marketTrendsTitle": "Тенденции рынка",
   "ideasTitle": "Купить",
-  "newsTitle": "Новости"
+  "newsTitle": "Новости",
+  "moneyOperationsTitle": "Пополнить или вывести",
+  "historyTitle": "История операций"
 }

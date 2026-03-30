@@ -1,7 +1,4 @@
-import {
-  DestroyRef,
-  Injectable
-} from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   Actions,
@@ -17,7 +14,10 @@ import {
   take
 } from 'rxjs';
 import { LocalStorageAdminConstants } from 'src/app/shared/constants/local-storage.constants';
-import { TerminalSettings } from 'src/app/shared/models/terminal-settings/terminal-settings.model';
+import {
+  OrdersInstantNotificationType,
+  TerminalSettings
+} from 'src/app/shared/models/terminal-settings/terminal-settings.model';
 import { GlobalLoadingIndicatorService } from 'src/app/shared/services/global-loading-indicator.service';
 import { LocalStorageService } from 'src/app/shared/services/local-storage.service';
 import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
@@ -48,16 +48,13 @@ import { WidgetSettings } from "../../../shared/models/widget-settings.model";
   providedIn: 'root'
 })
 export class AdminSettingsBrokerService {
-  constructor(
-    private readonly store: Store,
-    private readonly actions$: Actions,
-    private readonly localStorageService: LocalStorageService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly store = inject(Store);
+  private readonly actions$ = inject(Actions);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+  private readonly destroyRef = inject(DestroyRef);
 
   initSettingsBrokers(): void {
     this.initTerminalSettingsBroker();
@@ -188,11 +185,13 @@ export class AdminSettingsBrokerService {
 
     if (!terminalSettings) {
       this.store.dispatch(TerminalSettingsInternalActions.init({settings: null}));
+      this.setDefaultSettings();
       this.globalLoadingIndicatorService.releaseLoading(loadingId);
       return;
     }
 
     this.store.dispatch(TerminalSettingsInternalActions.init({settings: terminalSettings}));
+    this.setDefaultSettings();
     this.globalLoadingIndicatorService.releaseLoading(loadingId);
   }
 
@@ -203,5 +202,21 @@ export class AdminSettingsBrokerService {
     ).subscribe(action => {
       callback(<U>action);
     });
+  }
+
+  private setDefaultSettings(): void {
+    this.store.dispatch(TerminalSettingsServicesActions.update({
+      updates: {
+        instantNotificationsSettings: {
+          hiddenNotifications: [
+            OrdersInstantNotificationType.OrderFilled,
+            OrdersInstantNotificationType.OrderPartiallyFilled,
+            OrdersInstantNotificationType.OrderStatusChanged,
+            OrdersInstantNotificationType.OrderStatusChangeToCancelled
+          ]
+        }
+      },
+      freezeChanges: false
+    }));
   }
 }

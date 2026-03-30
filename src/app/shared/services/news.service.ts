@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import {
@@ -88,10 +88,7 @@ export type NewsResponse = TypeOf<typeof NewsSearchQueryScheme>;
   providedIn: 'root'
 })
 export class NewsService {
-  constructor(
-    private readonly graphQlService: GraphQlService
-  ) {
-  }
+  private readonly graphQlService = inject(GraphQlService);
 
   getNews(params: GetNewsParams): Observable<PagedResult<NewsListItem[]> | null> {
     const args: QueryNewsArgs = {

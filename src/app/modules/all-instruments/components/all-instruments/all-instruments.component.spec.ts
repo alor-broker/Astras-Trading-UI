@@ -1,24 +1,26 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AllInstrumentsComponent } from './all-instruments.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  EMPTY,
-  of,
-  Subject
-} from "rxjs";
-import { AllInstrumentsService } from "../../services/all-instruments.service";
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { TranslatorService } from '../../../../shared/services/translator.service';
+import {AllInstrumentsComponent} from './all-instruments.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {EMPTY, of, Subject} from "rxjs";
+import {AllInstrumentsService} from "../../services/all-instruments.service";
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {TranslatorService} from '../../../../shared/services/translator.service';
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
-import { BoardsService } from "../../services/boards.service";
-import { LetDirective } from "@ngrx/component";
-import { NzModalService } from "ng-zorro-antd/modal";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
-import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
+import {BoardsService} from "../../services/boards.service";
+import {LetDirective} from "@ngrx/component";
+import {NzModalService} from "ng-zorro-antd/modal";
+import {NzContextMenuService} from "ng-zorro-antd/dropdown";
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {NavigationStackService} from "../../../../shared/services/navigation-stack.service";
+import {MockComponents} from "ng-mocks";
+import {
+  AddToWatchlistMenuComponent
+} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import {
+  InfiniteScrollTableComponent
+} from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -26,25 +28,13 @@ describe('AllInstrumentsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        AllInstrumentsComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-infinite-scroll-table',
-          inputs: [
-            'contextMenu',
-            'tableConfig',
-            'tableContainerWidth',
-            'tableContainerHeight',
-            'data',
-            'isLoading'
-          ]
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-add-to-watchlist-menu'
-        })
-      ],
       imports: [
-        LetDirective
+        LetDirective,
+        AllInstrumentsComponent,
+        MockComponents(
+          InfiniteScrollTableComponent,
+          AddToWatchlistMenuComponent
+        )
       ],
       providers: [
         {
@@ -111,13 +101,18 @@ describe('AllInstrumentsComponent', () => {
         ...commonTestProviders
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AllInstrumentsComponent);
     component = fixture.componentInstance;
-    component.guid = 'testGuid';
+
+    fixture.componentRef.setInput(
+      'guid',
+      'testGuid'
+    );
+
     fixture.detectChanges();
   });
 

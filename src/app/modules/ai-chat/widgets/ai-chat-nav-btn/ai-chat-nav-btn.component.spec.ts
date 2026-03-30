@@ -1,11 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AiChatNavBtnComponent } from './ai-chat-nav-btn.component';
+import {AiChatNavBtnComponent} from './ai-chat-nav-btn.component';
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {provideHttpClient} from "@angular/common/http";
-import {MockModule, MockProvider} from "ng-mocks";
+import {MockComponents, MockDirectives, MockProvider} from "ng-mocks";
 import {EnvironmentService} from "../../../../shared/services/environment.service";
-import {AiChatModule} from "../../ai-chat.module";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {SideChatWidgetComponent} from "../side-chat-widget/side-chat-widget.component";
 
 describe('AiChatNavBtnComponent', () => {
   let component: AiChatNavBtnComponent;
@@ -16,7 +20,15 @@ describe('AiChatNavBtnComponent', () => {
       imports: [
         AiChatNavBtnComponent,
         TranslocoTestsModule.getModule(),
-        MockModule(AiChatModule)
+        MockComponents(
+          NzButtonComponent,
+          SideChatWidgetComponent
+        ),
+        MockDirectives(
+          NzTooltipDirective,
+          NzIconDirective,
+          TranslocoDirective,
+        )
       ],
       providers: [
         MockProvider(
@@ -30,7 +42,7 @@ describe('AiChatNavBtnComponent', () => {
         provideHttpClient()
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(AiChatNavBtnComponent);
     component = fixture.componentInstance;

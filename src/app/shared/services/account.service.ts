@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   map,
   switchMap
@@ -37,18 +34,14 @@ import { ErrorHandlerService } from "./handle-error/error-handler.service";
   providedIn: 'any',
 })
 export class AccountService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly userContext = inject<UserContext>(USER_CONTEXT);
+  private readonly positionsService = inject(PositionsService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly accountUrl = this.environmentService.clientDataUrl + '/client/v1.0';
   private readonly accountUrl2 = this.environmentService.clientDataUrl + '/client/v2.0';
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
-    private readonly positionsService: PositionsService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
 
   getFullName(): Observable<FullName> {
     return this.userContext.getUser().pipe(

@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
@@ -70,19 +67,14 @@ interface PortfolioRisk {
 
 @Injectable()
 export class ConfirmableOrderCommandsService {
-  private readonly baseUrl = `${this.environmentService.apiUrl}/md/v2/Clients`;
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly userContext = inject<UserContext>(USER_CONTEXT);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly nzModalService = inject(NzModalService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly environmentService = inject(EnvironmentService);
 
-  constructor(
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
-    private readonly translatorService: TranslatorService,
-    private readonly nzModalService: NzModalService,
-    private readonly httpClient: HttpClient,
-    private readonly environmentService: EnvironmentService
-  ) {
-  }
+  private readonly baseUrl = `${this.environmentService.apiUrl}/md/v2/Clients`;
 
   cancelOrders(cancelRequests: {
     orderId: string;

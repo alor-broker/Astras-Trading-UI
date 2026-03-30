@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import {
   HttpClient,
@@ -16,14 +16,11 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
   providedIn: 'root'
 })
 export class RisksService {
-  private readonly clientsRiskUrl = this.environmentService.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/clientsRisk';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
+  private readonly clientsRiskUrl = this.environmentService.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/clientsRisk';
 
   getRisksInfo(instrumentKey: InstrumentKey, portfolio: PortfolioKey): Observable<RisksInfo | null> {
     const errorHandler: ApplicationErrorHandler = {

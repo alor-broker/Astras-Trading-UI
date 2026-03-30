@@ -1,4 +1,4 @@
-﻿import {Injectable} from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {filter, map} from 'rxjs/operators';
 import {ErrorHandlerService} from '../../shared/services/handle-error/error-handler.service';
@@ -17,6 +17,11 @@ export interface SavedPortfolioState {
 
 @Injectable()
 export class PortfoliosEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly accountService = inject(AccountService);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+
   initPortfoliosWithList$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PortfoliosInternalActions.initWithList),
@@ -37,12 +42,4 @@ export class PortfoliosEffects {
       map(portfolios => PortfoliosInternalActions.initSuccess({portfolios: portfolios ?? []}))
     )
   );
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly accountService: AccountService,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService
-  ) {
-  }
 }

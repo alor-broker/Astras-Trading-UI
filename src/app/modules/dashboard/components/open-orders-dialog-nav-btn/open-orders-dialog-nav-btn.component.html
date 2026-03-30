@@ -3,7 +3,7 @@
     (click)="openDialog()"
     [nzType]="'text'"
     nz-button
-    [disabled]="atsDisabled"
+    [disabled]="atsDisabled()"
   >
     <i class="left-side-icon" nz-icon nzTheme="outline" nzType="plus-circle"></i>
     {{ tDesktop('dashboardNavbarDesktop.orderLabel') }}

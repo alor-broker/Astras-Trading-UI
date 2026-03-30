@@ -29,6 +29,17 @@ describe('PortfolioPropertyEditorComponent', () => {
 
     fixture = TestBed.createComponent(PortfolioPropertyEditorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'config',
+      {
+        label: 'label',
+        applyValueCallback: () => {},
+        initialValue: null,
+        validation: {
+          required: false
+        }
+      }
+    );
     fixture.detectChanges();
   });
 

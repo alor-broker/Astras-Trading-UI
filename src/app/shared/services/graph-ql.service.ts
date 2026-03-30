@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Apollo,
   gql
@@ -21,6 +21,7 @@ import {
   GqlQueryBuilder,
   Variables
 } from "../utils/graph-ql/gql-query-builder";
+import {ApplicationStatusService} from "./application-status.service";
 
 export type GraphQlVariables = Record<string, any>;
 
@@ -38,11 +39,9 @@ export enum FetchPolicy {
   providedIn: 'root'
 })
 export class GraphQlService {
-  constructor(
-    private readonly apollo: Apollo,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
+  private readonly apollo = inject(Apollo);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
 
   queryForSchema<TResp>(
     responseSchema: ZodObject<ZodPropertiesOf<TResp>>,
@@ -68,14 +67,16 @@ export class GraphQlService {
         }
       )).pipe(
         catchError(err => {
-          if (err.networkError != null) {
-            this.errorHandlerService.handleError(new HttpErrorResponse(err.networkError));
-          } else if (err.graphQLErrors?.length > 0) {
-            err.graphQLErrors.forEach((e: GraphQLError) => {
-              this.errorHandlerService.handleError(new GraphQLError(e.message, e));
-            });
-          } else {
-            this.errorHandlerService.handleError(new GraphQLError(err.message, err));
+          if(this.applicationStatusService.isActive) {
+            if (err.networkError != null) {
+              this.errorHandlerService.handleError(new HttpErrorResponse(err.networkError));
+            } else if (err.graphQLErrors?.length > 0) {
+              err.graphQLErrors.forEach((e: GraphQLError) => {
+                this.errorHandlerService.handleError(new GraphQLError(e.message, e));
+              });
+            } else {
+              this.errorHandlerService.handleError(new GraphQLError(err.message, err));
+            }
           }
 
           return of(null);

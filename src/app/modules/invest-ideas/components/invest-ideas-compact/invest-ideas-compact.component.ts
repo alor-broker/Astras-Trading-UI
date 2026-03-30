@@ -1,10 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  model,
-  OnInit,
-  signal
-} from '@angular/core';
+import { Component, DestroyRef, model, OnInit, signal, inject } from '@angular/core';
 import { LetDirective } from "@ngrx/component";
 import {
   NzCarouselComponent,
@@ -16,8 +10,7 @@ import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import {
   fromEvent,
   Observable,
-  switchMap,
-  timer
+  switchMap
 } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
@@ -30,6 +23,8 @@ import { IdeaDetailsComponent } from "../idea-details/idea-details.component";
 import { AsyncPipe } from "@angular/common";
 import { map } from "rxjs/operators";
 import { TranslocoDirective } from "@jsverse/transloco";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
+import {createRefresh} from "../../../../shared/utils/observable-helper";
 
 interface IdeaDisplay extends Idea {
   instruments: Observable<Instrument | null>[];
@@ -53,20 +48,19 @@ interface IdeaDisplay extends Idea {
   styleUrl: './invest-ideas-compact.component.less'
 })
 export class InvestIdeasCompactComponent implements OnInit {
+  private readonly investIdeasService = inject(InvestIdeasService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+  private readonly destroyRef = inject(DestroyRef);
+
   ideas$!: Observable<IdeaDisplay[]>;
 
-  protected selectedIdea = model<Idea | null>(null);
+  protected readonly selectedIdea = model<Idea | null>(null);
 
-  protected isLoading = signal<boolean>(false);
+  protected readonly isLoading = signal<boolean>(false);
 
   private readonly refreshInterval = 600_000;
-
-  constructor(
-    private readonly investIdeasService: InvestIdeasService,
-    private readonly translatorService: TranslatorService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly destroyRef: DestroyRef) {
-  }
 
   ngOnInit(): void {
     fromEvent(window, 'popstate').pipe(
@@ -75,7 +69,7 @@ export class InvestIdeasCompactComponent implements OnInit {
       this.selectedIdea.set(null);
     });
 
-    this.ideas$ = timer(0, this.refreshInterval).pipe(
+    this.ideas$ = createRefresh(this.refreshInterval, this.applicationStatusService.isActive$).pipe(
       switchMap(() => this.investIdeasService.getIdeas(
         {
           pageNum: 1,

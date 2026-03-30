@@ -1,8 +1,8 @@
 import { LoggerBase } from './logger-base';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { GuidGenerator } from '../../utils/guid';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import {of, Subject} from 'rxjs';
+import {catchError, debounceTime} from 'rxjs/operators';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { LocalStorageService } from '../local-storage.service';
 import {
@@ -32,6 +32,10 @@ interface LogEntry {
   providedIn: 'root'
 })
 export class RemoteLogger extends LoggerBase {
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly environmentService = inject(EnvironmentService);
+
   private readonly duplicatedMessagesLatencyMs = 1000;
   private readonly buffer: LogEntry[] = [];
   private readonly guid = GuidGenerator.newGuid();
@@ -40,11 +44,7 @@ export class RemoteLogger extends LoggerBase {
 
   private lastLoggedMessage: LogEntry | null = null;
 
-  constructor(
-    private readonly localStorageService: LocalStorageService,
-    private readonly httpClient: HttpClient,
-    private readonly environmentService: EnvironmentService
-  ) {
+  constructor() {
     super();
 
     this.flush
@@ -135,7 +135,11 @@ export class RemoteLogger extends LoggerBase {
             },
             context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
           }
-        ).subscribe();
+        ).pipe(
+          catchError(() => of(null))
+        )
+          .subscribe();
+        // eslint-disable-next-line no-constant-condition
       } while (true);
     } catch (e) {
       console.error(e);

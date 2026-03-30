@@ -1,15 +1,7 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import { PositionsComponent } from "../positions/positions.component";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  combineLatest,
-  distinctUntilChanged,
-  Observable
-} from "rxjs";
+import { combineLatest, distinctUntilChanged, Observable } from "rxjs";
 import { MobileHomeScreenSettings } from "../../models/mobile-home-screen-settings.model";
 import { LetDirective } from "@ngrx/component";
 import { Market } from "../../../../../generated/graphql.types";
@@ -17,27 +9,31 @@ import { RibbonComponent } from "../../../ribbon/components/ribbon/ribbon.compon
 import { PortfolioEvaluationComponent } from "../portfolio-evaluation/portfolio-evaluation.component";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import {
-  NzCollapseComponent,
-  NzCollapsePanelComponent
-} from "ng-zorro-antd/collapse";
+import { NzCollapseComponent, NzCollapsePanelComponent } from "ng-zorro-antd/collapse";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { NewsComponent } from "../news/news.component";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
-import { InvestIdeasCompactComponent } from "../../../invest-ideas/components/invest-ideas-compact/invest-ideas-compact.component";
-import { AgreementDynamicsComponent } from "../../../portfolio-charts/components/agreement-dynamics/agreement-dynamics.component";
+import {
+  InvestIdeasCompactComponent
+} from "../../../invest-ideas/components/invest-ideas-compact/invest-ideas-compact.component";
+import {
+  AgreementDynamicsComponent
+} from "../../../portfolio-charts/components/agreement-dynamics/agreement-dynamics.component";
 import { AsyncPipe } from "@angular/common";
 import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
-import {
-  filter,
-  map
-} from "rxjs/operators";
+import { filter, map } from "rxjs/operators";
 import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 import {
   DisplayParams,
   MarketTrendsComponent
 } from "../../../market-trends/components/market-trends/market-trends.component";
+import { NzButtonComponent } from "ng-zorro-antd/button";
+import { NzIconDirective } from "ng-zorro-antd/icon";
+import { MoneyOperationsComponent } from "../money-operations/money-operations/money-operations.component";
+import { OperationsHistoryComponent } from "../operations-history/operations-history.component";
+import { NzModalModule } from "ng-zorro-antd/modal";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 @Component({
   selector: 'ats-mobile-home-screen-content',
@@ -53,31 +49,36 @@ import {
     NewsComponent,
     InvestIdeasCompactComponent,
     AgreementDynamicsComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzButtonComponent,
+    NzIconDirective,
+    MoneyOperationsComponent,
+    OperationsHistoryComponent,
+    NzModalModule
   ],
   templateUrl: './mobile-home-screen-content.component.html',
   styleUrl: './mobile-home-screen-content.component.less'
 })
 export class MobileHomeScreenContentComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly navigationStackService = inject(NavigationStackService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly environmentService = inject(EnvironmentService);
+
+  readonly guid = input.required<string>();
 
   readonly Market = Market;
+  readonly isMoneyOperationsEnabled = this.environmentService.features.mobileMoneyOperations;
 
   currentAgreement$: Observable<string> | null = null;
+  showMoneyOperations = false;
+  showHistory = false;
 
   protected settings$!: Observable<MobileHomeScreenSettings>;
 
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly navigationStackService: NavigationStackService,
-    private readonly userPortfoliosService: UserPortfoliosService
-  ) {
-  }
-
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<MobileHomeScreenSettings>(this.guid);
+    this.settings$ = this.widgetSettingsService.getSettings<MobileHomeScreenSettings>(this.guid());
     this.currentAgreement$ = this.getCurrentAgreement();
   }
 
@@ -92,11 +93,11 @@ export class MobileHomeScreenContentComponent implements OnInit {
     });
   }
 
-  openChart(instrumentKey: InstrumentKey): void {
+  openOrder(instrumentKey: InstrumentKey): void {
     this.dashboardContextService.selectDashboardInstrument(instrumentKey, defaultBadgeColor);
     this.navigationStackService.pushState({
       widgetTarget: {
-        typeId: 'light-chart'
+        typeId: 'trade-screen'
       }
     });
   }
@@ -110,6 +111,22 @@ export class MobileHomeScreenContentComponent implements OnInit {
         }
       }
     });
+  }
+
+  openMoneyOperations(): void {
+    this.showMoneyOperations = true;
+  }
+
+  closeMoneyOperations(): void {
+    this.showMoneyOperations = false;
+  }
+
+  openHistory(): void {
+    this.showHistory = true;
+  }
+
+  closeHistory(): void {
+    this.showHistory = false;
   }
 
   openAllInstruments(displayParams: DisplayParams): void {

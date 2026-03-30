@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "766412584747",
+    "project_id": "lessgo-alor",
+    "storage_bucket": "lessgo-alor.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766412584747:android:25ea87e88f9ae7f313776e",
+        "android_client_info": {
+          "package_name": "ru.alor.astras"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB437YG_iED5rla9aC3FXtwhA4u37LjuFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766412584747:android:cd2cec7fa3450d3713776e",
+        "android_client_info": {
+          "package_name": "ru.alor.ma"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB437YG_iED5rla9aC3FXtwhA4u37LjuFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

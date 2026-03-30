@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   InstantNotificationsSettings,
   InstantNotificationType
@@ -20,13 +20,10 @@ import {TerminalSettingsService} from "./terminal-settings.service";
   providedIn: 'root'
 })
 export class InstantNotificationsService {
-  private notificationsSettings$: Observable<InstantNotificationsSettings> | null = null;
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly notificationService = inject(NzNotificationService);
 
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly notificationService: NzNotificationService
-  ) {
-  }
+  private notificationsSettings$: Observable<InstantNotificationsSettings> | null = null;
 
   showNotification(
     notificationType: InstantNotificationType,

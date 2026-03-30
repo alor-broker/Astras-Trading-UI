@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  SkipSelf
-} from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -23,10 +15,7 @@ import { WidgetLocalStateService } from "../../../../shared/services/widget-loca
 import { RecordContent } from "../../../../store/widgets-local-state/widgets-local-state.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
-import {
-  FormControl,
-  Validators
-} from "@angular/forms";
+import { FormControl, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   SCALPER_ORDERBOOK_SHARED_CONTEXT,
   ScalperOrderBookSharedContext
@@ -36,6 +25,12 @@ import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-comm
 import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
+import { LetDirective } from '@ngrx/component';
+import { NzPopconfirmDirective } from 'ng-zorro-antd/popconfirm';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
+import { NzFormItemComponent, NzFormControlComponent, NzFormLabelComponent } from 'ng-zorro-antd/form';
+import { InputNumberComponent } from '../../../../shared/components/input-number/input-number.component';
 
 interface SelectedWorkingVolumeState extends RecordContent {
   lastSelectedVolume?: Record<string, number>;
@@ -45,9 +40,27 @@ interface SelectedWorkingVolumeState extends RecordContent {
     selector: 'ats-working-volumes-panel',
     templateUrl: './working-volumes-panel.component.html',
     styleUrls: ['./working-volumes-panel.component.less'],
-    standalone: false
+    imports: [
+      LetDirective,
+      NzPopconfirmDirective,
+      TranslocoDirective,
+      NzRowDirective,
+      NzFormItemComponent,
+      NzColDirective,
+      NzFormControlComponent,
+      NzFormLabelComponent,
+      InputNumberComponent,
+      FormsModule,
+      ReactiveFormsModule
+    ]
 })
 export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
+  private readonly settingsWriteService = inject(ScalperOrderBookSettingsWriteService);
+  private readonly hotKeyCommandService = inject(ScalperHotKeyCommandService);
+  private readonly scalperOrderBookSharedContext = inject<ScalperOrderBookSharedContext>(SCALPER_ORDERBOOK_SHARED_CONTEXT, { skipSelf: true });
+  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly validation = {
     volume: {
       min: 1,
@@ -55,17 +68,13 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     }
   };
 
-  @Input()
-  isActive = false;
+  readonly isActive = input(false);
 
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  orientation: 'vertical' | 'horizontal' = 'vertical';
+  readonly orientation = input<'vertical' | 'horizontal'>('vertical');
 
-  @Input({ required: true })
-  dataContext!: ScalperOrderBookDataContext;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   workingVolumes$!: Observable<number[]>;
   readonly selectedVolume$ = new BehaviorSubject<{ index: number, value: number } | null>(null);
@@ -83,19 +92,8 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   private lastSelectedVolumeState$!: Observable<SelectedWorkingVolumeState | null>;
   private settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
-  constructor(
-    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
-    private readonly hotKeyCommandService: ScalperHotKeyCommandService,
-    @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
-    @SkipSelf()
-    private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
-    private readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
-
   ngOnInit(): void {
-    this.settings$ = this.dataContext.extendedSettings$.pipe(
+    this.settings$ = this.dataContext().extendedSettings$.pipe(
       map(x => x.widgetSettings),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -106,7 +104,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     );
 
     this.lastSelectedVolumeState$ = this.widgetLocalStateService.getStateRecord<SelectedWorkingVolumeState>(
-      this.guid,
+      this.guid(),
       this.lastSelectedVolumeStateKey
     ).pipe(
       shareReplay({ bufferSize: 1, refCount: true })
@@ -205,7 +203,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(x => {
       this.widgetLocalStateService.setStateRecord<SelectedWorkingVolumeState>(
-        this.guid,
+        this.guid(),
         this.lastSelectedVolumeStateKey,
         {
           lastSelectedVolume: {
@@ -219,7 +217,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
 
   private initVolumeSwitchByHotKey(): void {
     this.hotKeyCommandService.commands$.pipe(
-      filter(x => x.type === 'workingVolumes' && x.index != null && this.isActive),
+      filter(x => x.type === 'workingVolumes' && x.index != null && this.isActive()),
       withLatestFrom(this.workingVolumes$),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([command, workingVolumes]) => {

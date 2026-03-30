@@ -11,45 +11,49 @@
               formControlName="userName"
               nz-input
               type="text"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control [nzErrorTip]="t('validationErrors.emptyFieldError')">
-          <nz-input-group nzPrefixIcon="lock">
-            <input
-              [placeholder]="t('adminLoginPage.passwordLabel')"
-              formControlName="password"
-              nz-input
-              type="password"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <ng-container *ngrxLet="isLoading$ as isLoading">
-        <button
-          (click)="submit()"
-          [disabled]="loginForm.invalid || isLoading"
-          [nzLoading]="isLoading"
-          nz-button
-          nzBlock
-          nzType="primary"
-        >
-          {{ t('adminLoginPage.submitBtnLabel') }}
-        </button>
-      </ng-container>
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-control [nzErrorTip]="t('validationErrors.emptyFieldError')">
+            <nz-input-group nzPrefixIcon="lock">
+              <input
+                [placeholder]="t('adminLoginPage.passwordLabel')"
+                formControlName="password"
+                nz-input
+                type="password"/>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+          <ng-container *ngrxLet="isLoading$ as isLoading">
+            <button
+              (click)="submit()"
+              [disabled]="loginForm.invalid || isLoading"
+              [nzLoading]="isLoading"
+              nz-button
+              nzBlock
+              nzType="primary"
+              >
+              {{ t('adminLoginPage.submitBtnLabel') }}
+            </button>
+          </ng-container>
 
-      <div *ngIf="loginError$ | async as loginError" class="text-center mt-10">
-        <span nz-typography nzType="danger" [ngSwitch]="loginError">
-          <ng-container *ngSwitchCase="LoginErrorCodes.WrongCredentials">
-            {{ t('adminLoginPage.errors.wrongCredentials') }}
-          </ng-container>
-          <ng-container *ngSwitchDefault>
-            {{ t('adminLoginPage.errors.common') }}
-          </ng-container>
-        </span>
+          @if (loginError$ | async; as loginError) {
+            <div class="text-center mt-10">
+              <span nz-typography nzType="danger">
+                @switch (loginError) {
+                  @case (LoginErrorCodes.WrongCredentials) {
+                    {{ t('adminLoginPage.errors.wrongCredentials') }}
+                  }
+                  @default {
+                    {{ t('adminLoginPage.errors.common') }}
+                  }
+                }
+              </span>
+            </div>
+          }
+
+
+        </form>
       </div>
-
-
-    </form>
-  </div>
-</ng-container>
+    </ng-container>

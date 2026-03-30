@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  output
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, output, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -21,7 +16,6 @@ import { LetDirective } from "@ngrx/component";
 import { TruncatedTextComponent } from "../../../../shared/components/truncated-text/truncated-text.component";
 import {
   DecimalPipe,
-  NgClass,
   PercentPipe
 } from "@angular/common";
 import { TranslocoDirective } from "@jsverse/transloco";
@@ -55,17 +49,19 @@ type SortFn = (a: Position, b: Position) => number;
     TruncatedTextComponent,
     DecimalPipe,
     PercentPipe,
-    NgClass,
     TranslocoDirective,
     NzButtonComponent,
     NzEmptyComponent,
     NzSkeletonComponent,
     InstrumentIconComponent
-  ],
+],
   templateUrl: './positions.component.html',
   styleUrl: './positions.component.less'
 })
 export class PositionsComponent implements OnInit, OnDestroy {
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+
   displayPositions$!: Observable<DisplayPositions>;
 
   readonly instrumentSelected = output<InstrumentKey>();
@@ -79,12 +75,6 @@ export class PositionsComponent implements OnInit, OnDestroy {
     sortBy: SortBy.Ticker,
     sortDesc: false
   });
-
-  constructor(
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.itemsDisplayParams$.complete();

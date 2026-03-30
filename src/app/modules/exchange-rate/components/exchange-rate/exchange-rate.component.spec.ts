@@ -13,6 +13,18 @@ import { QuotesService } from '../../../../shared/services/quotes.service';
 import { MarketService } from "../../../../shared/services/market.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {
+  NzCellFixedDirective,
+  NzTableCellDirective,
+  NzTableComponent, NzTbodyComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from "ng-zorro-antd/table";
+import {TableRowHeightDirective} from "../../../../shared/directives/table-row-height.directive";
+import {PriceDiffComponent} from "../../../../shared/components/price-diff/price-diff.component";
 
 describe('ExchangeRateComponent', () => {
   let component: ExchangeRateComponent;
@@ -20,40 +32,56 @@ describe('ExchangeRateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ExchangeRateComponent],
-      providers: [
+    imports: [
+      ExchangeRateComponent,
+      MockComponents(
+        NzTableComponent,
+        NzTheadComponent,
+        NzTbodyComponent,
+        PriceDiffComponent
+      ),
+      MockDirectives(
+        NzResizeObserverDirective,
+        TableRowHeightDirective,
+        NzTrDirective,
+        NzTableCellDirective,
+        NzThMeasureDirective,
+        NzCellFixedDirective
+      )
+    ],
+    providers: [
         {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
-          }
+            provide: WidgetSettingsService,
+            useValue: {
+                getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+            }
         },
         {
-          provide: ExchangeRateService,
-          useValue: {
-            getCurrencyPairs: jasmine.createSpy('getCurrencyPairs').and.returnValue(of([]))
-          }
+            provide: ExchangeRateService,
+            useValue: {
+                getCurrencyPairs: jasmine.createSpy('getCurrencyPairs').and.returnValue(of([]))
+            }
         },
         {
-          provide: QuotesService,
-          useValue: {
-            getQuotes: jasmine.createSpy('getQuotes').and.returnValue(new Subject())
-          }
+            provide: QuotesService,
+            useValue: {
+                getQuotes: jasmine.createSpy('getQuotes').and.returnValue(new Subject())
+            }
         },
         {
-          provide: MarketService,
-          useValue: {
-            getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
-          }
+            provide: MarketService,
+            useValue: {
+                getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
+            }
         },
         {
-          provide: ACTIONS_CONTEXT,
-          useValue: {
-            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
-          }
+            provide: ACTIONS_CONTEXT,
+            useValue: {
+                instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+            }
         },
-      ]
-    })
+    ]
+})
       .compileComponents();
   });
 

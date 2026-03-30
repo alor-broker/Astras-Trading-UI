@@ -4,17 +4,21 @@ import { BaseTranslatorService } from './base-translator.service';
 import { InstantNotificationsService } from "./instant-notifications.service";
 import { TranslatorService } from "./translator.service";
 import { of } from "rxjs";
-import { Injectable } from "@angular/core";
+import { Injectable, inject as inject_1 } from "@angular/core";
 
 @Injectable({
   providedIn: 'root'
 })
 class WrapperService extends BaseTranslatorService {
+  protected readonly translatorService: TranslatorService;
+
   protected translationsPath = '';
-  constructor(
-    protected readonly translatorService: TranslatorService,
-  ) {
+  constructor() {
+    const translatorService = inject_1(TranslatorService);
+
     super(translatorService);
+
+    this.translatorService = translatorService;
   }
 }
 

@@ -12,10 +12,7 @@ import {
   switchMap,
   TeardownLogic
 } from "rxjs";
-import {
-  Inject,
-  Injectable
-} from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   Order,
   OrderType,
@@ -79,8 +76,7 @@ class OrdersState {
     orders.forEach(value => {
       try {
         value.remove();
-      } catch {
-      }
+      } catch { /* empty */ }
     });
 
     orders.clear();
@@ -89,19 +85,14 @@ class OrdersState {
 
 @Injectable()
 export class OrdersDisplayExtension extends BaseExtension {
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly translatorService = inject(TranslatorService);
+
   private ordersState: OrdersState | null = null;
   private drawOrdersSub: Subscription | null = null;
-
-  constructor(
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly ordersDialogService: OrdersDialogService,
-    private readonly translatorService: TranslatorService
-  ) {
-    super();
-  }
 
   apply(context: ChartContext): void {
     if (!(context.settings.showPosition ?? true)) {
@@ -181,8 +172,7 @@ export class OrdersDisplayExtension extends BaseExtension {
     const removeItem = (itemKey: string): void => {
       try {
         state.get(itemKey)?.remove();
-      } catch {
-      }
+      } catch { /* empty */ }
 
       state.delete(itemKey);
     };

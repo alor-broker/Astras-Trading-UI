@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import {UserContext} from "../../../shared/services/auth/user-context";
 import {SessionContext} from "../../../shared/services/auth/session-context";
 import {Observable, shareReplay, take} from 'rxjs';
@@ -38,6 +38,11 @@ interface IdentityState {
   providedIn: 'any'
 })
 export class AdminAuthContextService implements UserContext, SessionContext, OnDestroy {
+  private readonly localStorage = inject(LocalStorageService);
+  private readonly apiTokenProviderService = inject(ApiTokenProviderService);
+  private readonly adminIdentityService = inject(AdminIdentityService);
+  private readonly router = inject(Router);
+
   private readonly state = new ComponentStore<AuthContext>({
     status: AuthStateStatus.Initial,
     state: null
@@ -51,13 +56,6 @@ export class AdminAuthContextService implements UserContext, SessionContext, OnD
       map(s => s.state!.user),
       shareReplay(1)
     );
-
-  constructor(
-    private readonly localStorage: LocalStorageService,
-    private readonly apiTokenProviderService: ApiTokenProviderService,
-    private readonly adminIdentityService: AdminIdentityService,
-    private readonly router: Router) {
-  }
 
   checkAccess(): void {
     this.state.select(s => s).pipe(

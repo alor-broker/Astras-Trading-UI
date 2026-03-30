@@ -106,7 +106,7 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     minRowsCount: number,
     complete?: () => void
   ): void {
-    if(!!priceOptions) {
+    if(priceOptions) {
       const priceRowsCountByRange = Math.ceil((priceOptions.expectedRangeMax - priceOptions.expectedRangeMin) / priceOptions.scaledStep);
 
       const directionRowsCountMin = Math.ceil(minRowsCount / 2);

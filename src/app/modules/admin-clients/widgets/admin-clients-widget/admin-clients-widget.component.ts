@@ -1,8 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { Observable } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -11,41 +7,40 @@ import {
   AdminClientsSettings,
   AdminClientsTableColumns
 } from "../../models/admin-clients-settings.model";
-import { SharedModule } from "../../../../shared/shared.module";
 import { AdminClientsComponent } from "../../components/admin-clients/admin-clients.component";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { AdminClientsSettingsComponent } from "../../components/admin-clients-settings/admin-clients-settings.component";
+import {AsyncPipe} from "@angular/common";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
   selector: 'ats-admin-clients-widget',
   standalone: true,
   imports: [
-    SharedModule,
     AdminClientsComponent,
-    AdminClientsSettingsComponent
+    AdminClientsSettingsComponent,
+    AsyncPipe,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent
   ],
   templateUrl: './admin-clients-widget.component.html',
   styleUrl: './admin-clients-widget.component.less'
 })
 export class AdminClientsWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<AdminClientsSettings>;
 
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService
-  ) {
-  }
-
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -54,7 +49,7 @@ export class AdminClientsWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<AdminClientsSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'AdminClientsSettings',
       settings => ({
         ...settings,

@@ -1,82 +1,54 @@
-import {
-  Component, DestroyRef,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  filter,
-  take,
-} from 'rxjs';
-import {
-  FormBuilder, ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {
-  map,
-  startWith
-} from "rxjs/operators";
+import { Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, output, viewChildren, inject } from '@angular/core';
+import {BehaviorSubject, filter, take,} from 'rxjs';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {map} from "rxjs/operators";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {AsyncPipe, NgIf} from "@angular/common";
+import {AsyncPipe} from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-zorro-antd/form";
 import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
 
 @Component({
-    selector: 'ats-editable-string',
-    templateUrl: './editable-string.component.html',
-    styleUrls: ['./editable-string.component.less'],
-    imports: [
-        TranslocoDirective,
-        AsyncPipe,
-        NgIf,
-        NzIconDirective,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzFormDirective,
-        NzFormItemComponent,
-        NzInputGroupComponent,
-        NzFormControlComponent,
-        NzInputDirective
-    ]
+  selector: 'ats-editable-string',
+  templateUrl: './editable-string.component.html',
+  styleUrls: ['./editable-string.component.less'],
+  imports: [
+    TranslocoDirective,
+    AsyncPipe,
+    NzIconDirective,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzFormDirective,
+    NzFormItemComponent,
+    NzInputGroupComponent,
+    NzFormControlComponent,
+    NzInputDirective
+  ]
 })
 export class EditableStringComponent implements OnInit, OnDestroy {
-  @ViewChildren('editInput')
-  editInput!: QueryList<ElementRef<HTMLInputElement>>;
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Input({required: true})
-  content: string | null = null;
-
-  @Input()
-  lengthRestrictions?: {
+  readonly editInput = viewChildren<ElementRef<HTMLInputElement>>('editInput');
+  readonly content = input.required<string | null>();
+  readonly lengthRestrictions = input<{
     minLength: number;
     maxLength: number;
-  };
+  } | null>(null);
 
-  @Input()
-  inputClass = '';
+  readonly inputClass = input('');
 
-  @Output()
-  contentChanged = new EventEmitter<string>();
+  readonly contentChanged = output<string>();
 
   isEditMode$ = new BehaviorSubject(false);
+
   editForm = this.formBuilder.group({
     content: this.formBuilder.nonNullable.control('')
   });
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly editInputChanges$ = toObservable(this.editInput);
 
   ngOnInit(): void {
     this.isEditMode$.pipe(
@@ -102,7 +74,7 @@ export class EditableStringComponent implements OnInit, OnDestroy {
       event.preventDefault();
     }
 
-    if(event.key === "Esc") {
+    if (event.key === "Esc") {
       this.setEditMode(false);
       event.stopPropagation();
       event.preventDefault();
@@ -111,7 +83,7 @@ export class EditableStringComponent implements OnInit, OnDestroy {
 
   emitValueIfValid(): void {
     if (this.editForm.valid ?? false) {
-      this.contentChanged.emit(this.editForm!.value.content);
+      this.contentChanged.emit(this.editForm!.value.content ?? '');
     }
 
     this.setEditMode(false);
@@ -121,19 +93,19 @@ export class EditableStringComponent implements OnInit, OnDestroy {
     this.editForm.reset();
     this.editForm.controls.content.clearValidators();
 
-    if (this.lengthRestrictions) {
+    const lengthRestrictions = this.lengthRestrictions();
+    if (lengthRestrictions) {
       this.editForm.controls.content.addValidators([
         Validators.required,
-        Validators.minLength(this.lengthRestrictions.minLength),
-        Validators.maxLength(this.lengthRestrictions.maxLength)
+        Validators.minLength(lengthRestrictions.minLength),
+        Validators.maxLength(lengthRestrictions.maxLength)
       ]);
     }
 
-    this.editForm.controls.content.setValue(this.content ?? '');
+    this.editForm.controls.content.setValue(this.content() ?? '');
 
-    this.editInput.changes.pipe(
-      map(x => x.first as ElementRef | undefined),
-      startWith(this.editInput.first),
+    this.editInputChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter(x => !!x),
       take(1)
     ).subscribe(elRef => {

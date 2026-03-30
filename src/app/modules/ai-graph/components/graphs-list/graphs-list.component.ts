@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import { Component, OnInit, output, inject } from '@angular/core';
 import {combineLatest, Observable, take} from "rxjs";
 import {LetDirective} from "@ngrx/component";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
@@ -6,7 +6,10 @@ import {
   NzButtonComponent,
 } from "ng-zorro-antd/button";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
+import {
+  NzInputDirective,
+  NzInputModule,
+} from "ng-zorro-antd/input";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NzFormControlComponent, NzFormDirective} from "ng-zorro-antd/form";
@@ -22,7 +25,7 @@ import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import { GraphTemplatesStorageService } from "../../services/graph-templates-storage.service";
 import { GraphTemplate } from "../../models/graph-template.model";
 import {
-  NzDropDownDirective,
+  NzDropdownDirective,
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import { NzSpaceCompactComponent } from "ng-zorro-antd/space";
@@ -35,11 +38,11 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 @Component({
     selector: 'ats-graphs-list',
   imports: [
+    NzInputModule,
     LetDirective,
     NzSpinComponent,
     NzButtonComponent,
     NzIconDirective,
-    NzInputGroupComponent,
     NzInputDirective,
     TranslocoDirective,
     ReactiveFormsModule,
@@ -47,17 +50,22 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
     NzFormDirective,
     NzPopconfirmDirective,
     NzEmptyComponent,
-    NzDropDownDirective,
     NzSpaceCompactComponent,
     NzDropdownMenuComponent,
     NzMenuDirective,
     NzMenuItemComponent,
-    NzTooltipDirective
+    NzTooltipDirective,
+    NzDropdownDirective
   ],
     templateUrl: './graphs-list.component.html',
     styleUrl: './graphs-list.component.less'
 })
 export class GraphsListComponent implements OnInit {
+  private readonly graphStorageService = inject(GraphStorageService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly graphTemplatesStorageService = inject(GraphTemplatesStorageService);
+
   readonly validationOptions = {
     graphTitle: {
       max: 50
@@ -78,16 +86,7 @@ export class GraphsListComponent implements OnInit {
     }
   );
 
-  @Output()
-  editGraph = new EventEmitter<string>();
-
-  constructor(
-    private readonly graphStorageService: GraphStorageService,
-    private readonly formBuilder: FormBuilder,
-    private readonly translatorService: TranslatorService,
-    private readonly graphTemplatesStorageService: GraphTemplatesStorageService
-  ) {
-  }
+  readonly editGraph = output<string>();
 
   ngOnInit(): void {
     this.graphs$ = this.graphStorageService.getAllGraphs();

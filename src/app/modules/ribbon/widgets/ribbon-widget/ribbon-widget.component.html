@@ -1,7 +1,8 @@
-<ng-container *ngIf="settings$ | async as settings">
-  <div *ngIf="isBlockWidget" class="blocked-widget-overlay"></div>
+@if (settings$ | async; as settings) {
+  @if (isBlockWidget()) {
+    <div class="blocked-widget-overlay"></div>
+  }
   <div class="widget-body">
-
     @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
     @if (!isDashboardLocked) {
       <div class="manage-block" (mousedown)="$event.stopPropagation()">
@@ -11,9 +12,8 @@
       </div>
     }
     <div class="content">
-      <ats-ribbon
-        [displayItems]="settings.displayItems ?? null"
-      ></ats-ribbon>
+      <ats-ribbon [displayItems]="settings.displayItems ?? null"
+       />
     </div>
   </div>
-</ng-container>
+}

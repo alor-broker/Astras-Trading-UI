@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { NotificationsProvider } from '../../notifications/services/notifications-provider';
 import {
   Observable,
@@ -12,18 +12,20 @@ import { ModalService } from '../../../shared/services/modal.service';
 import { mapWith } from '../../../shared/utils/observable-helper';
 import { TranslatorService } from "../../../shared/services/translator.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import {Capacitor} from "@capacitor/core";
 
 @Injectable()
 export class ApplicationReleaseNotificationProvider implements NotificationsProvider {
-  constructor(
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly modalService: ModalService,
-    private readonly translatorService: TranslatorService,
-    private readonly environmentService: EnvironmentService
-  ) {
-  }
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly modalService = inject(ModalService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly environmentService = inject(EnvironmentService);
 
   getNotifications(): Observable<NotificationMeta[]> {
+    if(Capacitor.isNativePlatform()) {
+      return of([]);
+    }
+
     if(this.environmentService.features.releases ?? true) {
       return this.applicationMetaService.savedVersion$.pipe(
         mapWith(() => this.applicationMetaService.getCurrentVersion(), (savedVersion, currentVersion) => ({

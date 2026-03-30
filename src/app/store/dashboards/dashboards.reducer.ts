@@ -371,11 +371,11 @@ export const DashboardsFeature = createFeature({
   name: 'Dashboards',
   reducer,
   extraSelectors: ({ selectDashboardsState }) => ({
-    getDashboardItems: (dashboardGuid: string): MemoizedSelector<Record<string, any>, Widget[] | undefined> => createSelector(
+    getDashboardItems: (dashboardGuid: string): MemoizedSelector<Record<string, unknown>, Widget[] | undefined> => createSelector(
       selectDashboardsState,
       state => state.entities[dashboardGuid]?.items
     ),
-    getDashboard:(dashboardGuid: string): MemoizedSelector<Record<string, any>, Dashboard | undefined> => createSelector(
+    getDashboard:(dashboardGuid: string): MemoizedSelector<Record<string, unknown>, Dashboard | undefined> => createSelector(
       selectDashboardsState,
       state => state.entities[dashboardGuid]
     ),

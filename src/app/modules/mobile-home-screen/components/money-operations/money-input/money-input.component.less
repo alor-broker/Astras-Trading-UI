@@ -1,0 +1,46 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    .option-card.ant-btn {
+      border-color: @border-color-base;
+      color: @heading-color;
+
+      &:hover,
+      &:focus {
+        border-color: fade(@primary-color, 45%);
+        background: fade(@primary-color, 6%);
+      }
+    }
+  }
+});
+
+:host {
+  display: block;
+
+  .option-card.ant-btn {
+    height: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: transparent;
+    text-align: left;
+  }
+
+  ::ng-deep .step-form .ant-form-item {
+    margin-bottom: 10px;
+  }
+
+  :host ::ng-deep nz-form-label {
+    label {
+      display: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

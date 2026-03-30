@@ -1,4 +1,4 @@
-<div [class]="'loading-indicator ' + (className ?? '')">
-  <nz-spin [nzSpinning]="isLoading" nzSimple [nzIndicator]="indicatorTemplate"></nz-spin>
+<div [class]="'loading-indicator ' + (className() ?? '')">
+  <nz-spin [nzSpinning]="isLoading()" nzSimple [nzIndicator]="indicatorTemplate" />
   <ng-template #indicatorTemplate><i nz-icon nzType="loading"></i></ng-template>
 </div>

@@ -1,7 +1,4 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
 import { TranslatorService } from "../../../shared/services/translator.service";
 import {
@@ -51,17 +48,14 @@ interface AdminDashboardsPanelViewModel {
   styleUrl: './admin-dashboards-panel.component.less'
 })
 export class AdminDashboardsPanelComponent implements OnInit {
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly translatorService = inject(TranslatorService);
+
   protected viewModel$!: Observable<AdminDashboardsPanelViewModel>;
 
   private readonly allDashboards$ = this.manageDashboardsService.allDashboards$.pipe(
     shareReplay({bufferSize: 1, refCount: true})
   );
-
-  constructor(
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly translatorService: TranslatorService,
-  ) {
-  }
 
   ngOnInit(): void {
     const dashboards$ = this.allDashboards$.pipe(

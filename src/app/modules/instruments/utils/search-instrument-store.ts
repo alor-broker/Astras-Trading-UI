@@ -6,7 +6,7 @@ import {
   SortEnumType
 } from "../../../../generated/graphql.types";
 import { ComponentStore } from "@ngrx/component-store";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   FetchPolicy,
   GraphQlService
@@ -51,6 +51,8 @@ export interface SearchInstrumentState {
 
 @Injectable()
 export class SearchInstrumentStore extends ComponentStore<SearchInstrumentState> {
+  private readonly graphQlService = inject(GraphQlService);
+
   readonly searchByFilters = this.effect((filters$: Observable<SearchFilters>) => {
     return filters$.pipe(
       tap(filters => {
@@ -102,7 +104,7 @@ export class SearchInstrumentStore extends ComponentStore<SearchInstrumentState>
           status: SearchStatus.Success,
           results: r.instruments.nodes.map(i => ({
             symbol: i.basicInformation.symbol,
-            shortName: i.basicInformation.shortName,
+            shortName: i.basicInformation.shortName ?? '',
             exchange: i.basicInformation.exchange,
             board: i.boardInformation.board,
             market: i.basicInformation.market,
@@ -112,9 +114,7 @@ export class SearchInstrumentStore extends ComponentStore<SearchInstrumentState>
     );
   });
 
-  constructor(
-    private readonly graphQlService: GraphQlService,
-  ) {
+  constructor() {
     super({
       status: SearchStatus.Initial,
       filters: null,

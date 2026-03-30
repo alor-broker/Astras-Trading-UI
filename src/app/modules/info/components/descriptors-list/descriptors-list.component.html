@@ -1,7 +1,8 @@
 <ng-container *transloco="let t; scope: 'info/descriptors-list'">
-  <table>
+  <div class="descriptors-list">
+    <table>
     <tbody>
-      @for (group of descriptors; track $index) {
+      @for (group of descriptors(); track $index) {
         @if (group.items.length > 0) {
           @if (group.title != null && group.title.length > 0) {
             <tr class="group-title-row">
@@ -19,7 +20,7 @@
                   {{ t('infoDescriptorsList.descriptorTitles.' + (descriptor.translationKey ?? descriptor.id)) }}</span>
               </td>
               <td class="descriptor-content">
-                <span [ngStyle]="descriptor.customStyles">
+                <span [style]="descriptor.customStyles">
                   @if (descriptor.valueTranslationKey != null) {
                     {{ t('infoDescriptorsList.' + descriptor.valueTranslationKey) }}
                   } @else {
@@ -33,4 +34,5 @@
       }
     </tbody>
   </table>
+  </div>
 </ng-container>

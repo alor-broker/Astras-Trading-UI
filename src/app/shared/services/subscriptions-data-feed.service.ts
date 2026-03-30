@@ -1,15 +1,8 @@
-import {
-  Inject,
-  Injectable,
-  NgZone,
-  OnDestroy
-} from '@angular/core';
-import {
-  webSocket,
-  WebSocketSubject
-} from 'rxjs/webSocket';
+import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
+import { WebSocketSubject } from 'rxjs/webSocket';
 import {
   BehaviorSubject,
+  combineLatest,
   filter,
   interval,
   Observable,
@@ -32,14 +25,15 @@ import {
   takeWhile,
   tap
 } from 'rxjs/operators';
-import {isOnline$} from '../utils/network';
 import {LoggerService} from './logging/logger.service';
 import { EnvironmentService } from "./environment.service";
+import { DeviceNetworkService } from './device-network.service';
 import {
   RXJS_WEBSOCKET_CTOR,
   WsOptions
 } from "../constants/ws.constants";
 import { ApiTokenProviderService } from "./auth/api-token-provider.service";
+import {ApplicationStatusService} from "./application-status.service";
 
 export interface SubscriptionRequest {
   opcode: string;
@@ -74,20 +68,19 @@ interface SocketState {
   providedIn: 'root'
 })
 export class SubscriptionsDataFeedService implements OnDestroy {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly apiTokenProviderService = inject(ApiTokenProviderService);
+  private readonly logger = inject(LoggerService);
+  private readonly webSocketFactory = inject(RXJS_WEBSOCKET_CTOR);
+  private readonly ngZone = inject(NgZone);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+  private readonly deviceNetworkService = inject(DeviceNetworkService);
+
   private socketState: SocketState | null = null;
 
   private readonly isConnected$ = new BehaviorSubject<boolean>(false);
 
   private readonly options = WsOptions;
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly apiTokenProviderService: ApiTokenProviderService,
-    private readonly logger: LoggerService,
-    @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket,
-    private readonly ngZone: NgZone
-  ) {
-  }
 
   public getConnectionStatus(): Observable<boolean> {
     return this.isConnected$.pipe(
@@ -107,7 +100,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
       const subscriptionId = getSubscriptionId(request);
 
       const existingSubscription = socketState.subscriptionsMap.get(subscriptionId);
-      if (!!existingSubscription) {
+      if (existingSubscription) {
         return existingSubscription.sharedStream$ as Observable<R>;
       }
 
@@ -141,8 +134,8 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   private subscribeToMessages(source: Observable<WsResponseMessage>, target: Subject<any>, subscriptionId: string): Subscription {
     return source.subscribe({
       next: (value) => target.next(value),
-      complete: () => this.logger.trace(this.toLoggerMessage(`${subscriptionId} COMPLETED`)),
-      error: () => this.logger.trace(this.toLoggerMessage(`${subscriptionId} ERROR`)),
+      complete: () => this.logger.debug(this.toLoggerMessage(`${subscriptionId} COMPLETED`)),
+      error: () => this.logger.debug(this.toLoggerMessage(`${subscriptionId} ERROR`)),
     });
   }
 
@@ -243,20 +236,14 @@ export class SubscriptionsDataFeedService implements OnDestroy {
       url: this.environmentService.wsUrl,
       openObserver: {
         next: () => {
-          this.logger.trace(this.toLoggerMessage('Connection open'));
+          this.logger.info(this.toLoggerMessage('Connection open'));
           this.isConnected$.next(true);
         }
       },
       closeObserver: {
         next: (event: CloseEvent) => {
           if (socketState.subscriptionsMap.size > 0) {
-            this.logger.warn(
-              this.toLoggerMessage('Connection closed with active subscriptions'),
-              JSON.stringify({
-                code: event.code,
-                reason: event.reason
-              })
-            );
+            this.logger.debug(`${this.toLoggerMessage('Connection closed with active subscriptions')}, ${JSON.stringify({code: event.code,reason: event.reason})}`);
 
             socketState.webSocketSubject?.complete();
             socketState.webSocketSubject = null;
@@ -267,7 +254,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
             return;
           }
 
-          this.logger.info(this.toLoggerMessage('Connection closed'));
+          this.logger.debug(this.toLoggerMessage('Connection closed'));
           this.clean(socketState);
         }
       }
@@ -279,14 +266,17 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private initReconnectOnDisconnection(state: SocketState): void {
-    if (!!state.offlineSub) {
+    if (state.offlineSub) {
       return;
     }
 
-    state.offlineSub =
-      isOnline$().pipe(
+    state.offlineSub = combineLatest({
+        isOnline: this.deviceNetworkService.isOnline$,
+        isAppActive: this.applicationStatusService.isActive$
+      }
+    ).pipe(
         filter(() => !this.isStateValid(state)),
-        filter(isOnline => isOnline),
+        filter(x => x.isOnline && x.isAppActive),
       ).subscribe(() => {
         this.reconnect(state);
       });
@@ -337,7 +327,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private reconnect(socketState: SocketState): void {
-    if (socketState.reconnectSub) {
+    if (socketState.reconnectSub || !this.applicationStatusService.isActive) {
       return;
     }
 
@@ -348,13 +338,13 @@ export class SubscriptionsDataFeedService implements OnDestroy {
           socketState.reconnectSub?.unsubscribe();
           socketState.reconnectSub = null;
         }),
-        tap(attempt => this.logger.warn(this.toLoggerMessage(`Reconnection attempt #${attempt + 1}`)))
+        tap(attempt => this.logger.debug(this.toLoggerMessage(`Reconnection attempt #${attempt + 1}`)))
       );
 
     socketState.reconnectSub = reconnection$.subscribe(() => {
       socketState.webSocketSubject = this.createWebSocketSubject(socketState);
       socketState.subscriptionsMap.forEach((state, subscriptionId) => {
-        this.logger.trace(this.toLoggerMessage(`Reconnect to ${subscriptionId}`));
+        this.logger.debug(this.toLoggerMessage(`Reconnect to ${subscriptionId}`));
         state.subscription = this.subscribeToMessages(this.createSubscription(state.request, socketState), state.messageSource, subscriptionId);
       });
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   DatafeedConfiguration,
   DatafeedErrorCallback,
@@ -46,6 +46,14 @@ import { ChartSubscriptionIdHelper } from "../../../shared/utils/chart-subscript
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+  private readonly instrumentService = inject(InstrumentsService);
+  private readonly historyService = inject(HistoryService);
+  private readonly http = inject(HttpClient);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly syntheticInstrumentsService = inject(SyntheticInstrumentsService);
+
   private readonly lastBarPoint = new Map<string, number>();
   private readonly barsSubscriptions = new Map<string, Subscription>();
   private exchangeSettings: MarketExchange[] | null = null;
@@ -53,17 +61,6 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   private readonly onSymbolChange$ = new BehaviorSubject<InstrumentKey | null>(null);
   get onSymbolChange(): Observable<InstrumentKey | null> {
     return this.onSymbolChange$.asObservable();
-  }
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly instrumentService: InstrumentsService,
-    private readonly historyService: HistoryService,
-    private readonly http: HttpClient,
-    private readonly translatorService: TranslatorService,
-    private readonly syntheticInstrumentsService: SyntheticInstrumentsService
-  ) {
   }
 
   setExchangeSettings(settings: { exchange: string, settings: ExchangeSettings }[]): void {
@@ -116,7 +113,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     } else {
       request = this.instrumentService.getInstrument(instrumentsData.instrument)
         .pipe(
-          map(i => !!i
+          map(i => i
             ? {
               ...i,
               symbol: `[${i.exchange}:${i.symbol}${(i.instrumentGroup != null && i.instrumentGroup.length > 0) ? ':' + i.instrumentGroup : ''}]`
@@ -330,7 +327,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
 
   unsubscribeBars(listenerGuid: string): void {
     const sub = this.barsSubscriptions.get(listenerGuid);
-    if (!!sub) {
+    if (sub) {
       sub.unsubscribe();
     }
   }

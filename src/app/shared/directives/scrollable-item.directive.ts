@@ -1,11 +1,10 @@
-import {Directive, ElementRef} from '@angular/core';
+import { Directive, ElementRef, inject } from '@angular/core';
 
 @Directive({
     selector: '[atsScrollableItem]'
 })
 export class ScrollableItemDirective {
-  constructor(private readonly elementRef: ElementRef<HTMLElement>) {
-  }
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   getElementRef(): ElementRef<HTMLElement> {
     return this.elementRef;

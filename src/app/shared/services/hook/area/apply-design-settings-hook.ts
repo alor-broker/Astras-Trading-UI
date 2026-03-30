@@ -1,6 +1,4 @@
-﻿import {
-  Injectable
-} from "@angular/core";
+﻿import { Injectable, inject } from "@angular/core";
 import { Subscription } from "rxjs";
 import {
   map,
@@ -15,14 +13,11 @@ import { FontFamilies } from "../../../models/terminal-settings/terminal-setting
 
 @Injectable()
 export class ApplyDesignSettingsHook implements AreaHook {
-  private changesSubscription?: Subscription;
+  private readonly themeService = inject(ThemeService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly localStorageService = inject(LocalStorageService);
 
-  constructor(
-    private readonly themeService: ThemeService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly localStorageService: LocalStorageService
-  ) {
-  }
+  private changesSubscription?: Subscription;
 
   onDestroy(): void {
     this.changesSubscription?.unsubscribe();

@@ -1,6 +1,6 @@
 import {
   Component,
-  Input
+  input
 } from '@angular/core';
 
 export interface DisplayStatus {
@@ -10,10 +10,8 @@ export interface DisplayStatus {
 @Component({
     selector: 'ats-chat-status',
     templateUrl: './chat-status.component.html',
-    styleUrls: ['./chat-status.component.less'],
-    standalone: false
+    styleUrls: ['./chat-status.component.less']
 })
 export class ChatStatusComponent {
-  @Input({ required: true })
-  status: DisplayStatus | null = null;
+  readonly status = input.required<DisplayStatus | null>();
 }

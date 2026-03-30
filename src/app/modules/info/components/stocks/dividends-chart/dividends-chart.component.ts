@@ -1,10 +1,4 @@
-import {
-  Component,
-  input,
-  OnChanges,
-  signal,
-  SimpleChanges
-} from '@angular/core';
+import { Component, input, OnChanges, signal, SimpleChanges, inject } from '@angular/core';
 import { Dividend } from "../../../../../../generated/graphql.types";
 import {
   ChartData,
@@ -45,9 +39,12 @@ interface ChartSettings {
   styleUrl: './dividends-chart.component.less'
 })
 export class DividendsChartComponent implements OnChanges {
-  dividends = input<Dividend[]>([]);
+  private readonly themeService = inject(ThemeService);
+  private readonly translatorService = inject(TranslatorService);
 
-  protected chartSettings = signal<ChartSettings | null>(null);
+  readonly dividends = input<Dividend[]>([]);
+
+  protected readonly chartSettings = signal<ChartSettings | null>(null);
 
   private readonly themeColors$ = this.themeService.getThemeSettings().pipe(
     map(s => s.themeColors),
@@ -58,12 +55,6 @@ export class DividendsChartComponent implements OnChanges {
     .pipe(
       shareReplay(1)
     );
-
-  constructor(
-    private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.dividends != null) {

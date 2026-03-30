@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, take, tap } from "rxjs";
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { ArbitrageSpread, SpreadLeg } from "../models/arbitrage-spread.model";
@@ -19,6 +16,11 @@ import {
 
 @Injectable()
 export class ArbitrageSpreadService {
+  private readonly localStorage = inject(LocalStorageService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+
   private readonly spreadsKey = 'arbitration-spreads';
   private readonly spreads$ = new BehaviorSubject<ArbitrageSpread[]>([]);
 
@@ -26,15 +28,6 @@ export class ArbitrageSpreadService {
   private readonly spreadParams = new BehaviorSubject<ArbitrageSpread | null>(null);
   shouldShowSpreadModal$ = this.shouldShowSpreadModal.asObservable();
   spreadParams$ = this.spreadParams.asObservable();
-
-  constructor(
-    private readonly localStorage: LocalStorageService,
-    private readonly quotesService: QuotesService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
-  ) {
-  }
 
   getSpreadsSubscription(): Observable<ArbitrageSpread[]> {
     const localStorageSpreads = this.localStorage.getItem(this.spreadsKey) as ArbitrageSpread[] | undefined;

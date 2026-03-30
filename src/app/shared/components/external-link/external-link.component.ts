@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input
+  input
 } from '@angular/core';
 import {NzIconDirective} from "ng-zorro-antd/icon";
 
@@ -15,15 +15,11 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExternalLinkComponent {
-  @Input()
-  klass?: string;
+  readonly klass = input<string>();
 
-  @Input()
-  target: '_self' | '_blank' = '_blank';
+  readonly target = input<'_self' | '_blank'>('_blank');
 
-  @Input()
-  rel = 'noopener noreferrer';
+  readonly rel = input('noopener noreferrer');
 
-  @Input()
-  href?: string;
+  readonly href = input<string>();
 }

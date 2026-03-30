@@ -1,7 +1,4 @@
-import {
-  Component,
-  output
-} from '@angular/core';
+import { Component, output, inject } from '@angular/core';
 import { TranslocoDirective } from "@jsverse/transloco";
 import { PortfolioSummaryService } from "../../../../shared/services/portfolio-summary.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
@@ -10,8 +7,7 @@ import {
   switchMap
 } from "rxjs/operators";
 import {
-  AsyncPipe,
-  NgClass
+  AsyncPipe
 } from "@angular/common";
 import {
   combineLatest,
@@ -25,13 +21,15 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
   imports: [
     TranslocoDirective,
     AsyncPipe,
-    NgClass,
     NzIconDirective
-  ],
+],
   templateUrl: './portfolio-evaluation.component.html',
   styleUrl: './portfolio-evaluation.component.less'
 })
 export class PortfolioEvaluationComponent {
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly portfolioSummaryService = inject(PortfolioSummaryService);
+
   readonly openDetails = output();
 
   readonly summary$ = this.dashboardContextService.selectedPortfolio$.pipe(
@@ -64,10 +62,4 @@ export class PortfolioEvaluationComponent {
       };
     })
   );
-
-  constructor(
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly portfolioSummaryService: PortfolioSummaryService
-  ) {
-  }
 }

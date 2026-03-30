@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NgZone,
-} from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { RemoteStorageService } from "../../../shared/services/settings-broker/remote-storage.service";
 import {
   asyncScheduler,
@@ -38,15 +35,12 @@ interface InstrumentLinkedSettingsRecord extends Partial<InstrumentLinkedSetting
   providedIn: 'root'
 })
 export class ScalperSharedSettingsService {
+  private readonly remoteStorageService = inject(RemoteStorageService);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly ngZone = inject(NgZone);
+
   private readonly currentSettings$ = new BehaviorSubject<Map<string, Partial<InstrumentLinkedSettings>> | null>(null);
   private initialSettings$: Observable<StorageRecord[] | null> | null = null;
-
-  constructor(
-    private readonly remoteStorageService: RemoteStorageService,
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly ngZone: NgZone
-  ) {
-  }
 
   private get groupKey(): string {
     // scalper orderbook instrument linked settings

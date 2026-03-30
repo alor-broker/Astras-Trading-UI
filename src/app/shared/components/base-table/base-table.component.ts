@@ -26,7 +26,6 @@ export interface Sort {
 
 @Component({
     template: '',
-    standalone: false
 })
 export abstract class BaseTableComponent<
     T extends Record<string, any>,
@@ -49,7 +48,9 @@ implements OnInit, OnDestroy {
   protected settingsColumnsName?: string;
 
   constructor(
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly settingsService: WidgetSettingsService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly destroyRef: DestroyRef
   ) {
   }
@@ -128,7 +129,7 @@ implements OnInit, OnDestroy {
     });
   }
 
-  changeColumnOrder<T extends WidgetSettings>(event: CdkDragDrop<any>, settings$?: Observable<T>): void {
+  changeColumnOrder<T extends WidgetSettings>(event: CdkDragDrop<unknown>, settings$?: Observable<T>): void {
     settings$?.pipe(
       withLatestFrom(this.tableConfig$),
       take(1)

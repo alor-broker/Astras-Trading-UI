@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, OnInit, input, output, inject } from '@angular/core';
 import { DeviceService } from "../../services/device.service";
 import {
   Observable,
@@ -12,10 +6,7 @@ import {
 } from "rxjs";
 import { map } from "rxjs/operators";
 import { TranslocoDirective } from "@jsverse/transloco";
-import {
-  AsyncPipe,
-  NgIf
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import { NzIconDirective } from "ng-zorro-antd/icon";
@@ -24,35 +15,28 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
     selector: 'ats-widget-settings',
     templateUrl: './widget-settings.component.html',
     imports: [
-        TranslocoDirective,
-        NgIf,
-        NzTooltipDirective,
-        NzButtonComponent,
-        NzIconDirective,
-        AsyncPipe
-    ],
+    TranslocoDirective,
+    NzTooltipDirective,
+    NzButtonComponent,
+    NzIconDirective,
+    AsyncPipe
+],
     styleUrls: ['./widget-settings.component.less']
 })
 export class WidgetSettingsComponent implements OnInit {
-  @Input({ required: true })
-  canSave = false;
+  private readonly deviceService = inject(DeviceService);
 
-  @Output()
-  saveClick = new EventEmitter();
+  readonly canSave = input.required<boolean>();
 
-  @Input()
-  showCopy = false;
+  readonly saveClick = output();
 
-  @Input({ required: true })
-  canCopy = false;
+  readonly showCopy = input(false);
 
-  @Output()
-  copyClick = new EventEmitter();
+  readonly canCopy = input.required<boolean>();
+
+  readonly copyClick = output();
 
   isMobile$!: Observable<boolean>;
-
-  constructor(private readonly deviceService: DeviceService) {
-  }
 
   ngOnInit(): void {
     this.isMobile$ = this.deviceService.deviceInfo$.pipe(

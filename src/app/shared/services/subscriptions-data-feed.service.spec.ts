@@ -5,12 +5,15 @@ import {
 } from './subscriptions-data-feed.service';
 import {
   BehaviorSubject,
+  of,
   take
 } from 'rxjs';
 import { LoggerService } from './logging/logger.service';
 import { EnvironmentService } from "./environment.service";
 import { RXJS_WEBSOCKET_CTOR } from "../constants/ws.constants";
 import { ApiTokenProviderService } from "./auth/api-token-provider.service";
+import {ApplicationStatusService} from "./application-status.service";
+import {DeviceNetworkService} from "./device-network.service";
 
 describe('SubscriptionsDataFeedService', () => {
   let service: SubscriptionsDataFeedService;
@@ -21,7 +24,7 @@ describe('SubscriptionsDataFeedService', () => {
   let socketConstructorSpy: any;
 
   beforeEach(() => {
-    loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['trace', 'info', 'warn']);
+    loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['trace', 'info', 'warn', 'debug']);
     apiTokenProviderServiceSpy = {
       getToken: jasmine.createSpy('getToken').and.returnValue(new BehaviorSubject<string>('test_token'))
     };
@@ -43,6 +46,19 @@ describe('SubscriptionsDataFeedService', () => {
           provide: EnvironmentService,
           useValue: {
             wsUrl: ''
+          }
+        },
+        {
+          provide: ApplicationStatusService,
+          useValue: {
+            isActive: true,
+            isActive$: of(true)
+          }
+        },
+        {
+          provide: DeviceNetworkService,
+          useValue: {
+            isOnline$: of(true)
           }
         }
       ]

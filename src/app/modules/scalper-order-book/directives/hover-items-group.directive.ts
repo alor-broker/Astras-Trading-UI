@@ -1,12 +1,4 @@
-import {
-  DestroyRef,
-  Directive,
-  EventEmitter,
-  InjectionToken,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { DestroyRef, Directive, InjectionToken, OnInit, input, output, inject } from '@angular/core';
 import {
   BehaviorSubject,
   take,
@@ -24,20 +16,18 @@ export interface HoverItemsGroup<T = any> {
 
 @Directive({
     selector: '[atsHoverItemsGroup]',
-    providers: [{ provide: HOVER_ITEMS_GROUP, useExisting: HoverItemsGroupDirective }],
-    standalone: false
+    providers: [{ provide: HOVER_ITEMS_GROUP, useExisting: HoverItemsGroupDirective }]
 })
 export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, OnInit {
-  @Input()
-  atsHoverItemsGroup?: boolean = true;
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Output()
-  hoveredItemChanged = new EventEmitter<{ item: HoverItemDirective<T> } | null>();
+  readonly atsHoverItemsGroup = input<boolean | undefined>(true);
+
+  readonly hoveredItemChanged = output<{
+    item: HoverItemDirective<T>;
+} | null>();
 
   private readonly hoveredItem$ = new BehaviorSubject<{ item: HoverItemDirective<T> } | null>(null);
-
-  constructor(private readonly destroyRef: DestroyRef) {
-  }
 
   removeItemHover(item: HoverItemDirective<T>): void {
     this.hoveredItem$.pipe(
@@ -54,7 +44,7 @@ export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, On
   }
 
   ngOnInit(): void {
-    if(!(this.atsHoverItemsGroup ?? false)) {
+    if(!(this.atsHoverItemsGroup() ?? false)) {
       return;
     }
 

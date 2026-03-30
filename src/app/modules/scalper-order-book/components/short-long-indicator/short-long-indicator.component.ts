@@ -1,12 +1,6 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { EvaluationService } from "../../../../shared/services/evaluation.service";
-import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
+import {EvaluationService} from "../../../../shared/services/evaluation.service";
+import {ScalperOrderBookDataContext} from "../../models/scalper-order-book-data-context.model";
 import {
   BehaviorSubject,
   combineLatest,
@@ -21,65 +15,63 @@ import {
   tap,
   timer
 } from "rxjs";
-import {
-  distinct,
-  filter,
-  map,
-  startWith
-} from "rxjs/operators";
-import { Evaluation } from "../../../../shared/models/evaluation.model";
-import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
-import { toInstrumentKey } from "../../../../shared/utils/instruments";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {distinct, filter, map, startWith} from "rxjs/operators";
+import {Evaluation} from "../../../../shared/models/evaluation.model";
+import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
+import {toInstrumentKey} from "../../../../shared/utils/instruments";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {LetDirective} from '@ngrx/component';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-short-long-indicator',
-    templateUrl: './short-long-indicator.component.html',
-    styleUrls: ['./short-long-indicator.component.less'],
-    standalone: false
+  selector: 'ats-short-long-indicator',
+  templateUrl: './short-long-indicator.component.html',
+  styleUrls: ['./short-long-indicator.component.less'],
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzTooltipDirective,
+    AsyncPipe
+  ]
 })
 export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
-  @Input({ required: true })
-  dataContext!: ScalperOrderBookDataContext;
+  private readonly evaluationService = inject(EvaluationService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Input()
-  hideTooltips = false;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
-  @Input()
-  orientation: 'vertical' | 'horizontal' = 'vertical';
+  readonly hideTooltips = input(false);
+
+  readonly orientation = input<'vertical' | 'horizontal'>('vertical');
 
   shortLongValues$ = new BehaviorSubject<{ short: number, long: number } | null>(null);
-
-  constructor(
-    private readonly evaluationService: EvaluationService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.shortLongValues$.complete();
   }
 
   ngOnInit(): void {
-    const widgetSettings$ = this.dataContext.extendedSettings$.pipe(
+    const widgetSettings$ = this.dataContext().extendedSettings$.pipe(
       map(s => s.widgetSettings),
       distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     const instrumentKey$ = widgetSettings$.pipe(
       map(s => toInstrumentKey(s)),
       tap(() => this.shortLongValues$.next(null)),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     const updateInterval$ = widgetSettings$.pipe(
       map(s => s.shortLongIndicatorsUpdateIntervalSec ?? 60),
       distinct(),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
-    const currentOrders$ = this.dataContext.currentOrders$.pipe(
+    const currentOrders$ = this.dataContext().currentOrders$.pipe(
       startWith([])
     );
 
@@ -94,8 +86,8 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
     const dataStream$ = defer(() => {
       return combineLatest({
         instrumentKey: instrumentKey$,
-        orderBook: this.dataContext.orderBook$,
-        portfolioKey: this.dataContext.currentPortfolio$
+        orderBook: this.dataContext().orderBook$,
+        portfolioKey: this.dataContext().currentPortfolio$
       }).pipe(
         filter(x => isInstrumentEqual(x.instrumentKey, x.orderBook.instrumentKey)),
         filter(x => x.orderBook.rows.a.length > 0 || x.orderBook.rows.b.length > 0),

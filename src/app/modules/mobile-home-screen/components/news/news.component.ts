@@ -1,9 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  output
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import {
   NewsListItem,
@@ -13,9 +8,10 @@ import {
   Observable,
   switchMap,
   tap,
-  timer
 } from "rxjs";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {
+  withRefresh
+} from "../../../../shared/utils/observable-helper";
 import { PositionsService } from "../../../../shared/services/positions.service";
 import { map } from "rxjs/operators";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
@@ -25,6 +21,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { isToday } from "date-fns";
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import { TranslocoDirective } from "@jsverse/transloco";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 @Component({
   selector: 'ats-news',
@@ -39,6 +36,12 @@ import { TranslocoDirective } from "@jsverse/transloco";
   styleUrl: './news.component.less'
 })
 export class NewsComponent implements OnInit {
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly newsService = inject(NewsService);
+  private readonly positionsService = inject(PositionsService);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+  protected readonly destroyRef = inject(DestroyRef);
+
   items$!: Observable<NewsListItem[]>;
 
   isLoading = true;
@@ -49,20 +52,9 @@ export class NewsComponent implements OnInit {
 
   private readonly refreshIntervalSec = 30;
 
-  constructor(
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly newsService: NewsService,
-    private readonly positionsService: PositionsService,
-    protected readonly destroyRef: DestroyRef
-  ) {
-  }
-
   ngOnInit(): void {
     this.items$ = this.dashboardContextService.selectedPortfolio$.pipe(
-      mapWith(
-        () => timer(0, this.refreshIntervalSec * 1000),
-        source => source
-      ),
+      withRefresh(this.refreshIntervalSec * 1000, this.applicationStatusService.isActive$),
       tap(() => this.isLoading = true),
       switchMap(p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)),
       switchMap(pos => {

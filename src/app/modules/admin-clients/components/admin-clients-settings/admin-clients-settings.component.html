@@ -22,11 +22,9 @@
                   nzMode="multiple"
                 >
                   @for (item of allColumns; track item.id) {
-                    <nz-option
-                      [nzLabel]="tAdminClients('adminClientsAdminClients.columns.' + item.id + '.displayName')"
+                    <nz-option [nzLabel]="tAdminClients('adminClientsAdminClients.columns.' + item.id + '.displayName')"
                       [nzValue]="item.id"
-                    >
-                    </nz-option>
+                     />
                   }
                 </nz-select>
               </nz-form-control>
@@ -35,14 +33,12 @@
               <nz-form-control>
                 <nz-form-label nzFor="refreshIntervalSec" nzRequired>{{ t('form.refreshIntervalSec.label') }}
                 </nz-form-label>
-                <nz-slider
-                  [nzMarks]="marks"
+                <nz-slider [nzMarks]="marks"
                   [nzMax]="validation.refreshIntervalSec.max"
                   [nzMin]="validation.refreshIntervalSec.min"
                   [nzStep]="1"
                   formControlName="refreshIntervalSec"
-                >
-                </nz-slider>
+                 />
               </nz-form-control>
             </nz-form-item>
           </form>

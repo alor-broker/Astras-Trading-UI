@@ -1,12 +1,5 @@
-import {
-  Inject,
-  Injectable,
-  Optional
-} from '@angular/core';
-import {
-  NOTIFICATIONS_PROVIDER,
-  NotificationsProvider
-} from './notifications-provider';
+import { Injectable, inject } from '@angular/core';
+import { NOTIFICATIONS_PROVIDER } from './notifications-provider';
 import {
   combineLatest,
   Observable,
@@ -19,12 +12,13 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class NotificationsService {
+  private readonly providers = inject(NOTIFICATIONS_PROVIDER, { optional: true });
+
   private readonly notifications: Observable<NotificationMeta[]>;
 
-  constructor(
-    @Inject(NOTIFICATIONS_PROVIDER) @Optional()
-    private readonly providers: NotificationsProvider[] | null
-  ) {
+  constructor() {
+    const providers = this.providers;
+
     const allNotifications: Observable<NotificationMeta[]>[] = [];
 
     const allProviders = providers ?? [];

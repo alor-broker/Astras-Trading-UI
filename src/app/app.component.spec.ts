@@ -1,12 +1,11 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AppComponent } from './app.component';
-import { GlobalLoadingIndicatorService } from "./shared/services/global-loading-indicator.service";
-import { Subject } from "rxjs";
-import { APP_HOOK } from "./shared/services/hook/app/app-hook-token";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
+import {AppComponent} from './app.component';
+import {GlobalLoadingIndicatorService} from "./shared/services/global-loading-indicator.service";
+import {Subject} from "rxjs";
+import {APP_HOOK} from "./shared/services/hook/app/app-hook-token";
+import {MockComponents} from "ng-mocks";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -16,13 +15,14 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
-      ],
-      declarations: [
-        AppComponent
+        RouterTestingModule,
+        AppComponent,
+        MockComponents(
+          NzSpinComponent
+        )
       ],
       providers: [
-        { provide: APP_HOOK, useValue: [] },
+        {provide: APP_HOOK, useValue: []},
         {
           provide: GlobalLoadingIndicatorService,
           useValue: {

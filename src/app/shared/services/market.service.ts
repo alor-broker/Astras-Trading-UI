@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ExchangeSettings,
   MarketExchange,
@@ -19,12 +19,9 @@ import {HttpContextTokens} from "../constants/http.constants";
   providedIn: 'root'
 })
 export class MarketService {
-  private settings$?: Observable<MarketSettings>;
+  private readonly http = inject(HttpClient);
 
-  constructor(
-    private readonly http: HttpClient
-  ) {
-  }
+  private settings$?: Observable<MarketSettings>;
 
   getMarketSettings(): Observable<MarketSettings> {
     this.settings$ ??= this.http.get<MarketSettings>(

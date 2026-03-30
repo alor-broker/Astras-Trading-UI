@@ -8,6 +8,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { Subject } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('MarketTrendsSettingsComponent', () => {
   let component: MarketTrendsSettingsComponent;
@@ -17,8 +18,8 @@ describe('MarketTrendsSettingsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         TranslocoTestsModule.getModule(),
-        ...FormsTesting.getTestingModules(),
-        WidgetSettingsComponent
+        ...FormsTesting.getMocks(),
+        WidgetSettingsComponent,
       ],
       providers: [
         {
@@ -40,6 +41,7 @@ describe('MarketTrendsSettingsComponent', () => {
     .compileComponents();
 
     fixture = TestBed.createComponent(MarketTrendsSettingsComponent);
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

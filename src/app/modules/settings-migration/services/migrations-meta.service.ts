@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   combineLatest,
   forkJoin,
@@ -19,13 +19,11 @@ import { GuidGenerator } from "../../../shared/utils/guid";
   providedIn: 'root'
 })
 export class MigrationsMetaService {
-  private readonly migrationsSettingsGroupName = 'migrations';
+  private readonly remoteStorageService = inject(RemoteStorageService);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly cacheService = inject(CacheService);
 
-  constructor(
-    private readonly remoteStorageService: RemoteStorageService,
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly cacheService: CacheService) {
-  }
+  private readonly migrationsSettingsGroupName = 'migrations';
 
   getAppliedMigrations(): Observable<MigrationMeta[]> {
     const stream$ = combineLatest({

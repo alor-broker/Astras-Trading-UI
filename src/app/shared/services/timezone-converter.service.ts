@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { distinctUntilChanged, Observable } from 'rxjs';
 import { TimezoneConverter } from '../utils/timezone-converter';
 import { map } from 'rxjs/operators';
@@ -9,8 +9,7 @@ import {TerminalSettingsService} from "./terminal-settings.service";
   providedIn: 'root'
 })
 export class TimezoneConverterService {
-  constructor(private readonly terminalSettingsService: TerminalSettingsService) {
-  }
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
 
   public getConverter(): Observable<TimezoneConverter> {
     return this.terminalSettingsService.getSettings()

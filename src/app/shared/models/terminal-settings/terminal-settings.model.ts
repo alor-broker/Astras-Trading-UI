@@ -140,11 +140,23 @@ export interface InstantNotificationsSettings {
   hiddenPortfoliosForNotifications?: PortfolioKey[];
 }
 
+export type TerminalLanguage = 'en' | 'ru' | 'hy';
+
+export interface QuickAccessPanelWidget {
+  widgetType: string;
+  selectedByDefault?: boolean;
+  isPreferredOrderWidget?: boolean;
+}
+
+export interface MobileDashboardLayout {
+  quickAccessPanelWidgets: QuickAccessPanelWidget[];
+}
+
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   isLogoutOnUserIdle?: boolean;
   userIdleDurationMin?: number;
-  language?: 'en' | 'ru' | 'hy' | null;
+  language?: TerminalLanguage | null;
   tableRowHeight?: TableRowHeight;
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
@@ -154,4 +166,5 @@ export interface TerminalSettings {
   instantNotificationsSettings?: InstantNotificationsSettings;
   badgesColors?: string[];
   showCurrentTime?: boolean;
+  mobileDashboardLayout?: MobileDashboardLayout;
 }

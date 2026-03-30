@@ -224,7 +224,7 @@
         "initialSettings": {
           "showPortfolioDynamics": true,
           "showNews": true,
-          "showIdeas": false,
+          "showIdeas": true,
           "displayTrendsForMarket": ["FOND"],
           "ignoreTrendsForBoards": ["FQBR"],
           "marketTrendsSectors": [
@@ -243,6 +243,9 @@
           ],
           "marketTrendsExtendedFilter": []
         }
+      },
+      {
+        "widgetTypeId": "trade-screen"
       },
       {
         "widgetTypeId": "order-book",
@@ -294,6 +297,25 @@
       },
       {
         "widgetTypeId": "option-board"
+      }
+    ],
+    "quickAccessPanelItems": [
+      {
+        "widgetType": "trade-screen",
+        "isPreferredOrderWidget": true
+      },
+      {
+        "widgetType": "blotter"
+      },
+      {
+        "widgetType": "mobile-home-screen",
+        "selectedByDefault": true
+      },
+      {
+        "widgetType": "tech-chart"
+      },
+      {
+        "widgetType": "treemap"
       }
     ]
   },

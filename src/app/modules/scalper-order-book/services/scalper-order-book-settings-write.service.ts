@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { ScalperSharedSettingsService } from "./scalper-shared-settings.service";
 import {
@@ -11,11 +11,8 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
   providedIn: 'root'
 })
 export class ScalperOrderBookSettingsWriteService {
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly scalperSharedSettingsService: ScalperSharedSettingsService
-  ) {
-  }
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly scalperSharedSettingsService = inject(ScalperSharedSettingsService);
 
   updateInstrumentLinkedSettings(settings: Partial<InstrumentLinkedSettings>, instrumentKey: InstrumentKey): void {
     this.scalperSharedSettingsService.updateSettingsForInstrument(

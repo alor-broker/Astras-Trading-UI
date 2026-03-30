@@ -1,15 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  HostListener,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  Renderer2,
-  SkipSelf
-} from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, input, inject } from '@angular/core';
 import { Subject } from "rxjs";
 import { ResizedEvent } from "../panels-container/panels-container.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -19,6 +8,7 @@ import {
   PANELS_CONTAINER_CONTEXT,
   PanelsContainerContext
 } from "../tokens";
+import { PanelResizeHandlerComponent } from '../panel-resize-handler/panel-resize-handler.component';
 
 @Component({
     selector: 'ats-panel',
@@ -30,37 +20,27 @@ import {
             useExisting: PanelComponent
         }
     ],
-    standalone: false
+    imports: [PanelResizeHandlerComponent]
 })
 export class PanelComponent implements PanelResizeContext, OnInit, OnDestroy {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly panelsContainerContext = inject<PanelsContainerContext>(PANELS_CONTAINER_CONTEXT, { skipSelf: true });
+  private readonly renderer = inject(Renderer2);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly resizeEndOutsideAngular$ = new Subject<void>();
-  @Input()
-  canResize = false;
+  readonly canResize = input(false);
 
-  @Input({ required: true })
-  id!: string;
+  readonly id = input.required<string>();
 
-  @Input({ required: true })
-  defaultWidthPercent!: number;
+  readonly defaultWidthPercent = input.required<number>();
 
-  @Input()
-  minWidthPx = 5;
+  readonly minWidthPx = input(5);
 
-  @Input()
-  expandable = false;
+  readonly expandable = input(false);
 
   readonly resizedOutsideAngular$ = new Subject<ResizedEvent>();
   private expanded = false;
-
-  constructor(
-    private readonly host: ElementRef<HTMLElement>,
-    @Inject(PANELS_CONTAINER_CONTEXT)
-    @SkipSelf()
-    private readonly panelsContainerContext: PanelsContainerContext,
-    private readonly renderer: Renderer2,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.resizedOutsideAngular$.complete();
@@ -95,7 +75,7 @@ export class PanelComponent implements PanelResizeContext, OnInit, OnDestroy {
 
   @HostListener('dblclick')
   expand(): void {
-    if (!this.expandable) {
+    if (!this.expandable()) {
       return;
     }
 

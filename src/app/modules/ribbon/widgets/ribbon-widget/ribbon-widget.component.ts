@@ -1,46 +1,46 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { Observable } from 'rxjs';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
-import { RibbonSettings } from '../../models/ribbon-settings.model';
+import { Component, OnInit, input, inject } from '@angular/core';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {Observable} from 'rxjs';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {ManageDashboardsService} from '../../../../shared/services/manage-dashboards.service';
+import {RibbonSettings} from '../../models/ribbon-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {RibbonComponent} from '../../components/ribbon/ribbon.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-ribbon-widget',
-    templateUrl: './ribbon-widget.component.html',
-    styleUrls: ['./ribbon-widget.component.less'],
-    standalone: false
+  selector: 'ats-ribbon-widget',
+  templateUrl: './ribbon-widget.component.html',
+  styleUrls: ['./ribbon-widget.component.less'],
+  imports: [
+    NzButtonComponent,
+    NzIconDirective,
+    RibbonComponent,
+    AsyncPipe
+  ]
 })
 export class RibbonWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly manageDashboardService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly widgetInstance = input.required<WidgetInstance>();
+
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<RibbonSettings>;
   readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
 
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly manageDashboardService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService,
-  ) {
-  }
-
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<RibbonSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'RibbonSettings',
       settings => ({
         ...settings

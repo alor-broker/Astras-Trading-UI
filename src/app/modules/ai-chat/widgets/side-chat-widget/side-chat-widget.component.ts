@@ -1,59 +1,42 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Inject,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import { LocalStorageService } from "../../../../shared/services/local-storage.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { User } from "../../../../shared/models/user/user.model";
-import {
-  fromEvent,
-  Observable,
-  Subscription,
-  take
-} from "rxjs";
-import {
-  USER_CONTEXT,
-  UserContext
-} from "../../../../shared/services/auth/user-context";
-import {
-  filter,
-  map
-} from "rxjs/operators";
+import { Component, DestroyRef, model, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
+import {LocalStorageService} from "../../../../shared/services/local-storage.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {User} from "../../../../shared/models/user/user.model";
+import {fromEvent, Observable, Subscription, take} from "rxjs";
+import {USER_CONTEXT, UserContext} from "../../../../shared/services/auth/user-context";
+import {filter, map} from "rxjs/operators";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzDrawerComponent} from 'ng-zorro-antd/drawer';
+import {AiChatComponent} from '../../components/ai-chat/ai-chat.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {TermsOfUseDialogComponent} from '../../components/terms-of-use-dialog/terms-of-use-dialog.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-side-chat-widget',
-    templateUrl: './side-chat-widget.component.html',
-    styleUrls: ['./side-chat-widget.component.less'],
-    standalone: false
+  selector: 'ats-side-chat-widget',
+  templateUrl: './side-chat-widget.component.html',
+  styleUrls: ['./side-chat-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzDrawerComponent,
+    AiChatComponent,
+    NzTypographyComponent,
+    TermsOfUseDialogComponent,
+    AsyncPipe
+  ]
 })
 export class SideChatWidgetComponent implements OnInit, OnChanges {
-  @Input({ required: true })
-  atsVisible = false;
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly userContext = inject<UserContext>(USER_CONTEXT);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Output()
-  atsVisibleChange = new EventEmitter<boolean>();
+  readonly atsVisible = model(false);
 
-  private mouseupSub?: Subscription;
   isResizing = false;
   drawerWidth$!: Observable<number>;
-
   isTermOfUseDialogVisible = false;
   isChatDisabled = true;
-
-  constructor(
-    private readonly localStorageService: LocalStorageService,
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private mouseupSub?: Subscription;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.atsVisible != null) {
@@ -78,8 +61,7 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
   }
 
   close(): void {
-    this.atsVisible = false;
-    this.atsVisibleChange.emit(this.atsVisible);
+    this.atsVisible.set(false);
   }
 
   setTermsOfUseAgreement(isConfirmed: boolean): void {
@@ -91,8 +73,7 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
         this.isChatDisabled = false;
       });
     } else if (this.isChatDisabled) {
-      this.atsVisible = false;
-      this.atsVisibleChange.emit(this.atsVisible);
+      this.atsVisible.set(false);
     }
   }
 

@@ -1,14 +1,5 @@
-import {
-  Component,
-  Inject,
-  OnDestroy,
-  OnInit,
-  Optional
-} from '@angular/core';
-import {
-  AREA_HOOK,
-  AreaHook
-} from "../../shared/services/hook/area/area-hook-token";
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { AREA_HOOK } from "../../shared/services/hook/area/area-hook-token";
 import { ClientAuthContextService } from "../services/auth/client-auth-context.service";
 import {RouterOutlet} from "@angular/router";
 
@@ -21,12 +12,8 @@ import {RouterOutlet} from "@angular/router";
     ]
 })
 export class ClientAreaShellComponent implements OnInit, OnDestroy {
-  constructor(
-    private readonly clientAuthContextService: ClientAuthContextService,
-    @Inject(AREA_HOOK) @Optional()
-    private readonly areaHooks: AreaHook[] | null,
-  ) {
-  }
+  private readonly clientAuthContextService = inject(ClientAuthContextService);
+  private readonly areaHooks = inject(AREA_HOOK, { optional: true });
 
   ngOnDestroy(): void {
     this.destroyHooks();

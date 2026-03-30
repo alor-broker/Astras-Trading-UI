@@ -1,16 +1,16 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CorrelationChartComponent } from './correlation-chart.component';
-import { Subject } from "rxjs";
-import { InstrumentsCorrelationService } from "../../services/instruments-correlation.service";
-import { LetDirective } from "@ngrx/component";
-import { GuidGenerator } from "../../../../shared/utils/guid";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {CorrelationChartComponent} from './correlation-chart.component';
+import {Subject} from "rxjs";
+import {InstrumentsCorrelationService} from "../../services/instruments-correlation.service";
+import {LetDirective} from "@ngrx/component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {ChartFiltersComponent} from "../chart-filters/chart-filters.component";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
 
 describe('CorrelationChartComponent', () => {
   let component: CorrelationChartComponent;
@@ -20,15 +20,16 @@ describe('CorrelationChartComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
-      ],
-      declarations: [
+        LetDirective,
         CorrelationChartComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-chart-filters',
-          inputs: ['guid']
-        }),
-        ...ngZorroMockComponents
+        MockComponents(
+          ChartFiltersComponent,
+          NzEmptyComponent,
+          NzSpinComponent
+        ),
+        MockDirectives(
+          NzResizeObserverDirective
+        )
       ],
       providers: [
         {
@@ -41,7 +42,7 @@ describe('CorrelationChartComponent', () => {
     });
     fixture = TestBed.createComponent(CorrelationChartComponent);
     component = fixture.componentInstance;
-    component.guid = GuidGenerator.newGuid();
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

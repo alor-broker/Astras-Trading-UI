@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ScalperSharedSettingsService } from "./scalper-shared-settings.service";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import {
@@ -19,12 +19,9 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
   providedIn: 'root'
 })
 export class ScalperOrderBookSettingsReadService {
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly scalperSharedSettingsService: ScalperSharedSettingsService,
-    private readonly instrumentsService: InstrumentsService
-  ) {
-  }
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly scalperSharedSettingsService = inject(ScalperSharedSettingsService);
+  private readonly instrumentsService = inject(InstrumentsService);
 
   static getObsoleteInstrumentKey(instrumentKey: InstrumentKey): string {
     return `${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup}`;

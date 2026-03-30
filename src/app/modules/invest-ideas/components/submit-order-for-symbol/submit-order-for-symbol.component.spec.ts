@@ -13,6 +13,9 @@ import { CompactHeaderComponent } from "../../../order-commands/components/compa
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { EMPTY } from "rxjs";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import {
+  MarketOrderFormComponent
+} from "../../../order-commands/components/order-forms/market-order-form/market-order-form.component";
 
 describe('SubmitOrderForSymbolComponent', () => {
   let component: SubmitOrderForSymbolComponent;
@@ -24,7 +27,8 @@ describe('SubmitOrderForSymbolComponent', () => {
         SubmitOrderForSymbolComponent,
         TranslocoTestsModule.getModule(),
         MockComponents(
-          CompactHeaderComponent
+          CompactHeaderComponent,
+          MarketOrderFormComponent
         )
       ],
       providers: [

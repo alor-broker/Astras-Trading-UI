@@ -1,5 +1,16 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .ant-tag {
+      min-height: @input-height-mobile - 5px;
+      display: flex;
+      align-items: center;
+    }
+  }
+});
+
 .history-wrapper {
   height: 40px;
-  width: 100%;
-  overflow: auto;
 }
+
