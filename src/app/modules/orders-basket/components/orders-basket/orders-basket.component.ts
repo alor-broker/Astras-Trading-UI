@@ -1,4 +1,11 @@
-import { Component, DestroyRef, OnDestroy, OnInit, input, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -23,33 +30,64 @@ import {
   tap
 } from 'rxjs';
 import {inputNumberValidation} from '../../../../shared/utils/validation-options';
-import {OrdersBasket, OrdersBasketItem} from '../../models/orders-basket-form.model';
-import {debounceTime, filter, finalize, map} from 'rxjs/operators';
+import {
+  CalculationMode,
+  OrdersBasket,
+  OrdersBasketItem
+} from '../../models/orders-basket-form.model';
+import {
+  debounceTime,
+  filter,
+  finalize,
+  map
+} from 'rxjs/operators';
 import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
 import {Side} from '../../../../shared/models/enums/side.model';
 import {MathHelper} from '../../../../shared/utils/math-helper';
 import {EvaluationService} from '../../../../shared/services/evaluation.service';
 import {GuidGenerator} from '../../../../shared/utils/guid';
 import {mapWith} from '../../../../shared/utils/observable-helper';
-import {DataPreset, OrdersBasketSettings} from '../../models/orders-basket-settings.model';
+import {
+  DataPreset,
+  OrdersBasketSettings
+} from '../../models/orders-basket-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {NewLimitOrder, OrderCommandResult} from "../../../../shared/models/orders/new-order.model";
+import {
+  NewLimitOrder,
+  OrderCommandResult
+} from "../../../../shared/models/orders/new-order.model";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {PresetsComponent} from '../presets/presets.component';
-import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {
+  NzFormControlComponent,
+  NzFormDirective,
+  NzFormItemComponent,
+  NzFormLabelComponent
+} from 'ng-zorro-antd/form';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 import {OrdersBasketItemComponent} from '../orders-basket-item/orders-basket-item.component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {
+  NzColDirective,
+  NzRowDirective
+} from 'ng-zorro-antd/grid';
 import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
 import {AsyncPipe} from '@angular/common';
 import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
+import {
+  NzRadioComponent,
+  NzRadioGroupComponent
+} from "ng-zorro-antd/radio";
+import {
+  NzOptionComponent,
+  NzSelectComponent
+} from "ng-zorro-antd/select";
 
 @Component({
   selector: 'ats-orders-basket',
@@ -72,7 +110,11 @@ import {MarginOrderConfirmationService} from "../../../../shared/services/orders
     NzFormLabelComponent,
     NzFormControlComponent,
     InputNumberComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzRadioComponent,
+    NzRadioGroupComponent,
+    NzOptionComponent,
+    NzSelectComponent
   ]
 })
 export class OrdersBasketComponent implements OnInit, OnDestroy {
@@ -92,6 +134,18 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
         Validators.required,
         Validators.min(inputNumberValidation.min),
         Validators.max(inputNumberValidation.max)
+      ]
+    ),
+    side: this.formBuilder.nonNullable.control(
+      Side.Buy,
+      [
+        Validators.required,
+      ]
+    ),
+    mode: this.formBuilder.nonNullable.control(
+      CalculationMode.Cash,
+      [
+        Validators.required,
       ]
     ),
     items: this.formBuilder.array(
@@ -115,6 +169,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   currentPresets$!: Observable<DataPreset[]>;
 
   itemsContainerWidth$ = new Subject<number>();
+  protected readonly Sides = Side;
 
   private readonly savedBaskets = new Map<string, OrdersBasket>();
 
@@ -175,7 +230,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
         (this.form.value.items ?? []).forEach((item: any) => {
           orders.push({
-            side: Side.Buy,
+            side: this.form.value.side ?? Side.Buy,
             instrument: item.instrumentKey as InstrumentKey,
             quantity: item.quantity as number,
             price: item.price as number,
@@ -288,12 +343,16 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     return {
       ...formValue,
       budget: Number(formValue.budget),
+      side: formValue.side,
+      mode: formValue.mode,
       items: formValue.items
     };
   }
 
   private restoreFormValue(savedBasket: OrdersBasket): void {
-    this.form?.controls.budget.setValue(savedBasket.budget);
+    this.form.controls.budget.setValue(savedBasket.budget);
+    this.form.controls.side.setValue(savedBasket.side ?? Side.Buy);
+    this.form.controls.mode.setValue(savedBasket.mode ?? CalculationMode.Margin);
 
     const items = this.form.controls.items;
     items.clear();
@@ -341,6 +400,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       map(formValue => {
         const items = formValue.items as Partial<OrdersBasketItem>[];
         const totalBudget = Number(formValue.budget);
+
         const hasEvaluationParams = (item: Partial<OrdersBasketItem>): boolean => {
           return !!item.instrumentKey && !!(item.quota ?? 0) && !!(item.price ?? 0);
         };
@@ -366,6 +426,9 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
         (items, evaluation) => ({items, evaluation: evaluation ?? []})
       )
     ).subscribe(({items, evaluation}) => {
+      const side = this.form.value.side ?? Side.Buy;
+      const mode = this.form.value.mode ?? CalculationMode.Margin;
+
       const setQuantity = (id: string, quantity: number): void => {
         const itemsControl = this.form.controls.items;
         const targetControl = itemsControl.controls.find(c => c.value != null && c.value.id === id);
@@ -376,7 +439,21 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
       evaluation.forEach((item, index) => {
         const targetItem = items.itemsToEvaluate[index];
-        setQuantity(targetItem.id, item.quantityToBuy);
+
+        if(side === Side.Buy) {
+          if(mode === CalculationMode.Margin) {
+            setQuantity(targetItem.id, item.quantityToBuy);
+          } else {
+            setQuantity(targetItem.id, item.notMarginQuantityToBuy);
+          }
+          return;
+        }
+
+        if(mode === CalculationMode.Margin) {
+          setQuantity(targetItem.id, item.quantityToSell);
+        } else {
+          setQuantity(targetItem.id, item.notMarginQuantityToSell);
+        }
       });
 
       items.skippedItems.forEach(i => {
@@ -422,4 +499,6 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       }
       : null;
   }
+
+  protected readonly CalculationMode = CalculationMode;
 }
