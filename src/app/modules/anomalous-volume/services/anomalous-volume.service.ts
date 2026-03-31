@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, combineLatest, of } from 'rxjs';
 import { catchError, distinctUntilChanged, map, take, takeUntil, tap } from 'rxjs/operators';
 import { Candle } from '../../../shared/models/history/candle.model';
@@ -30,10 +30,8 @@ interface InstrumentRuntime {
   volumes: number[];
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AnomalousVolumeService {
+@Injectable()
+export class AnomalousVolumeService implements OnDestroy {
   private readonly candlesService = inject(CandlesService);
   private readonly instrumentsService = inject(InstrumentsService);
   private readonly historyService = inject(HistoryService);
@@ -42,10 +40,12 @@ export class AnomalousVolumeService {
 
   private readonly items$ = new BehaviorSubject<AnomalousVolumeItem[]>([]);
   private readonly reset$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
   private readonly dedup = new Set<string>();
   private readonly runtime = new Map<string, InstrumentRuntime>();
   private readonly storageKeyPrefix = 'anomalous-volume-items';
   private readonly maxItems = 500;
+  private readonly maxDedupSize = 2000;
   private activeStorageKey = `${this.storageKeyPrefix}:default`;
 
   watch(settings: AnomalousVolumeSettings): Observable<AnomalousVolumeItem[]> {
@@ -96,6 +96,16 @@ export class AnomalousVolumeService {
     }
 
     this.rebuildDedup();
+  }
+
+  ngOnDestroy(): void {
+    this.reset$.next();
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.reset$.complete();
+    this.runtime.clear();
+    this.dedup.clear();
+    this.items$.complete();
   }
 
   private startStreams(settings: AnomalousVolumeSettings, instruments: InstrumentKey[]): void {
@@ -199,14 +209,13 @@ export class AnomalousVolumeService {
       return;
     }
 
-    this.dedup.add(this.buildDedupId(settings.timeframe, item.id));
-
+    this.addToDedup(this.buildDedupId(settings.timeframe, item.id));
     this.pushItem(item);
   }
 
   private processLargeTrade(key: InstrumentKey, trade: AllTradesItem, settings: AnomalousVolumeSettings): void {
-    const minVolume = Math.max(1, settings.largeTradeMinVolume ?? 10000);
-    if (trade.qty < minVolume) {
+    const minVolume = Math.max(0, settings.largeTradeMinVolume ?? 10);
+    if (trade.price * trade.qty < minVolume * 1_000_000) {
       return;
     }
 
@@ -245,7 +254,7 @@ export class AnomalousVolumeService {
       return;
     }
 
-    this.dedup.add(dedupId);
+    this.addToDedup(dedupId);
     this.pushItem(item);
   }
 
@@ -284,6 +293,17 @@ export class AnomalousVolumeService {
     for (const item of this.items$.value) {
       this.dedup.add(this.buildDedupId(tf, item.id));
     }
+  }
+
+  private addToDedup(id: string): void {
+    if (this.dedup.size >= this.maxDedupSize) {
+      const firstKey = this.dedup.values().next().value;
+      if (firstKey != null) {
+        this.dedup.delete(firstKey);
+      }
+    }
+
+    this.dedup.add(id);
   }
 
   private buildDedupId(timeframe: AnomalousVolumeTimeframe, itemId: string): string {

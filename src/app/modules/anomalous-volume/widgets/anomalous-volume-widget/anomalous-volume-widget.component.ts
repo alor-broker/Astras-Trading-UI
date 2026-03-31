@@ -15,6 +15,7 @@ import {
   AnomalousVolumeSettings,
   anomalousVolumeWidgetColumns
 } from '../../models/anomalous-volume-settings.model';
+import { AnomalousVolumeService } from '../../services/anomalous-volume.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { PositionsService } from '../../../../shared/services/positions.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
@@ -33,7 +34,8 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
     WidgetHeaderComponent,
     AnomalousVolumeComponent,
     AnomalousVolumeSettingsComponent
-  ]
+  ],
+  providers: [AnomalousVolumeService]
 })
 export class AnomalousVolumeWidgetComponent implements OnInit {
   private readonly widgetSettingsService = inject(WidgetSettingsService);
@@ -63,7 +65,7 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
       settings => ({
         ...settings,
         instruments: getValueOrDefault(settings.instruments, []),
-        sourceMode: getValueOrDefault(settings.sourceMode, 'manual'),
+        sourceMode: getValueOrDefault(settings.sourceMode, AnomalousVolumeSourceMode.Manual),
         topTurnoverLimit: getValueOrDefault(settings.topTurnoverLimit, 30),
         excludeZeroPositions: getValueOrDefault(settings.excludeZeroPositions, true),
         timeframe: getValueOrDefault(settings.timeframe, '1m'),
@@ -71,7 +73,7 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
         sigmaMultiplier: getValueOrDefault(settings.sigmaMultiplier, 2.5),
         soundAlertEnabled: getValueOrDefault(settings.soundAlertEnabled, true),
         showLargeTrades: getValueOrDefault(settings.showLargeTrades, true),
-        largeTradeMinVolume: getValueOrDefault(settings.largeTradeMinVolume, 10000),
+        largeTradeMinVolume: getValueOrDefault(settings.largeTradeMinVolume, 10),
         maxInstruments: getValueOrDefault(settings.maxInstruments, 50),
         anomalousVolumeColumns: getValueOrDefault(
           settings.anomalousVolumeColumns,
@@ -82,7 +84,7 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
     );
 
     this.settings$ = this.widgetSettingsService.getSettings<AnomalousVolumeSettings>(this.guid);
-    this.sourceMode$ = this.settings$.pipe(map(s => s.sourceMode ?? 'manual'));
+    this.sourceMode$ = this.settings$.pipe(map(s => s.sourceMode ?? AnomalousVolumeSourceMode.Manual));
     this.effectiveSettings$ = this.settings$.pipe(
       switchMap(settings => this.resolveEffectiveSettings(settings))
     );
@@ -94,20 +96,20 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
 
   protected getSourceModeLabel(mode: AnomalousVolumeSourceMode): string {
     switch (mode) {
-      case 'dashboard-instrument':
+      case AnomalousVolumeSourceMode.DashboardInstrument:
         return 'Контекст: инструмент';
-      case 'dashboard-portfolio':
+      case AnomalousVolumeSourceMode.DashboardPortfolio:
         return 'Контекст: портфель';
-      case 'moex-top-turnover-session':
+      case AnomalousVolumeSourceMode.MoexTopTurnoverSession:
         return 'MOEX: топ по обороту (сессия)';
-      case 'manual':
+      case AnomalousVolumeSourceMode.Manual:
       default:
         return 'Ручной список';
     }
   }
 
   private resolveEffectiveSettings(settings: AnomalousVolumeSettings): Observable<AnomalousVolumeSettings> {
-    if (settings.sourceMode === 'dashboard-instrument') {
+    if (settings.sourceMode === AnomalousVolumeSourceMode.DashboardInstrument) {
       return this.dashboardContextService.instrumentsSelection$.pipe(
         map(groups => {
           const current = Object.values(groups)[0] ?? null;
@@ -120,7 +122,7 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
       );
     }
 
-    if (settings.sourceMode === 'dashboard-portfolio') {
+    if (settings.sourceMode === AnomalousVolumeSourceMode.DashboardPortfolio) {
       return this.dashboardContextService.selectedPortfolio$.pipe(
         switchMap(portfolio => this.positionsService.getAllByPortfolio(portfolio.portfolio, portfolio.exchange)),
         map((positions: Position[] | null) => {
@@ -137,7 +139,7 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
       );
     }
 
-    if (settings.sourceMode === 'moex-top-turnover-session') {
+    if (settings.sourceMode === AnomalousVolumeSourceMode.MoexTopTurnoverSession) {
       return this.resolveMoexTopTurnoverSettings(settings);
     }
 

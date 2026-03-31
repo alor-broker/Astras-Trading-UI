@@ -6,7 +6,7 @@ import { InstrumentsService } from '../../instruments/services/instruments.servi
 import { HistoryService } from '../../../shared/services/history.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { AllTradesService } from '../../../shared/services/all-trades.service';
-import { AnomalousVolumeSettings } from '../models/anomalous-volume-settings.model';
+import { AnomalousVolumeSettings, AnomalousVolumeSourceMode } from '../models/anomalous-volume-settings.model';
 import { AnomalousVolumeItem } from '../models/anomalous-volume-item.model';
 
 describe('AnomalousVolumeService', () => {
@@ -16,7 +16,7 @@ describe('AnomalousVolumeService', () => {
   const settings: AnomalousVolumeSettings = {
     guid: 'test-guid',
     instruments: [],
-    sourceMode: 'manual',
+    sourceMode: AnomalousVolumeSourceMode.Manual,
     topTurnoverLimit: 30,
     excludeZeroPositions: true,
     timeframe: '1m',

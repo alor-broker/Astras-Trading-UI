@@ -7,56 +7,65 @@
 >
   <ng-container *transloco="let t; scope: 'anomalous-volume/settings'">
     <form nz-form [nzLayout]="'vertical'" [formGroup]="form">
+
       <nz-form-item>
-        <nz-form-label nzFor="sourceMode">Источник инструментов</nz-form-label>
+        <nz-form-label nzFor="sourceMode">{{ t('anomalousVolumeSettings.sourceModeLabel') }}</nz-form-label>
         <nz-form-control>
           <nz-radio-group formControlName="sourceMode">
-            <label nz-radio [nzValue]="'manual'">Ручной список</label>
-            <label nz-radio [nzValue]="'dashboard-instrument'">Активный инструмент дашборда</label>
-            <label nz-radio [nzValue]="'dashboard-portfolio'">Инструменты портфеля дашборда</label>
-            <label nz-radio [nzValue]="'moex-top-turnover-session'">MOEX: топ по обороту (текущая сессия)</label>
+            <label nz-radio [nzValue]="SourceMode.Manual">{{ t('anomalousVolumeSettings.sourceModeManual') }}</label>
+            <label nz-radio [nzValue]="SourceMode.DashboardInstrument">{{ t('anomalousVolumeSettings.sourceModeDashboardInstrument') }}</label>
+            <label nz-radio [nzValue]="SourceMode.DashboardPortfolio">{{ t('anomalousVolumeSettings.sourceModeDashboardPortfolio') }}</label>
+            <label nz-radio [nzValue]="SourceMode.MoexTopTurnoverSession">{{ t('anomalousVolumeSettings.sourceModeMoexTopTurnover') }}</label>
           </nz-radio-group>
         </nz-form-control>
       </nz-form-item>
 
-      @if (sourceMode === 'moex-top-turnover-session') {
+      @if (sourceMode === SourceMode.MoexTopTurnoverSession) {
         <nz-form-item>
-          <nz-form-label nzFor="topTurnoverLimit">Количество инструментов</nz-form-label>
-          <nz-form-control>
+          <nz-form-label nzFor="topTurnoverLimit">{{ t('anomalousVolumeSettings.topTurnoverLimitLabel') }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="t('anomalousVolumeSettings.topTurnoverLimitError')">
             <ats-input-number formControlName="topTurnoverLimit" [step]="1" />
-            <span class="ant-form-text">Диапазон: 1-50, по умолчанию 30</span>
+            <span class="ant-form-text">{{ t('anomalousVolumeSettings.topTurnoverLimitHint') }}</span>
           </nz-form-control>
         </nz-form-item>
       }
 
-      @if (sourceMode === 'dashboard-instrument') {
+      @if (sourceMode === SourceMode.DashboardInstrument) {
         <nz-form-item>
-          <nz-form-label>Текущий инструмент</nz-form-label>
+          <nz-form-label>{{ t('anomalousVolumeSettings.currentInstrumentLabel') }}</nz-form-label>
           <nz-form-control>
-            <nz-tag nzColor="blue">{{ (currentDashboardInstrumentLabel$ | async) ?? 'Инструмент не выбран' }}</nz-tag>
+            @if (currentDashboardInstrumentLabel$ | async; as label) {
+              <nz-tag nzColor="blue">{{ label }}</nz-tag>
+            } @else {
+              <span class="ant-form-text">{{ t('anomalousVolumeSettings.instrumentNotSelected') }}</span>
+            }
           </nz-form-control>
         </nz-form-item>
       }
 
-      @if (sourceMode === 'dashboard-portfolio') {
+      @if (sourceMode === SourceMode.DashboardPortfolio) {
         <nz-form-item>
-          <nz-form-label>Текущий портфель</nz-form-label>
+          <nz-form-label>{{ t('anomalousVolumeSettings.currentPortfolioLabel') }}</nz-form-label>
           <nz-form-control>
-            <nz-tag nzColor="purple">{{ (currentDashboardPortfolioLabel$ | async) ?? 'Портфель не выбран' }}</nz-tag>
+            @if (currentDashboardPortfolioLabel$ | async; as label) {
+              <nz-tag nzColor="purple">{{ label }}</nz-tag>
+            } @else {
+              <span class="ant-form-text">{{ t('anomalousVolumeSettings.portfolioNotSelected') }}</span>
+            }
           </nz-form-control>
         </nz-form-item>
 
         <nz-form-item>
-          <nz-form-label nzFor="excludeZeroPositions">Фильтрация портфеля</nz-form-label>
+          <nz-form-label nzFor="excludeZeroPositions">{{ t('anomalousVolumeSettings.portfolioFilterLabel') }}</nz-form-label>
           <nz-form-control>
-            <label nz-checkbox formControlName="excludeZeroPositions">Исключить нулевые позиции</label>
+            <label nz-checkbox formControlName="excludeZeroPositions">{{ t('anomalousVolumeSettings.excludeZeroPositions') }}</label>
           </nz-form-control>
         </nz-form-item>
       }
 
-      @if (sourceMode === 'manual') {
+      @if (sourceMode === SourceMode.Manual) {
         <nz-form-item>
-          <nz-form-label nzFor="instrumentSearch">Добавить инструмент</nz-form-label>
+          <nz-form-label nzFor="instrumentSearch">{{ t('anomalousVolumeSettings.addInstrumentLabel') }}</nz-form-label>
           <nz-form-control>
             <ats-instrument-search
               [formControl]="instrumentSearchControl"
@@ -67,10 +76,10 @@
         </nz-form-item>
 
         <nz-form-item>
-          <nz-form-label>Список инструментов</nz-form-label>
+          <nz-form-label>{{ t('anomalousVolumeSettings.instrumentsListLabel') }}</nz-form-label>
           <nz-form-control>
             @if (form.controls.instruments.value.length === 0) {
-              <span class="ant-form-text">Добавьте инструменты для мониторинга</span>
+              <span class="ant-form-text">{{ t('anomalousVolumeSettings.instrumentsListEmpty') }}</span>
             } @else {
               <div class="d-flex flex-wrap" style="gap: 8px;">
                 @for (item of form.controls.instruments.value; track formatInstrument(item); let i = $index) {
@@ -84,23 +93,23 @@
         </nz-form-item>
 
         <nz-form-item>
-          <nz-form-label>Импорт из строки</nz-form-label>
+          <nz-form-label>{{ t('anomalousVolumeSettings.importLabel') }}</nz-form-label>
           <nz-form-control>
             <button nz-button nzType="default" type="button" (click)="toggleImportPanel()">
-              {{ showImport ? 'Скрыть импорт' : 'Импорт списка' }}
+              {{ showImport ? t('anomalousVolumeSettings.importHideButton') : t('anomalousVolumeSettings.importShowButton') }}
             </button>
           </nz-form-control>
         </nz-form-item>
 
         @if (showImport) {
           <nz-form-item>
-            <nz-form-label nzFor="importRaw">Тикеры для импорта</nz-form-label>
+            <nz-form-label nzFor="importRaw">{{ t('anomalousVolumeSettings.importTickersLabel') }}</nz-form-label>
             <nz-form-control>
               <textarea
                 nz-input
                 rows="4"
                 [formControl]="importRawControl"
-                placeholder="SBER, GAZP; LKOH\nMOEX:VTBR"
+                [placeholder]="t('anomalousVolumeSettings.importTickersPlaceholder')"
               ></textarea>
             </nz-form-control>
           </nz-form-item>
@@ -109,7 +118,7 @@
             <nz-form-control>
               <div class="d-flex" style="gap: 8px;">
                 <button nz-button nzType="default" type="button" (click)="validateImportTokens()">
-                  Проверить
+                  {{ t('anomalousVolumeSettings.importValidateButton') }}
                 </button>
                 <button
                   nz-button
@@ -118,7 +127,7 @@
                   [disabled]="!canImportValidated"
                   (click)="importValidatedInstruments()"
                 >
-                  Импортировать ({{ importValidKeys.length }})
+                  {{ t('anomalousVolumeSettings.importButton', { count: importValidKeys.length }) }}
                 </button>
               </div>
             </nz-form-control>
@@ -127,7 +136,7 @@
           <nz-spin [nzSpinning]="importValidationInProgress">
             @if (importValidLabels.length > 0) {
               <nz-form-item>
-                <nz-form-label>Найденные</nz-form-label>
+                <nz-form-label>{{ t('anomalousVolumeSettings.importFoundLabel') }}</nz-form-label>
                 <nz-form-control>
                   <div class="d-flex flex-wrap" style="gap: 8px;">
                     @for (label of importValidLabels; track label) {
@@ -142,7 +151,7 @@
               <nz-alert
                 nzType="warning"
                 nzShowIcon
-                [nzMessage]="'Не найдены: ' + importInvalidTokens.join(', ')"
+                [nzMessage]="t('anomalousVolumeSettings.importNotFoundWarning', { tokens: importInvalidTokens.join(', ') })"
               />
             }
           </nz-spin>
@@ -150,38 +159,38 @@
       }
 
       <nz-form-item>
-        <nz-form-label nzFor="timeframe">Таймфрейм</nz-form-label>
+        <nz-form-label nzFor="timeframe">{{ t('anomalousVolumeSettings.timeframeLabel') }}</nz-form-label>
         <nz-form-control>
           <nz-select formControlName="timeframe" [nzShowSearch]="true">
-            @for (tf of timeframeOptions; track tf) {
-              <nz-option [nzValue]="tf" [nzLabel]="getTimeframeLabel(tf)" />
-            }
+            <nz-option nzValue="1m" [nzLabel]="t('anomalousVolumeSettings.timeframeOption1m')" />
+            <nz-option nzValue="5m" [nzLabel]="t('anomalousVolumeSettings.timeframeOption5m')" />
+            <nz-option nzValue="15m" [nzLabel]="t('anomalousVolumeSettings.timeframeOption15m')" />
           </nz-select>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label nzFor="windowSize">Размер окна</nz-form-label>
-        <nz-form-control>
+        <nz-form-label nzFor="windowSize">{{ t('anomalousVolumeSettings.windowSizeLabel') }}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('anomalousVolumeSettings.windowSizeError')">
           <ats-input-number formControlName="windowSize" [step]="1" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label nzFor="sigmaMultiplier">Множитель сигмы</nz-form-label>
-        <nz-form-control>
+        <nz-form-label nzFor="sigmaMultiplier">{{ t('anomalousVolumeSettings.sigmaLabel') }}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('anomalousVolumeSettings.sigmaError')">
           <ats-input-number formControlName="sigmaMultiplier" [step]="0.1" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label nzFor="anomalousVolumeColumns">Колонки</nz-form-label>
+        <nz-form-label nzFor="anomalousVolumeColumns">{{ t('anomalousVolumeSettings.columnsLabel') }}</nz-form-label>
         <nz-form-control>
           <nz-select
             formControlName="anomalousVolumeColumns"
             nzMode="multiple"
             [nzMaxTagCount]="10"
-            nzPlaceHolder="Выберите колонки для отображения"
+            [nzPlaceHolder]="t('anomalousVolumeSettings.columnsPlaceholder')"
           >
             @for (column of availableColumns; track column.id) {
               <nz-option [nzValue]="column.id" [nzLabel]="column.displayName ?? column.id" />
@@ -191,14 +200,14 @@
       </nz-form-item>
 
       <nz-form-item class="one-row">
-        <nz-form-label nzFor="soundAlertEnabled">Звуковое оповещение</nz-form-label>
+        <nz-form-label nzFor="soundAlertEnabled">{{ t('anomalousVolumeSettings.soundAlertLabel') }}</nz-form-label>
         <nz-form-control>
           <nz-switch formControlName="soundAlertEnabled" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item class="one-row">
-        <nz-form-label nzFor="showLargeTrades">Крупные сделки из ленты</nz-form-label>
+        <nz-form-label nzFor="showLargeTrades">{{ t('anomalousVolumeSettings.showLargeTradesLabel') }}</nz-form-label>
         <nz-form-control>
           <nz-switch formControlName="showLargeTrades" />
         </nz-form-control>
@@ -206,13 +215,13 @@
 
       @if (form.controls.showLargeTrades.value) {
         <nz-form-item>
-          <nz-form-label nzFor="largeTradeMinVolume">Минимальный объём крупной сделки</nz-form-label>
-          <nz-form-control>
+          <nz-form-label nzFor="largeTradeMinVolume">{{ t('anomalousVolumeSettings.largeTradeMinVolumeLabel') }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="t('anomalousVolumeSettings.largeTradeMinVolumeError')">
             <ats-input-number formControlName="largeTradeMinVolume" [step]="1" />
           </nz-form-control>
         </nz-form-item>
       }
+
     </form>
   </ng-container>
 </ats-widget-settings>
-

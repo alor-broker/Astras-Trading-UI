@@ -30,7 +30,6 @@ import { AsyncPipe } from '@angular/common';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { MarketService } from '../../../../shared/services/market.service';
-import { NzMessageService } from 'ng-zorro-antd/message';
 import { map, switchMap, take } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 
@@ -71,13 +70,13 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
   private readonly dashboardContextService = inject(DashboardContextService);
   private readonly instrumentsService = inject(InstrumentsService);
   private readonly marketService = inject(MarketService);
-  private readonly messageService = inject(NzMessageService);
 
   protected settings$!: Observable<AnomalousVolumeSettings>;
 
   readonly availableColumns = anomalousVolumeWidgetColumns;
   readonly timeframeOptions: AnomalousVolumeTimeframe[] = ['1m', '5m', '15m'];
-  readonly sourceModeOptions: AnomalousVolumeSourceMode[] = ['manual', 'dashboard-instrument', 'dashboard-portfolio', 'moex-top-turnover-session'];
+  readonly sourceModeOptions = Object.values(AnomalousVolumeSourceMode);
+  readonly SourceMode = AnomalousVolumeSourceMode;
 
   readonly instrumentSearchControl = new FormControl<InstrumentKey | null>(null);
   readonly importRawControl = this.formBuilder.nonNullable.control('');
@@ -92,27 +91,19 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
   readonly currentDashboardInstrumentLabel$ = this.dashboardContextService.instrumentsSelection$.pipe(
     map(groups => {
       const instrument = Object.values(groups)[0];
-      if (instrument == null) {
-        return 'Инструмент не выбран';
-      }
-
-      return `${instrument.exchange}:${instrument.symbol}`;
+      return instrument != null ? `${instrument.exchange}:${instrument.symbol}` : null;
     })
   );
 
   readonly currentDashboardPortfolioLabel$ = this.dashboardContextService.selectedDashboard$.pipe(
     map(d => {
       const p = d.selectedPortfolio;
-      if (p == null) {
-        return 'Портфель не выбран';
-      }
-
-      return `${p.exchange}:${p.portfolio}`;
+      return p != null ? `${p.exchange}:${p.portfolio}` : null;
     })
   );
 
   readonly form = this.formBuilder.group({
-    sourceMode: this.formBuilder.nonNullable.control<AnomalousVolumeSourceMode>('manual'),
+    sourceMode: this.formBuilder.nonNullable.control<AnomalousVolumeSourceMode>(AnomalousVolumeSourceMode.Manual),
     topTurnoverLimit: this.formBuilder.nonNullable.control(30, [Validators.required, Validators.min(1), Validators.max(50)]),
     instruments: this.formBuilder.nonNullable.control<InstrumentKey[]>([]),
     excludeZeroPositions: this.formBuilder.nonNullable.control(true),
@@ -121,7 +112,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     sigmaMultiplier: this.formBuilder.nonNullable.control(2.5, [Validators.required, Validators.min(0.1), Validators.max(10)]),
     soundAlertEnabled: this.formBuilder.nonNullable.control(true),
     showLargeTrades: this.formBuilder.nonNullable.control(true),
-    largeTradeMinVolume: this.formBuilder.nonNullable.control(10000, [Validators.required, Validators.min(1)]),
+    largeTradeMinVolume: this.formBuilder.nonNullable.control(10, [Validators.required, Validators.min(0.1)]),
     anomalousVolumeColumns: this.formBuilder.nonNullable.control<string[]>(
       anomalousVolumeWidgetColumns.map(c => c.id)
     )
@@ -156,7 +147,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
 
     return {
       ...initialSettings,
-      sourceMode: values.sourceMode ?? 'manual',
+      sourceMode: values.sourceMode ?? AnomalousVolumeSourceMode.Manual,
       topTurnoverLimit: Math.max(1, Math.min(50, Number(values.topTurnoverLimit ?? 30))),
       instruments: (values.instruments ?? []).slice(0, 50),
       excludeZeroPositions: values.excludeZeroPositions ?? true,
@@ -165,7 +156,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
       sigmaMultiplier: Number(values.sigmaMultiplier ?? 2.5),
       soundAlertEnabled: values.soundAlertEnabled ?? true,
       showLargeTrades: values.showLargeTrades ?? true,
-      largeTradeMinVolume: Number(values.largeTradeMinVolume ?? 10000),
+      largeTradeMinVolume: Number(values.largeTradeMinVolume ?? 10),
       anomalousVolumeColumns: values.anomalousVolumeColumns ?? anomalousVolumeWidgetColumns.map(c => c.id)
     };
   }
@@ -173,7 +164,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
   protected setCurrentFormValues(settings: AnomalousVolumeSettings): void {
     this.form.reset();
 
-    this.form.controls.sourceMode.setValue(settings.sourceMode ?? 'manual');
+    this.form.controls.sourceMode.setValue(settings.sourceMode ?? AnomalousVolumeSourceMode.Manual);
     this.form.controls.topTurnoverLimit.setValue(settings.topTurnoverLimit ?? 30);
     this.form.controls.instruments.setValue(settings.instruments ?? []);
     this.form.controls.excludeZeroPositions.setValue(settings.excludeZeroPositions ?? true);
@@ -182,7 +173,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     this.form.controls.sigmaMultiplier.setValue(settings.sigmaMultiplier ?? 2.5);
     this.form.controls.soundAlertEnabled.setValue(settings.soundAlertEnabled ?? true);
     this.form.controls.showLargeTrades.setValue(settings.showLargeTrades ?? true);
-    this.form.controls.largeTradeMinVolume.setValue(settings.largeTradeMinVolume ?? 10000);
+    this.form.controls.largeTradeMinVolume.setValue(settings.largeTradeMinVolume ?? 10);
     this.form.controls.anomalousVolumeColumns.setValue(
       settings.anomalousVolumeColumns?.length
         ? settings.anomalousVolumeColumns
@@ -199,13 +190,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
 
     const current = this.form.controls.instruments.value;
     const merged = this.mergeUniqueInstruments(current, [instrument]);
-    if (merged.length > 50) {
-      this.messageService.warning('Можно выбрать не более 50 инструментов');
-      this.form.controls.instruments.setValue(merged.slice(0, 50));
-    } else {
-      this.form.controls.instruments.setValue(merged);
-    }
-
+    this.form.controls.instruments.setValue(merged.slice(0, 50));
     this.form.controls.instruments.markAsDirty();
     this.instrumentSearchControl.setValue(null);
   }
@@ -238,13 +223,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
       take(1),
       switchMap(defaultExchange => {
         const effectiveDefaultExchange = (defaultExchange ?? 'MOEX').toUpperCase();
-        const prepared = tokens.map(t => ({ token: t, key: this.parseImportToken(t, effectiveDefaultExchange) }));
-
-        let toValidate = prepared;
-        if (prepared.length > 50) {
-          this.messageService.warning('Импорт ограничен 50 тикерами, лишние будут проигнорированы');
-          toValidate = prepared.slice(0, 50);
-        }
+        const toValidate = tokens.slice(0, 50).map(t => ({ token: t, key: this.parseImportToken(t, effectiveDefaultExchange) }));
 
         return forkJoin(
           toValidate.map(x =>
@@ -273,13 +252,7 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     }
 
     const merged = this.mergeUniqueInstruments(this.form.controls.instruments.value, this.importValidKeys);
-    if (merged.length > 50) {
-      this.messageService.warning('Можно сохранить не более 50 инструментов');
-      this.form.controls.instruments.setValue(merged.slice(0, 50));
-    } else {
-      this.form.controls.instruments.setValue(merged);
-    }
-
+    this.form.controls.instruments.setValue(merged.slice(0, 50));
     this.form.controls.instruments.markAsDirty();
     this.showImport = false;
     this.resetImportState();
@@ -300,32 +273,6 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     return hasInstrumentGroup
       ? `${item.exchange}:${item.symbol}:${instrumentGroup}`
       : `${item.exchange}:${item.symbol}`;
-  }
-
-  protected getTimeframeLabel(tf: AnomalousVolumeTimeframe): string {
-    switch (tf) {
-      case '1m':
-        return '1 минута';
-      case '5m':
-        return '5 минут';
-      case '15m':
-      default:
-        return '15 минут';
-    }
-  }
-
-  protected getSourceModeLabel(mode: AnomalousVolumeSourceMode): string {
-    switch (mode) {
-      case 'dashboard-instrument':
-        return 'Контекст: инструмент';
-      case 'dashboard-portfolio':
-        return 'Контекст: портфель';
-      case 'moex-top-turnover-session':
-        return 'MOEX: топ по обороту (сессия)';
-      case 'manual':
-      default:
-        return 'Ручной список';
-    }
   }
 
   private parseImportTokens(raw: string): string[] {

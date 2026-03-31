@@ -3,7 +3,13 @@ import { InstrumentKey } from '../../../shared/models/instruments/instrument-key
 import { BaseColumnId, TableDisplaySettings } from '../../../shared/models/settings/table-settings.model';
 
 export type AnomalousVolumeTimeframe = '1m' | '5m' | '15m';
-export type AnomalousVolumeSourceMode = 'manual' | 'dashboard-instrument' | 'dashboard-portfolio' | 'moex-top-turnover-session';
+
+export enum AnomalousVolumeSourceMode {
+  Manual = 'manual',
+  DashboardInstrument = 'dashboard-instrument',
+  DashboardPortfolio = 'dashboard-portfolio',
+  MoexTopTurnoverSession = 'moex-top-turnover-session'
+}
 
 export interface AnomalousVolumeSettings extends WidgetSettings {
   instruments: InstrumentKey[];

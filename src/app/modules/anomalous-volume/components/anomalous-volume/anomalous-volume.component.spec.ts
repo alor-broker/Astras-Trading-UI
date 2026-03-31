@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AnomalousVolumeComponent } from './anomalous-volume.component';
 import { AnomalousVolumeService } from '../../services/anomalous-volume.service';
-import { AnomalousVolumeSettings } from '../../models/anomalous-volume-settings.model';
+import { AnomalousVolumeSettings, AnomalousVolumeSourceMode } from '../../models/anomalous-volume-settings.model';
 import { AnomalousVolumeItem } from '../../models/anomalous-volume-item.model';
 import { NzContextMenuService } from 'ng-zorro-antd/dropdown';
 import { provideMockStore } from '@ngrx/store/testing';
@@ -52,7 +52,7 @@ describe('AnomalousVolumeComponent', () => {
   const settings: AnomalousVolumeSettings = {
     guid: 'test-guid',
     instruments: [],
-    sourceMode: 'manual',
+    sourceMode: AnomalousVolumeSourceMode.Manual,
     topTurnoverLimit: 30,
     excludeZeroPositions: true,
     timeframe: '1m',
