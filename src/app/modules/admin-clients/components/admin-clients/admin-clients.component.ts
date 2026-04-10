@@ -146,7 +146,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           filterData: {
             filterName: columnBase.displayName,
             filterType: FilterType.Search,
-            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters)
+            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters) as string | undefined
           }
         };
       }
@@ -161,7 +161,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           filterData: {
             filterName: columnBase.displayName,
             filterType: FilterType.Search,
-            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters)
+            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters) as string | undefined
           }
         };
       }
@@ -176,7 +176,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           filterData: {
             filterName: columnBase.displayName,
             filterType: FilterType.Search,
-            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters)
+            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters) as string | undefined
           }
         };
       }
@@ -286,9 +286,27 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     {
       columnId: "portfolioLiquidationValue",
       filler: (columnId, context): BaseColumnSettings<ClientDisplay> => {
+        const savedFilterValue = this.getSavedFilterSState('excludeZeroPortfolioValuation', context.savedFilters) as boolean | undefined;
+
         return {
           ...this.fillColumnBase(columnId, context),
           transformFn: data => this.formatNumber(data.portfolioLiquidationValue),
+          filterData: {
+            filterName: 'excludeZeroPortfolioValuation',
+            filterType: FilterType.Default,
+            filters: [
+              {
+                value: true,
+                text: context.adminTranslator(['columns', columnId.id, 'filters', 'excludeZeroPortfolioValuation']),
+                byDefault: savedFilterValue ?? false
+              },
+              {
+                value: false,
+                text: context.adminTranslator(['columns', columnId.id, 'filters', 'all'])
+              }
+            ],
+            initialValue: savedFilterValue
+          }
         };
       }
     },
@@ -695,13 +713,13 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       );
   }
 
-  protected applyFilters(filters: Record<string, string>): void {
+  protected applyFilters(filters: Record<string, string | string[] | boolean>): void {
     this.filters$.pipe(
       take(1)
     ).subscribe(current => {
       const copy = {
         ...current
-      };
+      } as Record<string, string | string[] | boolean>;
 
       for (const key in filters) {
         if (filters[key] == null || filters[key] === '') {
@@ -722,7 +740,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       && allFilters[name as keyof ClientsSearchFilter] !== '';
   }
 
-  protected nzFilterChange(key: string, value: string): void {
+  protected nzFilterChange(key: string, value: string[]): void {
     this.applyFilters({
       [key]: value
     });
@@ -739,9 +757,9 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     );
   }
 
-  private getSavedFilterSState(columnId: string, filters: ClientsSearchFilter | null): string | undefined {
-    if (filters != null && columnId in filters) {
-      return filters[columnId as keyof ClientsSearchFilter];
+  private getSavedFilterSState(filterKey: string, filters: ClientsSearchFilter | null): string | boolean | string[] | undefined {
+    if (filters != null && filterKey in filters) {
+      return filters[filterKey as keyof ClientsSearchFilter];
     }
 
     return undefined;

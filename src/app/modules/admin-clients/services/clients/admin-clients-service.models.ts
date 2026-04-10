@@ -14,6 +14,8 @@ interface ClientFilterFields {
   clientName: string;
   login: string;
   portfolio: string;
+  portfolios: string[];
+  excludeZeroPortfolioValuation: boolean;
 }
 
 export type ClientsSearchFilter = Partial<ClientFilterFields>;

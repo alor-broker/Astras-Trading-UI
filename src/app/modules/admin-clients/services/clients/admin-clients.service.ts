@@ -28,7 +28,7 @@ export class AdminClientsService {
     page: PageFilter | null,
     sort: SortParams | null
   ): Observable<ClientsSearchResponse | null> {
-    const params: Record<string, string | number | boolean> = {
+    const params: Record<string, string | number | boolean | readonly (string | number | boolean)[]> = {
       ...filters,
       ...page,
       ...sort

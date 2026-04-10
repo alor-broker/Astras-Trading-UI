@@ -50,7 +50,11 @@
     },
     "portfolioLiquidationValue": {
       "displayName": "Оценка портфеля",
-      "tooltip": "Оценка портфеля"
+      "tooltip": "Оценка портфеля",
+      "filters": {
+        "all": "Все",
+        "excludeZeroPortfolioValuation": "Скрыть с нулевой оценкой"
+      }
     },
     "initialMargin": {
       "displayName": "Начальная маржа",

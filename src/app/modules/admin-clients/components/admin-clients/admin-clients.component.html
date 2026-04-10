@@ -52,7 +52,7 @@
                 [nzFilters]="column.filterData?.filters || []"
                 [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
                 [nzCustomFilter]="column.filterData != null && column.filterData.filterType === FilterType.Search"
-                (nzFilterChange)="nzFilterChange(column.id, $event)"
+                (nzFilterChange)="nzFilterChange(column.filterData?.filterName ?? column.id                                                                                                                        , $event)"
                 [nzShowSort]="column.sortChangeFn != null"
                 [nzSortOrder]="vm.sort?.orderBy === column.id ? (vm.sort!.descending ? 'descend' : 'ascend'): null"
                 (nzSortOrderChange)="column.sortChangeFn?.($event)"
