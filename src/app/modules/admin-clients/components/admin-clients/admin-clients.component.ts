@@ -56,8 +56,12 @@ import {ResizeColumnDirective} from "../../../../shared/directives/resize-column
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
+import {LocalStorageService} from "../../../../shared/services/local-storage.service";
+import {NzButtonComponent} from "ng-zorro-antd/button";
 
-type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension>;
+type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension> & {
+  isFavorite: boolean;
+};
 
 interface TableState {
   pageSize?: number;
@@ -80,6 +84,8 @@ interface ColumnBase {
   sortChangeFn: (direction: string | null) => any;
 }
 
+type FavoritePortfolios = string[];
+
 @Component({
   selector: 'ats-admin-clients',
   standalone: true,
@@ -97,7 +103,8 @@ interface ColumnBase {
     NzIconDirective,
     NzMenuDirective,
     NzMenuItemComponent,
-    NzTableModule
+    NzTableModule,
+    NzButtonComponent
   ],
   templateUrl: './admin-clients.component.html',
   styleUrl: './admin-clients.component.less',
@@ -130,6 +137,8 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   }).pipe(
     shareReplay(1)
   );
+
+  protected readonly favorites = signal<FavoritePortfolios>([]);
 
   private readonly locale = inject(LOCALE_ID);
   private readonly hostElement = inject(ElementRef);
@@ -491,9 +500,12 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     }
   ];
 
+  private readonly localStorageService = inject(LocalStorageService);
+
   private settings$!: Observable<AdminClientsSettings>;
 
   private readonly tableStateStorageKey = 'tableState';
+  private readonly favoriteClientsStateStorageKey = 'admin.favoriteClientsState';
 
   private tableState$!: Observable<TableState | null>;
 
@@ -540,6 +552,8 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
         }
       }
     });
+
+    this.favorites.set(this.getFavorites());
 
     super.ngOnInit();
   }
@@ -613,10 +627,12 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           }
 
           this.totalRecords.set(result.total);
+          const favorites = new Set(this.favorites());
 
           return result.items.map(i => ({
             ...i,
-            ...i.spectraExtension
+            ...i.spectraExtension,
+            isFavorite: favorites.has(i.portfolio),
           }));
         }
       ),
@@ -713,7 +729,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       );
   }
 
-  protected applyFilters(filters: Record<string, string | string[] | boolean>): void {
+  protected applyFilters(filters: Record<string, string | string[] | boolean | null>): void {
     this.filters$.pipe(
       take(1)
     ).subscribe(current => {
@@ -755,6 +771,63 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       },
       this.manageDashboardsService
     );
+  }
+
+  protected addToFavorites(client: ClientDisplay): void {
+    this.updateFavorites(
+      [
+        ...this.getFavorites(),
+        client.portfolio
+      ]
+    );
+
+    client.isFavorite = true;
+  }
+
+  protected removeFromFavorites(client: ClientDisplay): void {
+    this.updateFavorites(
+      this.getFavorites().filter(i => i !== client.portfolio),
+    );
+
+    client.isFavorite = false;
+  }
+
+  protected toggleFavorite(client: ClientDisplay): void {
+    if(client.isFavorite) {
+      this.removeFromFavorites(client);
+    } else {
+      this.addToFavorites(client);
+    }
+  }
+
+  protected getFavorites(): FavoritePortfolios {
+    return this.localStorageService.getItem<FavoritePortfolios>(this.favoriteClientsStateStorageKey) ?? [];
+  }
+
+  protected toggleFavoritesFilter(): void {
+    this.filters$.pipe(
+      take(1)
+    ).subscribe(filters => {
+      if((filters.portfolios ?? []).length > 0) {
+        this.applyFilters({portfolios: null});
+      } else {
+        this.applyFilters(
+          {
+            portfolio: '',
+            portfolios: this.favorites()
+          }
+        );
+      }
+    });
+  }
+
+  private updateFavorites(items: FavoritePortfolios): void {
+    this.localStorageService.setItem(
+      this.favoriteClientsStateStorageKey,
+      Array.from(new Set(items))
+    );
+
+    this.favorites.set(this.getFavorites());
   }
 
   private getSavedFilterSState(filterKey: string, filters: ClientsSearchFilter | null): string | boolean | string[] | undefined {

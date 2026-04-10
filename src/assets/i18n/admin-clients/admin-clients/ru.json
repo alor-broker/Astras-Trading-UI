@@ -136,5 +136,10 @@
 
   "contextMenu": {
     "openDashboard": "Открыть дашборд"
+  },
+
+  "favorites": {
+    "itemTooltip": "Добавить/удалить из избранного",
+    "filterTooltip": "Показать только избранные"
   }
 }

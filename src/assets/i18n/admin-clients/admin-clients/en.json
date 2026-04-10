@@ -1,4 +1,4 @@
-﻿{
+{
   "columns": {
     "login": {
       "displayName": "Login",
@@ -50,7 +50,11 @@
     },
     "portfolioLiquidationValue": {
       "displayName": "Portfolio liquidation",
-      "tooltip": "Portfolio liquidation"
+      "tooltip": "Portfolio liquidation",
+      "filters": {
+        "all": "All",
+        "excludeZeroPortfolioValuation": "Hide with zero valuation"
+      }
     },
     "initialMargin": {
       "displayName": "Initial margin",
@@ -129,8 +133,11 @@
       "tooltip": "Oper. risk"
     }
   },
-
   "contextMenu": {
     "openDashboard": "Open dashboard"
+  },
+  "favorites": {
+    "itemTooltip": "Add/remove from favorites",
+    "filterTooltip": "Show favorites only"
   }
 }
