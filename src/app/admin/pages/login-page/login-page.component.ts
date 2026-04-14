@@ -1,11 +1,35 @@
-import { AfterViewInit, Component, contentChildren, ElementRef, OnDestroy, inject } from '@angular/core';
-import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-zorro-antd/form";
-import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
+import {
+  AfterViewInit,
+  Component,
+  contentChildren,
+  ElementRef,
+  inject,
+  OnDestroy
+} from '@angular/core';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from "@angular/forms";
+import {
+  NzFormControlComponent,
+  NzFormDirective,
+  NzFormItemComponent
+} from "ng-zorro-antd/form";
+import {NzInputModule,} from "ng-zorro-antd/input";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {BehaviorSubject, of, switchMap, take, tap} from "rxjs";
-import {filter, map} from "rxjs/operators";
+import {
+  BehaviorSubject,
+  of,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
+import {
+  filter,
+  map
+} from "rxjs/operators";
 import {LetDirective} from "@ngrx/component";
 import {AdminIdentityService} from "../../services/identity/admin-identity.service";
 import {LoginStatus} from "../../services/identity/admin-identity-service.models";
@@ -14,6 +38,7 @@ import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {AdminAuthContextService} from "../../services/auth/admin-auth-context.service";
 import {Router} from "@angular/router";
 import {toObservable} from "@angular/core/rxjs-interop";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 enum LoginErrorCode {
   Unknown = 'unknown',
@@ -27,28 +52,28 @@ enum LoginErrorCode {
     ReactiveFormsModule,
     NzFormItemComponent,
     NzFormControlComponent,
-    NzInputGroupComponent,
-    NzInputDirective,
+    NzInputModule,
     NzButtonComponent,
     TranslocoDirective,
     LetDirective,
     AsyncPipe,
-    NzTypographyComponent
+    NzTypographyComponent,
+    NzIconDirective,
   ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.less'
 })
 export class LoginPageComponent implements OnDestroy, AfterViewInit {
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly adminIdentityService = inject(AdminIdentityService);
-  private readonly adminAuthContextService = inject(AdminAuthContextService);
-  private readonly router = inject(Router);
-
   readonly isLoading$ = new BehaviorSubject(false);
+
   readonly loginError$ = new BehaviorSubject<LoginErrorCode | null>(null);
+
   readonly LoginErrorCodes = LoginErrorCode;
 
   readonly userNameControlQuery = contentChildren<ElementRef<HTMLInputElement>>('userNameControl');
+
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly loginForm = this.formBuilder.nonNullable.group({
     userName: this.formBuilder.nonNullable.control('',
       [
@@ -63,6 +88,12 @@ export class LoginPageComponent implements OnDestroy, AfterViewInit {
       ]
     ),
   });
+
+  private readonly adminIdentityService = inject(AdminIdentityService);
+
+  private readonly adminAuthContextService = inject(AdminAuthContextService);
+
+  private readonly router = inject(Router);
 
   private readonly userNameControlQueryChanges$ = toObservable(this.userNameControlQuery);
 
