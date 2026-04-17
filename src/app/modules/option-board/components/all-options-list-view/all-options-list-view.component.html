@@ -72,7 +72,7 @@
                 </ng-template>
 
                 <nz-collapse-panel [nzHeader]="groupHeader" #panel [nzActive]="$first">
-                  @if (panel.nzActive()) {
+                  @if (panel.active()) {
                     <ng-container *ngrxLet="expiration.strikes$ as options; suspenseTpl: suspense">
                       @if (options != null && options.strikes.length > 0) {
 
