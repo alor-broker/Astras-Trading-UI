@@ -49,6 +49,7 @@ export interface Client {
   commission: number;
   correctedMargin: number;
   turnover: number;
+  clientId: string;
   clientName: string;
   portfolio: string;
   exchange: Exchange;
@@ -67,4 +68,15 @@ export interface SortParams {
 export interface ClientsSearchResponse {
   items: Client[];
   total: number;
+}
+
+export enum RestrictionOrigin {
+  Manual = 'Manual',
+  SocialRating = 'SocialRating',
+  Error = 'Error'
+}
+
+export interface ClientRestriction {
+  restrictionOrigin: RestrictionOrigin;
+  expiresAt?: Date;
 }

@@ -4,6 +4,10 @@
       "displayName": "Логин",
       "tooltip": "Логин клиента"
     },
+    "clientId": {
+      "displayName": "ИД",
+      "tooltip": "ИД клиента"
+    },
     "clientName": {
       "displayName": "Имя",
       "tooltip": "Имя клиента"
@@ -135,7 +139,8 @@
   },
 
   "contextMenu": {
-    "openDashboard": "Открыть дашборд"
+    "openDashboard": "Открыть дашборд",
+    "checkRestrictions": "Проверить ограничения"
   },
 
   "favorites": {

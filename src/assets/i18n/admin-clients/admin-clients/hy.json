@@ -131,10 +131,15 @@
     "posRisk": {
       "displayName": "Օպերատիվ ռիսկ",
       "tooltip": "Ընթացիկ օպերատիվ ռիսկ"
+    },
+    "clientId": {
+      "displayName": "ID",
+      "tooltip": "Հաճախորդի ID"
     }
   },
   "contextMenu": {
-    "openDashboard": "Բացել վահանակը"
+    "openDashboard": "Բացել վահանակը",
+    "checkRestrictions": "Ստուգել սահմանափակումները"
   },
   "favorites": {
     "itemTooltip": "Ավելացնել/հեռացնել ընտրյալներից",

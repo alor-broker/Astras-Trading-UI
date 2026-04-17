@@ -6,6 +6,7 @@ import {
   inject,
   input,
   LOCALE_ID,
+  model,
   OnDestroy,
   OnInit,
   signal
@@ -58,8 +59,9 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 import {LocalStorageService} from "../../../../shared/services/local-storage.service";
 import {NzButtonComponent} from "ng-zorro-antd/button";
+import {AdminClientRestrictionsComponent} from "../admin-client-restrictions/admin-client-restrictions.component";
 
-type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension> & {
+export type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension> & {
   isFavorite: boolean;
 };
 
@@ -81,7 +83,7 @@ interface ColumnBase {
   id: string;
   displayName: string;
   tooltip?: string;
-  sortChangeFn: (direction: string | null) => any;
+  sortChangeFn?: (direction: string | null) => any;
 }
 
 type FavoritePortfolios = string[];
@@ -104,7 +106,8 @@ type FavoritePortfolios = string[];
     NzMenuDirective,
     NzMenuItemComponent,
     NzTableModule,
-    NzButtonComponent
+    NzButtonComponent,
+    AdminClientRestrictionsComponent
   ],
   templateUrl: './admin-clients.component.html',
   styleUrl: './admin-clients.component.less',
@@ -127,7 +130,6 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   protected settingsTableName = 'table';
   protected settingsColumnsName = '';
   protected readonly FilterType = FilterType;
-  protected readonly filterTypes = FilterType;
   protected selectedItem: ClientDisplay | null = null;
   private readonly adminClientsService = inject(AdminClientsService);
   private readonly translatorService = inject(TranslatorService);
@@ -139,6 +141,8 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   );
 
   protected readonly favorites = signal<FavoritePortfolios>([]);
+
+  protected readonly clientToCheckRestrictions = model<Omit<Client, 'spectraExtension'> | null>(null);
 
   private readonly locale = inject(LOCALE_ID);
   private readonly hostElement = inject(ElementRef);
@@ -155,8 +159,19 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           filterData: {
             filterName: columnBase.displayName,
             filterType: FilterType.Search,
-            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters) as string | undefined
+            initialValue: this.getSavedFiltersState(columnId.id, context.savedFilters) as string | undefined
           }
+        };
+      }
+    },
+    {
+      columnId: "clientId",
+      filler: (columnId, context): BaseColumnSettings<ClientDisplay> => {
+        const columnBase = this.fillColumnBase(columnId, context);
+        return {
+          ...columnBase,
+          transformFn: data => data.clientId,
+          sortChangeFn: undefined,
         };
       }
     },
@@ -170,7 +185,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           filterData: {
             filterName: columnBase.displayName,
             filterType: FilterType.Search,
-            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters) as string | undefined
+            initialValue: this.getSavedFiltersState(columnId.id, context.savedFilters) as string | undefined
           }
         };
       }
@@ -185,7 +200,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           filterData: {
             filterName: columnBase.displayName,
             filterType: FilterType.Search,
-            initialValue: this.getSavedFilterSState(columnId.id, context.savedFilters) as string | undefined
+            initialValue: this.getSavedFiltersState(columnId.id, context.savedFilters) as string | undefined
           }
         };
       }
@@ -203,7 +218,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       columnId: "market",
       filler: (columnId, context): BaseColumnSettings<ClientDisplay> => {
         const columnBase = this.fillColumnBase(columnId, context);
-        const filterValue = this.getSavedFilterSState(columnId.id, context.savedFilters);
+        const filterValue = this.getSavedFiltersState(columnId.id, context.savedFilters);
 
         return {
           ...columnBase,
@@ -295,7 +310,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     {
       columnId: "portfolioLiquidationValue",
       filler: (columnId, context): BaseColumnSettings<ClientDisplay> => {
-        const savedFilterValue = this.getSavedFilterSState('excludeZeroPortfolioValuation', context.savedFilters) as boolean | undefined;
+        const savedFilterValue = this.getSavedFiltersState('excludeZeroPortfolioValuation', context.savedFilters) as boolean | undefined;
 
         return {
           ...this.fillColumnBase(columnId, context),
@@ -830,7 +845,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     this.favorites.set(this.getFavorites());
   }
 
-  private getSavedFilterSState(filterKey: string, filters: ClientsSearchFilter | null): string | boolean | string[] | undefined {
+  private getSavedFiltersState(filterKey: string, filters: ClientsSearchFilter | null): string | boolean | string[] | undefined {
     if (filters != null && filterKey in filters) {
       return filters[filterKey as keyof ClientsSearchFilter];
     }

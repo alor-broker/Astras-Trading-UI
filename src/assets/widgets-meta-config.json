@@ -1061,5 +1061,41 @@
       "mobile",
       "admin-selected-portfolio"
     ]
+  },
+  {
+    "typeId": "admin-client-positions",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "AdminClientPositionsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Client Positions",
+      "translations": {
+        "ru": "Позиции клиентов",
+        "en": "Client Positions",
+        "hy": "Իմ հաճախորդները"
+      }
+    },
+    "category": "all",
+    "desktopMeta": {
+      "headerIcon": "file-search",
+      "galleryIcon": "file-search",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 15,
+        "initialWidth": 18
+      },
+      "galleryOrder": 101,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "desktop",
+      "mobile",
+      "admin-selected-portfolio"
+    ]
   }
 ]

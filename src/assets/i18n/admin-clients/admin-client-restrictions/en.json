@@ -1,0 +1,14 @@
+{
+  "title": "Restriction Check",
+  "loadingText": "Checking restrictions for client {{clientName}}",
+  "errorText": "Failed to perform check",
+  "successText": "Client has no restrictions",
+  "foundText": "The following restrictions were found",
+  "restrictionOriginTitle": "Restriction Type",
+  "expiresAtTitle": "Expiration Date",
+  "restrictionOrigins": {
+    "Manual": "Manual Block",
+    "SocialRating": "Automatic Block by Social Rating",
+    "Error": "Automatic Block by Number of Errors"
+  }
+}

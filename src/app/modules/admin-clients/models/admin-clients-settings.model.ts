@@ -11,6 +11,7 @@ export interface AdminClientsSettings extends WidgetSettings {
 
 export const AdminClientsTableColumns: BaseColumnId[] = [
   { id: "login", isDefault: true},
+  { id: "clientId", isDefault: true},
   { id: "clientName", isDefault: true},
   { id: "portfolio", isDefault: true},
   { id: "exchange", isDefault: true},
