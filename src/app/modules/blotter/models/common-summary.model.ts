@@ -22,4 +22,6 @@ export interface CommonSummaryModel {
   riskBeforeForcePositionClosing: number;
   /** Комиссия **/
   commission: number;
+
+  derivativesDebt?: number | null;
 }

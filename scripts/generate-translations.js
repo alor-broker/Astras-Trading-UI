@@ -4,7 +4,7 @@ const { glob } = require('glob');
 
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const API_KEY = '';
-const MODEL = 'google/gemini-3.1-pro-preview';
+const MODEL = 'google/gemini-3-flash-preview';
 const LANGUAGES = [
   { code: 'en', name: 'English' },
   { code: 'hy', name: 'Armenian' }

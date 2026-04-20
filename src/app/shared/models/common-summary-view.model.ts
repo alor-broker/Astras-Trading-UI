@@ -19,4 +19,7 @@ export interface CommonSummaryView {
     riskBeforeForcePositionClosing: string;
     /** Комиссия **/
     commission: string;
+
+    derivativesDebt: string;
+    hasDerivativesDebt: boolean;
 }

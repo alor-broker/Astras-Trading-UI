@@ -30,6 +30,11 @@
         <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioTwoTitle')">{{summary.riskCoverageRatioTwo}}</nz-descriptions-item>
         <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.clientTypeTitle')">{{t('blotterForwardSummary.clientTypeValues.' + summary.clientType, {fallback: summary.clientType})}}</nz-descriptions-item>
         <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskStatusTitle')">{{t('blotterForwardSummary.riskStatusValues.' + summary.riskStatus, {fallback: summary.riskStatus})}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.derivativesDebtTitle')">
+          <span [class.negative-color]="summary.hasDerivativesDebt">
+            {{summary.hasDerivativesDebt ? summary.derivativesDebt : '-'}}
+          </span>
+        </nz-descriptions-item>
       </nz-descriptions>
     }
   </ng-container>
