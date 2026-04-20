@@ -1,0 +1,28 @@
+﻿{
+  "columns": {
+    "symbol": {
+      "displayName": "Тикер",
+      "tooltip": "Тикер"
+    },
+    "exchange": {
+      "displayName": "Биржа",
+      "tooltip": "Биржа"
+    },
+    "portfolio": {
+      "displayName": "Портфель",
+      "tooltip": "Портфель"
+    },
+    "quantityT0": {
+      "displayName": "Кол-во Т0",
+      "tooltip": "Количество позиций с учётом сегодняшних расчётов",
+      "filters": {
+        "all": "Все",
+        "excludeClosedPositions": "Скрыть закрытые"
+      }
+    }
+  },
+
+  "contextMenu": {
+    "openDashboard": "Открыть дашборд"
+  }
+}

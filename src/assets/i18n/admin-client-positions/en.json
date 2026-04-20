@@ -1,0 +1,27 @@
+{
+  "columns": {
+    "symbol": {
+      "displayName": "Symbol",
+      "tooltip": "Symbol"
+    },
+    "exchange": {
+      "displayName": "Exchange",
+      "tooltip": "Exchange"
+    },
+    "portfolio": {
+      "displayName": "Portfolio",
+      "tooltip": "Portfolio"
+    },
+    "quantityT0": {
+      "displayName": "Quantity T0",
+      "tooltip": "Quantity of positions taking into account today's settlements",
+      "filters": {
+        "all": "All",
+        "excludeClosedPositions": "Hide closed"
+      }
+    }
+  },
+  "contextMenu": {
+    "openDashboard": "Open dashboard"
+  }
+}

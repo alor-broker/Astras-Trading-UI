@@ -1,0 +1,126 @@
+<ng-container *transloco="let t; scope: 'admin-client-positions'">
+  <div
+    (nzResizeObserve)="containerSizeChanged($event)"
+    class="h-100"
+    nzResizeObserver
+  >
+    <ng-container
+      *ngrxLet="{
+    contentSize: contentSize$,
+    tableConfig: tableConfig$,
+    tableData: tableData$,
+    valuesTranslator: valuesTranslator$,
+    page: page$,
+    filters: filters$,
+    sort: sort$
+    } as vm"
+    >
+      <nz-table
+        #table
+        (nzPageIndexChange)="changePageOptions({page: $event})"
+        (nzPageSizeChange)="changePageOptions({pageSize: $event})"
+        [nzData]="vm.tableData"
+        [nzFrontPagination]="false"
+        [nzLoading]="isLoading()"
+        [nzPageSizeOptions]="allPageSizes"
+        [nzPageSize]="vm.page.pageSize"
+        [nzScroll]="{ x: (vm.contentSize?.width ?? 0) - 5 + 'px', y: (vm.contentSize?.height ?? 0) - 5 + 'px' }"
+        [nzShowPagination]="true"
+        [nzShowSizeChanger]="true"
+        [nzTotal]="totalRecords()"
+        atsTableRowHeight
+        nzTableLayout="fixed"
+      >
+        <thead>
+        <tr (cdkDropListDropped)="changeColumnOrder($event)"
+            (nzResizeObserve)="headerSizeChanged($event)"
+            cdkDropList
+            cdkDropListOrientation="horizontal"
+            nzResizeObserver>
+
+          <th nzWidth="25px"></th>
+          @for (column of vm.tableConfig.columns; track column.id) {
+            <th
+              (atsWidthChanged)="saveColumnWidth({columnId: column.id, width: $event})"
+              (nzFilterChange)="nzFilterChange(column.filterData?.filterName ?? column.id                                                                                                                        , $event)"
+              (nzSortOrderChange)="column.sortChangeFn?.($event)"
+              [atsResizeColumn]
+              [minWidth]="column.minWidth ?? 50"
+              [nzCustomFilter]="column.filterData != null && column.filterData.filterType === FilterType.Search"
+              [nzFilterMultiple]="column.filterData?.filterType === FilterType.DefaultMultiple"
+              [nzFilters]="column.filterData?.filters || []"
+              [nzShowFilter]="column.filterData != null"
+              [nzShowSort]="column.sortChangeFn != null"
+              [nzSortOrder]="vm.sort?.orderBy === column.id ? (vm.sort!.descending ? 'descend' : 'ascend'): null"
+              [nzWidth]="column.width ? column.width + 'px': null"
+              cdkDrag
+              cdkDragLockAxis="x"
+            >
+                <span
+                  [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                  [nzTooltipTitle]="column.tooltip"
+                  nz-tooltip
+                >
+                  {{ column.displayName }}
+                </span>
+
+              @if (column.filterData != null && column.filterData.filterType === FilterType.Search) {
+                <nz-filter-trigger
+                  (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
+                  [nzActive]="isFilterApplied(column.id, vm.filters)"
+                  [nzDropdownMenu]="filtersMenu"
+                  [nzVisible]="!!column.filterData.isOpenedFilter"
+                >
+                  <i nz-icon nzTheme="fill" nzType="filter"></i>
+                </nz-filter-trigger>
+              }
+            </th>
+          }
+        </tr>
+        </thead>
+
+        <nz-dropdown-menu #filtersMenu="nzDropdownMenu">
+          <ats-table-search-filter (filterChange)="applyFilters($event)"
+                                   [columns]="vm.tableConfig.columns"
+          />
+        </nz-dropdown-menu>
+
+        <tbody>
+          @for (item of table.data; track item) {
+            <tr (contextmenu)="contextMenu($event, menu, item)">
+              <td>
+                <span
+                  (click)="openDashboardForPosition(item)"
+                  [nz-tooltip]=" t('adminClientsAdminClients.contextMenu.openDashboard')"
+                  [nzTooltipMouseEnterDelay]="1"
+                  class="cursor-pointer primary-color">
+                  <nz-icon nzTheme="outline" nzType="appstore-add"/>
+                </span>
+              </td>
+
+              @for (column of vm.tableConfig.columns; track column.id) {
+                <td>
+                  <span>
+                    @if (column.transformFn != null) {
+                      {{ column.transformFn(item) }}
+                    }
+                  </span>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+
+      <nz-dropdown-menu #menu="nzDropdownMenu">
+        <ul nz-menu>
+          <li (click)="openDashboardForPosition(this.selectedItem!)" nz-menu-item>
+            <span>
+              <i class="primary-color" nz-icon nzTheme="outline"
+                 nzType="appstore-add"></i>{{ t('adminClientsAdminClients.contextMenu.openDashboard') }}</span>
+          </li>
+        </ul>
+      </nz-dropdown-menu>
+    </ng-container>
+  </div>
+</ng-container>

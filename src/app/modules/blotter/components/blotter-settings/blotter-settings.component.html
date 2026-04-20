@@ -5,8 +5,10 @@
   (saveClick)="updateSettings()"
   (copyClick)="createWidgetCopy()"
   >
+  @let user = userContext.getUser() | async;
+  @let deviceInfo = deviceInfo$ | async;
   <ng-container *transloco="let t; scope: 'blotter/settings'">
-    @if (deviceInfo$ | async; as deviceInfo) {
+    @if (user != null && deviceInfo != null) {
       <div>
         <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
           @if (!deviceInfo.isMobile) {
@@ -144,10 +146,12 @@
               </nz-form-control>
             </nz-form-item>
           }
-          <nz-form-item>
-            <nz-form-label nzFor="cancelOrdersWithoutConfirmation">{{t('blotterSettings.cancelWithoutConfirmLabel')}}</nz-form-label>
-            <nz-switch formControlName='cancelOrdersWithoutConfirmation' />
-          </nz-form-item>
+          @if(canCancelOrders(user)) {
+            <nz-form-item>
+              <nz-form-label nzFor="cancelOrdersWithoutConfirmation">{{t('blotterSettings.cancelWithoutConfirmLabel')}}</nz-form-label>
+              <nz-switch formControlName='cancelOrdersWithoutConfirmation' />
+            </nz-form-item>
+          }
           <nz-divider />
           <nz-form-item>
             <nz-form-label nzFor="showPositions">
@@ -192,7 +196,7 @@
               </nz-form-control>
             </nz-form-item>
           }
-          @if (form.value.showPositions) {
+          @if (form.value.showPositions && canChangePositions(user)) {
             <nz-form-item>
               <nz-form-label nzFor="showPositionActions">
                 {{t('blotterSettings.showPositionActionsLabel')}}

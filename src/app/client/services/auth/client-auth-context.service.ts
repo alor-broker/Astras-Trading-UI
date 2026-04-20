@@ -1,6 +1,6 @@
-import { Injectable, OnDestroy, inject } from '@angular/core';
+import {inject, Injectable, OnDestroy} from '@angular/core';
 import {Observable, of, shareReplay, switchMap, take} from 'rxjs';
-import {Role, User} from 'src/app/shared/models/user/user.model';
+import {Permission, Role, User} from 'src/app/shared/models/user/user.model';
 import {catchError, filter, map} from "rxjs/operators";
 import {HttpClient, HttpContext} from "@angular/common/http";
 import {ComponentStore} from "@ngrx/component-store";
@@ -210,7 +210,13 @@ export class ClientAuthContextService implements UserContext, SessionContext, On
             clientId: jwtBody.clientid,
             login: jwtBody.sub,
             portfolios: (jwtBody.portfolios as string | undefined)?.split(' ') ?? [],
-            roles: [Role.Client]
+            roles: [Role.Client],
+            permissions: [
+              Permission.EditOrder,
+              Permission.CancelOrder,
+              Permission.ClosePosition,
+              Permission.ReversePosition
+            ]
           },
           expirationTime: jwtBody.exp * 1000,
         } as JwtState;

@@ -331,6 +331,15 @@
           "cols": 50,
           "rows": 15
         }
+      },
+      {
+        "widgetTypeId": "admin-client-positions",
+        "position": {
+          "x": 0,
+          "y": 15,
+          "cols": 18,
+          "rows": 15
+        }
       }
     ]
   },
