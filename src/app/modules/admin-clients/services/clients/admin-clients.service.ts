@@ -1,24 +1,30 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable } from "rxjs";
 import {
+  inject,
+  Injectable
+} from '@angular/core';
+import {Observable} from "rxjs";
+import {
+  ClientRestriction,
   ClientsSearchFilter,
   ClientsSearchResponse,
   PageFilter,
   SortParams
 } from "./admin-clients-service.models";
-import { HttpClient } from "@angular/common/http";
-import { map } from "rxjs/operators";
-import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
-import { EnvironmentService } from "../../../../shared/services/environment.service";
-import { catchHttpError } from "../../../../shared/utils/observable-helper";
-import { Market } from "../../../../../generated/graphql.types";
+import {HttpClient} from "@angular/common/http";
+import {map} from "rxjs/operators";
+import {ErrorHandlerService} from "../../../../shared/services/handle-error/error-handler.service";
+import {EnvironmentService} from "../../../../shared/services/environment.service";
+import {catchHttpError} from "../../../../shared/utils/observable-helper";
+import {Market} from "../../../../../generated/graphql.types";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminClientsService {
   private readonly httpClient = inject(HttpClient);
+
   private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly environmentService = inject(EnvironmentService);
 
   private readonly baseUrl = this.environmentService.apiUrl;
@@ -28,7 +34,7 @@ export class AdminClientsService {
     page: PageFilter | null,
     sort: SortParams | null
   ): Observable<ClientsSearchResponse | null> {
-    const params: Record<string, string | number | boolean> = {
+    const params: Record<string, string | number | boolean | readonly (string | number | boolean)[]> = {
       ...filters,
       ...page,
       ...sort
@@ -53,6 +59,28 @@ export class AdminClientsService {
             market: item.market.toUpperCase() as Market
           }))
         };
+      })
+    );
+  }
+
+  getClientRestrictions(clientId: string): Observable<ClientRestriction[] | null> {
+    return this.httpClient.get<ClientRestriction[]>(
+      `${this.baseUrl}/admincomposer/clients/${clientId}/restrictions`,
+    ).pipe(
+      catchHttpError<ClientRestriction[] | undefined>(undefined, this.errorHandlerService),
+      map(r => {
+        if (r === undefined) {
+          return null;
+        }
+
+        if(r == null) {
+          return [];
+        }
+
+        return r.map(i => ({
+          ...i,
+          expiresAt: i.expiresAt != null ? new Date(i.expiresAt) : undefined
+        }));
       })
     );
   }

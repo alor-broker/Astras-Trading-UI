@@ -9,8 +9,6 @@ import {
   Store
 } from '@ngrx/store';
 import {
-  asyncScheduler,
-  subscribeOn,
   take
 } from 'rxjs';
 import { LocalStorageAdminConstants } from 'src/app/shared/constants/local-storage.constants';
@@ -72,19 +70,7 @@ export class AdminSettingsBrokerService {
     this.addActionSubscription(
       WidgetSettingsEventsActions.updated,
       action => {
-        this.manageDashboardsService.allDashboards$.pipe(
-          take(1),
-          subscribeOn(asyncScheduler)
-        ).subscribe(allDashboards => {
-          const mainDashboard = allDashboards.find(d => d.type === AdminDashboardType.AdminMain);
-          if(mainDashboard == null) {
-            return;
-          }
-
-          const mainDashboardItems = new Set(mainDashboard.items.map(i => i.guid));
-
-          saveSettings(action.settings.filter(s => mainDashboardItems.has(s.guid)));
-        });
+        saveSettings(action.settings);
       }
     );
 
@@ -105,7 +91,7 @@ export class AdminSettingsBrokerService {
     this.addActionSubscription(
       DashboardsEventsActions.updated,
       action => {
-        saveDashboard(action.dashboards.filter(d => d.type === AdminDashboardType.AdminMain));
+        saveDashboard(action.dashboards);
       }
     );
 

@@ -1,7 +1,37 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    td, th {
+      &.favorites {
+        &.active {
+          .anticon {
+            color: orange;
+          }
+        }
+      }
+    }
+  }
+});
+
 :host {
   ::ng-deep {
     .ant-table-pagination {
       margin-bottom: 0;
+    }
+  }
+
+  td {
+    &.favorites {
+      opacity: 0.4;
+
+      &.active {
+        opacity: 1;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 }

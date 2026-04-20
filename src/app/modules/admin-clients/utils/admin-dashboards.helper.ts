@@ -1,14 +1,9 @@
-﻿import {
-  combineLatest,
-  take
-} from "rxjs";
-import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
-import {
-  AdminDashboardType,
-  DefaultDesktopDashboardConfig
-} from "../../../shared/models/dashboard/dashboard.model";
-import { GuidGenerator } from "../../../shared/utils/guid";
+﻿import {combineLatest, take} from "rxjs";
+import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
+import {ManageDashboardsService} from "../../../shared/services/manage-dashboards.service";
+import {AdminDashboardType, DefaultDesktopDashboardConfig} from "../../../shared/models/dashboard/dashboard.model";
+import {GuidGenerator} from "../../../shared/utils/guid";
+import {ArrayHelper} from "../../../shared/utils/array-helper";
 
 export class AdminDashboardsHelper {
   static openDashboardForPortfolio(
@@ -25,6 +20,16 @@ export class AdminDashboardsHelper {
 
       if (existingDashboard != null) {
         manageDashboardsService.selectDashboard(existingDashboard.guid);
+        return;
+      }
+
+      const otherSelectedPortfolioDashboard = ArrayHelper.lastOrNull(x.allDashboards.filter(d => d.type === AdminDashboardType.AdminSelectedPortfolio));
+      if(otherSelectedPortfolioDashboard != null) {
+        manageDashboardsService.copyDashboard(
+          otherSelectedPortfolioDashboard.guid,
+          dashboardTitle,
+          selectedPortfolio
+        );
         return;
       }
 

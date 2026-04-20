@@ -34,6 +34,7 @@ import {
   DashboardsManageActions
 } from "../../store/dashboards/dashboards-actions";
 import { HttpContextTokens } from "../constants/http.constants";
+import {PortfolioKey} from "../models/portfolio-key.model";
 
 @Injectable({
   providedIn: 'root',
@@ -124,8 +125,11 @@ export class ManageDashboardsService {
     this.store.dispatch(DashboardsManageActions.remove({ dashboardGuid: guid }));
   }
 
-  copyDashboard(guid: string): void {
-    this.store.dispatch(DashboardsManageActions.copy({ dashboardGuid: guid }));
+  copyDashboard(
+    guid: string,
+    title?: string,
+    selectedPortfolio?: PortfolioKey): void {
+    this.store.dispatch(DashboardsManageActions.copy({ dashboardGuid: guid, selectedPortfolio, title }));
   }
 
   addDashboard(title: string): void {

@@ -34,6 +34,10 @@ import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {LoadingIndicatorComponent} from '../../../../shared/components/loading-indicator/loading-indicator.component';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {AsyncPipe} from '@angular/common';
+import {
+  FuturesGluingType,
+  FuturesInstrumentHelper
+} from "../../utils/futures-instrument.helper";
 
 @Component({
   selector: 'ats-instrument-search-modal',
@@ -196,6 +200,14 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
           }
         }, 0);
       });
+  }
+
+  protected isFuturesGluing(instrumentKey: InstrumentKey): boolean {
+    return FuturesInstrumentHelper.isFuturesGluing(instrumentKey.symbol);
+  }
+
+  protected getGluingType(instrumentKey: InstrumentKey): FuturesGluingType | null {
+    return FuturesInstrumentHelper.getGluingType(instrumentKey.symbol);
   }
 
   private readonly expressionValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {

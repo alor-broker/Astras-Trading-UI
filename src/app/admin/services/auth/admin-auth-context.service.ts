@@ -104,7 +104,8 @@ export class AdminAuthContextService implements UserContext, SessionContext, OnD
         clientId: jwtBody.clientid,
         login: jwtBody.sub,
         portfolios: (jwtBody.portfolios as string | undefined)?.split(' ') ?? [],
-        roles: [Role.Admin]
+        roles: [Role.Admin],
+        permissions: []
       },
       expirationTime: jwtBody.exp * 1000,
     };
