@@ -75,6 +75,8 @@ import { ChartContext } from "../../extensions/base.extension";
 import { PositionDisplayExtension } from "../../extensions/position-display.extension";
 import { OrdersDisplayExtension } from "../../extensions/orders-display.extension";
 import { HashMap } from "node_modules/@jsverse/transloco/lib/utils/type.utils";
+import {FuturesInstrumentHelper} from "../../utils/futures-instrument.helper";
+import {InstrumentSearchModalComponent} from "../instrument-search-modal/instrument-search-modal.component";
 
 interface ExtendedSettings { widgetSettings: TechChartSettings, instrument: Instrument }
 
@@ -83,15 +85,19 @@ interface ChartState {
 }
 
 @Component({
-    selector: 'ats-tech-chart',
-    templateUrl: './tech-chart.component.html',
-    styleUrls: ['./tech-chart.component.less'],
-    providers: [
-        TechChartDatafeedService,
-        PositionDisplayExtension,
-        OrdersDisplayExtension,
-        TradesDisplayExtension
-    ]
+  selector: 'ats-tech-chart',
+  templateUrl: './tech-chart.component.html',
+  styleUrls: ['./tech-chart.component.less'],
+  imports: [
+    InstrumentSearchModalComponent
+  ],
+  providers: [
+    TechChartDatafeedService,
+    PositionDisplayExtension,
+    OrdersDisplayExtension,
+    TradesDisplayExtension,
+    InstrumentSearchService
+  ]
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly settingsService = inject(WidgetSettingsService);
@@ -458,6 +464,19 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
             });
         } else {
           const instrumentKey = toInstrumentKey((<RegularInstrumentKey>SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(chartSymbol)).instrument);
+          const isFuturesGluing = FuturesInstrumentHelper.isFuturesGluing(instrumentKey.symbol);
+
+          if(isFuturesGluing) {
+            this.settingsService.updateSettings<TechChartSettings>(
+              settings.widgetSettings.guid,
+              {
+                ...instrumentKey,
+                linkToActive: false
+              }
+            );
+
+            return;
+          }
 
           if (settings.widgetSettings.linkToActive ?? false) {
             this.actionsContext.selectInstrument(instrumentKey, settings.widgetSettings.badgeColor ?? defaultBadgeColor);
@@ -514,7 +533,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private selectPrice(price: number): void {
-    if (!this.chartState?.widget || SyntheticInstrumentsHelper.isSyntheticInstrument(this.chartState.widget.activeChart().symbol())) {
+    if (
+      !this.chartState?.widget
+      || SyntheticInstrumentsHelper.isSyntheticInstrument(this.chartState.widget.activeChart().symbol())
+    ) {
       return;
     }
 
@@ -525,6 +547,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     }).pipe(
       take(1)
     ).subscribe(x => {
+      if(FuturesInstrumentHelper.isFuturesGluing(toInstrumentKey(x.settings.widgetSettings as InstrumentKey).symbol)) {
+        return;
+      }
+
       const roundedPrice = MathHelper.roundByMinStepMultiplicity(price, x.settings.instrument.minstep);
       if(this.ordersDialogService.dialogOptions.isNewOrderDialogSupported) {
         const relatedWidgets = x.currentDashboard.items
