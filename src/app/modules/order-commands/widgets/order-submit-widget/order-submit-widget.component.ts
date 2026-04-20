@@ -58,6 +58,7 @@ import {
 } from '../../../push-notifications/components/setup-instrument-notifications/setup-instrument-notifications.component';
 import {OrderSubmitSettingsComponent} from '../../components/order-submit-settings/order-submit-settings.component';
 import {AsyncPipe} from '@angular/common';
+import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 @Component({
   selector: 'ats-order-submit-widget',
@@ -65,6 +66,7 @@ import {AsyncPipe} from '@angular/common';
   styleUrls: ['./order-submit-widget.component.less'],
   providers: [
     CommonParametersService,
+    MarginOrderConfirmationService,
     ConfirmableOrderCommandsService
   ],
   imports: [

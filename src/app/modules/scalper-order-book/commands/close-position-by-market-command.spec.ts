@@ -86,7 +86,8 @@ describe('ClosePositionByMarketCommand', () => {
         {
           side: Side.Sell,
           quantity: position1.qtyTFutureBatch,
-          instrument: testInstrumentKey1
+          instrument: testInstrumentKey1,
+          allowMargin: undefined
         } as NewMarketOrder,
         portfolioKey.portfolio
       );
@@ -103,7 +104,8 @@ describe('ClosePositionByMarketCommand', () => {
         {
           side: Side.Buy,
           quantity: Math.abs(position2.qtyTFutureBatch),
-          instrument: testInstrumentKey2
+          instrument: testInstrumentKey2,
+          allowMargin: undefined
         } as NewMarketOrder,
         portfolioKey.portfolio
       );

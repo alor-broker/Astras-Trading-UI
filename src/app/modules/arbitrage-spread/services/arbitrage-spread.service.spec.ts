@@ -3,13 +3,20 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ArbitrageSpreadService } from './arbitrage-spread.service';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { QuotesService } from "../../../shared/services/quotes.service";
-import { of, filter, take, skip } from "rxjs";
+import {
+  of,
+  filter,
+  take,
+  skip,
+  Observable
+} from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
 import { ArbitrageSpread } from "../models/arbitrage-spread.model";
 import {
   ORDER_COMMAND_SERVICE_TOKEN
 } from "../../../shared/services/orders/order-command.service";
+import {MarginOrderConfirmationService} from "../../../shared/services/orders/margin-order-notification.service";
 
 const spreadItem: ArbitrageSpread = {
   id: 'spreadId',
@@ -70,6 +77,12 @@ describe('ArbitrageSpreadService', () => {
         {
           provide: PortfolioSubscriptionsService,
           useValue: portfolioSubscriptionsServiceSpy
+        },
+        {
+          provide: MarginOrderConfirmationService,
+          useValue: {
+            checkWithConfirmationMultiple: (): Observable<boolean> => of(true)
+          }
         }
       ]
     });
@@ -273,7 +286,8 @@ describe('ArbitrageSpreadService', () => {
     expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledWith({
         instrument: spreadItem.firstLeg.instrument,
         side: Side.Buy,
-        quantity: spreadItem.firstLeg.quantity
+        quantity: spreadItem.firstLeg.quantity,
+        allowMargin: true
       },
       spreadItem.firstLeg.portfolio.portfolio
     );
@@ -281,7 +295,8 @@ describe('ArbitrageSpreadService', () => {
     expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledWith({
         instrument: spreadItem.secondLeg.instrument,
         side: Side.Sell,
-        quantity: spreadItem.secondLeg.quantity
+        quantity: spreadItem.secondLeg.quantity,
+        allowMargin: true
       },
       spreadItem.secondLeg.portfolio.portfolio
     );

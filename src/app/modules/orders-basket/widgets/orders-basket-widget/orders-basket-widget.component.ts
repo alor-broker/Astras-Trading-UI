@@ -18,6 +18,7 @@ import {WidgetHeaderComponent} from '../../../../shared/components/widget-header
 import {OrdersBasketComponent} from '../../components/orders-basket/orders-basket.component';
 import {OrdersBasketSettingsComponent} from '../../components/orders-basket-settings/orders-basket-settings.component';
 import {AsyncPipe} from '@angular/common';
+import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 @Component({
   selector: 'ats-orders-basket-widget',
@@ -30,6 +31,9 @@ import {AsyncPipe} from '@angular/common';
     OrdersBasketComponent,
     OrdersBasketSettingsComponent,
     AsyncPipe
+  ],
+  providers: [
+    MarginOrderConfirmationService
   ]
 })
 export class OrdersBasketWidgetComponent implements OnInit {

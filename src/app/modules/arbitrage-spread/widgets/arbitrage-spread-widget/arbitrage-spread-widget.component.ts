@@ -13,6 +13,7 @@ import {
 } from '../arbitrage-spread-modal-widget/arbitrage-spread-modal-widget.component';
 import {AsyncPipe} from '@angular/common';
 import {ArbitrageSpreadService} from "../../services/arbitrage-spread.service";
+import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 @Component({
   selector: 'ats-arbitrage-spread-widget',
@@ -26,7 +27,10 @@ import {ArbitrageSpreadService} from "../../services/arbitrage-spread.service";
     ArbitrageSpreadModalWidgetComponent,
     AsyncPipe
   ],
-  providers: [ArbitrageSpreadService]
+  providers: [
+    ArbitrageSpreadService,
+    MarginOrderConfirmationService
+  ]
 })
 export class ArbitrageSpreadWidgetComponent implements OnInit {
   private readonly widgetSettingsService = inject(WidgetSettingsService);

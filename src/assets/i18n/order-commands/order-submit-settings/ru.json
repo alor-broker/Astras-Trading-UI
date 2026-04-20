@@ -13,5 +13,6 @@
   "volumeLabel": "Объём",
   "advancedHeader": "Продвинутые",
   "instrumentGroupLabel": "Режим торгов",
-  "instrumentGroupError": "Выберите режим торгов"
+  "instrumentGroupError": "Выберите режим торгов",
+  "skipMarginOrderConfirmationLabel": "Разрешить сделки, которые могут привести к открытию непокрытой позиции (только для клиентов низкого уровня риска)"
 }
