@@ -49,16 +49,18 @@
       </div>
       }
 
-      <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.marketTrendsTitle') }}</span>
-      <ats-market-trends (instrumentSelected)="openOrder($event)" (showMore)="openAllInstruments($event)"
-        [extendedFilter]="settings.marketTrendsExtendedFilter ?? []"
-        [itemsCount]="settings.marketTrendsItemsCount ?? 10" [marketFilters]="{
+      @if(settings.showMarketTrends ?? true) {
+        <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.marketTrendsTitle') }}</span>
+        <ats-market-trends (instrumentSelected)="openOrder($event)" (showMore)="openAllInstruments($event)"
+                           [extendedFilter]="settings.marketTrendsExtendedFilter ?? []"
+                           [itemsCount]="settings.marketTrendsItemsCount ?? 10" [marketFilters]="{
         targetMarkets: settings.marketTrendsMarkets,
         ignoredBoards: settings.marketTrendsIgnoredBoards,
         instrumentTypes: settings.marketTrendsInstrumentTypes,
         minTradeAmount: settings.marketTrendsMinTradeAmount,
         minCapitalization: settings.marketTrendsMinCapitalization
         }" [sectors]="settings.marketTrendsSectors ?? []" />
+      }
 
       @if (settings.showIdeas ?? false) {
       <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.ideasTitle') }}</span>
