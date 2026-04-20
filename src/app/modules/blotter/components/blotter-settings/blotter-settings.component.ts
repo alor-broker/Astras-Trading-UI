@@ -40,6 +40,9 @@ import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 import {RemoveSelectTitlesDirective} from '../../../../shared/directives/remove-select-titles.directive';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {AsyncPipe} from '@angular/common';
+import {USER_CONTEXT, UserContext} from "../../../../shared/services/auth/user-context";
+import {PermissionsHelper} from "../../../../shared/utils/permissions.helper";
+import {Permission, User} from "../../../../shared/models/user/user.model";
 
 @Component({
   selector: 'ats-blotter-settings',
@@ -73,6 +76,7 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
   private readonly store = inject(Store);
   private readonly deviceService = inject(DeviceService);
   private readonly formBuilder = inject(FormBuilder);
+  protected readonly userContext = inject<UserContext>(USER_CONTEXT);
   readonly pushNotificationsConfig = inject<PushNotificationsConfig>(PUSH_NOTIFICATIONS_CONFIG);
 
   form = this.formBuilder.group({
@@ -163,6 +167,15 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
 
   toPortfolioKey(portfolio: { portfolio: string, exchange: string }): string {
     return `${portfolio.portfolio}:${portfolio.exchange}`;
+  }
+
+  protected canCancelOrders(user: User): boolean {
+    return PermissionsHelper.hasPermission(user, Permission.CancelOrder);
+  }
+
+  protected canChangePositions(user: User): boolean {
+    return PermissionsHelper.hasPermission(user, Permission.ClosePosition)
+      || PermissionsHelper.hasPermission(user, Permission.ReversePosition);
   }
 
   protected getUpdatedSettings(initialSettings: BlotterSettings): Partial<BlotterSettings> {

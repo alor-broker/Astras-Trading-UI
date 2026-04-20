@@ -62,6 +62,7 @@
                             <ats-limit-order-price-change [instrument]="currentInstrument"
                               [currentPortfolio]="currentPortfolio"
                               [steps]="settings.limitOrderPriceMoveSteps"
+                              [skipMarginOrderConfirmation]="settings.skipMarginOrderConfirmation ?? false"
                              />
                           </div>
                         }

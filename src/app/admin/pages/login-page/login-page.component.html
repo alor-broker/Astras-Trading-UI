@@ -4,25 +4,25 @@
     <form [formGroup]="loginForm" nz-form>
       <nz-form-item>
         <nz-form-control [nzErrorTip]="t('validationErrors.emptyFieldError')">
-          <nz-input-group nzPrefixIcon="user">
+          <nz-input-wrapper>
             <input
               #userNameControl
               [placeholder]="t('adminLoginPage.userNameLabel')"
               formControlName="userName"
               nz-input
               type="text"/>
-            </nz-input-group>
+            <nz-icon nzInputSuffix nzType="user" />
+          </nz-input-wrapper>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-control [nzErrorTip]="t('validationErrors.emptyFieldError')">
-            <nz-input-group nzPrefixIcon="lock">
+            <nz-input-password>
               <input
                 [placeholder]="t('adminLoginPage.passwordLabel')"
                 formControlName="password"
-                nz-input
-                type="password"/>
-              </nz-input-group>
+                nz-input/>
+            </nz-input-password>
             </nz-form-control>
           </nz-form-item>
           <ng-container *ngrxLet="isLoading$ as isLoading">

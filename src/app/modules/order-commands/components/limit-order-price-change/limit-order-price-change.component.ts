@@ -1,10 +1,28 @@
-import { Component, input, OnInit, inject } from '@angular/core';
-import {combineLatest, Observable, shareReplay, take, withLatestFrom} from "rxjs";
+import {
+  Component,
+  inject,
+  input,
+  OnInit
+} from '@angular/core';
+import {
+  combineLatest,
+  Observable,
+  shareReplay,
+  take,
+  withLatestFrom
+} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {Order, OrderType} from "../../../../shared/models/orders/order.model";
+import {
+  Order,
+  OrderType
+} from "../../../../shared/models/orders/order.model";
 import {Side} from "../../../../shared/models/enums/side.model";
 import {mapWith} from "../../../../shared/utils/observable-helper";
-import {filter, map, startWith} from "rxjs/operators";
+import {
+  filter,
+  map,
+  startWith
+} from "rxjs/operators";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
@@ -13,10 +31,14 @@ import {
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
 import {TranslocoDirective} from '@jsverse/transloco';
-import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
+import {
+  AsyncPipe,
+  NgTemplateOutlet
+} from '@angular/common';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {toObservable} from "@angular/core/rxjs-interop";
+import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 @Component({
   selector: 'ats-limit-order-price-change',
@@ -31,14 +53,18 @@ import {toObservable} from "@angular/core/rxjs-interop";
   ]
 })
 export class LimitOrderPriceChangeComponent implements OnInit {
-  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
-  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
-
   readonly orderSides = Side;
+
   activeLimitOrders$!: Observable<Order[]>;
+
   readonly steps = input.required<number[]>();
+
   readonly instrument = input.required<Instrument>();
+
   readonly currentPortfolio = input.required<PortfolioKey>();
+
+  readonly skipMarginOrderConfirmation = input(false);
+
   protected readonly instrumentChanges$ = toObservable(this.instrument)
     .pipe(
       startWith(null),
@@ -50,6 +76,12 @@ export class LimitOrderPriceChangeComponent implements OnInit {
       startWith(null),
       shareReplay(1)
     );
+
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+
+  private readonly marginOrderConfirmationService = inject(MarginOrderConfirmationService);
 
   get sortedSteps(): number[] {
     return [...this.steps()].sort((a, b) => a - b);
@@ -71,6 +103,30 @@ export class LimitOrderPriceChangeComponent implements OnInit {
   }
 
   updateLimitOrdersPrice(step: number, side: Side): void {
+    if (this.skipMarginOrderConfirmation()) {
+      this.updateOrdersPrice(step, side, null);
+    } else {
+      const currentPortfolio = this.currentPortfolio();
+      this.marginOrderConfirmationService.checkWithConfirmation({
+        portfolio: currentPortfolio.portfolio,
+        exchange: currentPortfolio.exchange
+      }).pipe(
+        take(1)
+      ).subscribe(isConfirmed => this.updateOrdersPrice(step, side, isConfirmed));
+    }
+  }
+
+  protected getInstrumentWithPortfolio(): Observable<{ instrument: Instrument, portfolioKey: PortfolioKey }> {
+    return combineLatest({
+      instrument: this.instrumentChanges$,
+      portfolioKey: this.currentPortfolioChanges$
+    }).pipe(
+      filter(x => !!x.instrument && !!x.portfolioKey),
+      map(x => ({instrument: x.instrument!, portfolioKey: x.portfolioKey!}))
+    );
+  }
+
+  private updateOrdersPrice(step: number, side: Side, marginOrderConfirmed: boolean | null): void {
     this.activeLimitOrders$.pipe(
       withLatestFrom(this.getInstrumentWithPortfolio()),
       take(1)
@@ -90,21 +146,12 @@ export class LimitOrderPriceChangeComponent implements OnInit {
             quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
             price: newPrice,
             instrument: order.targetInstrument,
-            side: order.side
+            side: order.side,
+            allowMargin: marginOrderConfirmed ?? undefined
           },
-          selection.portfolioKey.portfolio
+          selection.portfolioKey.portfolio,
         ).subscribe();
       });
     });
-  }
-
-  protected getInstrumentWithPortfolio(): Observable<{ instrument: Instrument, portfolioKey: PortfolioKey }> {
-    return combineLatest({
-      instrument: this.instrumentChanges$,
-      portfolioKey: this.currentPortfolioChanges$
-    }).pipe(
-      filter(x => !!x.instrument && !!x.portfolioKey),
-      map(x => ({instrument: x.instrument!, portfolioKey: x.portfolioKey!}))
-    );
   }
 }

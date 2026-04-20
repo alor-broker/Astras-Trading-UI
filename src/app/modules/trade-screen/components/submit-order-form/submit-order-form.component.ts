@@ -36,6 +36,7 @@ import { MarketOrderFormComponent } from "../order-forms/market-order-form/marke
 import { OrderTarget } from "../order-forms/order-form-base";
 import { map } from "rxjs/operators";
 import { LimitOrderFormComponent } from "../order-forms/limit-order-form/limit-order-form.component";
+import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 @Component({
   selector: 'ats-submit-order-form',
@@ -54,6 +55,7 @@ import { LimitOrderFormComponent } from "../order-forms/limit-order-form/limit-o
   styleUrl: './submit-order-form.component.less',
   providers: [
     CommonParametersService,
+    MarginOrderConfirmationService,
     ConfirmableOrderCommandsService
   ],
   changeDetection: ChangeDetectionStrategy.OnPush

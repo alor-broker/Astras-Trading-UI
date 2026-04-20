@@ -13,5 +13,6 @@
   "volumeLabel": "Volume",
   "advancedHeader": "Advanced",
   "instrumentGroupLabel": "Trading mode",
-  "instrumentGroupError": "Select trading mode"
+  "instrumentGroupError": "Select trading mode",
+  "skipMarginOrderConfirmationLabel": "Allow trades that may result in an uncovered position (for low risk clients only)"
 }

@@ -11,26 +11,19 @@ import {getValueOrDefault} from "../../../../shared/utils/object-helper";
 import {map} from "rxjs/operators";
 import {SyntheticInstrumentsHelper} from "../../utils/synthetic-instruments.helper";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {InstrumentSearchService} from "../../services/instrument-search.service";
 import {ThemeService} from "../../../../shared/services/theme.service";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
 import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
-import {
-  WidgetHeaderInstrumentSwitchComponent
-} from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
 import {TechChartComponent} from '../../components/tech-chart/tech-chart.component';
 import {TechChartSettingsComponent} from '../../components/tech-chart-settings/tech-chart-settings.component';
-import {InstrumentSearchModalComponent} from '../instrument-search-modal/instrument-search-modal.component';
 import {AsyncPipe} from '@angular/common';
+import {WidgetHeaderInstrumentSwitchComponent} from "../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component";
 
 @Component({
   selector: 'ats-tech-chart-widget',
   templateUrl: './tech-chart-widget.component.html',
   styleUrls: ['./tech-chart-widget.component.less'],
-  providers: [
-    InstrumentSearchService
-  ],
   imports: [
     TranslocoDirective,
     WidgetSkeletonComponent,
@@ -38,7 +31,6 @@ import {AsyncPipe} from '@angular/common';
     WidgetHeaderInstrumentSwitchComponent,
     TechChartComponent,
     TechChartSettingsComponent,
-    InstrumentSearchModalComponent,
     AsyncPipe
   ]
 })

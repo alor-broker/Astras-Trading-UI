@@ -13,5 +13,6 @@
   "volumeLabel": "Ծավալ",
   "advancedHeader": "Ընդլայնված",
   "instrumentGroupLabel": "Առևտրի ռեժիմ",
-  "instrumentGroupError": "Ընտրեք առևտրի ռեժիմ"
+  "instrumentGroupError": "Ընտրեք առևտրի ռեժիմ",
+  "skipMarginOrderConfirmationLabel": "Թույլատրել գործարքներ, որոնք կարող են հանգեցնել չապահովված դիրքի բացմանը (միայն ցածր ռիսկայնության հաճախորդների համար)"
 }

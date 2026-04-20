@@ -79,6 +79,14 @@
               </nz-collapse-panel>
             </nz-collapse>
           </nz-form-item>
+          <nz-form-item  class="one-row">
+            <nz-form-label nzFor="skipMarginOrderConfirmation">
+              {{ t('orderCommandsOrderSubmitSettings.skipMarginOrderConfirmationLabel') }}
+            </nz-form-label>
+            <nz-form-control>
+              <nz-switch formControlName='skipMarginOrderConfirmation' />
+            </nz-form-control>
+          </nz-form-item>
         }
         <nz-form-item class="one-row">
           <nz-form-label nzFor="enableLimitOrdersFastEditing">

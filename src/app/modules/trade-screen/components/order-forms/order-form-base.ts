@@ -4,10 +4,10 @@
   model,
   output
 } from "@angular/core";
-import { TargetPortfolio } from "../../../order-commands/services/confirmable-order-commands.service";
 import { toObservable } from "@angular/core/rxjs-interop";
 import { shareReplay } from "rxjs";
 import { Side } from "../../../../shared/models/enums/side.model";
+import {TargetPortfolio} from "../../../../shared/services/orders/margin-order-notification.service";
 
 export interface TargetInstrument {
   symbol: string;

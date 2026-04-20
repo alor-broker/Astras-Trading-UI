@@ -50,7 +50,11 @@
     },
     "portfolioLiquidationValue": {
       "displayName": "Պորտֆելի գնահատում",
-      "tooltip": "Պորտֆելի գնահատում"
+      "tooltip": "Պորտֆելի գնահատում",
+      "filters": {
+        "all": "Բոլորը",
+        "excludeZeroPortfolioValuation": "Թաքցնել զրոյական գնահատմամբ"
+      }
     },
     "initialMargin": {
       "displayName": "Սկզբնական մարժա",
@@ -127,9 +131,18 @@
     "posRisk": {
       "displayName": "Օպերատիվ ռիսկ",
       "tooltip": "Ընթացիկ օպերատիվ ռիսկ"
+    },
+    "clientId": {
+      "displayName": "ID",
+      "tooltip": "Հաճախորդի ID"
     }
   },
   "contextMenu": {
-    "openDashboard": "Բացել վահանակը"
+    "openDashboard": "Բացել վահանակը",
+    "checkRestrictions": "Ստուգել սահմանափակումները"
+  },
+  "favorites": {
+    "itemTooltip": "Ավելացնել/հեռացնել ընտրյալներից",
+    "filterTooltip": "Ցույց տալ միայն ընտրյալները"
   }
 }
