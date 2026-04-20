@@ -18,7 +18,8 @@
     "option-board": "/widgets/option-board",
     "arbitrage-spread": "/widgets/arbitrage-spread",
     "instruments-correlation": "/widgets/instruments-correlation",
-    "bond-screener": "/widgets/bond-screener"
+    "bond-screener": "/widgets/bond-screener",
+    "anomalous-volume": "/widgets/anomalous-volume"
   },
   "sections": {
     "main": "/overview",

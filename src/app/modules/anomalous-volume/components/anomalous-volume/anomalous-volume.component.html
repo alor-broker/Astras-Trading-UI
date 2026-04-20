@@ -1,0 +1,17 @@
+<div
+  (nzResizeObserve)="containerSizeChanged($event)"
+  class="container"
+  nzResizeObserver
+>
+  @if (tableConfig$ | async; as tableConfig) {
+    <ats-infinite-scroll-table
+      (filterApplied)="applyFilter($event)"
+      [tableConfig]="tableConfig"
+      [data]="(tableData$ | async) ?? []"
+      [isLoading]="(isLoading$ | async) ?? true"
+      [tableContainerHeight]="(contentSize$ | async)?.height || 0"
+      [tableContainerWidth]="(contentSize$ | async)?.width || 0"
+    />
+  }
+</div>
+

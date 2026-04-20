@@ -1,0 +1,41 @@
+@if (effectiveSettings$ | async; as settings) {
+  <ats-widget-skeleton
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [showContentScroll]="false"
+    [showSettings]="shouldShowSettings"
+    [isBlockWidget]="isBlockWidget()"
+  >
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasSettings]="true"
+        [titleTemplate]="titleRef"
+        [widgetMeta]="widgetInstance().widgetMeta"
+      />
+
+      <ng-template #titleRef>
+        <div class="d-flex align-items-center" style="gap: 8px;">
+          <span>{{ widgetInstance().widgetMeta?.widgetName?.translations?.ru ?? widgetInstance().widgetMeta?.widgetName?.default ?? 'Anomalous Volume' }}</span>
+          @if (sourceMode$ | async; as sourceMode) {
+            <span class="ant-tag ant-tag-blue">{{ getSourceModeLabel(sourceMode) }}</span>
+          }
+        </div>
+      </ng-template>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-anomalous-volume [settings]="settings" />
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-anomalous-volume-settings
+        [guid]="guid"
+        (settingsChange)="onSettingsChange()"
+      />
+    </ng-template>
+  </ats-widget-skeleton>
+}
+
