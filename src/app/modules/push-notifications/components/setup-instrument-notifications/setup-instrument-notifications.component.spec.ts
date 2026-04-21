@@ -16,6 +16,7 @@ import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {InputNumberComponent} from "../../../../shared/components/input-number/input-number.component";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 describe('SetupInstrumentNotificationsComponent', () => {
   let component: SetupInstrumentNotificationsComponent;
@@ -80,5 +81,19 @@ describe('SetupInstrumentNotificationsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should invalidate form when price is 0', () => {
+    component.newPriceChangeSubscriptionForm.controls.price.setValue(0);
+    component.newPriceChangeSubscriptionForm.controls.priceCondition.setValue(LessMore.More);
+
+    expect(component.newPriceChangeSubscriptionForm.valid).toBeFalse();
+  });
+
+  it('should validate form when price is greater than 0', () => {
+    component.newPriceChangeSubscriptionForm.controls.price.setValue(0.01);
+    component.newPriceChangeSubscriptionForm.controls.priceCondition.setValue(LessMore.More);
+
+    expect(component.newPriceChangeSubscriptionForm.valid).toBeTrue();
   });
 });

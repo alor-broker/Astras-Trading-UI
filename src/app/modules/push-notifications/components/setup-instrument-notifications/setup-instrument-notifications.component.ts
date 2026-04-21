@@ -62,6 +62,8 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy {
+  private static readonly minNotificationPrice = Number.EPSILON;
+
   private readonly pushNotificationsService = inject(PushNotificationsService);
   private readonly commonParametersService = inject(CommonParametersService);
   private readonly quoteService = inject(QuotesService);
@@ -77,7 +79,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
       null,
       [
         Validators.required,
-        Validators.min(inputNumberValidation.min),
+        Validators.min(SetupInstrumentNotificationsComponent.minNotificationPrice),
         Validators.max(inputNumberValidation.max)
       ]
     ),

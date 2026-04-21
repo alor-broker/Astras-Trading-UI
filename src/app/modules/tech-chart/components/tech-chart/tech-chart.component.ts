@@ -299,7 +299,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.localStorageService.removeItem('tradingview.current_theme.name');
 
-    const features = this.getFeatures(settings);
+    const features = this.getFeatures(settings, deviceInfo);
 
     this.techChartDatafeedService.setExchangeSettings(exchanges);
     const config: ChartingLibraryWidgetOptions = {
@@ -668,7 +668,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private getFeatures(settings: TechChartSettings): { enabled: ChartingLibraryFeatureset[], disabled: ChartingLibraryFeatureset[] } {
+  private getFeatures(
+    settings: TechChartSettings,
+    deviceInfo: DeviceInfo
+  ): { enabled: ChartingLibraryFeatureset[], disabled: ChartingLibraryFeatureset[] } {
     const enabled = new Set<ChartingLibraryFeatureset>([
       'side_toolbar_in_fullscreen_mode',
       'chart_crosshair_menu' as ChartingLibraryFeatureset,
@@ -696,7 +699,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.switchChartFeature('header_screenshot', settings.panels?.headerScreenshot ?? true, enabled, disabled);
     this.switchChartFeature('header_settings', settings.panels?.headerSettings ?? true, enabled, disabled);
     this.switchChartFeature('header_undo_redo', settings.panels?.headerUndoRedo ?? true, enabled, disabled);
-    this.switchChartFeature('header_fullscreen_button', settings.panels?.headerFullscreenButton ?? true, enabled, disabled);
+    this.switchChartFeature(
+      'header_fullscreen_button',
+      !deviceInfo.isMobile && (settings.panels?.headerFullscreenButton ?? true),
+      enabled,
+      disabled
+    );
     this.switchChartFeature('left_toolbar', settings.panels?.drawingsToolbar ?? true, enabled, disabled);
     this.switchChartFeature('timeframes_toolbar', settings.panels?.timeframesBottomToolbar ?? true, enabled, disabled);
     this.switchChartFeature('custom_resolutions', settings.allowCustomTimeframes ?? false, enabled, disabled);
