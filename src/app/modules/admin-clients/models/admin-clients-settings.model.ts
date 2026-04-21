@@ -11,6 +11,7 @@ export interface AdminClientsSettings extends WidgetSettings {
 
 export const AdminClientsTableColumns: BaseColumnId[] = [
   { id: "login", isDefault: true},
+  { id: "clientId", isDefault: true},
   { id: "clientName", isDefault: true},
   { id: "portfolio", isDefault: true},
   { id: "exchange", isDefault: true},
@@ -22,7 +23,7 @@ export const AdminClientsTableColumns: BaseColumnId[] = [
   { id: "profit", isDefault: false},
   { id: "profitRate", isDefault: false},
   { id: "portfolioEvaluation", isDefault: false},
-  { id: "portfolioLiquidationValue", isDefault: false},
+  { id: "portfolioLiquidationValue", isDefault: true},
   { id: "initialMargin", isDefault: false},
   { id: "minimalMargin", isDefault: false},
   { id: "riskBeforeForcePositionClosing", isDefault: false},

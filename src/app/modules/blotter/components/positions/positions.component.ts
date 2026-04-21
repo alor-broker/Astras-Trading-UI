@@ -49,6 +49,9 @@ import {
   AddToWatchlistMenuComponent
 } from '../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component';
 import {DecimalPipe} from '@angular/common';
+import {USER_CONTEXT, UserContext} from "../../../../shared/services/auth/user-context";
+import {Permission, User} from "../../../../shared/models/user/user.model";
+import {PermissionsHelper} from "../../../../shared/utils/permissions.helper";
 import {MarginOrderConfirmationService} from "../../../../shared/services/orders/margin-order-notification.service";
 
 interface PositionDisplay extends Position {
@@ -91,7 +94,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   readonly marketType = input<MarketType | null>();
   portfolioTotalCost$!: Observable<number>;
   readonly shouldShowSettingsChange = output<boolean>();
-  allColumns: BaseColumnSettings<PositionDisplay>[] = [
+  readonly allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {
       id: 'icon',
       displayName: 'Значок',
@@ -236,6 +239,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   protected readonly destroyRef: DestroyRef;
   private readonly service = inject(BlotterService);
   private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  protected readonly userContext = inject<UserContext>(USER_CONTEXT);
   private readonly marginOrderConfirmationService = inject(MarginOrderConfirmationService);
 
   constructor() {
@@ -336,20 +340,28 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     }
   }
 
-  getClosablePositions(positions: readonly PositionDisplay[]): PositionDisplay[] {
-    return positions.filter(p => this.canClosePosition(p));
+  getClosablePositions(positions: readonly PositionDisplay[], user: User): PositionDisplay[] {
+    return positions.filter(p => this.canClosePosition(p, user));
   }
 
-  showPositionActions(settings: BlotterSettings): boolean {
-    return settings.showPositionActions ?? false;
+  showPositionActions(settings: BlotterSettings, user: User): boolean {
+    return (settings.showPositionActions ?? false)
+      && (
+        PermissionsHelper.hasPermission(user, Permission.ClosePosition)
+        || PermissionsHelper.hasPermission(user, Permission.ReversePosition)
+      );
   }
 
-  canClosePosition(position: PositionDisplay): boolean {
-    return !position.isCurrency && this.abs(position.qtyTFutureBatch) > 0;
+  canClosePosition(position: PositionDisplay, user: User): boolean {
+    return PermissionsHelper.hasPermission(user, Permission.ClosePosition)
+      && !position.isCurrency
+      && this.abs(position.qtyTFutureBatch) > 0;
   }
 
-  canReversePosition(position: PositionDisplay): boolean {
-    return this.canClosePosition(position);
+  canReversePosition(position: PositionDisplay, user: User): boolean {
+    return PermissionsHelper.hasPermission(user, Permission.ReversePosition)
+      && !position.isCurrency
+      && this.abs(position.qtyTFutureBatch) > 0;
   }
 
   protected initTableConfigStream(): Observable<TableConfig<PositionDisplay>> {

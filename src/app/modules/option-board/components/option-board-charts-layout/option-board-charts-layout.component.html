@@ -2,8 +2,10 @@
   <div class="flex-fill overflow-hidden">
     <ats-option-board-chart [dataContext]="dataContext()" />
   </div>
-  <nz-alert nzType="warning"
+  <nz-alert
+    nzType="warning"
     nzCloseable
+    [nzNoAnimation]="true"
     [nzMessage]="t('optionBoardOptionBoardChart.betaNotice')"
    />
 </div>

@@ -14,6 +14,7 @@
       (nzResizeObserve)="containerSizeChanged($event)"
       nzResizeObserver
       >
+      @let user = userContext.getUser() | async;
       <nz-table
         [nzData]="td.orders"
         [nzFooter]="footer"
@@ -38,14 +39,16 @@
             >
             <th nzWidth="5px"></th>
             <th nzWidth="65px">
-              <span>
+              @if(canCancelOrders(user)) {
+                <span>
                 <a (nzOnConfirm)="cancelAllOrders()"
-                  [nzCancelText]="t('no')"
-                  [nzCondition]="td.settings.cancelOrdersWithoutConfirmation ?? false"
-                  [nzOkText]="t('yes')"
-                  [nzPopconfirmTitle]="t('blotterBlotterCommon.cancelConfirm')"
-                nz-popconfirm>{{t('blotterBlotterCommon.cancelAll')}}</a>
+                   [nzCancelText]="t('no')"
+                   [nzCondition]="td.settings.cancelOrdersWithoutConfirmation ?? false"
+                   [nzOkText]="t('yes')"
+                   [nzPopconfirmTitle]="t('blotterBlotterCommon.cancelConfirm')"
+                   nz-popconfirm>{{t('blotterBlotterCommon.cancelAll')}}</a>
               </span>
+              }
             </th>
             @for (column of td.tableConfig.columns; track column) {
               <th (atsWidthChanged)="saveColumnWidth({ columnId: column.id, width: $event })"
@@ -96,13 +99,13 @@
               </td>
               <td>
                 <div class="d-flex flex-row flex-no-wrap flex-gap-5">
-                  @if (ord.status.toString() === "working") {
+                  @if (ord.status.toString() === "working" && canEditOrders(user)) {
                     <a (click)="editOrder(ord, $event)">
                       <i nz-icon nzTheme="outline" nzType="edit"></i>
                     </a>
                   }
 
-                  @if (ord.status.toString() === "working") {
+                  @if (ord.status.toString() === "working" && canCancelOrders(user)) {
                     <a (click)="$event.preventDefault(); $event.stopPropagation()"
                        (nzOnConfirm)="cancelOrder(ord)"
                        [nzCancelText]="t('no')"

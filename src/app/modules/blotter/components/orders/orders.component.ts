@@ -48,7 +48,10 @@ import {
 import {
   AddToWatchlistMenuComponent
 } from '../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component';
-import {DecimalPipe} from '@angular/common';
+import {AsyncPipe, DecimalPipe} from '@angular/common';
+import {USER_CONTEXT, UserContext} from "../../../../shared/services/auth/user-context";
+import {Permission, User} from "../../../../shared/models/user/user.model";
+import {PermissionsHelper} from "../../../../shared/utils/permissions.helper";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -77,7 +80,8 @@ interface DisplayOrder extends Order {
     TableSearchFilterComponent,
     AddToWatchlistMenuComponent,
     DecimalPipe,
-    NzTableModule
+    NzTableModule,
+    AsyncPipe
   ]
 })
 export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
@@ -233,6 +237,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   protected readonly nzContextMenuService: NzContextMenuService;
   protected readonly widgetLocalStateService: WidgetLocalStateService;
   protected readonly destroyRef: DestroyRef;
+  protected readonly userContext = inject<UserContext>(USER_CONTEXT);
   private readonly service = inject(BlotterService);
   private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
   private readonly timezoneConverterService = inject(TimezoneConverterService);
@@ -341,6 +346,18 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     event.preventDefault();
     event.stopPropagation();
     this.service.openOrderGroupModal(groupId);
+  }
+
+  protected canCancelOrders(user: User | null): boolean {
+    return user == null
+      ? true
+      : PermissionsHelper.hasPermission(user, Permission.CancelOrder);
+  }
+
+  protected canEditOrders(user: User | null): boolean {
+    return user == null
+      ? true
+      : PermissionsHelper.hasPermission(user, Permission.EditOrder);
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {

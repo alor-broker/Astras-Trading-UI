@@ -10,6 +10,7 @@ export interface MobileHomeScreenSettings extends WidgetSettings {
   showPortfolioDynamics?: boolean;
   showNews?: boolean;
   showIdeas?: boolean;
+  showMarketTrends?: boolean;
   marketTrendsMarkets?: Market[];
   marketTrendsIgnoredBoards?: string[];
   marketTrendsInstrumentTypes?: string[];

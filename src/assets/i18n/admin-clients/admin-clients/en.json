@@ -1,4 +1,4 @@
-﻿{
+{
   "columns": {
     "login": {
       "displayName": "Login",
@@ -50,7 +50,11 @@
     },
     "portfolioLiquidationValue": {
       "displayName": "Portfolio liquidation",
-      "tooltip": "Portfolio liquidation"
+      "tooltip": "Portfolio liquidation",
+      "filters": {
+        "all": "All",
+        "excludeZeroPortfolioValuation": "Hide with zero valuation"
+      }
     },
     "initialMargin": {
       "displayName": "Initial margin",
@@ -127,10 +131,18 @@
     "posRisk": {
       "displayName": "Oper. risk",
       "tooltip": "Oper. risk"
+    },
+    "clientId": {
+      "displayName": "ID",
+      "tooltip": "Client ID"
     }
   },
-
   "contextMenu": {
-    "openDashboard": "Open dashboard"
+    "openDashboard": "Open dashboard",
+    "checkRestrictions": "Check restrictions"
+  },
+  "favorites": {
+    "itemTooltip": "Add/remove from favorites",
+    "filterTooltip": "Show favorites only"
   }
 }

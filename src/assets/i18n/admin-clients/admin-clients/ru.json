@@ -4,6 +4,10 @@
       "displayName": "Логин",
       "tooltip": "Логин клиента"
     },
+    "clientId": {
+      "displayName": "ИД",
+      "tooltip": "ИД клиента"
+    },
     "clientName": {
       "displayName": "Имя",
       "tooltip": "Имя клиента"
@@ -50,7 +54,11 @@
     },
     "portfolioLiquidationValue": {
       "displayName": "Оценка портфеля",
-      "tooltip": "Оценка портфеля"
+      "tooltip": "Оценка портфеля",
+      "filters": {
+        "all": "Все",
+        "excludeZeroPortfolioValuation": "Скрыть с нулевой оценкой"
+      }
     },
     "initialMargin": {
       "displayName": "Начальная маржа",
@@ -131,6 +139,12 @@
   },
 
   "contextMenu": {
-    "openDashboard": "Открыть дашборд"
+    "openDashboard": "Открыть дашборд",
+    "checkRestrictions": "Проверить ограничения"
+  },
+
+  "favorites": {
+    "itemTooltip": "Добавить/удалить из избранного",
+    "filterTooltip": "Показать только избранные"
   }
 }

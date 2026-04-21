@@ -54,7 +54,7 @@
     "graphql": "^16.0.0",
     "json-patch": "^0.7.0",
     "lightweight-charts": "^5.0.9",
-    "ng-zorro-antd": "21.1.0",
+    "ng-zorro-antd": "^21.1.0",
     "ng2-charts": "^9.0.0",
     "ngx-device-detector": "^11.0.0",
     "ngx-joyride": "^2.5.0",

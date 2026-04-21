@@ -1,0 +1,74 @@
+<ng-container
+  *transloco="let t; scope: 'admin-clients/admin-client-restrictions'">
+  <nz-modal
+    (nzOnCancel)="close()"
+    [nzTitle]="t('adminClientsAdminClientRestrictions.title')"
+    [nzVisible]="targetClient() != null"
+    nzClassName="ats-admin-client-restrictions"
+  >
+    @let restrictions = restrictions$ | async;
+    <ng-container *nzModalContent>
+      @if (isLoading()) {
+        <div [style]="{'min-height': '50px'}" class="d-flex flex-column justify-content-center align-items-center">
+          <nz-spin
+            nzSimple="true"
+            nzSize="default"
+            nzSpinning="true"
+          />
+          <span
+            class="mt-10 heading-color">{{ t('adminClientsAdminClientRestrictions.loadingText', {clientName: targetClient()?.clientName}) }}
+            ...</span>
+        </div>
+      } @else {
+        @if (restrictions != null) {
+          @if (restrictions.length === 0) {
+            <nz-result
+              [nzTitle]="t('adminClientsAdminClientRestrictions.successText')"
+              nzStatus="success"
+            />
+          } @else {
+            <nz-result
+              [nzTitle]="t('adminClientsAdminClientRestrictions.foundText')"
+              nzStatus="warning"
+            />
+            <div>
+              <nz-table nzBordered nzTemplateMode nzSize="small">
+                <thead>
+                <tr>
+                  <th>{{ t('adminClientsAdminClientRestrictions.restrictionOriginTitle') }}</th>
+                  <th>{{ t('adminClientsAdminClientRestrictions.expiresAtTitle') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                  @for (restriction of restrictions; track restriction) {
+                    <tr>
+                      <td>
+                        {{ t('adminClientsAdminClientRestrictions.restrictionOrigins.' + restriction.restrictionOrigin, {fallback: restriction.restrictionOrigin}) }}
+                      </td>
+                      <td>
+                        @if (restriction.expiresAt != null) {
+                          {{ restriction.expiresAt | date : 'long' }}
+                        } @else {
+                          <span>-</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </nz-table>
+            </div>
+          }
+        } @else {
+          <nz-result
+            [nzTitle]="t('adminClientsAdminClientRestrictions.errorText')"
+            nzStatus="error"
+          />
+        }
+      }
+    </ng-container>
+    <div *nzModalFooter>
+      <button (click)="close()" nz-button nzType="primary">{{ t('okBtnText') }}</button>
+    </div>
+  </nz-modal>
+</ng-container>
+

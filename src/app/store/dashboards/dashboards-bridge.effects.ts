@@ -16,6 +16,7 @@ import {
   DashboardsManageActions
 } from "./dashboards-actions";
 import { ClientDashboardType } from "../../shared/models/dashboard/dashboard.model";
+import {isPortfolioDependent} from "../../shared/utils/settings-helper";
 
 @Injectable()
 export class DashboardsBridgeEffects {
@@ -75,6 +76,11 @@ export class DashboardsBridgeEffects {
               guid: newWidgetInstance.guid
             } as WidgetSettings;
 
+            if(params.action.selectedPortfolio != null && isPortfolioDependent(newSettings)) {
+              newSettings.portfolio = params.action.selectedPortfolio.portfolio;
+              newSettings.exchange = params.action.selectedPortfolio.exchange;
+            }
+
             settingsCopy.push(newSettings);
           }
         }
@@ -84,17 +90,21 @@ export class DashboardsBridgeEffects {
           actions.push(WidgetSettingsServiceActions.add({settings: settingsCopy}));
         }
 
+        const title = params.action.title
+          ?? `${targetDashboard.title} ${params.allDashboards.filter(d => d.sourceGuid === targetDashboard.guid).length + 1}`;
+
         actions.push(DashboardsManageActions.add({
           guid: GuidGenerator.newGuid(),
           sourceGuid: targetDashboard.guid,
           templateId: targetDashboard.templateId,
-          title: `${targetDashboard.title} ${params.allDashboards.filter(d => d.sourceGuid === targetDashboard.guid).length + 1}`,
+          title,
           isSelected: true,
           isFavorite: false,
           existedItems: widgetsCopy,
           instrumentsSelection: {
             ...targetDashboard.instrumentsSelection
           },
+          selectedPortfolio: params.action.selectedPortfolio,
           dashboardType: targetDashboard.type ?? ClientDashboardType.ClientDesktop
         }));
 

@@ -22,6 +22,8 @@
 
   "clientTypeTitle": "Уровень риска",
 
+  "derivativesDebtTitle": "Требуется довнести",
+
   "riskStatusTitle": "Статус",
   "riskStatusValues": {
     "Ok": "Нормальный",

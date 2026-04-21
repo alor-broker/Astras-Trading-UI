@@ -39,6 +39,25 @@
             nzResizeObserver>
 
             <th nzWidth="25px"></th>
+            <th
+              nzWidth="20px"
+              class="favorites d-flex justify-content-center"
+              [class.active]="(vm.filters.portfolios ?? []).length > 0"
+            >
+                <a nz-button
+                   nzType="link"
+                   [disabled]="favorites().length === 0 && (vm.filters.portfolios ?? []).length === 0"
+                   (click)="toggleFavoritesFilter()"
+                   [nz-tooltip]=" t('adminClientsAdminClients.favorites.filterTooltip')"
+                   [nzTooltipMouseEnterDelay]="1"
+                >
+                  <nz-icon
+                    nz-icon
+                    nzTheme="outline"
+                    nzType="star"
+                  />
+                </a>
+            </th>
 
             @for (column of vm.tableConfig.columns; track column.id) {
               <th
@@ -50,9 +69,9 @@
                 cdkDragLockAxis="x"
                 [nzShowFilter]="column.filterData != null"
                 [nzFilters]="column.filterData?.filters || []"
-                [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+                [nzFilterMultiple]="column.filterData?.filterType === FilterType.DefaultMultiple"
                 [nzCustomFilter]="column.filterData != null && column.filterData.filterType === FilterType.Search"
-                (nzFilterChange)="nzFilterChange(column.id, $event)"
+                (nzFilterChange)="nzFilterChange(column.filterData?.filterName ?? column.id                                                                                                                        , $event)"
                 [nzShowSort]="column.sortChangeFn != null"
                 [nzSortOrder]="vm.sort?.orderBy === column.id ? (vm.sort!.descending ? 'descend' : 'ascend'): null"
                 (nzSortOrderChange)="column.sortChangeFn?.($event)"
@@ -99,6 +118,22 @@
                 </span>
               </td>
 
+              <td class="favorites  d-flex justify-content-center"
+                  [class.active]="item.isFavorite"
+              >
+                <span
+                  [nz-tooltip]=" t('adminClientsAdminClients.favorites.itemTooltip')"
+                  [nzTooltipMouseEnterDelay]="1"
+                  (click)="toggleFavorite(item)"
+                >
+                  <nz-icon
+                    nz-icon
+                    nzTheme="outline"
+                    nzType="star"
+                  />
+                </span>
+              </td>
+
               @for (column of vm.tableConfig.columns; track column.id) {
                 <td>
                   <span>
@@ -119,9 +154,16 @@
             <span>
               <i class="primary-color" nz-icon nzTheme="outline"
               nzType="appstore-add"></i>{{ t('adminClientsAdminClients.contextMenu.openDashboard') }}</span>
-            </li>
+          </li>
+          <li nz-menu-item (click)="clientToCheckRestrictions.set(this.selectedItem!)">
+            <span>
+              <i class="primary-color" nz-icon nzTheme="outline"
+                 nzType="audit"></i>{{ t('adminClientsAdminClients.contextMenu.checkRestrictions') }}</span>
+          </li>
           </ul>
         </nz-dropdown-menu>
       </ng-container>
     </div>
   </ng-container>
+
+<ats-admin-client-restrictions [(targetClient)]="clientToCheckRestrictions"></ats-admin-client-restrictions>

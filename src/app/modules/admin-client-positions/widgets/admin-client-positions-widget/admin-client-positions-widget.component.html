@@ -1,0 +1,24 @@
+@if (settings$ | async; as settings) {
+  <ats-widget-skeleton
+    [content]="contentRef"
+    [header]="headerRef"
+    [isBlockWidget]="isBlockWidget()"
+    [settings]="settingsRef"
+    [showContentScroll]="false"
+    [showSettings]="shouldShowSettings"
+  >
+    <ng-template #headerRef>
+      <ats-widget-header (switchSettings)="onSettingsChange()"
+                         [guid]="guid"
+                         [hasSettings]="true"
+                         [widgetMeta]="widgetInstance().widgetMeta"
+      />
+    </ng-template>
+    <ng-template #contentRef>
+      <ats-admin-client-positions [guid]="guid"/>
+    </ng-template>
+    <ng-template #settingsRef>
+      <ats-admin-client-positions-settings (settingsChange)="onSettingsChange()" [guid]='guid'/>
+    </ng-template>
+  </ats-widget-skeleton>
+}
