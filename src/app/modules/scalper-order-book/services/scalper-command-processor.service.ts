@@ -3,7 +3,8 @@ import { ScalperOrderBookDataContext } from '../models/scalper-order-book-data-c
 import { Side } from '../../../shared/models/enums/side.model';
 import {
   BodyRow,
-  CurrentOrderDisplay
+  CurrentOrderDisplay,
+  ScalperOrderBookRowType
 } from '../models/scalper-order-book.model';
 import {
   combineLatest,
@@ -29,7 +30,8 @@ import {
   ActiveOrderBookHotKeysTypes,
   AllOrderBooksHotKeysTypes,
   ScalperOrderBookMouseAction,
-  ScalperOrderBookMouseActionsMap
+  ScalperOrderBookMouseActionsMap,
+  ScalperOrderBookMouseActionsMapItem
 } from '../../../shared/models/terminal-settings/terminal-settings.model';
 import { TerminalSettingsHelper } from '../../../shared/utils/terminal-settings-helper';
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
@@ -56,6 +58,8 @@ import { UpdateOrdersCommand } from "../commands/update-orders-command";
 import { ScalperCommand } from "../models/scalper-command";
 import { ScalperHotKeyCommandService } from "./scalper-hot-key-command.service";
 import { BracketOptions } from "../commands/bracket-command";
+
+type MouseActionRowType = Exclude<ScalperOrderBookMouseActionsMapItem['orderBookRowType'], 'any'>;
 
 @Injectable()
 export class ScalperCommandProcessorService {
@@ -438,12 +442,14 @@ export class ScalperCommandProcessorService {
   }
 
   private processClick(btn: 'left' | 'right', e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext): void {
+    const comparableRowType = this.getComparableRowType(row.rowType);
+
     this.getMouseActionsMap().pipe(
       take(1),
       map(map => {
         return map.actions.find(a =>
             a.button === btn
-            && (a.orderBookRowType === row.rowType || a.orderBookRowType === 'any')
+            && (a.orderBookRowType === comparableRowType || a.orderBookRowType === 'any')
             && (
               (!a.modifier && !e.ctrlKey && !e.shiftKey && !e.metaKey)
               || (a.modifier === 'ctrl' && (e.ctrlKey || e.metaKey))
@@ -458,6 +464,19 @@ export class ScalperCommandProcessorService {
 
       this.getActionMethod(action)(row, dataContext);
     });
+  }
+
+  private getComparableRowType(rowType?: BodyRow['rowType']): MouseActionRowType | null {
+    switch (rowType) {
+      case ScalperOrderBookRowType.Ask:
+        return 'ask';
+      case ScalperOrderBookRowType.Bid:
+        return 'bid';
+      case ScalperOrderBookRowType.Spread:
+        return 'spread';
+      default:
+        return null;
+    }
   }
 
   private getActionMethod(action: ScalperOrderBookMouseAction): (row: { price: number }, dataContext: ScalperOrderBookDataContext) => void {

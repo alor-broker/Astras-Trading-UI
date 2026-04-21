@@ -5,6 +5,29 @@ const tseslint = require("typescript-eslint");
 const angular = require("angular-eslint");
 const stylistic = require("@stylistic/eslint-plugin");
 
+const typedAwareTsRules = {
+  "@typescript-eslint/no-duplicate-type-constituents": "error",
+  "@typescript-eslint/no-mixed-enums": "error",
+  "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
+  "@typescript-eslint/no-unsafe-assignment": "error",
+  "@typescript-eslint/no-unsafe-enum-comparison": "error",
+  "@typescript-eslint/no-unsafe-return": "error",
+  "@typescript-eslint/prefer-nullish-coalescing": "error",
+  "@typescript-eslint/prefer-readonly": "error",
+  "@typescript-eslint/prefer-string-starts-ends-with": "error",
+  "@typescript-eslint/restrict-plus-operands": "error",
+  "@typescript-eslint/strict-boolean-expressions": [
+    "error",
+    {
+      allowAny: true,
+    },
+  ],
+};
+
+const disabledTypedAwareTsRules = Object.fromEntries(
+  Object.keys(typedAwareTsRules).map(ruleName => [ruleName, "off"])
+);
+
 module.exports = defineConfig([
   globalIgnores([
     ".angular/**/*",
@@ -120,7 +143,6 @@ module.exports = defineConfig([
       ],
       "@typescript-eslint/no-confusing-non-null-assertion": "error",
       "@typescript-eslint/no-duplicate-enum-values": "error",
-      "@typescript-eslint/no-duplicate-type-constituents": "off",
       "@typescript-eslint/no-extra-non-null-assertion": "error",
       "@typescript-eslint/no-extraneous-class": [
         "error",
@@ -131,28 +153,14 @@ module.exports = defineConfig([
       ],
       "@typescript-eslint/no-inferrable-types": "error",
       "@typescript-eslint/no-misused-new": "error",
-      "@typescript-eslint/no-mixed-enums": "off",
       "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
-      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-enum-comparison": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/class-literal-property-style": "off",
       "@typescript-eslint/no-unused-expressions": "error",
       "@typescript-eslint/no-use-before-define": "error",
       "@typescript-eslint/no-useless-constructor": "error",
-      "@typescript-eslint/prefer-nullish-coalescing": "off",
-      "@typescript-eslint/prefer-readonly": "off",
-      "@typescript-eslint/prefer-string-starts-ends-with": "off",
-      "@typescript-eslint/restrict-plus-operands": "off",
-      "@typescript-eslint/strict-boolean-expressions": [
-        "off",
-        {
-          "allowAny": true
-        }
-      ],
       "@typescript-eslint/switch-exhaustiveness-check": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      ...disabledTypedAwareTsRules,
 
       "@stylistic/semi": ["error", "always"],
       "@stylistic/comma-dangle": "off",

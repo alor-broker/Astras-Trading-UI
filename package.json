@@ -13,7 +13,8 @@
     "codegen-news": "graphql-codegen --config news-codegen.ts",
     "prepare": "husky",
     "lint": "eslint src --cache --cache-location .cache/eslint --cache-strategy content --max-warnings 0",
-    "lint:typed": "eslint src --config eslint.typed.config.js --max-warnings 0"
+    "lint:typed": "eslint src --config eslint.typed.config.js --max-warnings 0",
+    "lint:ci": "pnpm lint && pnpm lint:typed"
   },
   "private": true,
   "dependencies": {
