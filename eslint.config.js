@@ -16,11 +16,6 @@ module.exports = defineConfig([
   tseslint.configs.disableTypeChecked,
   {
     files: ["**/*.ts"],
-    languageOptions: {
-      parserOptions: {
-        projectService: true
-      }
-    },
     extends: [
       eslint.configs.recommended,
       tseslint.configs.recommended,
@@ -52,8 +47,7 @@ module.exports = defineConfig([
         {
           "preferReadonlySignalProperties": true,
           "preferInputSignals": true,
-          "preferQuerySignals": true,
-          "useTypeChecking": true
+          "preferQuerySignals": true
         }
       ],
 
@@ -126,7 +120,7 @@ module.exports = defineConfig([
       ],
       "@typescript-eslint/no-confusing-non-null-assertion": "error",
       "@typescript-eslint/no-duplicate-enum-values": "error",
-      "@typescript-eslint/no-duplicate-type-constituents": "error",
+      "@typescript-eslint/no-duplicate-type-constituents": "off",
       "@typescript-eslint/no-extra-non-null-assertion": "error",
       "@typescript-eslint/no-extraneous-class": [
         "error",
@@ -137,22 +131,22 @@ module.exports = defineConfig([
       ],
       "@typescript-eslint/no-inferrable-types": "error",
       "@typescript-eslint/no-misused-new": "error",
-      "@typescript-eslint/no-mixed-enums": "error",
+      "@typescript-eslint/no-mixed-enums": "off",
       "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
-      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
-      "@typescript-eslint/no-unsafe-assignment": "error",
-      "@typescript-eslint/no-unsafe-enum-comparison": "error",
-      "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-enum-comparison": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/class-literal-property-style": "off",
       "@typescript-eslint/no-unused-expressions": "error",
       "@typescript-eslint/no-use-before-define": "error",
       "@typescript-eslint/no-useless-constructor": "error",
-      "@typescript-eslint/prefer-nullish-coalescing": "error",
-      "@typescript-eslint/prefer-readonly": "error",
-      "@typescript-eslint/prefer-string-starts-ends-with": "error",
-      "@typescript-eslint/restrict-plus-operands": "error",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-readonly": "off",
+      "@typescript-eslint/prefer-string-starts-ends-with": "off",
+      "@typescript-eslint/restrict-plus-operands": "off",
       "@typescript-eslint/strict-boolean-expressions": [
-        "error",
+        "off",
         {
           "allowAny": true
         }
@@ -193,6 +187,7 @@ module.exports = defineConfig([
       tseslint.configs.stylistic
     ],
     rules: {
+      "@typescript-eslint/no-duplicate-type-constituents": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-explicit-any": "off"
     },

@@ -261,8 +261,8 @@ export class DashboardComponent implements OnInit {
                 });
             }
           } else if(widgetMeta.desktopMeta?.addOptions.initialPosition === "below" && gridster!.grid.length > 0) {
-            newPosition.y = Math.max(...gridster!.grid.map(x => {
-              const itemConfig = x.item();
+            newPosition.y = Math.max(...gridster!.grid.map((itemComponent: GridsterItem) => {
+              const itemConfig: GridsterItemConfig = itemComponent.item();
               return itemConfig.y + itemConfig.rows;
             }));
           }

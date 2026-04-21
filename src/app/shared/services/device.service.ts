@@ -8,11 +8,12 @@ import {Capacitor} from "@capacitor/core";
   providedIn: 'root'
 })
 export class DeviceService {
-  private readonly deviceDetectorService = inject(DeviceDetectorService);
+  private readonly deviceDetector = inject<DeviceDetectorService>(DeviceDetectorService);
 
-  deviceInfo$: Observable<DeviceInfo> = of(this.deviceDetectorService).pipe(
-    map(deviceDetectorService => {
-      const isMobile = deviceDetectorService.isMobile() || deviceDetectorService.isTablet() || Capacitor.isNativePlatform();
+  deviceInfo$: Observable<DeviceInfo> = of(this.deviceDetector).pipe(
+    map(deviceDetector => {
+      const deviceInfo = deviceDetector.getDeviceInfo();
+      const isMobile = deviceDetector.isMobile() || deviceDetector.isTablet() || Capacitor.isNativePlatform();
       let deviceType = isMobile ? DeviceType.Mobile : DeviceType.Desktop;
       if(Capacitor.isNativePlatform()) {
         deviceType = DeviceType.MobileNative;
@@ -21,7 +22,7 @@ export class DeviceService {
       return {
         isMobile,
         deviceType,
-        userAgent: deviceDetectorService.getDeviceInfo().userAgent ?? ''
+        userAgent: deviceInfo.userAgent ?? ''
       };
     }),
     shareReplay(1)

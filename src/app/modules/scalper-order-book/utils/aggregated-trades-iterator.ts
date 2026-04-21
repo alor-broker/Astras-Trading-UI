@@ -117,8 +117,8 @@ export class AggregatedTradesIterator implements Iterator<AggregatedTrade | null
       };
     }
 
-    let minPrice = Number.MAX_VALUE;
-    let maxPrice = Number.MIN_VALUE;
+    let minPrice = Number.POSITIVE_INFINITY;
+    let maxPrice = Number.NEGATIVE_INFINITY;
     let totalVolume = 0;
     aggregatedTrades.forEach(trade => {
       minPrice = Math.min(minPrice, trade.price);

@@ -39,7 +39,7 @@ import 'firebase/compat/messaging';
 import { LoggerService } from "../../../shared/services/logging/logger.service";
 import { DeviceHelper } from "../../../shared/utils/device-helper";
 import { Capacitor } from '@capacitor/core';
-import { FirebaseMessaging } from '@capacitor-firebase/messaging';
+import { FirebaseMessaging, type NotificationReceivedEvent } from '@capacitor-firebase/messaging';
 import isSupported = firebase.messaging.isSupported;
 
 export type MessagingStatus = NotificationPermission | 'not-supported';
@@ -54,6 +54,20 @@ interface MessagePayload extends firebase.messaging.MessagePayload {
 interface MessagingState {
   permission: MessagingStatus;
   swToken: string | null;
+}
+
+interface NativePushTokenResult {
+  token?: string | null;
+}
+
+function mapNativeNotificationData(data: unknown): MessagePayload['data'] {
+  if (!data || typeof data !== 'object') {
+    return undefined;
+  }
+
+  const { body } = data as { body?: unknown };
+
+  return typeof body === 'string' ? { body } : undefined;
 }
 
 @Injectable({
@@ -145,10 +159,10 @@ export class PushNotificationsService implements OnDestroy {
       switchMap(() => {
           return new Observable<MessagePayload>(subscriber => {
             if (Capacitor.isNativePlatform()) {
-              const listenerPromise = FirebaseMessaging.addListener('notificationReceived', (event) => {
+              const listenerPromise = FirebaseMessaging.addListener('notificationReceived', (event: NotificationReceivedEvent) => {
                 const message: MessagePayload = {
                   messageId: event.notification.id ?? '',
-                  data: event.notification.data as { body?: string },
+                  data: mapNativeNotificationData(event.notification.data),
                   notification: {
                     title: event.notification.title,
                     body: event.notification.body,
@@ -239,7 +253,7 @@ export class PushNotificationsService implements OnDestroy {
                 this.loggerService.warn(this.formatLogMessage(`Unable to get FCM token. Details: ${e}`));
                 return of(null);
               }),
-              map(result => {
+              map((result: NativePushTokenResult | null) => {
                 const t = result?.token;
                 if (t != null && t.length > 0) {
                   return {

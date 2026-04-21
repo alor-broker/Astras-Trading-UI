@@ -443,7 +443,6 @@ export class ScalperCommandProcessorService {
       map(map => {
         return map.actions.find(a =>
             a.button === btn
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
             && (a.orderBookRowType === row.rowType || a.orderBookRowType === 'any')
             && (
               (!a.modifier && !e.ctrlKey && !e.shiftKey && !e.metaKey)

@@ -19,6 +19,13 @@ export class DeviceNetworkService {
     this.isOnline$ = this.createIsOnlineStream();
   }
 
+  private isHttpErrorWithStatus(error: unknown): error is { status: number } {
+    return typeof error === 'object'
+      && error != null
+      && 'status' in error
+      && typeof error.status === 'number';
+  }
+
   private createIsOnlineStream(): Observable<boolean> {
     if (Capacitor.isNativePlatform()) {
       return new Observable<boolean>(observer => {
@@ -70,11 +77,11 @@ export class DeviceNetworkService {
         this.httpClient.get<number>(`${this.environmentService.apiUrl}/md/v2/time`)
       );
       return true;
-    } catch (e: any) {
+    } catch (e: unknown) {
       // If status is greater than 0, it means we received a response (even if it's an error like 404 or 500).
       // This confirms that the server is reachable.
       // Status 0 usually indicates a network error or CORS issue.
-      return e.status != null && e.status > 0;
+      return this.isHttpErrorWithStatus(e) && e.status > 0;
     }
   }
 }
