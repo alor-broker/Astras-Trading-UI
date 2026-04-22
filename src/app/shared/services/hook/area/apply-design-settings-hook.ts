@@ -52,6 +52,7 @@ export class ApplyDesignSettingsHook implements AreaHook {
 
         document.body.style.fontFamily = `'${fontFamily}', ${defaultFontFamilies}`;
         document.documentElement.style.fontSize = `${fontSize}%`;
+        document.body.style.zoom = `${fontSize}%`;
         this.localStorageService.setStringItem(DesignSettingsConstants.LastFontStorageKey, fontFamily);
         this.localStorageService.setStringItem(DesignSettingsConstants.LastFontSizeStorageKey, String(fontSize));
       })
