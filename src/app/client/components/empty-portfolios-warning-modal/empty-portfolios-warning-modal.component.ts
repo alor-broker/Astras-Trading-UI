@@ -29,6 +29,7 @@ export class EmptyPortfoliosWarningModalComponent implements OnInit {
   private readonly helpService = inject(HelpService);
 
   supportLink = this.environmentService.externalLinks?.support;
+  videoTutorialLink = this.environmentService.externalLinks?.videoTutorial;
   helpLink$!: Observable<string | null>;
 
   readonly atsVisible = model(false);

@@ -10,11 +10,8 @@
       <p>1. {{t('dashboardEmptyPortfoliosWarningModal.point1')}}</p>
       <p>
         2. {{t('dashboardEmptyPortfoliosWarningModal.point2Pt1')}}
-        <ats-external-link
-          klass="link"
-          href="https://www.youtube.com/watch?v=Jn0rLQlcAE0&list=PLMmnmN5fr5OQdclMyRVqIzL6RG7-LlqG3&pp=iAQB"
-        >
-          YouTube
+        <ats-external-link klass="link" [href]="videoTutorialLink ?? ''">
+          Rutube
         </ats-external-link>
         {{t('dashboardEmptyPortfoliosWarningModal.point2Pt2')}}
         <ats-external-link klass="link" [href]="(helpLink$ | async) ?? ''">
