@@ -92,10 +92,13 @@ export enum FontFamilies {
   Caveat = 'Caveat'
 }
 
+export type TerminalFontSize = 100 | 110 | 120;
+
 export interface DesignSettings {
   theme?: ThemeType;
   gridType?: GridType;
   fontFamily?: FontFamilies;
+  fontSize?: TerminalFontSize;
 }
 
 export interface PortfolioCurrencySettings {
