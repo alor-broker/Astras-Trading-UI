@@ -759,6 +759,40 @@
     ]
   },
   {
+    "typeId": "portfolio-risk-gauge",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "PortfolioRiskGaugeWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Portfolio Risk",
+      "translations": {
+        "ru": "Риск портфеля",
+        "en": "Portfolio Risk",
+        "hy": "Պորտֆելի ռիսկ"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "dashboard",
+      "galleryIcon": "dashboard",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 8,
+        "initialWidth": 8
+      },
+      "galleryOrder": 20,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
     "typeId": "instruments-correlation",
     "definition": {
       "adapter": "application",
@@ -785,7 +819,7 @@
         "initialHeight": 18,
         "initialWidth": 10
       },
-      "galleryOrder": 20,
+      "galleryOrder": 21,
       "enabled": true
     },
     "hideOnDashboardType": [
@@ -820,7 +854,7 @@
         "initialHeight": 18,
         "initialWidth": 10
       },
-      "galleryOrder": 21,
+      "galleryOrder": 22,
       "enabled": true
     },
     "hideOnDashboardType": [
@@ -917,7 +951,7 @@
         "initialHeight": 12,
         "initialWidth": 8
       },
-      "galleryOrder": 22,
+      "galleryOrder": 23,
       "enabled": true
     },
     "hideOnDashboardType": [
@@ -952,7 +986,7 @@
         "initialHeight": 12,
         "initialWidth": 8
       },
-      "galleryOrder": 23,
+      "galleryOrder": 24,
       "enabled": true
     },
     "hideOnDashboardType": [
@@ -986,7 +1020,7 @@
         "initialHeight": 18,
         "initialWidth": 10
       },
-      "galleryOrder": 24,
+      "galleryOrder": 25,
       "enabled": true
     },
     "baseSettings": {

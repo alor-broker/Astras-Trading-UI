@@ -1,0 +1,22 @@
+{
+  "title": "Portfolio risk",
+  "states": {
+    "GREEN": "Calm",
+    "YELLOW": "Attention",
+    "RED": "Low reserve",
+    "RESTRICTED": "Restricted",
+    "CRITICAL": "Critical",
+    "FORCED_CLOSE_RISK": "Auto-close possible",
+    "NO_DATA": "No data"
+  },
+  "values": {
+    "noData": "No data",
+    "noMarginRisk": "No margin load",
+    "noMarginRequirementLoad": "No margin requirement load"
+  },
+  "components": {
+    "title": "Risk components",
+    "NPR": "NPR",
+    "FORTS": "Margin / reserve"
+  }
+}

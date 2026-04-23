@@ -1,0 +1,191 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .risk-gauge {
+      color: @text-color;
+    }
+
+    .gauge-track {
+      fill: fade(@text-color, 12%);
+    }
+
+    .gauge-segment.green {
+      fill: @buy-color;
+    }
+
+    .gauge-segment.yellow {
+      fill: @warning-color;
+    }
+
+    .gauge-segment.red {
+      fill: @error-color;
+    }
+
+    .needle path,
+    .needle-center {
+      fill: @heading-color;
+    }
+
+    .state-label,
+    .component-value {
+      color: @heading-color;
+    }
+
+    .state-green {
+      .state-label {
+        color: @buy-color;
+      }
+    }
+
+    .state-yellow {
+      .state-label {
+        color: @warning-color;
+      }
+    }
+
+    .state-red,
+    .state-restricted,
+    .state-critical,
+    .state-forced-close-risk {
+      .state-label {
+        color: @error-color;
+      }
+    }
+
+    .component.state-green .component-value {
+      color: @buy-color;
+    }
+
+    .component.state-yellow .component-value {
+      color: @warning-color;
+    }
+
+    .component.state-red .component-value,
+    .component.state-restricted .component-value,
+    .component.state-critical .component-value,
+    .component.state-forced-close-risk .component-value {
+      color: @error-color;
+    }
+
+    .state-no-data {
+      .state-label,
+      .value {
+        color: fade(@text-color, 75%);
+      }
+    }
+
+    .component {
+      border-color: fade(@text-color, 18%);
+      background: fade(@text-color, 4%);
+    }
+  }
+});
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.risk-gauge {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(112px, 42%) minmax(120px, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "visual summary"
+    "components components";
+  align-items: center;
+  height: 100%;
+  min-height: 0;
+  gap: 8px 12px;
+  padding: 8px 10px 10px;
+}
+
+.visual {
+  grid-area: visual;
+  min-width: 112px;
+
+  svg {
+    display: block;
+    width: 100%;
+    min-width: 112px;
+    max-height: 132px;
+  }
+}
+
+.summary {
+  grid-area: summary;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.title {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.state-label {
+  overflow-wrap: anywhere;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.value {
+  min-height: 18px;
+  font-size: 13px;
+}
+
+.components {
+  grid-area: components;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.component {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 8px;
+  padding: 3px 6px;
+  border: 1px solid;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.component-label,
+.component-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.component-value {
+  flex: 0 0 auto;
+  font-weight: 600;
+}
+
+@media (max-width: 420px) {
+  .risk-gauge {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "visual"
+      "summary"
+      "components";
+  }
+
+  .summary {
+    align-items: center;
+    text-align: center;
+  }
+}

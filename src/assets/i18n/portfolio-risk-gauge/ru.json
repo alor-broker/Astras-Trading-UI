@@ -1,0 +1,22 @@
+{
+  "title": "Риск портфеля",
+  "states": {
+    "GREEN": "Спокойно",
+    "YELLOW": "Внимание",
+    "RED": "Малый запас",
+    "RESTRICTED": "Ограничение",
+    "CRITICAL": "Критично",
+    "FORCED_CLOSE_RISK": "Автозакрытие возможно",
+    "NO_DATA": "Нет данных"
+  },
+  "values": {
+    "noData": "Нет данных",
+    "noMarginRisk": "Нет маржинальной нагрузки",
+    "noMarginRequirementLoad": "Нет нагрузки по ГО"
+  },
+  "components": {
+    "title": "Компоненты риска",
+    "NPR": "НПР",
+    "FORTS": "ГО / запас"
+  }
+}

@@ -1,0 +1,84 @@
+<ng-container *transloco="let t; scope: 'portfolio-risk-gauge'">
+  @let gaugeView = view();
+
+  <section
+    class="risk-gauge"
+    [class.state-critical]="gaugeView.state === riskStates.Critical"
+    [class.state-forced-close-risk]="gaugeView.state === riskStates.ForcedCloseRisk"
+    [class.state-green]="gaugeView.state === riskStates.Green"
+    [class.state-no-data]="gaugeView.state === riskStates.NoData"
+    [class.state-red]="gaugeView.state === riskStates.Red"
+    [class.state-restricted]="gaugeView.state === riskStates.Restricted"
+    [class.state-yellow]="gaugeView.state === riskStates.Yellow"
+  >
+    <div class="visual">
+      <svg
+        [attr.aria-label]="t('portfolioRiskGauge.title')"
+        [attr.aria-valuenow]="gaugeView.state === riskStates.NoData ? null : gaugeView.gaugeValuePercent"
+        [attr.aria-valuetext]="getAriaValueText(gaugeView, t)"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        role="progressbar"
+        viewBox="0 0 220 132"
+      >
+        <g transform="translate(110,106)">
+          <path class="gauge-track" [attr.d]="trackPath" />
+
+          @for (segment of segments; track segment.className) {
+            <path
+              class="gauge-segment"
+              [attr.d]="segment.path"
+              [class.green]="segment.className === 'green'"
+              [class.red]="segment.className === 'red'"
+              [class.yellow]="segment.className === 'yellow'"
+            />
+          }
+
+          @if (gaugeView.state !== riskStates.NoData) {
+            <g class="needle" [attr.transform]="getNeedleTransform(gaugeView)">
+              <path d="M -4 0 L 0 -66 L 4 0 Z" />
+            </g>
+            <circle class="needle-center" r="6" />
+          }
+        </g>
+      </svg>
+    </div>
+
+    <div class="summary">
+      <span class="title">{{ t('portfolioRiskGauge.title') }}</span>
+      <span class="state-label">{{ t(gaugeView.labelKey) }}</span>
+      <span class="value">
+        @if (gaugeView.valueTextKey != null) {
+          {{ t(gaugeView.valueTextKey) }}
+        } @else if (gaugeView.reserveRatio != null) {
+          {{ gaugeView.reserveRatio | percent: '1.0-0' }}
+        }
+      </span>
+    </div>
+
+    @if (gaugeView.components.length > 0) {
+      <div class="components" [attr.aria-label]="t('portfolioRiskGauge.components.title')">
+        @for (component of gaugeView.components; track component.kind) {
+          <div
+            class="component"
+            [class.state-critical]="component.state === riskStates.Critical"
+            [class.state-forced-close-risk]="component.state === riskStates.ForcedCloseRisk"
+            [class.state-green]="component.state === riskStates.Green"
+            [class.state-red]="component.state === riskStates.Red"
+            [class.state-restricted]="component.state === riskStates.Restricted"
+            [class.state-yellow]="component.state === riskStates.Yellow"
+          >
+            <span class="component-label">{{ t(component.labelKey) }}</span>
+            <span class="component-value">
+              @if (component.valueTextKey != null) {
+                {{ t(component.valueTextKey) }}
+              } @else if (component.reserveRatio != null) {
+                {{ component.reserveRatio | percent: '1.0-0' }}
+              }
+            </span>
+          </div>
+        }
+      </div>
+    }
+  </section>
+</ng-container>
