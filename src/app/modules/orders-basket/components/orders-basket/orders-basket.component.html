@@ -4,90 +4,112 @@
       <ng-container *transloco="let t; scope: 'orders-basket/orders-basket'">
         @if (settings.showPresetsPanel) {
           <div class="mb-5">
-            <ats-presets [guid]="guid()"
-              [presets]="(currentPresets$ | async) ?? []"
-              [canAddPreset]="form.valid"
-              (addPreset)="savePreset($event.title)"
-              (removePreset)="removePreset($event.id)"
-              (presetSelected)="applyPreset($event)"
-               />
+            <ats-presets (addPreset)="savePreset($event.title)"
+                         (presetSelected)="applyPreset($event)"
+                         (removePreset)="removePreset($event.id)"
+                         [canAddPreset]="form.valid"
+                         [guid]="guid()"
+                         [presets]="(currentPresets$ | async) ?? []"
+            />
           </div>
         }
         <form [formGroup]="form" nz-form nzLayout="vertical">
-          <div class="basket-items-container" nzResizeObserver (nzResizeObserve)="itemsContainerWidthChanged($event)">
+          <div (nzResizeObserve)="itemsContainerWidthChanged($event)" class="basket-items-container mb-25"
+               nzResizeObserver>
             @for (itemControl of form.controls.items.controls; track itemControl; let i = $index) {
               <div class="basket-item">
                 <div class="item-control">
                   <ats-orders-basket-item (delete)="form.controls.items.removeAt(i)"
-                    [enableDelete]="form.controls.items.controls.length > 1"
-                    [exchange]="settings.exchange"
-                    [formControl]="itemControl"
-                    [itemIndex]="i"
-                    [width]="itemsContainerWidth$ | async"
-                   />
+                                          [enableDelete]="form.controls.items.controls.length > 1"
+                                          [exchange]="settings.exchange"
+                                          [formControl]="itemControl"
+                                          [itemIndex]="i"
+                                          [width]="itemsContainerWidth$ | async"
+                  />
                 </div>
               </div>
             }
             @if (form.controls.items.errors?.max100Percent) {
               <span nz-typography nzType="danger">
-                {{t('ordersBasketOrdersBasket.moreThan100Percents')}} ({{form.controls.items.errors?.max100Percent.actual}})
+                {{ t('ordersBasketOrdersBasket.moreThan100Percents') }}
+                ({{ form.controls.items.errors?.max100Percent.actual }})
               </span>
             }
             <div>
               <button (click)="addItemDraft(form.controls.items)"
-                id="add-item-btn"
-                nz-button
-                nzBlock
-                nzType="dashed">
+                      id="add-item-btn"
+                      nz-button
+                      nzBlock
+                      nzType="dashed">
                 <span nz-icon nzType="plus"></span>
               </button>
             </div>
           </div>
-          <div class="budget-container">
+          <div class="row mb-10">
             <div nz-col>
-              <nz-form-item>
-                <nz-form-label nzRequired>{{t('ordersBasketOrdersBasket.budgetLabel')}}</nz-form-label>
-                <nz-form-control [nzErrorTip]="budgetError">
-                  <ats-input-number formControlName="budget"
-                    [placeholder]="t('ordersBasketOrdersBasket.budgetPlaceholder')"
-                   />
-                  <ng-template #budgetError>
-                    @if (form.controls.budget.errors?.required) {
-                      <span>{{t('ordersBasketOrdersBasket.budgetPlaceholder')}}</span>
-                    }
-                    @if (form.controls.budget.errors?.min) {
-                      <span>{{t('validationErrors.tooLittle')}}</span>
-                    }
-                    @if (form.controls.budget.errors?.max) {
-                      <span>{{t('validationErrors.tooMuch')}}</span>
-                    }
-                  </ng-template>
-                </nz-form-control>
-              </nz-form-item>
+              <ng-container *transloco="let toc; scope: 'order-commands/buy-sell-buttons'">
+                <nz-radio-group class="buy-sell-switch" formControlName="side">
+                  <label [nzValue]="Sides.Buy" class="buy"
+                         nz-radio-button>{{ toc('orderCommandsBuySellButtons.buyBtnText') }}</label>
+                  <label [nzValue]="Sides.Sell" class="sell"
+                         nz-radio-button>{{ toc('orderCommandsBuySellButtons.sellBtnText') }}</label>
+                </nz-radio-group>
+              </ng-container>
             </div>
             <div nz-col>
-              <nz-form-item>
-                <nz-form-label>&nbsp;</nz-form-label>
-                <nz-form-control>
-                  <button
-                    (click)="submitOrders()"
-                    [disabled]="(canSubmit$ | async)===false"
-                    [nzLoading]="processing$ | async"
-                    class="submit-orders-btn"
-                    nz-button>
-                    {{t('ordersBasketOrdersBasket.submitLabel')}}
-                  </button>
-                </nz-form-control>
-              </nz-form-item>
+              <nz-select formControlName="mode" class="w-100">
+                <nz-option [nzLabel]="t('ordersBasketOrdersBasket.calculationMode.' + CalculationMode.Margin)" [nzValue]="CalculationMode.Margin"/>
+                <nz-option [nzLabel]="t('ordersBasketOrdersBasket.calculationMode.' + CalculationMode.Cash)" [nzValue]="CalculationMode.Cash"/>
+              </nz-select>
             </div>
+          </div>
+          <div class="row">
+            <nz-form-item class="w-100">
+              <nz-form-label nzRequired>{{ t('ordersBasketOrdersBasket.budgetLabel') }}</nz-form-label>
+              <nz-form-control [nzErrorTip]="budgetError">
+                <ats-input-number [placeholder]="t('ordersBasketOrdersBasket.budgetPlaceholder')"
+                                  formControlName="budget"
+                />
+                <ng-template #budgetError>
+                  @if (form.controls.budget.errors?.required) {
+                    <span>{{ t('ordersBasketOrdersBasket.budgetPlaceholder') }}</span>
+                  }
+                  @if (form.controls.budget.errors?.min) {
+                    <span>{{ t('validationErrors.tooLittle') }}</span>
+                  }
+                  @if (form.controls.budget.errors?.max) {
+                    <span>{{ t('validationErrors.tooMuch') }}</span>
+                  }
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div class="row">
+            <nz-form-item class="w-100">
+              <nz-form-label>&nbsp;</nz-form-label>
+              <nz-form-control>
+                <button
+                  (click)="submitOrders()"
+                  [disabled]="(canSubmit$ | async)===false"
+                  [nzLoading]="processing$ | async"
+                  class="submit-orders-btn"
+                  [class]="{
+                  'buy-btn': form.controls.side.value === Sides.Buy,
+                  'sell-btn': form.controls.side.value === Sides.Sell
+                  }"
+                  nz-button>
+                  {{ t('ordersBasketOrdersBasket.submitLabel') }}
+                </button>
+              </nz-form-control>
+            </nz-form-item>
           </div>
           @if (submitResult$ | async; as submitResult) {
             <div>
               @if (submitResult === 'success') {
-                <span nz-typography nzType="success">{{t('ordersBasketOrdersBasket.submitSuccessMessage')}}</span>
+                <span nz-typography nzType="success">{{ t('ordersBasketOrdersBasket.submitSuccessMessage') }}</span>
               }
               @if (submitResult === 'failed') {
-                <span nz-typography nzType="warning">{{t('ordersBasketOrdersBasket.submitFailedMessage')}}</span>
+                <span nz-typography nzType="warning">{{ t('ordersBasketOrdersBasket.submitFailedMessage') }}</span>
               }
             </div>
           }
