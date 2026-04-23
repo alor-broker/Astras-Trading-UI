@@ -1,0 +1,22 @@
+{
+  "title": "Պորտֆելի ռիսկ",
+  "states": {
+    "GREEN": "Հանգիստ",
+    "YELLOW": "Ուշադրություն",
+    "RED": "Փոքր պահուստ",
+    "RESTRICTED": "Սահմանափակում",
+    "CRITICAL": "Կրիտիկական",
+    "FORCED_CLOSE_RISK": "Հնարավոր է ավտոփակում",
+    "NO_DATA": "Տվյալներ չկան"
+  },
+  "values": {
+    "noData": "Տվյալներ չկան",
+    "noMarginRisk": "Մարժինալ բեռ չկա",
+    "noMarginRequirementLoad": "ԳԱ բեռ չկա"
+  },
+  "components": {
+    "title": "Ռիսկի բաղադրիչներ",
+    "NPR": "ՆՊՌ",
+    "FORTS": "ԳԱ / պահուստ"
+  }
+}

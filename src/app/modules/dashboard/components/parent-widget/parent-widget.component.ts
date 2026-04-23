@@ -41,6 +41,9 @@ import {
   PortfolioSummaryWidgetComponent
 } from '../../../portfolio-summary/widgets/portfolio-summary-widget/portfolio-summary-widget.component';
 import {
+  PortfolioRiskGaugeWidgetComponent
+} from '../../../portfolio-risk-gauge/widgets/portfolio-risk-gauge-widget/portfolio-risk-gauge-widget.component';
+import {
   InstrumentsCorrelationWidgetComponent
 } from '../../../instruments-correlation/widgets/instruments-correlation-widget/instruments-correlation-widget.component';
 import {
@@ -93,6 +96,7 @@ import {AdminClientPositionsWidgetComponent} from "../../../admin-client-positio
     OptionBoardWidgetComponent,
     ArbitrageSpreadWidgetComponent,
     PortfolioSummaryWidgetComponent,
+    PortfolioRiskGaugeWidgetComponent,
     InstrumentsCorrelationWidgetComponent,
     BondScreenerWidgetComponent,
     MobileHomeScreenWidgetComponent,
