@@ -19,12 +19,12 @@
         </div>
         @if (priceData$ | async; as priceData) {
           <div>
-            <label>Ask: </label>
-            <span (click)="priceSelected.emit(priceData.ask)" class="selectable sell">{{priceData.ask | atsPrice: getPriceDecimalSymbolsCount(instrument)}}</span>
-          </div>
-          <div>
             <label>Bid: </label>
             <span (click)="priceSelected.emit(priceData.bid)" class="selectable buy">{{priceData.bid | atsPrice:  getPriceDecimalSymbolsCount(instrument)}}</span>
+          </div>
+          <div>
+            <label>Ask: </label>
+            <span (click)="priceSelected.emit(priceData.ask)" class="selectable sell">{{priceData.ask | atsPrice: getPriceDecimalSymbolsCount(instrument)}}</span>
           </div>
         }
       </div>
