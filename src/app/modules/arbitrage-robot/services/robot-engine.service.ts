@@ -47,8 +47,8 @@ export class RobotEngineService implements OnDestroy {
         // Закрытие по порогу
         if (cfg.closeThreshold != null && pos !== 0) {
           const shouldClose =
-            (pos > 0 && current.sellSpread != null && current.sellSpread <= cfg.closeThreshold) ||
-            (pos < 0 && current.buySpread != null && current.buySpread >= cfg.closeThreshold);
+            (pos > 0 && current.sellSpread != null && current.sellSpread >= cfg.closeThreshold) ||
+            (pos < 0 && current.buySpread != null && current.buySpread <= cfg.closeThreshold);
 
           if (shouldClose) {
             this.robotService.closePositions(current, volume).subscribe();
