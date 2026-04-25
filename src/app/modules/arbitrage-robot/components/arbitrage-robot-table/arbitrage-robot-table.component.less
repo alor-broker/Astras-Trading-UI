@@ -1,0 +1,109 @@
+@import "theme-mixin";
+@import "buy-sell-button-mixin";
+
+.themeMixin({
+  :host ::ng-deep {
+    .robot-active td {
+      background: fade(@buy-color, 5%) !important;
+    }
+
+    .toggle-label.enabled {
+      color: @success-color;
+    }
+
+    .op-btn--danger {
+      color: @error-color;
+    }
+
+    .symbol-name {
+      .badge {
+        z-index: @zindex-badge;
+        min-width: @badge-height-sm;
+        height: @badge-height-sm;
+        padding: 0 4px;
+        color: @badge-text-color;
+        font-weight: @badge-font-weight;
+        font-size: @badge-font-size;
+        line-height: @badge-height-sm;
+        white-space: nowrap;
+        text-align: center;
+        background: @badge-color;
+        border-radius: (@badge-height / 2);
+        box-shadow: 0 0 0 1px @shadow-color-inverse;
+
+        &.long  { color: @layout-header-color; background: @buy-color; }
+        &.short { color: @layout-header-color; background: @sell-color; }
+      }
+    }
+  }
+});
+
+.robot-table-wrap {
+  height: calc(100% - 40px);
+  overflow: auto;
+}
+
+.compact {
+  margin: 0;
+}
+
+.symbol-name {
+  position: relative;
+  display: inline-block;
+
+  .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(70%, -40%);
+    transform-origin: 100% 0;
+  }
+}
+
+.col-hint {
+  margin-left: 3px;
+  opacity: 0.45;
+  cursor: help;
+  font-size: 12px;
+}
+
+.close-hint {
+  font-size: 11px;
+  opacity: 0.5;
+  margin-top: 2px;
+  text-align: center;
+}
+
+.operations {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.toggle-label {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 32px;
+  opacity: 0.6;
+
+  &.enabled {
+    opacity: 1;
+  }
+}
+
+.op-btn {
+  font-size: 16px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.add-btn-wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px 4px;
+}

@@ -726,6 +726,41 @@
     ]
   },
   {
+    "typeId": "arbitrage-robot",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "ArbitrageRobotModule",
+        "componentName": "ArbitrageRobotWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Arbitrage Robot",
+      "translations": {
+        "ru": "Арбитражный робот",
+        "en": "Arbitrage Robot",
+        "hy": "Արբիտրաժային Ռոբոտ"
+      }
+    },
+    "category": "details",
+    "desktopMeta": {
+      "headerIcon": "robot",
+      "galleryIcon": "robot",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 12
+      },
+      "galleryOrder": 19,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
     "typeId": "portfolio-summary",
     "definition": {
       "adapter": "application",

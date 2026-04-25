@@ -1,0 +1,60 @@
+<div [formGroup]="form">
+  <div class="d-flex flex-column">
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Неверный формат формулы">
+        <nz-form-label>Формула расчёта</nz-form-label>
+        <nz-input-group [nzSuffix]="suffixHelp">
+          <input
+            type="text"
+            nz-input
+            [formControl]="formulaControl"
+            placeholder="L1-L2"
+          />
+        </nz-input-group>
+
+        <ng-template #suffixHelp>
+          <span
+            nz-icon
+            nzType="question-circle"
+            class="help-icon"
+            nz-tooltip
+            [nzTooltipTitle]="formulaTip"
+          ></span>
+        </ng-template>
+
+        <ng-template #formulaTip>
+          <p>Используйте L1, L2, L3 для обозначения ног и арифметические операторы.</p>
+          <p>Примеры: L1-L2, L1*L3-L2, L1/L2</p>
+          <p>L1 всегда покупается по ask, L2/L3 — зависит от стороны ноги.</p>
+        </ng-template>
+      </nz-form-control>
+
+      @if (form.errors?.calculationFormula) {
+        <span nz-typography nzType="danger">
+          Формула содержит L3, но третья нога не включена.
+        </span>
+      }
+    </nz-form-item>
+
+    <h2>Первая нога</h2>
+    <ats-spread-leg formControlName="firstLeg" [portfolios]="(portfolios$ | async) ?? []" />
+  </div>
+
+  <div class="d-flex flex-column mt-10">
+    <h2>Вторая нога</h2>
+    <ats-spread-leg formControlName="secondLeg" [isSideNeeded]="true" [portfolios]="(portfolios$ | async) ?? []" />
+  </div>
+
+  <nz-form-item class="mt-10">
+    <nz-form-label nzFor="isThirdLeg">Третья нога</nz-form-label>
+    <nz-form-control>
+      <nz-switch [formControl]="isThirdLegControl" />
+    </nz-form-control>
+  </nz-form-item>
+
+  @if (isThirdLegControl.value) {
+    <div class="d-flex flex-column mt-10">
+      <ats-spread-leg formControlName="thirdLeg" [isSideNeeded]="true" [portfolios]="(portfolios$ | async) ?? []" />
+    </div>
+  }
+</div>

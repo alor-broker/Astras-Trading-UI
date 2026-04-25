@@ -1,0 +1,33 @@
+<nz-modal
+  [nzTitle]="header"
+  nzClosable="true"
+  [nzVisible]="isVisible$ | async"
+  [nzMaskClosable]="false"
+  (nzOnCancel)="handleCancel()"
+  nzDraggable
+>
+  <ng-template #header>
+    <div class="header">
+      {{ (spreadInfo$ | async) ? 'Редактировать раздвижку' : 'Новая раздвижка' }}
+    </div>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <ats-arbitrage-robot-manage
+      [spread]="spreadInfo$ | async"
+      (formChange)="formChange($event)"
+    />
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <button
+      nz-button
+      nzType="primary"
+      [disabled]="!formData?.isValid"
+      (click)="addOrEdit()"
+    >
+      {{ (spreadInfo$ | async) ? 'Сохранить' : 'Добавить' }}
+    </button>
+    <button nz-button nzType="default" (click)="handleCancel()">Отмена</button>
+  </ng-container>
+</nz-modal>

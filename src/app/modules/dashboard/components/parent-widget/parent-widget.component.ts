@@ -38,6 +38,9 @@ import {
   ArbitrageSpreadWidgetComponent
 } from '../../../arbitrage-spread/widgets/arbitrage-spread-widget/arbitrage-spread-widget.component';
 import {
+  ArbitrageRobotWidgetComponent
+} from '../../../arbitrage-robot/widgets/arbitrage-robot-widget/arbitrage-robot-widget.component';
+import {
   PortfolioSummaryWidgetComponent
 } from '../../../portfolio-summary/widgets/portfolio-summary-widget/portfolio-summary-widget.component';
 import {
@@ -94,6 +97,7 @@ import {
     EventsCalendarWidgetComponent,
     OptionBoardWidgetComponent,
     ArbitrageSpreadWidgetComponent,
+    ArbitrageRobotWidgetComponent,
     PortfolioSummaryWidgetComponent,
     InstrumentsCorrelationWidgetComponent,
     BondScreenerWidgetComponent,

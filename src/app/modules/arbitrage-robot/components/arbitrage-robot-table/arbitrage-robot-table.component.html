@@ -1,0 +1,241 @@
+<div class="robot-table-wrap">
+  @if (items$ | async; as items) {
+    <nz-table
+      #nzTable
+      [nzData]="items"
+      [nzFrontPagination]="false"
+      [nzNoResult]="empty"
+      [nzShowPagination]="false"
+      atsTableRowHeight
+    >
+      <thead>
+        <tr>
+          <th>Инструменты</th>
+          <th nzAlign="right">Спред покупка</th>
+          <th nzAlign="right">Спред продажа</th>
+          <th nzAlign="center">
+            Порог покупки
+            <i
+              class="col-hint"
+              nz-icon nzType="question-circle" nzTheme="outline"
+              nz-tooltip
+              nzTooltipTitle="Покупать базис (купить L1, продать L2) когда Спред покупки ≤ этого значения"
+            ></i>
+          </th>
+          <th nzAlign="center">
+            Порог продажи
+            <i
+              class="col-hint"
+              nz-icon nzType="question-circle" nzTheme="outline"
+              nz-tooltip
+              nzTooltipTitle="Продавать базис (продать L1, купить L2) когда Спред продажи ≥ этого значения"
+            ></i>
+          </th>
+          <th nzAlign="center">
+            Объём заявки
+            <i
+              class="col-hint"
+              nz-icon nzType="question-circle" nzTheme="outline"
+              nz-tooltip
+              nzTooltipTitle="Количество контрактов первой ноги в одной сделке"
+            ></i>
+          </th>
+          <th nzAlign="center">
+            Макс. объём
+            <i
+              class="col-hint"
+              nz-icon nzType="question-circle" nzTheme="outline"
+              nz-tooltip
+              nzTooltipTitle="Максимальное количество конструкций (позиций). Робот не открывает новые сделки сверх лимита"
+            ></i>
+          </th>
+          <th nzAlign="center">
+            Порог закрытия
+            <i
+              class="col-hint"
+              nz-icon nzType="question-circle" nzTheme="outline"
+              nz-tooltip
+              nzTooltipTitle="Закрывать позицию при достижении этого значения спреда. Лонг закрывается когда Спред продажи ≤ порога; Шорт — когда Спред покупки ≥ порога"
+            ></i>
+          </th>
+          <th nzAlign="center">Направление</th>
+          <th nzAlign="center">Состояние</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (spread of nzTable.data!; track trackByFn(i, spread); let i = $index) {
+          <tr [class.robot-active]="engine.isRunning(spread.id!)">
+
+            <!-- Инструменты -->
+            <td class="fw-bold">
+              <div class="symbol-name" [class.mr-8]="!!spread.firstLeg.positionsCount">
+                @if (!!spread.firstLeg.positionsCount) {
+                  <span class="badge" [class]="spread.firstLeg.positionsCount > 0 ? 'long' : 'short'">
+                    {{getAbs(spread.firstLeg.positionsCount)}}
+                  </span>
+                }
+                {{ spread.firstLeg.instrument.symbol }}
+              </div>
+              /
+              <div class="symbol-name" [class.mr-8]="!!spread.secondLeg.positionsCount">
+                @if (!!spread.secondLeg.positionsCount) {
+                  <span class="badge" [class]="spread.secondLeg.positionsCount > 0 ? 'long' : 'short'">
+                    {{getAbs(spread.secondLeg.positionsCount)}}
+                  </span>
+                }
+                {{ spread.secondLeg.instrument.symbol }}
+              </div>
+              @if (spread.isThirdLeg) {
+                /
+                <div class="symbol-name" [class.mr-8]="!!spread.thirdLeg.positionsCount">
+                  @if (!!spread.thirdLeg.positionsCount) {
+                    <span class="badge" [class]="spread.thirdLeg.positionsCount > 0 ? 'long' : 'short'">
+                      {{getAbs(spread.thirdLeg.positionsCount)}}
+                    </span>
+                  }
+                  {{ spread.thirdLeg.instrument.symbol }}
+                </div>
+              }
+            </td>
+
+            <!-- Спред покупка -->
+            <td nzAlign="right">{{ spread.buySpread | number:'1.3-3' }}</td>
+
+            <!-- Спред продажа -->
+            <td nzAlign="right">{{ spread.sellSpread | number:'1.3-3' }}</td>
+
+            <!-- Порог покупки -->
+            <td nzAlign="center">
+              <nz-form-item class="compact">
+                <nz-form-control>
+                  <ats-input-number
+                    placeholder="—"
+                    [ngModel]="spread.robotConfig.buyThreshold"
+                    (ngModelChange)="updateConfig(spread, { buyThreshold: $event })"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+
+            <!-- Порог продажи -->
+            <td nzAlign="center">
+              <nz-form-item class="compact">
+                <nz-form-control>
+                  <ats-input-number
+                    placeholder="—"
+                    [ngModel]="spread.robotConfig.sellThreshold"
+                    (ngModelChange)="updateConfig(spread, { sellThreshold: $event })"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+
+            <!-- Объём заявки -->
+            <td nzAlign="center">
+              <nz-form-item class="compact">
+                <nz-form-control>
+                  <ats-input-number
+                    placeholder="—"
+                    [ngModel]="spread.robotConfig.volume"
+                    (ngModelChange)="updateConfig(spread, { volume: $event })"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+
+            <!-- Макс. объём -->
+            <td nzAlign="center">
+              <nz-form-item class="compact">
+                <nz-form-control>
+                  <ats-input-number
+                    placeholder="—"
+                    [ngModel]="spread.robotConfig.maxVolume"
+                    (ngModelChange)="updateConfig(spread, { maxVolume: $event })"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+
+            <!-- Порог закрытия -->
+            <td nzAlign="center">
+              <nz-form-item class="compact">
+                <nz-form-control>
+                  <ats-input-number
+                    placeholder="—"
+                    [ngModel]="spread.robotConfig.closeThreshold"
+                    (ngModelChange)="updateConfig(spread, { closeThreshold: $event })"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+
+            <!-- Направление -->
+            <td nzAlign="center">
+              <nz-select
+                [ngModel]="spread.robotConfig.direction"
+                (ngModelChange)="updateConfig(spread, { direction: $event })"
+                nzSize="small"
+              >
+                @for (opt of directionOptions; track opt.value) {
+                  <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+                }
+              </nz-select>
+            </td>
+
+            <!-- Операции: тогл + редактировать + удалить -->
+            <td nzAlign="center">
+              <div class="operations">
+                <nz-switch
+                  [ngModel]="engine.isRunning(spread.id!)"
+                  (ngModelChange)="onToggle(spread, $event)"
+                  nz-tooltip
+                  [nzTooltipTitle]="engine.isRunning(spread.id!) ? 'Выключить робота' : 'Включить робота'"
+                />
+                <span class="toggle-label" [class.enabled]="engine.isRunning(spread.id!)">
+                  {{ engine.isRunning(spread.id!) ? 'ВКЛ' : 'ВЫКЛ' }}
+                </span>
+                <a
+                  class="op-btn"
+                  (click)="editSpread(spread)"
+                  nz-tooltip
+                  nzTooltipTitle="Редактировать"
+                >
+                  <i nz-icon nzType="edit" nzTheme="outline"></i>
+                </a>
+                <a
+                  class="op-btn op-btn--danger"
+                  (click)="removeSpread(spread)"
+                  nz-tooltip
+                  nzTooltipTitle="Удалить"
+                >
+                  <i nz-icon nzType="close-circle" nzTheme="outline"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  }
+
+  <ng-template #empty>
+    <nz-empty
+      nzNotFoundImage="simple"
+      nzNotFoundContent="Нет раздвижек. Нажмите + чтобы добавить."
+    />
+  </ng-template>
+</div>
+
+<!-- Кнопка добавить (снаружи таблицы, если таблица пуста или всегда) -->
+<div class="add-btn-wrap">
+  <button
+    nz-button
+    nzType="primary"
+    nzShape="circle"
+    (click)="addSpread()"
+    nz-tooltip
+    nzTooltipTitle="Добавить раздвижку"
+  >
+    <i nz-icon nzType="plus" nzTheme="outline"></i>
+  </button>
+</div>
