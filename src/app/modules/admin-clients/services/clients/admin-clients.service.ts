@@ -63,6 +63,36 @@ export class AdminClientsService {
     );
   }
 
+  addClientRecordToFavorites(portfolio: string, exchange: string): Observable<boolean> {
+    {
+      return this.httpClient.put(
+        `${this.baseUrl}/admincomposer/portfolios/favorites`,
+        {
+          portfolio,
+          exchange
+        }
+      ).pipe(
+        catchHttpError<any>(false, this.errorHandlerService),
+        map(r => {
+          return r != false;
+        })
+      );
+    }
+  }
+
+  removeClientRecordFromFavorites(portfolio: string, exchange: string): Observable<boolean> {
+    {
+      return this.httpClient.delete(
+        `${this.baseUrl}/admincomposer/portfolios/favorites/${exchange}/${portfolio}`,
+      ).pipe(
+        catchHttpError<any>(false, this.errorHandlerService),
+        map(r => {
+          return r != false;
+        })
+      );
+    }
+  }
+
   getClientRestrictions(clientId: string): Observable<ClientRestriction[] | null> {
     return this.httpClient.get<ClientRestriction[]>(
       `${this.baseUrl}/admincomposer/clients/${clientId}/restrictions`,

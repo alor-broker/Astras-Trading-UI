@@ -57,13 +57,9 @@ import {ResizeColumnDirective} from "../../../../shared/directives/resize-column
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
-import {LocalStorageService} from "../../../../shared/services/local-storage.service";
-import {NzButtonComponent} from "ng-zorro-antd/button";
 import {AdminClientRestrictionsComponent} from "../admin-client-restrictions/admin-client-restrictions.component";
 
-export type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension> & {
-  isFavorite: boolean;
-};
+export type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension>;
 
 interface TableState {
   pageSize?: number;
@@ -86,8 +82,6 @@ interface ColumnBase {
   sortChangeFn?: (direction: string | null) => any;
 }
 
-type FavoritePortfolios = string[];
-
 @Component({
   selector: 'ats-admin-clients',
   standalone: true,
@@ -106,7 +100,6 @@ type FavoritePortfolios = string[];
     NzMenuDirective,
     NzMenuItemComponent,
     NzTableModule,
-    NzButtonComponent,
     AdminClientRestrictionsComponent
   ],
   templateUrl: './admin-clients.component.html',
@@ -119,7 +112,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   protected readonly settingsService: WidgetSettingsService;
   protected readonly destroyRef: DestroyRef;
   protected readonly widgetLocalStateService = inject(WidgetLocalStateService);
-  protected readonly allPageSizes = [10, 25, 50, 100, 200, 500];
+  protected readonly allPageSizes = [10, 25, 50, 100, 200];
   protected readonly page$ = new BehaviorSubject<{ page: number, pageSize: number }>({
     page: 1,
     pageSize: this.allPageSizes[0]
@@ -131,6 +124,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   protected settingsColumnsName = '';
   protected readonly FilterType = FilterType;
   protected selectedItem: ClientDisplay | null = null;
+  protected readonly clientToCheckRestrictions = model<Omit<Client, 'spectraExtension'> | null>(null);
   private readonly adminClientsService = inject(AdminClientsService);
   private readonly translatorService = inject(TranslatorService);
   protected readonly valuesTranslator$ = combineLatest({
@@ -139,10 +133,6 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   }).pipe(
     shareReplay(1)
   );
-
-  protected readonly favorites = signal<FavoritePortfolios>([]);
-
-  protected readonly clientToCheckRestrictions = model<Omit<Client, 'spectraExtension'> | null>(null);
 
   private readonly locale = inject(LOCALE_ID);
   private readonly hostElement = inject(ElementRef);
@@ -224,7 +214,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           ...columnBase,
           transformFn: data => data.market,
           filterData: {
-            filterName: columnBase.displayName,
+            filterName: '',
             filterType: FilterType.Default,
             filters: [
               Market.Curr,
@@ -316,7 +306,8 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           ...this.fillColumnBase(columnId, context),
           transformFn: data => this.formatNumber(data.portfolioLiquidationValue),
           filterData: {
-            filterName: 'excludeZeroPortfolioValuation',
+            filterName: '',
+            filterKey: 'excludeZeroPortfolioValuation',
             filterType: FilterType.Default,
             filters: [
               {
@@ -515,12 +506,9 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     }
   ];
 
-  private readonly localStorageService = inject(LocalStorageService);
-
   private settings$!: Observable<AdminClientsSettings>;
 
   private readonly tableStateStorageKey = 'tableState';
-  private readonly favoriteClientsStateStorageKey = 'admin.favoriteClientsState';
 
   private tableState$!: Observable<TableState | null>;
 
@@ -567,8 +555,6 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
         }
       }
     });
-
-    this.favorites.set(this.getFavorites());
 
     super.ngOnInit();
   }
@@ -642,12 +628,10 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           }
 
           this.totalRecords.set(result.total);
-          const favorites = new Set(this.favorites());
 
           return result.items.map(i => ({
             ...i,
-            ...i.spectraExtension,
-            isFavorite: favorites.has(i.portfolio),
+            ...i.spectraExtension
           }));
         }
       ),
@@ -762,6 +746,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
 
       this.filters$.next(copy);
       this.saveFiltersState(copy);
+      this.changePageOptions({page: 1});
     });
   }
 
@@ -788,61 +773,30 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     );
   }
 
-  protected addToFavorites(client: ClientDisplay): void {
-    this.updateFavorites(
-      [
-        ...this.getFavorites(),
-        client.portfolio
-      ]
-    );
-
-    client.isFavorite = true;
-  }
-
-  protected removeFromFavorites(client: ClientDisplay): void {
-    this.updateFavorites(
-      this.getFavorites().filter(i => i !== client.portfolio),
-    );
-
-    client.isFavorite = false;
-  }
-
   protected toggleFavorite(client: ClientDisplay): void {
-    if(client.isFavorite) {
-      this.removeFromFavorites(client);
+    if (client.isFavorite) {
+      client.isFavorite = false;
+      this.adminClientsService.removeClientRecordFromFavorites(
+        client.portfolio,
+        client.exchange
+      ).subscribe();
     } else {
-      this.addToFavorites(client);
+      client.isFavorite = true;
+      this.adminClientsService.addClientRecordToFavorites(
+        client.portfolio,
+        client.exchange
+      ).subscribe();
     }
-  }
-
-  protected getFavorites(): FavoritePortfolios {
-    return this.localStorageService.getItem<FavoritePortfolios>(this.favoriteClientsStateStorageKey) ?? [];
   }
 
   protected toggleFavoritesFilter(): void {
     this.filters$.pipe(
       take(1)
     ).subscribe(filters => {
-      if((filters.portfolios ?? []).length > 0) {
-        this.applyFilters({portfolios: null});
-      } else {
-        this.applyFilters(
-          {
-            portfolio: '',
-            portfolios: this.favorites()
-          }
-        );
-      }
+      this.applyFilters({
+        favoritePortfoliosOnly: !(filters.favoritePortfoliosOnly ?? false)
+      });
     });
-  }
-
-  private updateFavorites(items: FavoritePortfolios): void {
-    this.localStorageService.setItem(
-      this.favoriteClientsStateStorageKey,
-      Array.from(new Set(items))
-    );
-
-    this.favorites.set(this.getFavorites());
   }
 
   private getSavedFiltersState(filterKey: string, filters: ClientsSearchFilter | null): string | boolean | string[] | undefined {
