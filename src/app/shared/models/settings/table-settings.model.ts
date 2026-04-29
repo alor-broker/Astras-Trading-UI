@@ -37,8 +37,10 @@ export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
 }
 
 export interface FilterData {
-  // Наименование фильтра
+  // Наименование фильтра для UI (placeholder для Search поля). Обычно содержит перевод по ID столбца
   filterName: string;
+  // Ключ фильтра, который будет использоваться в общем объекте фильтров и отсылаться в API. НЕ ВСЕГДА ключ фильтра совпадает с именем столбца
+  filterKey?: string;
   // Открыт ли фильтр
   isOpenedFilter?: boolean;
   filterType: FilterType;

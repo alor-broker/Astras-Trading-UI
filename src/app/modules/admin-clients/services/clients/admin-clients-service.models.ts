@@ -14,7 +14,7 @@ interface ClientFilterFields {
   clientName: string;
   login: string;
   portfolio: string;
-  portfolios: string[];
+  favoritePortfoliosOnly: boolean;
   excludeZeroPortfolioValuation: boolean;
 }
 
@@ -58,6 +58,7 @@ export interface Client {
   clientRiskType: ClientRiskType;
   market: Market;
   spectraExtension: SpectraExtension | null;
+  isFavorite: boolean;
 }
 
 export interface SortParams {
