@@ -143,7 +143,7 @@ export class AdminClientPositionsComponent extends BaseTableComponent<PositionDi
 
   protected readonly widgetLocalStateService = inject(WidgetLocalStateService);
 
-  protected readonly allPageSizes = [10, 25, 50, 100, 200, 500];
+  protected readonly allPageSizes = [10, 25, 50, 100, 200];
 
   protected readonly page$ = new BehaviorSubject<{ page: number, pageSize: number }>({
     page: 1,
@@ -224,7 +224,8 @@ export class AdminClientPositionsComponent extends BaseTableComponent<PositionDi
           ...this.fillColumnBase(columnId, context),
           transformFn: data => this.formatNumber(data.quantityT0),
           filterData: {
-            filterName: 'excludeClosedPositions',
+            filterName: '',
+            filterKey: 'excludeClosedPositions',
             filterType: FilterType.Default,
             filters: [
               {
@@ -481,6 +482,7 @@ export class AdminClientPositionsComponent extends BaseTableComponent<PositionDi
 
       this.filters$.next(copy);
       this.saveFiltersState(copy);
+      this.changePageOptions({page: 1});
     });
   }
 
