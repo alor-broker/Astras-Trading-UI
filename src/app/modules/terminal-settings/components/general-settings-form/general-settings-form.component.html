@@ -24,13 +24,31 @@
       <nz-form-item>
         <nz-form-label nzFor="fontFamily">{{t('terminalSettingsGeneralSettingsForm.fontFamilyLabel')}}</nz-form-label>
         <nz-form-control>
-          <nz-select formControlName='fontFamily' [nzPlaceHolder]="t('terminalSettingsGeneralSettingsForm.fontFamilyPlaceholder')">
+          <nz-select formControlName='fontFamily'>
             @for (fontFamily of availableFontFamilies; track fontFamily) {
               <nz-option [nzLabel]="fontFamily" [nzValue]="fontFamily" />
             }
           </nz-select>
         </nz-form-control>
       </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="fontSize">{{t('terminalSettingsGeneralSettingsForm.fontSizeLabel')}}</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName='fontSize'>
+            @for (fontSize of availableFontSizes; track fontSize) {
+              <nz-option
+                [nzLabel]="t('terminalSettingsGeneralSettingsForm.fontSizeOption', { value: fontSize })"
+                [nzValue]="fontSize"
+              />
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      @if (form.controls.designSettings.controls.fontSize.value !== defaultFontSize) {
+        <p nz-typography nzType="warning">
+          {{t('terminalSettingsGeneralSettingsForm.fontSizeDisclaimer')}}
+        </p>
+      }
       @if (!excludedSettings().includes('gridType')) {
         <nz-form-item>
           <nz-form-label nzFor="gridType">{{t('terminalSettingsGeneralSettingsForm.gridTypeLabel')}}</nz-form-label>

@@ -6,6 +6,7 @@
   MouseActionsSchemes,
   ScalperOrderBookMouseAction,
   ScalperOrderBookMouseActionsMap,
+  TerminalFontSize,
   TerminalSettings
 } from '../models/terminal-settings/terminal-settings.model';
 import { ThemeType } from '../models/settings/theme-settings.model';
@@ -27,7 +28,8 @@ export class TerminalSettingsHelper {
       designSettings: {
         theme: ThemeType.dark,
         fontFamily: FontFamilies.NotoSans,
-        gridType: GridType.Fit
+        gridType: GridType.Fit,
+        fontSize: 100 satisfies TerminalFontSize
       },
       instantNotificationsSettings: this.getDefaultInstantNotificationsSettings()
     } as TerminalSettings;

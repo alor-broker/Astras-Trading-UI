@@ -8,6 +8,7 @@
 export class DesignSettingsConstants {
   static LastThemeStorageKey = 'last-theme';
   static LastFontStorageKey = 'last-font';
+  static LastFontSizeStorageKey = 'last-font-size';
 }
 
 export class LocalStorageDesktopConstants {

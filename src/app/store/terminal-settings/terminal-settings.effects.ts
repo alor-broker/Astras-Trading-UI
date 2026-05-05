@@ -22,6 +22,10 @@ export class TerminalSettingsEffects {
             settings: {
               ...defaultSettings,
               ...action.settings,
+              designSettings: {
+                ...defaultSettings.designSettings,
+                ...action.settings?.designSettings
+              },
               hotKeysSettings: {
                 ...defaultSettings.hotKeysSettings,
                 ...action.settings?.hotKeysSettings
