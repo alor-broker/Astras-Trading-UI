@@ -1,4 +1,5 @@
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
+import {Side} from "../../../shared/models/enums/side.model";
 
 export interface OrdersBasketItem {
   instrumentKey: InstrumentKey;
@@ -12,7 +13,14 @@ export interface OrdersBasketItem {
   id: string;
 }
 
+export enum CalculationMode {
+  Cash = 'cash',
+  Margin = 'margin'
+}
+
 export interface OrdersBasket {
   budget: number;
+  side?: Side;
+  mode?: CalculationMode;
   items: OrdersBasketItem[];
 }

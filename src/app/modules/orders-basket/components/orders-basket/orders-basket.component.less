@@ -4,7 +4,29 @@
 .themeMixin({
   :host {
     .submit-orders-btn {
-      .buySellButton(@buy-color, @buy-sell-btn-text-color, @buy-color-disabled, @buy-color-background-disabled);
+      &.buy-btn {
+        .buySellButton(@buy-color, @buy-sell-btn-text-color, @buy-color-disabled, @buy-color-background-disabled);
+      }
+
+      &.sell-btn {
+        .buySellButton(@sell-color, @buy-sell-btn-text-color, @sell-color-disabled, @sell-color-background-disabled);
+      }
+    }
+
+    .buy-sell-switch {
+      .ant-radio-button-wrapper {
+        background-color: @input-bg;
+      }
+
+      .buy.ant-radio-button-wrapper-checked {
+        background-color: @buy-color;
+        color: @buy-sell-btn-text-color;
+      }
+
+      .sell.ant-radio-button-wrapper-checked {
+        background-color: @sell-color;
+        color: @buy-sell-btn-text-color;
+      }
     }
   }
 });
@@ -29,7 +51,7 @@
   }
 }
 
-.budget-container {
+.row {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -45,5 +67,21 @@
 
   .ant-form-item {
     margin: 0;
+  }
+}
+
+.buy-sell-switch {
+  display: flex;
+
+  .ant-radio-button-wrapper {
+    flex: 1;
+    text-align: center;
+
+    &-checked {
+      border-color: transparent;
+      &::before {
+        background-color: transparent;
+      }
+    }
   }
 }
