@@ -1,22 +1,17 @@
 {
-  "title": "Риск портфеля",
+  "title": "Уровень достаточности",
   "states": {
     "GREEN": "Спокойно",
     "YELLOW": "Внимание",
-    "RED": "Малый запас",
+    "RED": "Критично",
     "RESTRICTED": "Ограничение",
-    "CRITICAL": "Критично",
-    "FORCED_CLOSE_RISK": "Автозакрытие возможно",
+    "CRITICAL": "Критично низкий запас",
+    "FORCED_CLOSE_RISK": "Риск принудительного закрытия",
     "NO_DATA": "Нет данных"
   },
   "values": {
+    "adequacyRatioShort": "УД",
     "noData": "Нет данных",
-    "noMarginRisk": "Нет маржинальной нагрузки",
-    "noMarginRequirementLoad": "Нет нагрузки по ГО"
-  },
-  "components": {
-    "title": "Компоненты риска",
-    "NPR": "НПР",
-    "FORTS": "ГО / запас"
+    "noMinimumMarginRequirement": "Нет требования по минимальной марже"
   }
 }

@@ -1,22 +1,17 @@
 {
-  "title": "Պորտֆելի ռիսկ",
+  "title": "Բավարարության մակարդակ",
   "states": {
     "GREEN": "Հանգիստ",
     "YELLOW": "Ուշադրություն",
-    "RED": "Փոքր պահուստ",
+    "RED": "Կրիտիկական",
     "RESTRICTED": "Սահմանափակում",
-    "CRITICAL": "Կրիտիկական",
-    "FORCED_CLOSE_RISK": "Հնարավոր է ավտոփակում",
+    "CRITICAL": "Կրիտիկորեն ցածր պահուստ",
+    "FORCED_CLOSE_RISK": "Հարկադիր փակման ռիսկ",
     "NO_DATA": "Տվյալներ չկան"
   },
   "values": {
+    "adequacyRatioShort": "UD",
     "noData": "Տվյալներ չկան",
-    "noMarginRisk": "Մարժինալ բեռ չկա",
-    "noMarginRequirementLoad": "ԳԱ բեռ չկա"
-  },
-  "components": {
-    "title": "Ռիսկի բաղադրիչներ",
-    "NPR": "ՆՊՌ",
-    "FORTS": "ԳԱ / պահուստ"
+    "noMinimumMarginRequirement": "Նվազագույն մարժայի պահանջ չկա"
   }
 }

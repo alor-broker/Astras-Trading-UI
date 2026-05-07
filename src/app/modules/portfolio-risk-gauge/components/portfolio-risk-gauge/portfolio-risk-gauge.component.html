@@ -28,8 +28,11 @@
             <path
               class="gauge-segment"
               [attr.d]="segment.path"
+              [class.critical]="segment.className === 'critical'"
+              [class.forced-close-risk]="segment.className === 'forced-close-risk'"
               [class.green]="segment.className === 'green'"
               [class.red]="segment.className === 'red'"
+              [class.restricted]="segment.className === 'restricted'"
               [class.yellow]="segment.className === 'yellow'"
             />
           }
@@ -50,35 +53,10 @@
       <span class="value">
         @if (gaugeView.valueTextKey != null) {
           {{ t(gaugeView.valueTextKey) }}
-        } @else if (gaugeView.reserveRatio != null) {
-          {{ gaugeView.reserveRatio | percent: '1.0-0' }}
+        } @else if (gaugeView.adequacyRatio != null) {
+          {{ t('portfolioRiskGauge.values.adequacyRatioShort') }} {{ gaugeView.adequacyRatio | number: '1.2-2' }}x
         }
       </span>
     </div>
-
-    @if (gaugeView.components.length > 0) {
-      <div class="components" [attr.aria-label]="t('portfolioRiskGauge.components.title')">
-        @for (component of gaugeView.components; track component.kind) {
-          <div
-            class="component"
-            [class.state-critical]="component.state === riskStates.Critical"
-            [class.state-forced-close-risk]="component.state === riskStates.ForcedCloseRisk"
-            [class.state-green]="component.state === riskStates.Green"
-            [class.state-red]="component.state === riskStates.Red"
-            [class.state-restricted]="component.state === riskStates.Restricted"
-            [class.state-yellow]="component.state === riskStates.Yellow"
-          >
-            <span class="component-label">{{ t(component.labelKey) }}</span>
-            <span class="component-value">
-              @if (component.valueTextKey != null) {
-                {{ t(component.valueTextKey) }}
-              } @else if (component.reserveRatio != null) {
-                {{ component.reserveRatio | percent: '1.0-0' }}
-              }
-            </span>
-          </div>
-        }
-      </div>
-    }
   </section>
 </ng-container>

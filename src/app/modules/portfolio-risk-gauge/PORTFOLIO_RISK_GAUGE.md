@@ -1,213 +1,79 @@
-# Виджет Gauge риска портфеля
+# Portfolio Risk Gauge
 
-Документ описывает, какие данные использует виджет, как считается состояние и почему красная зона находится справа: слева показывается безопасное состояние, справа - рост риска.
-
-## Общая логика отображения
-
-Виджет показывает один итоговый риск портфеля. Для обычных портфелей используется НПР, для срочного контура - запас свободных средств относительно ГО/оперативного риска, для ЕДП - худшая из двух компонент.
-
-Внутренний числовой показатель для стрелки называется `gaugeValuePercent`:
+This widget shows one portfolio-wide risk state based on the adequacy level
+(`UD`). Risk managers define `UD` as:
 
 ```text
-gaugeValuePercent = clamp(100 - reserveRatio * 100, 0, 100)
+UD = portfolioEvaluation / minimalMargin
 ```
 
-То есть чем меньше запас, тем правее стрелка:
-
-```text
-0-50%   левая зелёная зона
-50-80%  жёлтая зона
-80-100% правая красная зона
-```
-
-Если по компоненте нет значимой нагрузки, стрелка остаётся слева. Если наступил аварийный режим, стрелка принудительно ставится вправо.
-
-Данные обновляются динамически через существующие WebSocket-подписки:
-
-```text
-RisksGetAndSubscribe
-SpectraRisksGetAndSubscribe
-```
-
-## Портфели с расчётом по НПР
-
-Источник данных:
+Both fields come from the portfolio risks API / subscription:
 
 ```text
 /md/v2/Clients/{exchange}/{portfolio}/risk
+RisksGetAndSubscribe
 ```
 
-Используемые поля:
+The old split calculation by NPR and FORTS-specific free funds is not used.
+The same `UD` calculation applies to stock, derivatives, and united portfolios.
 
-```text
-riskCoverageRatioOne
-riskCoverageRatioTwo
-initialMargin
-riskStatus
-```
+## Source Fields
 
-Русские названия полей из API:
-
-| Поле API | Название / смысл |
+| API field | Meaning |
 | --- | --- |
-| `riskCoverageRatioOne` | НПР1 |
-| `riskCoverageRatioTwo` | НПР2 |
-| `initialMargin` | Начальная маржа |
-| `minimalMargin` | Минимальная маржа |
-| `portfolioLiquidationValue` | Ликвидационная стоимость портфеля |
-| `riskStatus` | Статус риска |
+| `portfolioEvaluation` | Liquid portfolio value used for adequacy calculation |
+| `minimalMargin` | Minimum margin |
 
-Основной запас:
+If `minimalMargin <= 0`, the widget shows `GREEN` with "No minimum margin
+requirement" because there is no margin load to calculate. If `UD` is zero or
+negative, the widget shows `CRITICAL`. If data is missing, invalid, or the
+subscription fails, the widget shows `NO_DATA`.
+
+## States
+
+The state is calculated from lowest threshold to highest severity:
 
 ```text
-nprReserveRatio = riskCoverageRatioOne / initialMargin
+CRITICAL           UD <= 0.7
+FORCED_CLOSE_RISK  UD < 1.0
+RED                UD <= 1.2
+RESTRICTED         UD <= 2.0
+YELLOW             UD <= 2.6
+GREEN              UD > 2.6
+NO_DATA            No valid risk data
 ```
 
-Если `initialMargin <= 0`, маржинальной нагрузки нет. Виджет показывает спокойное состояние.
-
-Состояния:
+Displayed labels:
 
 ```text
-FORCED_CLOSE_RISK:
-riskStatus = ToClose
-или riskCoverageRatioTwo <= 0
-
-RESTRICTED:
-riskStatus = Demand
-или riskCoverageRatioOne <= 0
-
-RED:
-riskStatus = Ok
-и 0 < nprReserveRatio < 0.20
-
-YELLOW:
-riskStatus = Ok
-и 0.20 <= nprReserveRatio < 0.50
-
-GREEN:
-riskStatus = Ok
-и nprReserveRatio >= 0.50
+GREEN              Calm
+YELLOW             Attention
+RESTRICTED         Restricted
+RED                Critical
+FORCED_CLOSE_RISK  Forced close risk
+CRITICAL           Critically low reserve
+NO_DATA            No data
 ```
 
-Важно: `Demand` и `ToClose` не являются обычными жёлтой/красной зонами. Это аварийные состояния после нарушения нормального запаса.
+## Gauge Scale
 
-## Портфели срочного контура
-
-Источник данных:
+The gauge keeps safe values on the left and higher risk on the right. The
+needle uses a visual cap of `UD = 3.0`:
 
 ```text
-/md/v2/Clients/{exchange}/{portfolio}/fortsrisk
+gaugeValuePercent = clamp((3.0 - UD) / 3.0 * 100, 0, 100)
 ```
 
-Используемые поля:
+Values above `3.0` remain `GREEN` and clamp to the left edge. The displayed
+number is the decimal `UD` multiplier, for example `UD 2.60x`.
+
+## Example States
 
 ```text
-moneyFree
-moneyBlocked
-posRisk
-```
-
-Русские названия полей из API:
-
-| Поле API | Название / смысл |
-| --- | --- |
-| `moneyFree` | Свободные средства |
-| `moneyBlocked` | Средства, заблокированные под ГО |
-| `moneyAmount` | Общее количество средств и залогов |
-| `moneyPledgeAmount` | Сумма залогов |
-| `vmInterCl` | Вариационная маржа в промежуточный клиринг |
-| `vmCurrentPositions` | Вариационная маржа по текущим позициям |
-| `varMargin` | Итоговая вариационная маржа |
-| `indicativeVarMargin` | Индикативная вариационная маржа |
-| `posRisk` | Оперативный риск |
-| `isLimitsSet` | Наличие денежных и залоговых лимитов |
-
-База риска:
-
-```text
-riskBase = max(abs(moneyBlocked), abs(posRisk))
-```
-
-Если `riskBase <= 0`, значит нет заблокированных средств под ГО и нет оперативного риска. Виджет показывает спокойное состояние с текстом "Нет нагрузки по ГО".
-
-Основной запас:
-
-```text
-fortsReserveRatio = moneyFree / riskBase
-```
-
-Состояния:
-
-```text
-CRITICAL:
-moneyFree <= 0
-
-RED:
-0 < fortsReserveRatio < 0.20
-
-YELLOW:
-0.20 <= fortsReserveRatio < 0.50
-
-GREEN:
-fortsReserveRatio >= 0.50
-```
-
-Здесь `moneyFree <= 0` считается аварийным состоянием, а не просто красной зоной.
-
-## ЕДП-портфель
-
-ЕДП объединяет фондовый и срочный контуры, поэтому виджет показывает один итоговый риск.
-
-Компоненты:
-
-```text
-edpNprState = состояние по /risk
-edpFortsState = состояние по /fortsrisk
-```
-
-Итоговое состояние:
-
-```text
-edpState = худшее состояние из edpNprState и edpFortsState
-```
-
-Порядок тяжести:
-
-```text
-GREEN < YELLOW < RED < RESTRICTED < CRITICAL < FORCED_CLOSE_RISK
-```
-
-Если для ЕДП не пришла одна из компонент, виджет показывает `NO_DATA`. Это сделано намеренно: безопасная доступная часть не должна маскировать неизвестную часть объединённого риска.
-
-## Нет данных
-
-Состояние `NO_DATA` используется, когда виджет не может корректно посчитать риск:
-
-```text
-для ЕДП нет одной из двух компонент;
-подписка вернула ошибку;
-данные ещё не пришли.
-```
-
-В этом состоянии стрелка не отображается.
-
-## Отображаемые подписи
-
-Основные состояния:
-
-```text
-GREEN              Спокойно
-YELLOW             Внимание
-RED                Малый запас
-RESTRICTED         Ограничение
-CRITICAL           Критично
-FORCED_CLOSE_RISK  Автозакрытие возможно
-NO_DATA            Нет данных
-```
-
-Для ЕДП дополнительно показываются технические компоненты:
-
-```text
-НПР
-ГО / запас
+99980 / 38450 = 2.6003 -> GREEN
+99970 / 38450 = 2.6000 -> YELLOW
+76900 / 38450 = 2.0000 -> RESTRICTED
+46140 / 38450 = 1.2000 -> RED
+38440 / 38450 = 0.9997 -> FORCED_CLOSE_RISK
+26915 / 38450 = 0.7000 -> CRITICAL
 ```

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { PercentPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { arc } from 'd3';
 import {
@@ -22,7 +22,7 @@ interface GaugeArc {
 @Component({
   selector: 'ats-portfolio-risk-gauge',
   imports: [
-    PercentPipe,
+    DecimalPipe,
     TranslocoDirective
   ],
   templateUrl: './portfolio-risk-gauge.component.html',
@@ -46,16 +46,28 @@ export class PortfolioRiskGaugeComponent {
 
   protected readonly segments: GaugeSegment[] = [
     {
-      path: this.getArcPath(0, 50),
+      path: this.getArcPath(0, 13.333),
       className: 'green'
     },
     {
-      path: this.getArcPath(50, 80),
+      path: this.getArcPath(13.333, 33.333),
       className: 'yellow'
     },
     {
-      path: this.getArcPath(80, 100),
+      path: this.getArcPath(33.333, 60),
+      className: 'restricted'
+    },
+    {
+      path: this.getArcPath(60, 66.667),
       className: 'red'
+    },
+    {
+      path: this.getArcPath(66.667, 76.667),
+      className: 'forced-close-risk'
+    },
+    {
+      path: this.getArcPath(76.667, 100),
+      className: 'critical'
     }
   ];
 
@@ -70,11 +82,11 @@ export class PortfolioRiskGaugeComponent {
       return `${stateText}. ${translate(view.valueTextKey)}`;
     }
 
-    if (view.reserveRatio == null) {
+    if (view.adequacyRatio == null) {
       return stateText;
     }
 
-    return `${stateText}. ${Math.round(view.reserveRatio * 100)}%`;
+    return `${stateText}. ${view.adequacyRatio.toFixed(2)}x`;
   }
 
   private getArcPath(startPercent: number, endPercent: number): string {

@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Проверка Risk Gauge</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --text: #17202a;
+      --muted: #5f6b7a;
+      --border: #d9e0e7;
+      --green: #2e7d32;
+      --yellow: #f2a000;
+      --restricted: #f36c21;
+      --red: #e53935;
+      --forced: #b71c1c;
+      --critical: #641111;
+      --track: #d7dee6;
+      --focus: #1769aa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    main {
+      width: min(1100px, calc(100% - 32px));
+      margin: 24px auto;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(20, 35, 50, 0.08);
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    label,
+    legend {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--text);
+      font: inherit;
+      background: #fff;
+    }
+
+    input[type="number"]:focus,
+    input[type="radio"]:focus-visible,
+    button:focus-visible {
+      outline: 3px solid rgba(23, 105, 170, 0.28);
+      outline-offset: 2px;
+      border-color: var(--focus);
+    }
+
+    fieldset {
+      margin: 0 0 14px;
+      padding: 0;
+      border: 0;
+    }
+
+    .portfolio-types {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .portfolio-type {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      min-height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover {
+      border-color: var(--focus);
+    }
+
+    .result {
+      display: grid;
+      grid-template-columns: minmax(260px, 44%) minmax(220px, 1fr);
+      gap: 18px;
+      align-items: center;
+      min-height: 310px;
+    }
+
+    .gauge-wrap {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .track {
+      fill: var(--track);
+    }
+
+    .segment-green {
+      fill: var(--green);
+    }
+
+    .segment-yellow {
+      fill: var(--yellow);
+    }
+
+    .segment-restricted {
+      fill: var(--restricted);
+    }
+
+    .segment-red {
+      fill: var(--red);
+    }
+
+    .segment-forced {
+      fill: var(--forced);
+    }
+
+    .segment-critical {
+      fill: var(--critical);
+    }
+
+    .needle,
+    .needle-center {
+      fill: #1d2733;
+    }
+
+    .summary {
+      display: grid;
+      gap: 8px;
+    }
+
+    .status {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .status.GREEN {
+      color: var(--green);
+    }
+
+    .status.YELLOW {
+      color: var(--yellow);
+    }
+
+    .status.RESTRICTED {
+      color: var(--restricted);
+    }
+
+    .status.RED {
+      color: var(--red);
+    }
+
+    .status.FORCED_CLOSE_RISK {
+      color: var(--forced);
+    }
+
+    .status.CRITICAL {
+      color: var(--critical);
+    }
+
+    .status.NO_DATA {
+      color: var(--muted);
+    }
+
+    .ud {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .details {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .detail {
+      min-height: 58px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fafbfc;
+    }
+
+    .detail span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .detail strong {
+      display: block;
+      margin-top: 2px;
+      overflow-wrap: anywhere;
+      font-size: 16px;
+    }
+
+    .formula {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-left: 4px solid var(--focus);
+      background: #eef5fb;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .error {
+      color: var(--critical);
+      font-size: 13px;
+      min-height: 18px;
+    }
+
+    @media (max-width: 780px) {
+      .layout,
+      .result {
+        grid-template-columns: 1fr;
+      }
+
+      .details {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Проверка Risk Gauge</h1>
+    <p class="subtitle">Расчет УД: portfolioEvaluation / minimalMargin. portfolioLiquidationValue показан только справочно и не участвует в расчете.</p>
+
+    <div class="layout">
+      <section class="panel" aria-labelledby="input-title">
+        <h2 id="input-title">Параметры</h2>
+
+        <fieldset>
+          <legend>Тип портфеля</legend>
+          <div class="portfolio-types">
+            <label class="portfolio-type">
+              <input type="radio" name="portfolioType" value="stock" checked>
+              Фондовый
+            </label>
+            <label class="portfolio-type">
+              <input type="radio" name="portfolioType" value="forward">
+              Срочный
+            </label>
+            <label class="portfolio-type">
+              <input type="radio" name="portfolioType" value="united">
+              ЕДП
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="portfolioEvaluation">portfolioEvaluation, ЛП</label>
+          <input id="portfolioEvaluation" type="number" step="0.01" value="99980" inputmode="decimal">
+          <div class="hint">Используется как числитель УД.</div>
+        </div>
+
+        <div class="field">
+          <label for="minimalMargin">minimalMargin, минимальная маржа</label>
+          <input id="minimalMargin" type="number" step="0.01" value="38450" inputmode="decimal">
+          <div class="hint">Используется как знаменатель УД.</div>
+        </div>
+
+        <div class="field">
+          <label for="portfolioLiquidationValue">portfolioLiquidationValue</label>
+          <input id="portfolioLiquidationValue" type="number" step="0.01" value="100980" inputmode="decimal">
+          <div class="hint">Справочное поле. В расчете не участвует.</div>
+        </div>
+
+        <div class="error" id="error" aria-live="polite"></div>
+
+        <div class="examples" aria-label="Примеры">
+          <button type="button" data-example="99980,38450">GREEN</button>
+          <button type="button" data-example="99970,38450">YELLOW</button>
+          <button type="button" data-example="76900,38450">RESTRICTED</button>
+          <button type="button" data-example="46140,38450">RED</button>
+          <button type="button" data-example="38440,38450">FORCED</button>
+          <button type="button" data-example="26915,38450">CRITICAL</button>
+        </div>
+      </section>
+
+      <section class="panel result" aria-labelledby="result-title">
+        <h2 id="result-title" hidden>Результат</h2>
+
+        <div class="gauge-wrap">
+          <svg
+            id="gauge"
+            role="img"
+            aria-labelledby="gauge-title gauge-description"
+            viewBox="0 0 220 132"
+          >
+            <title id="gauge-title">Диаграмма уровня достаточности</title>
+            <desc id="gauge-description">Слева безопасная зона, справа рост риска.</desc>
+            <g transform="translate(110,106)">
+              <path class="track" id="track"></path>
+              <path class="segment-green" id="segmentGreen"></path>
+              <path class="segment-yellow" id="segmentYellow"></path>
+              <path class="segment-restricted" id="segmentRestricted"></path>
+              <path class="segment-red" id="segmentRed"></path>
+              <path class="segment-forced" id="segmentForced"></path>
+              <path class="segment-critical" id="segmentCritical"></path>
+              <path class="needle" id="needle" d=""></path>
+              <circle class="needle-center" r="6"></circle>
+            </g>
+          </svg>
+        </div>
+
+        <div class="summary">
+          <p class="status" id="status">-</p>
+          <div class="ud" id="ud">УД -</div>
+          <div id="description">Введите параметры для расчета.</div>
+
+          <div class="details">
+            <div class="detail">
+              <span>Тип портфеля</span>
+              <strong id="portfolioTypeLabel">Фондовый</strong>
+            </div>
+            <div class="detail">
+              <span>Состояние</span>
+              <strong id="stateCode">-</strong>
+            </div>
+            <div class="detail">
+              <span>portfolioEvaluation</span>
+              <strong id="portfolioEvaluationView">-</strong>
+            </div>
+            <div class="detail">
+              <span>minimalMargin</span>
+              <strong id="minimalMarginView">-</strong>
+            </div>
+          </div>
+
+          <div class="formula">
+            УД = portfolioEvaluation / minimalMargin. Если minimalMargin <= 0, показывается GREEN: нет требования по минимальной марже.
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const visualAdequacyCap = 3;
+
+    const states = {
+      GREEN: {
+        label: 'Спокойно',
+        description: 'Большой запас плеча. УД > 2.6.'
+      },
+      YELLOW: {
+        label: 'Внимание',
+        description: 'Ограниченный запас плеча. УД <= 2.6.'
+      },
+      RESTRICTED: {
+        label: 'Ограничение',
+        description: 'Нет возможности совершать сделки на открытие непокрытых позиций. УД <= 2.'
+      },
+      RED: {
+        label: 'Критично',
+        description: 'Состояние приближается к принудительному закрытию. УД <= 1.2.'
+      },
+      FORCED_CLOSE_RISK: {
+        label: 'Риск принудительного закрытия',
+        description: 'Клиенту светит принудительное закрытие, если ничего не предпринять. УД < 1.'
+      },
+      CRITICAL: {
+        label: 'Критично низкий запас',
+        description: 'Критично низкий запас обеспечения. УД <= 0.7.'
+      },
+      NO_DATA: {
+        label: 'Нет данных',
+        description: 'Недостаточно корректных данных для расчета.'
+      }
+    };
+
+    const portfolioTypeLabels = {
+      stock: 'Фондовый',
+      forward: 'Срочный',
+      united: 'ЕДП'
+    };
+
+    const inputs = {
+      portfolioEvaluation: document.getElementById('portfolioEvaluation'),
+      minimalMargin: document.getElementById('minimalMargin'),
+      portfolioLiquidationValue: document.getElementById('portfolioLiquidationValue')
+    };
+
+    const output = {
+      error: document.getElementById('error'),
+      status: document.getElementById('status'),
+      ud: document.getElementById('ud'),
+      description: document.getElementById('description'),
+      portfolioTypeLabel: document.getElementById('portfolioTypeLabel'),
+      stateCode: document.getElementById('stateCode'),
+      portfolioEvaluationView: document.getElementById('portfolioEvaluationView'),
+      minimalMarginView: document.getElementById('minimalMarginView'),
+      needle: document.getElementById('needle')
+    };
+
+    const segmentDefinitions = [
+      ['track', 0, 100],
+      ['segmentGreen', 0, 13.333],
+      ['segmentYellow', 13.333, 33.333],
+      ['segmentRestricted', 33.333, 60],
+      ['segmentRed', 60, 66.667],
+      ['segmentForced', 66.667, 76.667],
+      ['segmentCritical', 76.667, 100]
+    ];
+
+    function polarToCartesian(radius, angleDegrees) {
+      const angleRadians = (-90 + angleDegrees) * Math.PI / 180;
+      return {
+        x: radius * Math.sin(angleRadians),
+        y: -radius * Math.cos(angleRadians)
+      };
+    }
+
+    function arcPath(startPercent, endPercent, innerRadius, outerRadius) {
+      const startAngle = startPercent * 1.8;
+      const endAngle = endPercent * 1.8;
+      const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
+      const outerStart = polarToCartesian(outerRadius, startAngle);
+      const outerEnd = polarToCartesian(outerRadius, endAngle);
+      const innerEnd = polarToCartesian(innerRadius, endAngle);
+      const innerStart = polarToCartesian(innerRadius, startAngle);
+
+      return [
+        `M ${outerStart.x.toFixed(3)} ${outerStart.y.toFixed(3)}`,
+        `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${outerEnd.x.toFixed(3)} ${outerEnd.y.toFixed(3)}`,
+        `L ${innerEnd.x.toFixed(3)} ${innerEnd.y.toFixed(3)}`,
+        `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x.toFixed(3)} ${innerStart.y.toFixed(3)}`,
+        'Z'
+      ].join(' ');
+    }
+
+    function parseInput(input) {
+      if (input.value.trim() === '') {
+        return Number.NaN;
+      }
+
+      return Number(input.value.replace(',', '.'));
+    }
+
+    function getPortfolioType() {
+      return document.querySelector('input[name="portfolioType"]:checked').value;
+    }
+
+    function getState(adequacyRatio) {
+      if (adequacyRatio <= 0.7) {
+        return 'CRITICAL';
+      }
+
+      if (adequacyRatio < 1) {
+        return 'FORCED_CLOSE_RISK';
+      }
+
+      if (adequacyRatio <= 1.2) {
+        return 'RED';
+      }
+
+      if (adequacyRatio <= 2) {
+        return 'RESTRICTED';
+      }
+
+      if (adequacyRatio <= 2.6) {
+        return 'YELLOW';
+      }
+
+      return 'GREEN';
+    }
+
+    function toGaugeValuePercent(adequacyRatio) {
+      return Math.min(Math.max((visualAdequacyCap - adequacyRatio) / visualAdequacyCap * 100, 0), 100);
+    }
+
+    function formatNumber(value) {
+      return Number.isFinite(value)
+        ? new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 }).format(value)
+        : '-';
+    }
+
+    function calculate() {
+      const portfolioEvaluation = parseInput(inputs.portfolioEvaluation);
+      const minimalMargin = parseInput(inputs.minimalMargin);
+      const portfolioType = getPortfolioType();
+      let stateCode = 'NO_DATA';
+      let adequacyRatio = null;
+      let error = '';
+
+      if (!Number.isFinite(portfolioEvaluation) || !Number.isFinite(minimalMargin)) {
+        error = 'Введите корректные числовые значения portfolioEvaluation и minimalMargin.';
+      } else if (minimalMargin <= 0) {
+        stateCode = 'GREEN';
+      } else {
+        adequacyRatio = portfolioEvaluation / minimalMargin;
+        stateCode = getState(adequacyRatio);
+      }
+
+      const state = states[stateCode];
+      const gaugePercent = adequacyRatio == null ? 0 : toGaugeValuePercent(adequacyRatio);
+      const needlePath = getNeedlePath(gaugePercent);
+
+      output.error.textContent = error;
+      output.status.textContent = state.label;
+      output.status.className = `status ${stateCode}`;
+      output.ud.textContent = adequacyRatio == null ? 'УД -' : `УД ${adequacyRatio.toFixed(4)}x`;
+      output.description.textContent = minimalMargin <= 0 && Number.isFinite(minimalMargin)
+        ? 'Нет требования по минимальной марже.'
+        : state.description;
+      output.portfolioTypeLabel.textContent = portfolioTypeLabels[portfolioType];
+      output.stateCode.textContent = stateCode;
+      output.portfolioEvaluationView.textContent = formatNumber(portfolioEvaluation);
+      output.minimalMarginView.textContent = formatNumber(minimalMargin);
+      output.needle.style.display = stateCode === 'NO_DATA' ? 'none' : '';
+      output.needle.setAttribute('d', needlePath);
+    }
+
+    function getNeedlePath(gaugePercent) {
+      const angle = gaugePercent * 1.8;
+      const tip = polarToCartesian(76, angle);
+      const baseLeft = polarToCartesian(5, angle + 90);
+      const baseRight = polarToCartesian(5, angle - 90);
+
+      return [
+        `M ${baseLeft.x.toFixed(3)} ${baseLeft.y.toFixed(3)}`,
+        `L ${tip.x.toFixed(3)} ${tip.y.toFixed(3)}`,
+        `L ${baseRight.x.toFixed(3)} ${baseRight.y.toFixed(3)}`,
+        'Z'
+      ].join(' ');
+    }
+
+    function initGauge() {
+      for (const [id, start, end] of segmentDefinitions) {
+        document.getElementById(id).setAttribute('d', arcPath(start, end, 69, 82));
+      }
+    }
+
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', calculate);
+      input.addEventListener('change', calculate);
+    });
+
+    document.querySelectorAll('[data-example]').forEach(button => {
+      button.addEventListener('click', () => {
+        const [portfolioEvaluation, minimalMargin] = button.dataset.example.split(',');
+        inputs.portfolioEvaluation.value = portfolioEvaluation;
+        inputs.minimalMargin.value = minimalMargin;
+        inputs.portfolioLiquidationValue.value = String(Number(portfolioEvaluation) + 1000);
+        calculate();
+      });
+    });
+
+    initGauge();
+    calculate();
+  </script>
+</body>
+</html>

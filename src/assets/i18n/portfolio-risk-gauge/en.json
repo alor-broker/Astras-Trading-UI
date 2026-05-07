@@ -1,22 +1,17 @@
 {
-  "title": "Portfolio risk",
+  "title": "Adequacy level",
   "states": {
     "GREEN": "Calm",
     "YELLOW": "Attention",
-    "RED": "Low reserve",
+    "RED": "Critical",
     "RESTRICTED": "Restricted",
-    "CRITICAL": "Critical",
-    "FORCED_CLOSE_RISK": "Auto-close possible",
+    "CRITICAL": "Critically low reserve",
+    "FORCED_CLOSE_RISK": "Forced close risk",
     "NO_DATA": "No data"
   },
   "values": {
+    "adequacyRatioShort": "UD",
     "noData": "No data",
-    "noMarginRisk": "No margin load",
-    "noMarginRequirementLoad": "No margin requirement load"
-  },
-  "components": {
-    "title": "Risk components",
-    "NPR": "NPR",
-    "FORTS": "Margin / reserve"
+    "noMinimumMarginRequirement": "No minimum margin requirement"
   }
 }

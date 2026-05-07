@@ -18,8 +18,20 @@
       fill: @warning-color;
     }
 
+    .gauge-segment.restricted {
+      fill: mix(@warning-color, @error-color, 58%);
+    }
+
     .gauge-segment.red {
       fill: @error-color;
+    }
+
+    .gauge-segment.forced-close-risk {
+      fill: darken(@error-color, 12%);
+    }
+
+    .gauge-segment.critical {
+      fill: darken(@error-color, 28%);
     }
 
     .needle path,
@@ -44,28 +56,28 @@
       }
     }
 
-    .state-red,
-    .state-restricted,
-    .state-critical,
-    .state-forced-close-risk {
+    .state-restricted {
+      .state-label {
+        color: mix(@warning-color, @error-color, 58%);
+      }
+    }
+
+    .state-red {
       .state-label {
         color: @error-color;
       }
     }
 
-    .component.state-green .component-value {
-      color: @buy-color;
+    .state-forced-close-risk {
+      .state-label {
+        color: darken(@error-color, 12%);
+      }
     }
 
-    .component.state-yellow .component-value {
-      color: @warning-color;
-    }
-
-    .component.state-red .component-value,
-    .component.state-restricted .component-value,
-    .component.state-critical .component-value,
-    .component.state-forced-close-risk .component-value {
-      color: @error-color;
+    .state-critical {
+      .state-label {
+        color: darken(@error-color, 28%);
+      }
     }
 
     .state-no-data {
@@ -73,11 +85,6 @@
       .value {
         color: fade(@text-color, 75%);
       }
-    }
-
-    .component {
-      border-color: fade(@text-color, 18%);
-      background: fade(@text-color, 4%);
     }
   }
 });
@@ -92,10 +99,9 @@
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(112px, 42%) minmax(120px, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr);
   grid-template-areas:
-    "visual summary"
-    "components components";
+    "visual summary";
   align-items: center;
   height: 100%;
   min-height: 0;
@@ -143,45 +149,12 @@
   font-size: 13px;
 }
 
-.components {
-  grid-area: components;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  min-width: 0;
-}
-
-.component {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 0;
-  gap: 8px;
-  padding: 3px 6px;
-  border: 1px solid;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-.component-label,
-.component-value {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.component-value {
-  flex: 0 0 auto;
-  font-weight: 600;
-}
-
 @media (max-width: 420px) {
   .risk-gauge {
     grid-template-columns: 1fr;
     grid-template-areas:
       "visual"
-      "summary"
-      "components";
+      "summary";
   }
 
   .summary {
