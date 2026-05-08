@@ -1,0 +1,41 @@
+<ng-container *transloco="let t; scope: 'portfolio-risk-gauge'">
+  @let gaugeView = view();
+  <section [class]="'status-' + gaugeView.riskStatus.toLowerCase().replaceAll('_', '-')">
+    <div class="visual">
+      <svg viewBox="0 0 220 132">
+        <g transform="translate(110,106)">
+          <path [attr.d]="trackPath" class="gauge-track"/>
+
+          @for (segment of segments; track segment.className) {
+            <path
+              [attr.d]="segment.path"
+              [class]="segment.className"
+              class="gauge-segment"
+            />
+          }
+
+          @if (gaugeView.riskStatus !== riskStates.NoData) {
+            <g [attr.transform]="getNeedleTransform(gaugeView)" class="needle">
+              <path d="M -4 0 L 0 -66 L 4 0 Z"/>
+            </g>
+            <circle class="needle-center" r="6"/>
+          }
+        </g>
+      </svg>
+    </div>
+
+    <div class="summary">
+      <span class="title">{{ t('portfolioRiskGauge.title') }}</span>
+      <span class="status-label">{{ t('portfolioRiskGauge.statuses.' + gaugeView.riskStatus, {fallback: gaugeView.riskStatus}) }}</span>
+      <span class="value">
+        @if (gaugeView.riskStatus !== riskStates.NoData) {
+          @if (gaugeView.adequacyRatio == null) {
+            {{ t('portfolioRiskGauge.values.noMinimumMarginRequirement') }}
+          } @else {
+            {{ t('portfolioRiskGauge.values.adequacyRatioShort') }} {{ gaugeView.adequacyRatio | number: '1.2-2' }}x
+          }
+        }
+      </span>
+    </div>
+  </section>
+</ng-container>

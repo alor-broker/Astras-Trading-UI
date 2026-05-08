@@ -1,0 +1,17 @@
+{
+  "title": "Уровень достаточности",
+  "statuses": {
+    "GREEN": "Спокойно",
+    "YELLOW": "Внимание",
+    "RED": "Критично",
+    "RESTRICTED": "Ограничение",
+    "CRITICAL": "Критично низкий запас",
+    "FORCED_CLOSE_RISK": "Риск принудительного закрытия",
+    "NO_DATA": "Нет данных"
+  },
+  "values": {
+    "adequacyRatioShort": "УД",
+    "noData": "Нет данных",
+    "noMinimumMarginRequirement": "Нет требования по минимальной марже"
+  }
+}

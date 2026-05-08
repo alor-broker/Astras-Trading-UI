@@ -67,6 +67,7 @@ import {
   MobileOrderWidgetComponent
 } from "../../../trade-screen/widgets/trade-screen-widget/trade-screen-widget.component";
 import {AdminClientPositionsWidgetComponent} from "../../../admin-client-positions/widgets/admin-client-positions-widget/admin-client-positions-widget.component";
+import {PortfolioRiskGaugeWidgetComponent} from "../../../portfolio-risk-gauge/widgets/portfolio-risk-gauge-widget/portfolio-risk-gauge-widget.component";
 
 @Component({
   selector: 'ats-parent-widget',
@@ -103,7 +104,8 @@ import {AdminClientPositionsWidgetComponent} from "../../../admin-client-positio
     AdminClientsWidgetComponent,
     AsyncPipe,
     MobileOrderWidgetComponent,
-    AdminClientPositionsWidgetComponent
+    AdminClientPositionsWidgetComponent,
+    PortfolioRiskGaugeWidgetComponent
   ]
 })
 export class ParentWidgetComponent implements OnDestroy {

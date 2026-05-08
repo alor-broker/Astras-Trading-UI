@@ -1,0 +1,25 @@
+<ats-widget-skeleton
+  [content]="contentRef"
+  [header]="headerRef"
+  [isBlockWidget]="isBlockWidget()"
+  [showContentScroll]="false"
+  [showSettings]="false"
+>
+  <ng-template #headerRef>
+    @if (settings$ | async; as settings) {
+      <ats-widget-header
+        [guid]="guid"
+        [hasSettings]="false"
+        [linkToActive]="settings.linkToActive ?? false"
+        [showBadgesMenu]="false"
+        [widgetMeta]="widgetInstance().widgetMeta"
+      />
+    }
+  </ng-template>
+
+  <ng-template #contentRef>
+    @if (view$ | async; as view) {
+      <ats-portfolio-risk-gauge [view]="view" />
+    }
+  </ng-template>
+</ats-widget-skeleton>
