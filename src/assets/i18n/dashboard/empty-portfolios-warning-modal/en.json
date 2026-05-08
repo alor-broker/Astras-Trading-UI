@@ -1,13 +1,15 @@
 {
-  "title": "Portfolios are missing",
-  "explanation": "Some of the terminal's functionality is not available if you don't have portfolios with open positions or money.",
-  "stepsTitle": "If you haven’t decided yet whether to transfer positions to us or not, but want to look at the terminal, you can do the following:",
-  "point1": "Credit 500 rubles via SBP to any of your portfolios through the client's account.",
-  "point2Pt1": "If you don’t want to deposit money, you can watch a video on documentation",
-  "point2Pt2": "about Astras, or look at the",
-  "point2Pt3": "which can give you an idea of the functionality.",
-  "documentation": "documentation",
-  "supportPointPt1": "If you are sure that there is money or positions in your accounts, then contact",
-  "supportPointPt2": " we will try to figure out the problem.",
-  "support": "tech. support"
+  "title": "No portfolios found",
+  "explanation": "Some terminal features are unavailable if you don't have portfolios with open positions or funds.",
+  "stepsTitle": "If you haven't decided whether to transfer your positions to us yet but want to explore the terminal, you can do the following:",
+  "point1": "Deposit 500 rubles to any of your portfolios via SBP (Faster Payments System) through the Client Portal.",
+  "point2WithVideoPrefix": "If you don't want to deposit funds, you can watch a ",
+  "point2VideoLinkText": "video",
+  "point2WithVideoMiddle": "about the terminal, or check out the",
+  "point2WithoutVideoPrefix": "If you don't want to deposit funds, you can check out the",
+  "point2DocsLinkText": "documentation",
+  "point2DocsSuffix": ", which can provide an overview of the functionality.",
+  "supportPrefix": "If you are sure there are funds or positions in your accounts, please contact",
+  "supportLinkText": "technical support",
+  "supportSuffix": ", and we will look into the issue."
 }

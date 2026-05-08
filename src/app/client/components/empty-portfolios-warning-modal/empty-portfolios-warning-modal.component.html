@@ -8,31 +8,37 @@
       <p nz-typography nzType="warning">{{t('dashboardEmptyPortfoliosWarningModal.explanation')}}</p>
       <p>{{t('dashboardEmptyPortfoliosWarningModal.stepsTitle')}}</p>
       <p>1. {{t('dashboardEmptyPortfoliosWarningModal.point1')}}</p>
-      <p>
-        2. {{t('dashboardEmptyPortfoliosWarningModal.point2Pt1')}}
-        <ats-external-link
-          klass="link"
-          href="https://www.youtube.com/watch?v=Jn0rLQlcAE0&list=PLMmnmN5fr5OQdclMyRVqIzL6RG7-LlqG3&pp=iAQB"
-        >
-          YouTube
-        </ats-external-link>
-        {{t('dashboardEmptyPortfoliosWarningModal.point2Pt2')}}
-        <ats-external-link klass="link" [href]="(helpLink$ | async) ?? ''">
-          {{t('dashboardEmptyPortfoliosWarningModal.documentation')}}
-        </ats-external-link>,
-        {{t('dashboardEmptyPortfoliosWarningModal.point2Pt3')}}
-      </p>
-      <p>
-        {{t('dashboardEmptyPortfoliosWarningModal.supportPointPt1')}}
-        @if(supportLink != null && supportLink.length > 0) {
-          <ats-external-link klass="link" [href]="supportLink">
-            {{t('dashboardEmptyPortfoliosWarningModal.support')}}
-          </ats-external-link>,
-        } @else {
-          {{t('dashboardEmptyPortfoliosWarningModal.support')}}
-        }
 
-        {{t('dashboardEmptyPortfoliosWarningModal.supportPointPt2')}}
+      @if (videoTutorialLink) {
+        <p>
+          2. {{t('dashboardEmptyPortfoliosWarningModal.point2WithVideoPrefix')}}
+          <ats-external-link klass="link" [href]="videoTutorialLink">
+            {{t('dashboardEmptyPortfoliosWarningModal.point2VideoLinkText')}}
+          </ats-external-link>
+          {{t('dashboardEmptyPortfoliosWarningModal.point2WithVideoMiddle')}}
+          <ats-external-link klass="link" [href]="(helpLink$ | async) ?? ''">
+            {{t('dashboardEmptyPortfoliosWarningModal.point2DocsLinkText')}}
+          </ats-external-link>{{t('dashboardEmptyPortfoliosWarningModal.point2DocsSuffix')}}
+        </p>
+      } @else {
+        <p>
+          2. {{t('dashboardEmptyPortfoliosWarningModal.point2WithoutVideoPrefix')}}
+          <ats-external-link klass="link" [href]="(helpLink$ | async) ?? ''">
+            {{t('dashboardEmptyPortfoliosWarningModal.point2DocsLinkText')}}
+          </ats-external-link>{{t('dashboardEmptyPortfoliosWarningModal.point2DocsSuffix')}}
+        </p>
+      }
+
+      <p>
+        {{t('dashboardEmptyPortfoliosWarningModal.supportPrefix')}}
+        @if (supportLink) {
+          <ats-external-link klass="link" [href]="supportLink">
+            {{t('dashboardEmptyPortfoliosWarningModal.supportLinkText')}}
+          </ats-external-link>
+        } @else {
+          {{t('dashboardEmptyPortfoliosWarningModal.supportLinkText')}}
+        }
+        {{t('dashboardEmptyPortfoliosWarningModal.supportSuffix')}}
       </p>
     </div>
   </ng-container>
