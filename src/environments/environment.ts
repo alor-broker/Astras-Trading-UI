@@ -40,7 +40,7 @@ export const environment = {
     personalAccount: 'https://lk.alor.ru/main',
     bankroll: 'https://lk.alor.ru/operations/money',
     services: 'https://lk.alor.ru/products/services',
-    videoTutorial: 'https://www.youtube.com/watch?v=Jn0rLQlcAE0&list=PLMmnmN5fr5OQdclMyRVqIzL6RG7-LlqG3'
+    videoTutorial: 'https://rutube.ru/plst/1553723/'
   },
   admin: {
     identityUrl: "https://hub.dev.alor.ru/api"
