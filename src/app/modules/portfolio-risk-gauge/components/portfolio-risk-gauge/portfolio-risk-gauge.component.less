@@ -1,0 +1,79 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    @risk-colors: {
+      green: @buy-color;
+      yellow: @warning-color;
+      restricted: mix(@warning-color, @error-color, 58%);
+      red: @error-color;
+      forced-close-risk: darken(@error-color, 12%);
+      critical: darken(@error-color, 28%);
+    };
+
+    .gauge-track {
+      fill: fade(@text-color, 12%);
+    }
+
+    each(@risk-colors, {
+      .gauge-segment.@{key} {
+        fill: @value;
+      }
+
+      .status-@{key} .status-label {
+        color: @value;
+      }
+    });
+
+    .needle path,
+    .needle-center {
+      fill: @heading-color;
+    }
+  }
+});
+
+:host {
+  section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .visual {
+    flex: 1;
+
+    svg {
+      display: block;
+      width: 100%;
+      min-width: 150px;
+    }
+  }
+
+  .summary {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .status-label {
+    overflow-wrap: anywhere;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .value {
+    min-height: 18px;
+    font-size: 13px;
+  }
+}

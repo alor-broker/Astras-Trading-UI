@@ -92,6 +92,9 @@
   @case ('trade-screen') {
   <ats-trade-screen-widget [widgetInstance]="targetWidgetInstance" />
   }
+  @case ('portfolio-risk-gauge') {
+    <ats-portfolio-risk-gauge-widget [widgetInstance]="targetWidgetInstance" [isBlockWidget]="isBlockWidget()" />
+  }
 
   }
 </div>

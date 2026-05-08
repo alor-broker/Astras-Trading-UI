@@ -1,0 +1,17 @@
+{
+  "title": "Բավարարվածության մակարդակ",
+  "statuses": {
+    "GREEN": "Հանգիստ",
+    "YELLOW": "Ուշադրություն",
+    "RED": "Կրիտիկական",
+    "RESTRICTED": "Սահմանափակում",
+    "CRITICAL": "Կրիտիկական ցածր պաշար",
+    "FORCED_CLOSE_RISK": "Հարկադիր փակման ռիսկ",
+    "NO_DATA": "Տվյալներ չկան"
+  },
+  "values": {
+    "adequacyRatioShort": "ԲՄ",
+    "noData": "Տվյալներ չկան",
+    "noMinimumMarginRequirement": "Նվազագույն մարժայի պահանջ չկա"
+  }
+}
