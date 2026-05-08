@@ -24,6 +24,7 @@
         [nzLoading]="isLoading()"
         [nzPageSizeOptions]="allPageSizes"
         [nzPageSize]="vm.page.pageSize"
+        [nzPageIndex]="vm.page.page"
         [nzScroll]="{ x: (vm.contentSize?.width ?? 0) - 5 + 'px', y: (vm.contentSize?.height ?? 0) - 5 + 'px' }"
         [nzShowPagination]="true"
         [nzShowSizeChanger]="true"
@@ -42,7 +43,7 @@
           @for (column of vm.tableConfig.columns; track column.id) {
             <th
               (atsWidthChanged)="saveColumnWidth({columnId: column.id, width: $event})"
-              (nzFilterChange)="nzFilterChange(column.filterData?.filterName ?? column.id                                                                                                                        , $event)"
+              (nzFilterChange)="nzFilterChange(column.filterData?.filterKey ?? column.id                                                                                                               , $event)"
               (nzSortOrderChange)="column.sortChangeFn?.($event)"
               [atsResizeColumn]
               [minWidth]="column.minWidth ?? 50"
