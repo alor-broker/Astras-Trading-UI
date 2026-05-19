@@ -4,7 +4,8 @@
   DestroyRef,
   inject,
   OnDestroy,
-  OnInit
+  OnInit,
+  signal
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -68,6 +69,8 @@ export abstract class BaseTableComponent<
 
   protected readonly cdr = inject(ChangeDetectorRef);
 
+  readonly activeFilterColumnId = signal<string | null>(null);
+
   ngOnInit(): void {
     this.tableConfig$ = this.initTableConfigStream();
     this.tableData$ = this.initTableDataStream();
@@ -82,6 +85,13 @@ export abstract class BaseTableComponent<
   }
 
   rowClick?(row: T, event?: Event): void;
+
+  onFilterVisibilityChange(column: BaseColumnSettings<T>, isVisible: boolean): void {
+    if (column.filterData) {
+      column.filterData.isOpenedFilter = isVisible;
+    }
+    this.activeFilterColumnId.set(isVisible ? column.id : null);
+  }
 
   applyFilter(filters: F): void {
     const cleanedFilters = Object.keys(filters)

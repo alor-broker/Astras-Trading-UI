@@ -82,7 +82,7 @@
 
               @if (column.filterData != null && column.filterData.filterType === FilterType.Search) {
                 <nz-filter-trigger
-                  (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
+                  (nzVisibleChange)="onFilterVisibilityChange(column, $event)"
                   [nzActive]="isFilterApplied(column.id, vm.filters)"
                   [nzDropdownMenu]="filtersMenu"
                   [nzVisible]="!!column.filterData.isOpenedFilter"
@@ -98,6 +98,7 @@
         <nz-dropdown-menu #filtersMenu="nzDropdownMenu">
           <ats-table-search-filter (filterChange)="applyFilters($event)"
                                    [columns]="vm.tableConfig.columns"
+                                   [activeColumnId]="activeFilterColumnId()"
           />
         </nz-dropdown-menu>
 

@@ -77,10 +77,10 @@
                 </span>
               @if (column.filterData != null && column.filterData.filterType !== filterTypes.DefaultMultiple) {
                 <nz-filter-trigger
-                  (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
+                  (nzVisibleChange)="onFilterVisibilityChange(column, $event)"
                   [nzActive]="isFilterApplied(column)"
                   [nzDropdownMenu]="searchMenu"
-                  [nzVisible]="!!column.filterData.isOpenedFilter"
+                  [nzVisible]="column.filterData.isOpenedFilter ?? false"
                 >
                   <i nz-icon nzType="search"></i>
                 </nz-filter-trigger>
@@ -210,7 +210,7 @@
     </div>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"/>
+      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns" [activeColumnId]="activeFilterColumnId()"/>
     </nz-dropdown-menu>
 
     <ats-add-to-watchlist-menu #contextMenu/>

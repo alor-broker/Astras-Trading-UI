@@ -10,6 +10,7 @@ import {
   OnChanges,
   OnInit,
   output,
+  signal,
   SimpleChange,
   SimpleChanges,
   TrackByFunction,
@@ -144,7 +145,7 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
 
   readonly filtersForm = new FormGroup({});
 
-  activeFilterName = '';
+  protected readonly activeFilterName = signal('');
 
   sortedColumnId = '';
 
@@ -292,7 +293,7 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
   }
 
   public openedFilterChange(name: string, isOpened: boolean): void {
-    this.activeFilterName = isOpened ? name : '';
+    this.activeFilterName.set(isOpened ? name : '');
   }
 
   public defaultFilterChange(name: string, value: string): void {

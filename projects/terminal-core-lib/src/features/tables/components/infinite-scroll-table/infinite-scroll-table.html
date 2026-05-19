@@ -108,7 +108,7 @@
     <div *transloco="let t; scope: 'shared/infinite-scroll-table'"
          class="ant-table-filter-dropdown custom-filter ats-infinite-scroll-table-filters">
       @for (column of config?.columns ?? []; track column.id) {
-        @if (!!column.filterData && activeFilterName === column.filterData.filterName) {
+        @if (!!column.filterData && activeFilterName() === column.filterData.filterName) {
           <div
             class="d-flex flex-column justify-content-start"
           >

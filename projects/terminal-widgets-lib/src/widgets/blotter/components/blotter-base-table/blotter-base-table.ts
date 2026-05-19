@@ -67,7 +67,6 @@ export abstract class BlotterBaseTable<T extends { id: string }, F extends objec
 
   protected readonly widgetLocalStateService = inject(WidgetLocalStateService);
 
-
   abstract get restoreFiltersAndSortOnLoad(): boolean;
 
   private get filterStateStorageKey(): string {

@@ -47,6 +47,8 @@ export class TableSearchFilter implements OnChanges, OnDestroy {
 
   readonly columns = input.required<BaseColumnSettings<any>[]>();
 
+  readonly activeColumnId = input<string | null>(null);
+
   filterChange = output<Record<string, string>>();
 
   private readonly formBuilder = inject(FormBuilder);
@@ -83,8 +85,10 @@ export class TableSearchFilter implements OnChanges, OnDestroy {
   }
 
   reset(): void {
-    const activeCol = this.columns().find(col => col.filterData?.isOpenedFilter ?? false);
-    this.filtersForm?.get(activeCol!.id)?.reset();
+    const columnId = this.activeColumnId();
+    if (columnId) {
+      this.filtersForm?.get(columnId)?.reset();
+    }
   }
 
   ngOnDestroy(): void {
