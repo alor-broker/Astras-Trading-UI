@@ -97,8 +97,8 @@
 
         <nz-dropdown-menu #filtersMenu="nzDropdownMenu">
           <ats-table-search-filter (filterChange)="applyFilters($event)"
-                                   [columns]="vm.tableConfig.columns"
                                    [activeColumnId]="activeFilterColumnId()"
+                                   [columns]="vm.tableConfig.columns"
           />
         </nz-dropdown-menu>
 

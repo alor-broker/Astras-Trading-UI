@@ -119,6 +119,27 @@
                 }
               ]
             },
+            "devContour": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4.5kb",
+                  "maximumError": "9kb"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/desktop-terminal/src/environments/environment.ts",
+                  "with": "projects/desktop-terminal/src/environments/environment.dev.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -262,6 +283,27 @@
                 }
               ]
             },
+            "devContour": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/mobile-terminal/src/environments/environment.ts",
+                  "with": "projects/mobile-terminal/src/environments/environment.dev.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -387,11 +429,38 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "4.5kb",
+                  "maximumError": "9kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/admin-terminal/src/environments/environment.ts",
+                  "with": "projects/admin-terminal/src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "devContour": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4.5kb",
+                  "maximumError": "9kb"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/admin-terminal/src/environments/environment.ts",
+                  "with": "projects/admin-terminal/src/environments/environment.dev.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -524,37 +593,9 @@
     "terminal-i18n": {
       "projectType": "library",
       "root": "projects/terminal-i18n",
-      "sourceRoot": "projects/terminal-i18n/src",
+      "sourceRoot": "projects/terminal-i18n/i18n",
       "prefix": "lib",
       "architect": {
-        "build": {
-          "builder": "@angular/build:ng-packagr",
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/terminal-i18n/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/terminal-i18n/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test",
-          "options": {
-            "tsConfig": "projects/terminal-i18n/tsconfig.spec.json"
-          }
-        },
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "lintFilePatterns": [
-              "projects/terminal-i18n/**/*.ts",
-              "projects/terminal-i18n/**/*.html"
-            ],
-            "eslintConfig": "projects/terminal-i18n/eslint.config.js"
-          }
-        }
       }
     }
   }

@@ -1,6 +1,5 @@
 import {
   ApplicationConfig,
-  isDevMode,
   LOCALE_ID,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
@@ -8,7 +7,6 @@ import {
   provideRouter,
   withComponentInputBinding
 } from '@angular/router';
-import {provideServiceWorker} from '@angular/service-worker';
 
 import {routes} from './app.routes';
 import {registerLocaleData} from '@angular/common';
@@ -50,8 +48,6 @@ import {provideWatchlist} from '@terminal-core-lib/features/watchlist/watchlist.
 import {REMOTE_STORAGE_URL_PROVIDER} from '@terminal-core-lib/features/remote-storage/remote-storage-url-provider';
 import {EnvironmentService} from './services/environment.service';
 import {provideRemoteStorage} from '@terminal-core-lib/features/remote-storage/remote-storage.providers';
-import {provideClientUserContext} from '@terminal-core-lib/features/user-context/client/client-user-context.providers';
-import {ClientAuthService} from '@terminal-core-lib/features/user-context/client/services/client-auth.service';
 import {
   SESSION_CONTEXT,
   USER_CONTEXT
@@ -84,7 +80,7 @@ const adminAuthProviders = [
     provide: SESSION_CONTEXT,
     useExisting: AdminAuthService
   }
-]
+];
 
 const coreProviders = [
   adminAuthProviders,

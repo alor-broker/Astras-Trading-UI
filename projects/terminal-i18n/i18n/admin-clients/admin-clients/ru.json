@@ -137,12 +137,10 @@
       "tooltip": "Текущий оперативный риск"
     }
   },
-
   "contextMenu": {
     "openDashboard": "Открыть дашборд",
     "checkRestrictions": "Проверить ограничения"
   },
-
   "favorites": {
     "itemTooltip": "Добавить/удалить из избранного",
     "filterTooltip": "Показать только избранные"

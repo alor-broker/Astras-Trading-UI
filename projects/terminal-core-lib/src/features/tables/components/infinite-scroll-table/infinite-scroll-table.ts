@@ -145,8 +145,6 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
 
   readonly filtersForm = new FormGroup({});
 
-  protected readonly activeFilterName = signal('');
-
   sortedColumnId = '';
 
   sortedColumnOrder: string | null = '';
@@ -154,6 +152,8 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
   selectedRow: TableDataRow | null = null;
 
   readonly trackByFn = input<TrackByFunction<TableDataRow>>((index: number, data: TableDataRow) => data.id);
+
+  protected readonly activeFilterName = signal('');
 
   protected readonly itemHeight = 29;
 

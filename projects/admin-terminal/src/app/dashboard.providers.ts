@@ -72,7 +72,7 @@ const orderCommandsProviders = [
   MarginOrderConfirmationService,
   ConfirmableOrderCommandsService,
   OrderDetailsService
-]
+];
 
 const featureProviders = [
   orderCommandsProviders,

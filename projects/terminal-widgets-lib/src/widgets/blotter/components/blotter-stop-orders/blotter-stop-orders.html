@@ -218,7 +218,8 @@
     </div>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns" [activeColumnId]="activeFilterColumnId()"/>
+      <ats-table-search-filter (filterChange)="filterChange($event)" [activeColumnId]="activeFilterColumnId()"
+                               [columns]="td.tableConfig.columns"/>
     </nz-dropdown-menu>
 
     <ats-add-to-watchlist-menu #contextMenu/>

@@ -46,6 +46,7 @@ export class EmptyPortfoliosWarningModal implements OnInit {
   protected readonly externalLinksConfig = inject(EXTERNAL_LINKS_CONFIG);
 
   supportLink = this.externalLinksConfig.support;
+
   readonly videoTutorialLink = this.externalLinksConfig.videoTutorial;
 
   private readonly helpService = inject(HelpService);

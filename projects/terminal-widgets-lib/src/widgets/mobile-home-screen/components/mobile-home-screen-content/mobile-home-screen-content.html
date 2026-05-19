@@ -70,7 +70,8 @@
   </ng-container>
 </ng-container>
 
-<nz-modal (nzOnCancel)="closeMoneyOperations()" [(nzVisible)]="showMoneyOperations" [nzClosable]="false" [nzFooter]="null"
+<nz-modal (nzOnCancel)="closeMoneyOperations()" [(nzVisible)]="showMoneyOperations" [nzClosable]="false"
+          [nzFooter]="null"
           [nzTitle]="moneyOperationsTitle" nzClassName="full-screen">
   <ng-container *nzModalContent>
     <ats-money-operations/>

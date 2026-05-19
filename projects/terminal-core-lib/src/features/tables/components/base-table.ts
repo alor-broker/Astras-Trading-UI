@@ -45,6 +45,8 @@ export abstract class BaseTableComponent<
 
   tableData$!: Observable<T[]>;
 
+  readonly activeFilterColumnId = signal<string | null>(null);
+
   protected readonly defaultColumnWidth = 100;
 
   protected contentSize$!: Observable<ContentSize | null>;
@@ -68,8 +70,6 @@ export abstract class BaseTableComponent<
   protected readonly destroyRef = inject(DestroyRef);
 
   protected readonly cdr = inject(ChangeDetectorRef);
-
-  readonly activeFilterColumnId = signal<string | null>(null);
 
   ngOnInit(): void {
     this.tableConfig$ = this.initTableConfigStream();

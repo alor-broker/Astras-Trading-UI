@@ -14,7 +14,6 @@ import {BlotterWidget} from '@terminal-widgets-lib/widgets/blotter/blotter-widge
 import {OrderSubmitWidget} from '@terminal-widgets-lib/widgets/order-commands/widgets/order-submit-widget/order-submit-widget';
 import {OrdersBasketWidget} from '@terminal-widgets-lib/widgets/orders-basket/orders-basket-widget/orders-basket-widget';
 import {PortfolioSummaryWidget} from '@terminal-widgets-lib/widgets/portfolio-summary/portfolio-summary-widget/portfolio-summary-widget';
-import {PortfolioChartsWidget} from '@terminal-widgets-lib/widgets/portfolio-charts/portfolio-charts-widget/portfolio-charts-widget';
 import {NewsWidget} from '@terminal-widgets-lib/widgets/news/news-widget/news-widget';
 import {ExchangeRateWidget} from '@terminal-widgets-lib/widgets/exchange-rate/exchange-rate-widget/exchange-rate-widget';
 import {RibbonWidget} from '@terminal-widgets-lib/widgets/ribbon/ribbon-widget/ribbon-widget';

@@ -6,7 +6,6 @@
   "foundText": "Найдены следующие ограничения",
   "restrictionOriginTitle": "Вид блокировки",
   "expiresAtTitle": "Дата окончания",
-
   "restrictionOrigins": {
     "Manual": "Ручная блокировка",
     "SocialRating": "Автоматическая блокировка по социальному рейтингу",
