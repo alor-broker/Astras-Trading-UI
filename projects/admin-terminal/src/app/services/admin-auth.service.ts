@@ -34,7 +34,7 @@ import {
 } from "@terminal-core-lib/features/user-context/user.types";
 import {JwtHelper} from "@terminal-core-lib/common/utils/jwt-helper";
 
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class AdminAuthService implements UserContext, SessionContext, OnDestroy {
   private readonly localStorage = inject(LocalStorageService);
 
@@ -172,6 +172,6 @@ export class AdminAuthService implements UserContext, SessionContext, OnDestroy 
   }
 
   private requestCredentials(): void {
-    this.router.navigate(['/admin/login']);
+    this.router.navigate(['/login']);
   }
 }

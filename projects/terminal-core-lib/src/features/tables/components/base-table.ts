@@ -1,4 +1,5 @@
 ﻿import {
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
@@ -64,6 +65,8 @@ export abstract class BaseTableComponent<
   protected readonly settingsService = inject(WidgetSettingsService);
 
   protected readonly destroyRef = inject(DestroyRef);
+
+  protected readonly cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.tableConfig$ = this.initTableConfigStream();

@@ -108,6 +108,8 @@ export class DashboardPage implements OnInit, OnDestroy, ActionsContext {
     ).subscribe(result => {
       if (result) {
         this.initAfterAuth();
+      } else {
+        this.globalLoadingIndicatorService.releaseLoading(this.loadingId);
       }
     });
   }

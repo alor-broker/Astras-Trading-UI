@@ -51,6 +51,12 @@ import {REMOTE_STORAGE_URL_PROVIDER} from '@terminal-core-lib/features/remote-st
 import {EnvironmentService} from './services/environment.service';
 import {provideRemoteStorage} from '@terminal-core-lib/features/remote-storage/remote-storage.providers';
 import {provideClientUserContext} from '@terminal-core-lib/features/user-context/client/client-user-context.providers';
+import {ClientAuthService} from '@terminal-core-lib/features/user-context/client/services/client-auth.service';
+import {
+  SESSION_CONTEXT,
+  USER_CONTEXT
+} from '@terminal-core-lib/features/user-context/user-context.types';
+import {AdminAuthService} from './services/admin-auth.service';
 
 registerLocaleData(ru);
 
@@ -63,18 +69,26 @@ const frameworkProviders = [
   provideAnimationsAsync(),
   provideNzI18n(ru_RU),
   provideHttpClient(withInterceptorsFromDi()),
-  provideServiceWorker('ngsw-worker.js', {
-    enabled: !isDevMode(),
-    registrationStrategy: 'registerWhenStable:30000',
-  }),
   {
     provide: Window, useValue: window
   }
 ];
 
+const adminAuthProviders = [
+  AdminAuthService,
+  {
+    provide: USER_CONTEXT,
+    useExisting: AdminAuthService
+  },
+  {
+    provide: SESSION_CONTEXT,
+    useExisting: AdminAuthService
+  }
+]
+
 const coreProviders = [
+  adminAuthProviders,
   provideEnvironmentConfig(),
-  provideClientUserContext(),
   LocalStorageService,
   provideAuthHttpRequests(),
   provideErrorHandlers([

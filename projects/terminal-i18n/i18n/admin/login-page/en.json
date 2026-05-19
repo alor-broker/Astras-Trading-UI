@@ -3,6 +3,7 @@
   "userNameLabel": "User name",
   "passwordLabel": "Password",
   "submitBtnLabel": "Log in",
+
   "errors": {
     "common": "Failed to complete your request. Please try again later.",
     "wrongCredentials": "Incorrect username or password"

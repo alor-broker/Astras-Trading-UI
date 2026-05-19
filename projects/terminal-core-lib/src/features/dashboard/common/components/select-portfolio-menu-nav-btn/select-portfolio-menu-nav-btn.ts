@@ -72,7 +72,7 @@ export class SelectPortfolioMenuNavBtn implements OnInit {
 
   protected selectedPortfolio$!: Observable<PortfolioExtended | null>;
 
-  protected readonly showEmptyPortfoliosWarning = signal(true);
+  protected readonly showEmptyPortfoliosWarning = signal(false);
 
   protected readonly searchControl = inject(FormBuilder).nonNullable.control('');
 

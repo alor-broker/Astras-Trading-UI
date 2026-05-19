@@ -24,7 +24,7 @@ import {
 } from "./admin-identity-service.types";
 import {HttpContextTokens} from '@terminal-core-lib/features/http-requests/constants/http.constants';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class AdminIdentityService {
   private readonly httpClient = inject(HttpClient);
 

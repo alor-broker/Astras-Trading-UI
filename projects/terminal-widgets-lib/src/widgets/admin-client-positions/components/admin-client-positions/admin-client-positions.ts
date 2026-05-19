@@ -113,25 +113,25 @@ interface ColumnBase {
     TranslocoDirective,
     NzResizeObserverDirective,
     LetDirective,
+    TableRowHeight,
     CdkDropList,
     NzThMeasureDirective,
     CdkDrag,
     NzTableModule,
+    ResizeColumn,
     NzTooltipDirective,
     NzIconDirective,
     NzDropdownMenuComponent,
+    TableSearchFilter,
     NzMenuDirective,
-    NzMenuItemComponent,
-    TableRowHeight,
-    ResizeColumn,
-    TableSearchFilter
+    NzMenuItemComponent
   ],
   templateUrl: './admin-client-positions.html',
   styleUrl: './admin-client-positions.less',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class AdminClientPositionsComponent extends BaseTableComponent<PositionDisplay, PositionsSearchFilter> implements OnInit, OnDestroy {
+export class AdminClientPositions extends BaseTableComponent<PositionDisplay, PositionsSearchFilter> implements OnInit, OnDestroy {
   readonly guid = input.required<string>();
 
   allColumns: BaseColumnSettings<PositionDisplay>[] = [];

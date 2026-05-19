@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   inject,
   input,
@@ -52,6 +53,8 @@ export class TableSearchFilter implements OnChanges, OnDestroy {
 
   private changesSubscription?: Subscription;
 
+  private readonly cdr = inject(ChangeDetectorRef);
+
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes.columns as SimpleChange | undefined)) {
       this.changesSubscription?.unsubscribe();
@@ -74,6 +77,8 @@ export class TableSearchFilter implements OnChanges, OnDestroy {
       ).subscribe(val => {
         this.filterChange.emit(val);
       });
+
+      this.cdr.markForCheck();
     }
   }
 

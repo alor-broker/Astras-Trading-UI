@@ -28,7 +28,10 @@ import {
 import {LoginStatus} from '../../services/admin-identity-service.types';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzFormModule} from 'ng-zorro-antd/form';
-import {NzInputWrapperComponent} from 'ng-zorro-antd/input';
+import {
+  NzInputModule,
+  NzInputWrapperComponent
+} from 'ng-zorro-antd/input';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
@@ -44,10 +47,10 @@ enum LoginErrorCode {
     TranslocoDirective,
     ReactiveFormsModule,
     NzFormModule,
-    NzInputWrapperComponent,
     NzIconDirective,
     NzButtonComponent,
-    NzTypographyComponent
+    NzTypographyComponent,
+    NzInputModule
   ],
   templateUrl: './login-page.html',
   styleUrl: './login-page.less',

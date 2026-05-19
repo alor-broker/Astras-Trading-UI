@@ -42,7 +42,6 @@ const DESKTOP_WIDGET_REGISTRY: Map<string, Type<any>> = new Map<string, Type<any
   ['order-submit', OrderSubmitWidget],
   ['orders-basket', OrdersBasketWidget],
   ['portfolio-summary', PortfolioSummaryWidget],
-  ['portfolio-charts', PortfolioChartsWidget],
   ['news', NewsWidget],
   ['exchange-rate', ExchangeRateWidget],
   ['ribbon', RibbonWidget],
@@ -50,7 +49,7 @@ const DESKTOP_WIDGET_REGISTRY: Map<string, Type<any>> = new Map<string, Type<any
   ['all-trades', InstrumentTradesWidget],
   ['all-instruments', AllInstrumentsWidget],
   ['admin-clients', AdminClientsWidget],
-  ['admin-clients', AdminClientPositionsWidget]
+  ['admin-client-positions', AdminClientPositionsWidget]
   // Add new desktop widgets here
 ]);
 

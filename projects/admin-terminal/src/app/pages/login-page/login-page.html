@@ -28,7 +28,7 @@
       <ng-container>
         <button
           (click)="submit()"
-          [disabled]="loginForm.invalid || isLoading"
+          [disabled]="loginForm.invalid || isLoading()"
           [nzLoading]="isLoading()"
           nz-button
           nzBlock

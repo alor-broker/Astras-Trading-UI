@@ -1,0 +1,27 @@
+{
+  "columns": {
+    "symbol": {
+      "displayName": "Թիքեր",
+      "tooltip": "Թիքեր"
+    },
+    "exchange": {
+      "displayName": "Բորսա",
+      "tooltip": "Բորսա"
+    },
+    "portfolio": {
+      "displayName": "Պորտֆել",
+      "tooltip": "Պորտֆել"
+    },
+    "quantityT0": {
+      "displayName": "Քանակ Т0",
+      "tooltip": "Դիրքերի քանակն այսօրվա հաշվարկներով",
+      "filters": {
+        "all": "Բոլորը",
+        "excludeClosedPositions": "Թաքցնել փակվածները"
+      }
+    }
+  },
+  "contextMenu": {
+    "openDashboard": "Բացել դաշբորդը"
+  }
+}

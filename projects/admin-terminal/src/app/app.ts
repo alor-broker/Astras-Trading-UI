@@ -10,8 +10,6 @@ import {
 import {RouterOutlet} from '@angular/router';
 import {Hook} from '@terminal-core-lib/common/types/hook.types';
 import {TitleHook} from '@terminal-core-lib/common/hooks/set-title.hook';
-import {SwEventsLoggingHook} from '@terminal-core-lib/features/pwa/hooks/sw-events-logging-hook';
-import {SwUpdateHook} from '@terminal-core-lib/features/pwa/hooks/sw-update.hook';
 
 const APP_INIT_HOOK = new InjectionToken<Hook[]>('APP_INIT_HOOK');
 
@@ -27,17 +25,7 @@ const APP_INIT_HOOK = new InjectionToken<Hook[]>('APP_INIT_HOOK');
       provide: APP_INIT_HOOK,
       useClass: TitleHook,
       multi: true
-    },
-    {
-      provide: APP_INIT_HOOK,
-      useClass: SwUpdateHook,
-      multi: true
-    },
-    {
-      provide: APP_INIT_HOOK,
-      useClass: SwEventsLoggingHook,
-      multi: true
-    },
+    }
   ],
 })
 export class App implements OnInit, OnDestroy {

@@ -173,7 +173,7 @@ export class SettingsBrokerService {
           ]
         }
       },
-      true
+      false
     );
   }
 }

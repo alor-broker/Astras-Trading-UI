@@ -67,10 +67,10 @@
 
               @if (column.filterData != null && column.filterData.filterType === FilterType.Search) {
                 <nz-filter-trigger
-                  (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
+                  (nzVisibleChange)="column.filterData.isOpenedFilter = $event;"
                   [nzActive]="isFilterApplied(column.id, vm.filters)"
                   [nzDropdownMenu]="filtersMenu"
-                  [nzVisible]="!!column.filterData.isOpenedFilter"
+                  [nzVisible]="column.filterData.isOpenedFilter ?? false"
                 >
                   <i nz-icon nzTheme="fill" nzType="filter"></i>
                 </nz-filter-trigger>

@@ -14,7 +14,7 @@ import {TableSettingHelper} from '@terminal-core-lib/features/tables/utils/table
 import {AsyncPipe} from '@angular/common';
 import {WidgetSkeleton} from '@terminal-widgets-lib/common/components/widget-skeleton/widget-skeleton';
 import {WidgetHeader} from '@terminal-widgets-lib/common/components/widget-header/widget-header';
-import {AdminClientPositionsComponent} from '@terminal-widgets-lib/widgets/admin-client-positions/components/admin-client-positions/admin-client-positions';
+import {AdminClientPositions} from '@terminal-widgets-lib/widgets/admin-client-positions/components/admin-client-positions/admin-client-positions';
 import {AdminClientPositionsSettings} from '@terminal-widgets-lib/widgets/admin-client-positions/components/admin-client-positions-settings/admin-client-positions-settings';
 
 @Component({
@@ -23,7 +23,7 @@ import {AdminClientPositionsSettings} from '@terminal-widgets-lib/widgets/admin-
     AsyncPipe,
     WidgetSkeleton,
     WidgetHeader,
-    AdminClientPositionsComponent,
+    AdminClientPositions,
     AdminClientPositionsSettings
   ],
   templateUrl: './admin-client-positions-widget.html',

@@ -104,9 +104,6 @@ importers:
       firebase:
         specifier: 12.12.1
         version: 12.12.1
-      glob:
-        specifier: ^13.0.6
-        version: 13.0.6
       gql-query-builder:
         specifier: ^3.8.0
         version: 3.8.0
@@ -216,6 +213,9 @@ importers:
       eslint:
         specifier: ^10.3.0
         version: 10.3.0(jiti@2.7.0)
+      glob:
+        specifier: ^13.0.6
+        version: 13.0.6
       graphql-codegen-typescript-validation-schema:
         specifier: ^0.18.1
         version: 0.18.1(graphql@16.14.0)(zod@4.4.3)
