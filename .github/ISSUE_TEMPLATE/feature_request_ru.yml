@@ -1,0 +1,41 @@
+name: Feature request RU
+description: Предложить идею. Если у вас проблема с сервисами Алора, напишите нам на support@alor.ru. Github issues только для багов и фич по Astras. 
+title: '[FEATURE] ... '
+labels: 
+  - enhancement
+  - recently reported
+body:
+  - type: textarea
+    id: formulation
+    attributes:
+      label: Опишите проблему, которую решает ваша фича
+      description: Краткое и понятное описание сути проблемы, которую решает фича.
+      placeholder: |
+        Я испытываю трудности когда [...]
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Опишите предлагаемое вами решение
+      description: Краткое и понятное описание того, что должно произойти.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Опишите альтернативные решения, о которых вы думали
+      description: Краткое и понятное описание альтернативных решений или фич, которые пришли вам в голову.
+  - type: textarea
+    id: additional
+    attributes:
+      label: Дополнительная информация
+      description: Добавьте любую дополнительную информацию или скриншоты.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Правила
+      description: Отправляя, вы соглашаетесь с [Code of Conduct](https://github.com/alor-broker/.github/blob/master/CODE_OF_CONDUCT.md) и [Contribution guideline](https://github.com/alor-broker/Astras-Trading-UI/blob/master/CONTRIBUTING.md)
+      options:
+        - label: Я согласен следовать правилам
+          required: true
