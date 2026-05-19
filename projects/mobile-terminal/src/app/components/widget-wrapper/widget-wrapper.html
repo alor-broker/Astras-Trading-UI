@@ -1,0 +1,16 @@
+<div class="widget-container">
+  @let target = widgetDisplay();
+  @if (target != null) {
+    @if (target.componentType == null) {
+      <span>Something is wrong with application configuration. Widget type <span nz-typography
+                                                                                 nzType="warning">{{ target.instance.instance.widgetType }}</span> is not registered</span>
+    } @else {
+      <ng-container [ngComponentOutletInputs]="{
+                                widgetInstance: target.instance,
+                                isBlockWidget: false,
+                                isActive: false
+                              }"
+                    [ngComponentOutlet]="target.componentType"/>
+    }
+  }
+</div>

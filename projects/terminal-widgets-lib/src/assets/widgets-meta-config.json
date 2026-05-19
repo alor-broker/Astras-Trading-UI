@@ -1,0 +1,895 @@
+﻿[
+  {
+    "typeId": "instrument-select",
+    "widgetName": {
+      "default": "Instrument Select",
+      "translations": {
+        "ru": "Выбор инструмента",
+        "en": "Instrument Select",
+        "hy": "Գործիքի ընտրություն"
+      }
+    },
+    "category": "all",
+    "desktopMeta": {
+      "headerIcon": "ats-watchlist",
+      "galleryIcon": "ats-watchlist",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 1,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "order-book",
+    "widgetName": {
+      "default": "Orderbook",
+      "translations": {
+        "ru": "Стакан",
+        "en": "Orderbook",
+        "hy": "ՊԳնանշումների ցուցակ"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "chartsAndOrderbooks",
+    "desktopMeta": {
+      "headerIcon": "ats-orderbook",
+      "galleryIcon": "ats-orderbook",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 2,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "ats-orderbook",
+      "ribbonIcon": "ats-orderbook",
+      "enabled": true,
+      "galleryOrder": 2,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "scalper-order-book",
+    "widgetName": {
+      "default": "Scalper Orderbook",
+      "translations": {
+        "ru": "Скальперский стакан",
+        "en": "Scalper Orderbook",
+        "hy": "Թրեյդերների գնանշումների ցուցակ"
+      }
+    },
+    "category": "chartsAndOrderbooks",
+    "desktopMeta": {
+      "headerIcon": "ats-scalper-orderbook",
+      "galleryIcon": "ats-scalper-orderbook",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 6
+      },
+      "hasZeroPaddings": true,
+      "galleryOrder": 3,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "light-chart",
+    "widgetName": {
+      "default": "Chart",
+      "translations": {
+        "ru": "График",
+        "en": "Chart",
+        "hy": "Գրաֆիկ"
+      }
+    },
+    "category": "chartsAndOrderbooks",
+    "hasInstrumentBind": true,
+    "desktopMeta": {
+      "headerIcon": "sliders",
+      "galleryIcon": "sliders",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 4,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "sliders",
+      "ribbonIcon": "sliders",
+      "enabled": true,
+      "galleryOrder": 4,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "tech-chart",
+    "widgetName": {
+      "default": "Tech Chart",
+      "translations": {
+        "ru": "Тех. анализ",
+        "en": "Tech Chart",
+        "hy": "Տեխ. վերլուծություն"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "chartsAndOrderbooks",
+    "desktopMeta": {
+      "headerIcon": "fund",
+      "galleryIcon": "fund",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 5,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "fund",
+      "ribbonIcon": "fund",
+      "enabled": true,
+      "galleryOrder": 5,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "blotter",
+    "widgetName": {
+      "default": "Blotter",
+      "translations": {
+        "ru": "Блоттер",
+        "en": "Blotter",
+        "hy": "Գործարքների մատյան"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "ats-portfolio",
+      "galleryIcon": "ats-portfolio",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 6,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "ats-portfolio",
+      "ribbonIcon": "ats-portfolio",
+      "enabled": true,
+      "galleryOrder": 6,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "instrument-info",
+    "widgetName": {
+      "default": "Info",
+      "translations": {
+        "ru": "Инфо",
+        "en": "Info",
+        "hy": "Տեղեկատվություն"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "ats-instrument-info",
+      "galleryIcon": "ats-instrument-info",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 7,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "ats-instrument-info",
+      "ribbonIcon": "ats-instrument-info",
+      "enabled": true,
+      "galleryOrder": 7,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "news",
+    "widgetName": {
+      "default": "News",
+      "translations": {
+        "ru": "Новости",
+        "en": "News",
+        "hy": "Լուրեր"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "read",
+      "galleryIcon": "read",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 8,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "read",
+      "ribbonIcon": "read",
+      "enabled": true,
+      "galleryOrder": 8,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "all-trades",
+    "widgetName": {
+      "default": "All Trades",
+      "translations": {
+        "ru": "Все сделки",
+        "en": "All Trades",
+        "hy": "Բոլոր գործարքները"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "details",
+    "desktopMeta": {
+      "headerIcon": "ats-trade",
+      "galleryIcon": "ats-trade",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 9,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "ats-trade",
+      "ribbonIcon": "ats-trade",
+      "enabled": true,
+      "galleryOrder": 9,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "exchange-rate",
+    "widgetName": {
+      "default": "Exchange Rate",
+      "translations": {
+        "ru": "Курсы валют",
+        "en": "Exchange Rate",
+        "hy": "Արտարժույթի Կուրսեր"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "dollar",
+      "galleryIcon": "ats-exchange-rate",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 10,
+        "initialWidth": 10
+      },
+      "galleryOrder": 10,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "ats-exchange-rate",
+      "ribbonIcon": "ats-exchange-rate",
+      "enabled": true,
+      "galleryOrder": 10,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "all-instruments",
+    "widgetName": {
+      "default": "All Instruments",
+      "translations": {
+        "ru": "Все инструменты",
+        "en": "All Instruments",
+        "hy": "Բոլոր գործիքները"
+      }
+    },
+    "category": "details",
+    "desktopMeta": {
+      "headerIcon": "ats-instruments-search",
+      "galleryIcon": "ats-instruments-search",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 11,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "ats-instruments-search",
+      "ribbonIcon": "ats-instruments-search",
+      "enabled": true,
+      "galleryOrder": 11,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "order-submit",
+    "widgetName": {
+      "default": "Order Submit",
+      "translations": {
+        "ru": "Выставить заявку",
+        "en": "Order Submit",
+        "hy": "Հայտի ձևակերպում"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "plus-circle",
+      "galleryIcon": "plus-circle",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 12,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "plus-circle",
+      "ribbonIcon": "plus-circle",
+      "enabled": true,
+      "widgetName": {
+        "default": "Order",
+        "translations": {
+          "ru": "Заявка",
+          "en": "Order",
+          "hy": "Հայտի ձևակերպում"
+        }
+      },
+      "galleryOrder": 12,
+      "selectableForQuickAccessPanel": true,
+      "isOrderWidget": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "orders-basket",
+    "widgetName": {
+      "default": "Orders Basket",
+      "translations": {
+        "ru": "Корзина заявок",
+        "en": "Orders Basket",
+        "hy": "Հայտերի զամբյուղ"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "calculator",
+      "galleryIcon": "calculator",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 13,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "calculator",
+      "ribbonIcon": "calculator",
+      "enabled": true,
+      "galleryOrder": 13,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "treemap",
+    "widgetName": {
+      "default": "Market Map",
+      "translations": {
+        "ru": "Карта рынка",
+        "en": "Market Map",
+        "hy": "Շուկայի Քարտեզ"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "layout",
+      "galleryIcon": "layout",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 14,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "layout",
+      "ribbonIcon": "layout",
+      "enabled": true,
+      "galleryOrder": 14,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "ribbon",
+    "widgetName": {
+      "default": "Ribbon",
+      "translations": {
+        "ru": "Лента",
+        "en": "Ribbon",
+        "hy": "Առևտրային ժապավեն"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "stock",
+      "galleryIcon": "stock",
+      "addOptions": {
+        "initialPosition": "top",
+        "isFullWidth": true,
+        "initialHeightPx": 25
+      },
+      "galleryOrder": 15,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "events-calendar",
+    "widgetName": {
+      "default": "Events Calendar",
+      "translations": {
+        "ru": "Календарь событий",
+        "en": "Events Calendar",
+        "hy": "Իրադարձությունների Օրացույց"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "calendar",
+      "galleryIcon": "calendar",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 16,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "calendar",
+      "ribbonIcon": "calendar",
+      "enabled": true,
+      "galleryOrder": 16,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "option-board",
+    "widgetName": {
+      "default": "Option Board",
+      "translations": {
+        "ru": "Опционная доска",
+        "en": "Option Board",
+        "hy": "Օպցիոնների Աղյուսակ"
+      }
+    },
+    "category": "details",
+    "desktopMeta": {
+      "headerIcon": "table",
+      "galleryIcon": "table",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 11
+      },
+      "galleryOrder": 17,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "table",
+      "ribbonIcon": "table",
+      "enabled": true,
+      "galleryOrder": 17,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "arbitrage-spread",
+    "widgetName": {
+      "default": "Arbitrage Spread",
+      "translations": {
+        "ru": "Арбитражная раздвижка",
+        "en": "Arbitrage Spread",
+        "hy": "Արբիտրաժային Բացվածք"
+      }
+    },
+    "category": "details",
+    "desktopMeta": {
+      "headerIcon": "fork",
+      "galleryIcon": "fork",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 18,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
+    "typeId": "portfolio-summary",
+    "widgetName": {
+      "default": "Portfolio Summary",
+      "translations": {
+        "ru": "Сводка по портфелю",
+        "en": "Portfolio Summary",
+        "hy": "Պորտֆելի Ամփոփում"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "ats-portfolio-summary",
+      "galleryIcon": "ats-portfolio-summary",
+      "addOptions": {
+        "initialPosition": "below",
+        "isFullWidth": true,
+        "initialHeightPx": 25
+      },
+      "galleryOrder": 19,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "instruments-correlation",
+    "widgetName": {
+      "default": "Instruments Correlation",
+      "translations": {
+        "ru": "Корреляция инструментов",
+        "en": "Instruments Correlation",
+        "hy": "Կորել. Գործիք."
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "node-index",
+      "galleryIcon": "node-index",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 20,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
+    "typeId": "bond-screener",
+    "widgetName": {
+      "default": "Bond Screener",
+      "translations": {
+        "ru": "Скринер облигаций",
+        "en": "Bond Screener",
+        "hy": "Պարտատոմսերի Զտիչ"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "ats-bonds-search",
+      "galleryIcon": "ats-bonds-search",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 21,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
+    "typeId": "mobile-home-screen",
+    "widgetName": {
+      "default": "Home Screen",
+      "translations": {
+        "ru": "Домашний экран",
+        "en": "Home Screen",
+        "hy": "Գլխավոր էջ"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "mobileMeta": {
+      "galleryIcon": "home",
+      "ribbonIcon": "home",
+      "enabled": true,
+      "galleryOrder": 0,
+      "selectableForQuickAccessPanel": true
+    }
+  },
+  {
+    "typeId": "invest-ideas",
+    "widgetName": {
+      "default": "Ideas",
+      "translations": {
+        "ru": "Идеи",
+        "en": "Ideas",
+        "hy": "Գաղափարներ"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "bulb",
+      "galleryIcon": "bulb",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 12,
+        "initialWidth": 8
+      },
+      "galleryOrder": 22,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
+    "typeId": "portfolio-charts",
+    "widgetName": {
+      "default": "Portfolio dynamics",
+      "translations": {
+        "ru": "Динамика по портфелю",
+        "en": "Portfolio dynamics",
+        "hy": "Պորտֆելի դինամիկ"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "area-chart",
+      "galleryIcon": "area-chart",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 12,
+        "initialWidth": 8
+      },
+      "galleryOrder": 23,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "market-trends",
+    "widgetName": {
+      "default": "Market trends",
+      "translations": {
+        "ru": "Тенденции рынка",
+        "en": "Market trends",
+        "hy": "Շուկայի միտումներ"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "ats-cup",
+      "galleryIcon": "ats-cup",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 24,
+      "enabled": true
+    },
+    "baseSettings": {
+      "availableExtendedFilters": []
+    },
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
+    "typeId": "trade-screen",
+    "widgetName": {
+      "default": "Trade",
+      "translations": {
+        "ru": "Торговля",
+        "en": "Trade",
+        "hy": "Առևտուր"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "positionsTradesOrders",
+    "mobileMeta": {
+      "galleryIcon": "shopping-cart",
+      "ribbonIcon": "shopping-cart",
+      "enabled": true,
+      "galleryOrder": 25,
+      "selectableForQuickAccessPanel": true,
+      "isOrderWidget": true
+    }
+  },
+  {
+    "typeId": "admin-clients",
+    "widgetName": {
+      "default": "My clients",
+      "translations": {
+        "ru": "Мои клиенты",
+        "en": "My clients",
+        "hy": "Իմ հաճախորդները"
+      }
+    },
+    "category": "all",
+    "desktopMeta": {
+      "headerIcon": "user-switch",
+      "galleryIcon": "user-switch",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 15,
+        "initialWidth": 30
+      },
+      "galleryOrder": 100,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "desktop",
+      "mobile",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
+    "typeId": "admin-client-positions",
+    "widgetName": {
+      "default": "Client Positions",
+      "translations": {
+        "ru": "Позиции клиентов",
+        "en": "Client Positions",
+        "hy": "Իմ հաճախորդները"
+      }
+    },
+    "category": "all",
+    "desktopMeta": {
+      "headerIcon": "file-search",
+      "galleryIcon": "file-search",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 15,
+        "initialWidth": 18
+      },
+      "galleryOrder": 101,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "desktop",
+      "mobile",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
+    "typeId": "portfolio-risk-gauge",
+    "widgetName": {
+      "default": "Portfolio Risk",
+      "translations": {
+        "ru": "Риск портфеля",
+        "en": "Portfolio Risk",
+        "hy": "Պորտֆելի ռիսկ"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "dashboard",
+      "galleryIcon": "dashboard",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 6,
+        "initialWidth": 8
+      },
+      "galleryOrder": 26,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  }
+]

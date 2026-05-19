@@ -1,0 +1,65 @@
+<ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
+  <ng-container *ngrxLet="{portfolios: portfolios$, selectedPortfolio: selectedPortfolio$} as vm">
+    @if (vm.selectedPortfolio != null) {
+      <button
+        [nzDropdownMenu]="portfoliosDropdown"
+        class="dropdown-btn d-flex align-items-center"
+        nz-button
+        nz-dropdown
+        nzSize="small"
+        nzType="text"
+      >
+        <span>{{ vm.selectedPortfolio.market }} {{ vm.selectedPortfolio.portfolio }}</span>
+        <nz-icon class="arrow-icon" nzTheme="outline" nzType="down"/>
+      </button>
+      <nz-dropdown-menu #portfoliosDropdown="nzDropdownMenu">
+        <ul class="portfolio-menu" nz-menu>
+          <li>
+            <input
+              [formControl]="searchControl"
+              [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
+              class="portfolio-search"
+              nz-input
+              type="text"
+            />
+          </li>
+          @for (kvp of vm.portfolios | keyvalue; track portfolioGroupsTrackByFn($index, kvp)) {
+            <li nz-menu-item nzDisabled> {{ kvp.key }}</li>
+            @for (model of kvp.value; track portfoliosTrackByFn($index, model)) {
+              @if (isFoundPortfolio(model)) {
+                <li (click)="changePortfolio(model)" class="heading-color" nz-menu-item>
+                  {{ model.market }} {{ model.portfolio }}
+                </li>
+              }
+            }
+          }
+        </ul>
+      </nz-dropdown-menu>
+    } @else {
+      <span
+        [nzPopoverContent]="emptyPortfolioPopover"
+        nz-popover
+        nz-typography
+        nzPopoverPlacement="bottom"
+        nzType="danger"
+      >
+        {{ t('dashboardNavbarCommon.emptyPortfolioBtn') }}
+      </span>
+      <ng-template #emptyPortfolioPopover>
+        <p>{{ t('dashboardNavbarCommon.emptyPortfolioPopover') }}</p>
+        @if (externalLinksConfig.personalAccount != null && externalLinksConfig.personalAccount.length > 0) {
+          <p>{{ t('dashboardNavbarCommon.emptyPortfolioPopoverHint') }}
+            <ats-external-link [href]="externalLinksConfig.personalAccount">
+              {{ t('dashboardNavbarCommon.emptyPortfolioPopoverLink') }}
+            </ats-external-link>
+          </p>
+        }
+      </ng-template>
+    }
+
+  </ng-container>
+</ng-container>
+
+<ats-empty-portfolios-warning-modal [atsVisible]="showEmptyPortfoliosWarning()"/>
+
+

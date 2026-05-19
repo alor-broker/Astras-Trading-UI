@@ -1,8 +1,0 @@
-{
-  "budgetLabel": "All Orders Amount",
-  "budgetPlaceholder": "Enter amount",
-  "moreThan100Percents": "The sum of the indicated percentages is more than 100",
-  "submitLabel": "Submit",
-  "submitSuccessMessage": "All orders have been submitted successfully",
-  "submitFailedMessage": "One or more order submission have been failed"
-}

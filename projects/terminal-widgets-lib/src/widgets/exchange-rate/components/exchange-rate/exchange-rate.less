@@ -1,0 +1,17 @@
+ats-exchange-rate {
+  td {
+    &.selectable {
+      text-decoration: underline;
+      font-weight: 500;
+
+      &:hover {
+        cursor: pointer;
+        color: var(--ats-primary-color);
+
+        .changed {
+          color: var(--ats-primary-color) !important;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+﻿import {
+  Injectable,
+  OnDestroy
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  interval,
+  Observable,
+  shareReplay
+} from "rxjs";
+import {
+  distinct,
+  filter,
+  map
+} from "rxjs/operators";
+import {TokenState} from "./api-token-provider.types";
+import {mapWith} from '@terminal-core-lib/common/utils/observable/map-with';
+
+
+@Injectable()
+export class ApiTokenProviderService implements OnDestroy {
+  private readonly state$ = new BehaviorSubject<TokenState | null>(null);
+
+  private tokenRefresh$: Observable<TokenState> | null = null;
+
+  ngOnDestroy(): void {
+    this.state$.complete();
+  }
+
+  getToken(): Observable<string> {
+    this.tokenRefresh$ ??= this.state$.pipe(
+      filter(s => s != null),
+      mapWith(() => interval(1000), (state,) => state),
+      map(state => {
+        if (this.isTokenNotExpired(state)) {
+          return state;
+        }
+
+        state.refreshCallback();
+        return null;
+      }),
+      filter(t => t != null),
+      distinct(),
+      shareReplay(1)
+    );
+
+    return this.tokenRefresh$.pipe(
+      // need to check expiration for each subscriber because cached token can be expired
+      filter(state => this.isTokenNotExpired(state)),
+      map(state => state.token)
+    );
+  }
+
+  updateTokenState(state: TokenState): void {
+    this.state$.next(state);
+  }
+
+  clearToken(): void {
+    this.state$.next(null);
+  }
+
+  private isTokenNotExpired(state: TokenState): boolean {
+    const timeReserveMs = 1000 * 5;
+    const now = Date.now() + timeReserveMs;
+    return now < state.expirationTime;
+  }
+}

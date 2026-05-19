@@ -1,0 +1,6 @@
+@if (href(); as href) {
+  <a [class]="klass()" [href]="href" [rel]="rel()" [target]="target()">
+    <ng-content/>
+    <span nz-icon nzTheme="outline" nzType="ats-external-link"></span>
+  </a>
+}

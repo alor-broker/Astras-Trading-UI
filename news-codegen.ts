@@ -1,10 +1,10 @@
-import type { CodegenConfig } from '@graphql-codegen/cli';
+﻿import type {CodegenConfig} from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
   schema: "https://apidev.alor.ru/news/graphql",
   generates: {
-    "src/generated/news-graphql.types.ts": {
+    "projects/terminal-core-lib/src/features/news/graphql/schema/graphql.types.ts": {
       plugins: [
         {
           add: {
@@ -17,15 +17,15 @@ const config: CodegenConfig = {
             declarationKind: 'interface',
             skipTypename: true,
             scalars: {
-              DateTime:  {
+              DateTime: {
                 input: 'string',
                 output: 'string'
               },
-              Decimal:  {
+              Decimal: {
                 input: 'number',
                 output: 'number'
               },
-              Long:  {
+              Long: {
                 input: 'number',
                 output: 'number'
               }
@@ -34,7 +34,7 @@ const config: CodegenConfig = {
         }
       ]
     },
-    "src/generated/news-graphql.schemas.ts": {
+    "projects/terminal-core-lib/src/features/news/graphql/schema/graphql.schemas.ts": {
       plugins: [
         {
           add: {
@@ -44,7 +44,7 @@ const config: CodegenConfig = {
         },
         {
           'typescript-validation-schema': {
-            importFrom: './news-graphql.types',
+            importFrom: './graphql.types',
             schema: 'zod',
             zodImportPath: 'zod/v3',
             scalarSchemas: {

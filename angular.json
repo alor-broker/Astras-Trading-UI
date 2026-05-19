@@ -1,57 +1,39 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
   "cli": {
-    "analytics": false,
     "packageManager": "pnpm",
     "schematicCollections": [
       "angular-eslint"
     ]
   },
-  "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "astras": {
+    "desktop-terminal": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "less",
-          "standalone": true,
-          "skipTests": true
-        },
-        "@schematics/angular:directive": {
-          "standalone": true,
-          "skipTests": true
-        },
-        "@schematics/angular:pipe": {
-          "standalone": true,
-          "skipTests": true
-        },
-        "@schematics/angular:application": {
-          "strict": true,
-          "skipTests": true
+          "skipTests": true,
+          "changeDetection": "OnPush",
+          "viewEncapsulation": "None"
         }
       },
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "ats",
+      "root": "projects/desktop-terminal",
+      "sourceRoot": "projects/desktop-terminal/src",
+      "prefix": "atsd",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": {
-              "base": "dist/astras",
-              "browser": ""
-            },
-            "index": "src/index.html",
-            "polyfills": [
-              "src/polyfills.ts"
-            ],
-            "tsConfig": "tsconfig.app.json",
+            "browser": "projects/desktop-terminal/src/main.ts",
+            "tsConfig": "projects/desktop-terminal/tsconfig.app.json",
             "inlineStyleLanguage": "less",
             "assets": [
-              "src/favicon.svg",
-              "src/assets",
-              "src/firebase-messaging-sw.js",
+              {
+                "glob": "**/*",
+                "input": "projects/desktop-terminal/public"
+              },
               {
                 "glob": "**/*",
                 "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
@@ -59,51 +41,68 @@
               },
               {
                 "glob": "**/*",
-                "input": "src/assets/custom_icons/",
+                "input": "projects/terminal-styling-lib/src/custom_icons",
                 "output": "/assets/"
               },
-              "src/manifest.webmanifest"
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-styling-lib/src/pwa-icons",
+                "output": "/assets/pwa-icons"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-i18n/i18n",
+                "output": "/assets/i18n"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-core-lib/src/assets",
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-widgets-lib/src/assets",
+                "output": "/assets/"
+              }
             ],
             "styles": [
-              "src/styles.less",
               {
-                "input": "src/styles/default.less",
-                "bundleName": "default",
+                "input": "projects/terminal-styling-lib/src/styles/themes/light-theme.less",
+                "bundleName": "light-theme",
                 "inject": false
               },
               {
-                "input": "src/styles/dark.less",
-                "bundleName": "dark",
+                "input": "projects/terminal-styling-lib/src/styles/themes/dark-theme.less",
+                "bundleName": "dark-theme",
                 "inject": false
-              }
+              },
+              {
+                "input": "projects/terminal-styling-lib/src/styles/utils/index.less",
+                "bundleName": "utils",
+                "inject": true
+              },
+              "projects/desktop-terminal/src/styles/styles.less"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/styles/themes",
-                "src/styles/mixins",
-                "src/styles/utils",
-                "src/styles/components"
+                "projects/terminal-styling-lib/src/styles/mixins"
               ]
             },
-            "scripts": [
-              "src/assets/lib/charting_library/charting_library.js"
-            ],
             "allowedCommonJsDependencies": [
               "flat",
               "json-patch",
               "gql-query-builder",
               "moment"
             ],
-            "serviceWorker": "ngsw-config.json",
-            "browser": "src/main.ts"
+            "serviceWorker": "projects/desktop-terminal/ngsw-config.json"
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "2.6mb"
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -111,44 +110,18 @@
                   "maximumError": "9kb"
                 }
               ],
+              "outputHashing": "all",
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "src/app/build-specifics/ext-modules.ts",
-                  "with": "src/app/build-specifics/ext-modules.prod.ts"
+                  "replace": "projects/desktop-terminal/src/environments/environment.ts",
+                  "with": "projects/desktop-terminal/src/environments/environment.prod.ts"
                 }
-              ],
-              "outputHashing": "all"
-            },
-            "devContour": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "2.6mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4.5kb",
-                  "maximumError": "9kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
-                }
-              ],
-              "outputHashing": "all"
+              ]
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -157,96 +130,431 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "astras:build:production"
-            },
-            "devContour": {
-              "buildTarget": "astras:build:production"
+              "buildTarget": "desktop-terminal:build:production"
             },
             "development": {
-              "buildTarget": "astras:build:development"
+              "buildTarget": "desktop-terminal:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
-        "extract-i18n": {
-          "builder": "@angular/build:extract-i18n",
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "buildTarget": "astras:build"
+            "lintFilePatterns": [
+              "projects/desktop-terminal/src/**/*.ts",
+              "projects/desktop-terminal/src/**/*.html"
+            ]
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "mobile-terminal": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "less",
+          "skipTests": true,
+          "changeDetection": "OnPush",
+          "viewEncapsulation": "None"
+        }
+      },
+      "root": "projects/mobile-terminal",
+      "sourceRoot": "projects/mobile-terminal/src",
+      "prefix": "atsm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": [
-              "src/polyfills.ts"
-            ],
-            "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
+            "browser": "projects/mobile-terminal/src/main.ts",
+            "tsConfig": "projects/mobile-terminal/tsconfig.app.json",
             "inlineStyleLanguage": "less",
             "assets": [
-              "src/favicon.svg",
-              "src/assets",
-              "src/firebase-messaging-sw.js",
+              {
+                "glob": "**/*",
+                "input": "projects/mobile-terminal/public"
+              },
               {
                 "glob": "**/*",
                 "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
                 "output": "/assets/"
               },
-              "src/manifest.webmanifest"
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-styling-lib/src/custom_icons",
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-styling-lib/src/pwa-icons",
+                "output": "/assets/pwa-icons"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-i18n/i18n",
+                "output": "/assets/i18n"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-core-lib/src/assets",
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-widgets-lib/src/assets",
+                "output": "/assets/"
+              }
             ],
             "styles": [
-              "src/styles.less"
+              {
+                "input": "projects/mobile-terminal/src/styles/themes/light-theme.less",
+                "bundleName": "light-theme",
+                "inject": false
+              },
+              {
+                "input": "projects/mobile-terminal/src/styles/themes/dark-theme.less",
+                "bundleName": "dark-theme",
+                "inject": false
+              },
+              {
+                "input": "projects/terminal-styling-lib/src/styles/utils/index.less",
+                "bundleName": "utils",
+                "inject": true
+              },
+              "projects/mobile-terminal/src/styles/styles.less"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/styles/themes",
-                "src/styles/mixins",
-                "src/styles/utils",
-                "src/styles/components"
+                "projects/terminal-styling-lib/src/styles/mixins"
               ]
             },
-            "scripts": [
-              "src/assets/lib/charting_library/charting_library.js"
+            "allowedCommonJsDependencies": [
+              "flat",
+              "json-patch",
+              "gql-query-builder",
+              "moment"
+            ],
+            "serviceWorker": "projects/mobile-terminal/ngsw-config.json"
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/mobile-terminal/src/environments/environment.ts",
+                  "with": "projects/mobile-terminal/src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "mobile-terminal:build:production"
+            },
+            "development": {
+              "buildTarget": "mobile-terminal:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/mobile-terminal/src/**/*.ts",
+              "projects/mobile-terminal/src/**/*.html"
             ]
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "admin-terminal": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "less",
+          "skipTests": true,
+          "changeDetection": "OnPush",
+          "viewEncapsulation": "None"
+        }
+      },
+      "root": "projects/admin-terminal",
+      "sourceRoot": "projects/admin-terminal/src",
+      "prefix": "atsa",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/admin-terminal/src/main.ts",
+            "tsConfig": "projects/admin-terminal/tsconfig.app.json",
+            "inlineStyleLanguage": "less",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/admin-terminal/public"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-styling-lib/src/custom_icons",
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-i18n/i18n",
+                "output": "/assets/i18n"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-core-lib/src/assets",
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/terminal-widgets-lib/src/assets",
+                "output": "/assets/"
+              }
+            ],
+            "styles": [
+              {
+                "input": "projects/terminal-styling-lib/src/styles/themes/light-theme.less",
+                "bundleName": "light-theme",
+                "inject": false
+              },
+              {
+                "input": "projects/terminal-styling-lib/src/styles/themes/dark-theme.less",
+                "bundleName": "dark-theme",
+                "inject": false
+              },
+              {
+                "input": "projects/terminal-styling-lib/src/styles/utils/index.less",
+                "bundleName": "utils",
+                "inject": true
+              },
+              "projects/admin-terminal/src/styles/styles.less"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/terminal-styling-lib/src/styles/mixins"
+              ]
+            },
+            "allowedCommonJsDependencies": [
+              "flat",
+              "json-patch",
+              "gql-query-builder",
+              "moment"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "admin-terminal:build:production"
+            },
+            "development": {
+              "buildTarget": "admin-terminal:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/admin-terminal/src/**/*.ts",
+              "projects/admin-terminal/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "terminal-core-lib": {
+      "projectType": "library",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "less",
+          "skipTests": true,
+          "changeDetection": "OnPush",
+          "viewEncapsulation": "None"
+        }
+      },
+      "root": "projects/terminal-core-lib",
+      "sourceRoot": "projects/terminal-core-lib/src",
+      "prefix": "ats",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/terminal-core-lib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/terminal-core-lib/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/terminal-core-lib/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "terminal-widgets-lib": {
+      "projectType": "library",
+      "root": "projects/terminal-widgets-lib",
+      "sourceRoot": "projects/terminal-widgets-lib/src",
+      "prefix": "ats",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "less",
+          "skipTests": true,
+          "changeDetection": "OnPush",
+          "viewEncapsulation": "None"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/terminal-widgets-lib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/terminal-widgets-lib/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/terminal-widgets-lib/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "terminal-styling-lib": {
+      "projectType": "library",
+      "root": "projects/terminal-styling-lib",
+      "sourceRoot": "projects/terminal-styling-lib/src",
+      "prefix": "ats",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/terminal-styling-lib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/terminal-styling-lib/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/terminal-styling-lib/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "terminal-i18n": {
+      "projectType": "library",
+      "root": "projects/terminal-i18n",
+      "sourceRoot": "projects/terminal-i18n/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/terminal-i18n/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/terminal-i18n/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/terminal-i18n/tsconfig.spec.json"
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+              "projects/terminal-i18n/**/*.ts",
+              "projects/terminal-i18n/**/*.html"
+            ],
+            "eslintConfig": "projects/terminal-i18n/eslint.config.js"
           }
         }
       }
-    }
-  },
-  "schematics": {
-    "@schematics/angular:component": {
-      "type": "component"
-    },
-    "@schematics/angular:directive": {
-      "type": "directive"
-    },
-    "@schematics/angular:service": {
-      "type": "service"
-    },
-    "@schematics/angular:guard": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:interceptor": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:module": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:pipe": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:resolver": {
-      "typeSeparator": "."
     }
   }
 }

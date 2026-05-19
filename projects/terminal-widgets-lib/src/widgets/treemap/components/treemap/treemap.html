@@ -1,0 +1,21 @@
+<div #treemapWrapper class="treemap-wrapper">
+  @if (tooltipData$ | async; as tooltipData) {
+    <div
+      #treemapTooltip
+      [class.visible]="isTooltipVisible$ | async"
+      [style]="{
+        top: getMinValue(treemapWrapper.clientHeight - treemapTooltip.clientHeight, tooltipData.position.top) + 'px',
+        left: getMinValue(treemapWrapper.clientWidth - treemapTooltip.clientWidth, tooltipData.position.left) + 'px',
+      }"
+      class="treemap-tooltip"
+    >
+      <p class="title">{{ tooltipData.title }}</p>
+      @for (bodyLine of tooltipData.body; track bodyLine) {
+        <p>{{ bodyLine }}</p>
+      }
+    </div>
+  }
+
+  <canvas [class.clickable]="isCursorOnSector$ | async" [id]="guid()" class="treemap"></canvas>
+
+</div>

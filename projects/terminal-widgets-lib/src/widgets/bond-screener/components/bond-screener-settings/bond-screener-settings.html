@@ -1,0 +1,45 @@
+<ats-widget-settings
+  (copyClick)="createWidgetCopy()"
+  (saveClick)="updateSettings()"
+  [canCopy]="canCopy"
+  [canSave]="canSave"
+  [showCopy]="showCopy"
+>
+  <ng-container *transloco="let t; scope: 'bond-screener/settings'">
+    <div>
+      <form [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+        <nz-form-item class="compact">
+          <nz-form-control [nzErrorTip]="t('validationErrors.selectColumnsError')">
+            <nz-form-label nzFor="bondScreenerColumns" nzRequired>{{ t('form.tableColumns.selectColumnLabel') }}
+            </nz-form-label>
+            <nz-select
+              [nzMaxTagCount]="10"
+              [nzMaxTagPlaceholder]="tagPlaceHolder"
+              [nzPlaceHolder]="t('form.tableColumns.selectColumnLabel')"
+              formControlName="bondScreenerColumns"
+              nzMode="multiple"
+            >
+              <ng-container *transloco="let tBondScreener; scope: 'bond-screener/bond-screener'">
+                @for (item of bondScreenerColumns; track item) {
+                  <nz-option [nzLabel]="tBondScreener('bondScreenerBondScreener.columns.' + item.id)"
+                             [nzValue]="item.id"
+                  />
+                }
+              </ng-container>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzFor="hideExpired">{{ t('bondScreenerSettings.hideExpired') }}</nz-form-label>
+          <nz-form-control>
+            <nz-switch formControlName='hideExpired'/>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+
+    <ng-template #tagPlaceHolder let-selectedList>{{ t('maxTagPlaceholder', {count: selectedList.length}) }}
+    </ng-template>
+  </ng-container>
+</ats-widget-settings>

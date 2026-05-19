@@ -1,0 +1,75 @@
+ats-operations-history {
+  display: block;
+  height: 100%;
+
+  .history-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+
+    .ant-list-items {
+      padding: 0;
+
+      .ant-list-item {
+        padding: 8px 0;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .item-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          font-size: 18px;
+        }
+      }
+    }
+
+    .history-item {
+      .item-icon {
+        &.success {
+          color: var(--ats-success-color);
+          background: color-mix(in srgb, var(--ats-success-color) 10%, transparent);
+        }
+
+        &.error {
+          color: var(--ats-error-color);
+          background: color-mix(in srgb, var(--ats-error-color) 10%, transparent);
+        }
+
+        &.warning {
+          color: var(--ats-warning-color);
+          background: color-mix(in srgb, var(--ats-warning-color) 10%, transparent);
+        }
+
+        &.processing {
+          color: var(--ats-processing-color);
+          background: color-mix(in srgb, var(--ats-processing-color) 10%, transparent);
+        }
+
+        &.default {
+          color: var(--ats-text-color-secondary);
+          background: color-mix(in srgb, var(--ats-text-color-secondary) 5%, transparent);
+        }
+      }
+
+      .ant-list-item-meta-title {
+        margin-bottom: 8px;
+      }
+
+      .ant-list-item-meta-description {
+        font-size: var(--ats-font-size-base);
+      }
+    }
+  }
+}
+
+
+
+
+
+

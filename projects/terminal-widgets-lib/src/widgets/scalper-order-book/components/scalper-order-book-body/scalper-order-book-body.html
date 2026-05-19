@@ -1,0 +1,150 @@
+<div class="d-flex flex-column h-100">
+  <div>
+    @if (dataContext) {
+      <ats-top-panel [dataContext]="dataContext" [guid]="guid()" [isActive]="isActive()"/>
+    }
+  </div>
+  <div class="flex-fill">
+    <div *ngrxLet="{ isLoading: isLoading$, rowHeight: rowHeight$} as shared" class="container">
+      <nz-spin [nzSpinning]="shared.isLoading">
+        <cdk-virtual-scroll-viewport
+          (nzResizeObserve)="updateContentSize($event)"
+          [itemSize]="shared.rowHeight"
+          [maxBufferPx]="shared.rowHeight * 10"
+          [minBufferPx]="shared.rowHeight * 10"
+          [orientation]="'vertical'"
+          class="container show-scroll"
+          nzResizeObserver>
+          @if (dataContext) {
+            <ng-container *ngrxLet="{
+        panelWidths: panelWidths$,
+        orderBookBody: dataContext.orderBookBody$,
+        extendedSettings: dataContext.extendedSettings$} as vm">
+              <div id="spacer">
+                <div *cdkVirtualFor="let row of vm.orderBookBody; templateCacheSize: 0"
+                     [style.height]="shared.rowHeight + 'px'"
+                     [style.line-height]="shared.rowHeight + 'px'"
+                ></div>
+              </div>
+              @if (vm.orderBookBody.length > 0) {
+                <ats-panels-container
+                  (widthUpdated)="updatePanelWidths($event)"
+                  [initialWidths]="vm.panelWidths"
+                  class="w-100"
+                >
+                  @if (vm.extendedSettings.widgetSettings.showTradesClustersPanel) {
+                    <ats-panel
+                      [canResize]="true"
+                      [defaultWidthPercent]="25"
+                      [expandable]="vm.extendedSettings.widgetSettings.showTradesPanel ?? false"
+                      [id]="panelIds.tradeClusters"
+                      [minWidthPx]="20"
+                    >
+                      <ats-trade-clusters-panel [dataContext]="dataContext"
+                                                [xAxisStep]="shared.rowHeight"
+                      />
+                    </ats-panel>
+                  }
+                  @if (vm.extendedSettings.widgetSettings.showTradesPanel) {
+                    <ats-panel
+                      [canResize]="true"
+                      [defaultWidthPercent]="25"
+                      [id]="panelIds.currentTrades"
+                      [minWidthPx]="40"
+                    >
+                      <ats-trades-panel [dataContext]="dataContext"
+                                        [xAxisStep]="shared.rowHeight"
+                      />
+                    </ats-panel>
+                  }
+                  <ats-panel
+                    [defaultWidthPercent]="50"
+                    [id]="panelIds.ordersTable"
+                    [minWidthPx]="75"
+                  >
+                    <ats-scalper-order-book-table (mouseenter)="isTableHovered$.next(true)"
+                                                  (mouseleave)="isTableHovered$.next(false)"
+                                                  [dataContext]="dataContext"
+                                                  [hideTooltips]="vm.extendedSettings.widgetSettings.hideTooltips ?? false"
+                                                  [isActive]="isActive()"
+                                                  [rowHeight]="shared.rowHeight"
+                    />
+                  </ats-panel>
+                </ats-panels-container>
+              }
+            </ng-container>
+          }
+        </cdk-virtual-scroll-viewport>
+
+        <ng-container *ngrxLet="dataContext.extendedSettings$ as settings">
+          @if (settings.widgetSettings.showLimitOrdersVolumeIndicators) {
+            <div class="position-absolute top-0 start-50 translate-middle-x lh-1">
+              <ats-limit-orders-volume-indicator [dataContext]="dataContext"
+                                                 [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+                                                 [side]="sides.Sell"
+              />
+            </div>
+          }
+          @if (settings.widgetSettings.showLimitOrdersVolumeIndicators) {
+            <div class="position-absolute bottom-0 start-50 translate-middle-x lh-1">
+              <ats-limit-orders-volume-indicator [dataContext]="dataContext"
+                                                 [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+                                                 [side]="sides.Buy"
+              />
+            </div>
+          }
+
+          <div class="position-absolute top-0 end-0">
+            <ats-orders-indicator [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+                                  [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
+                                  direction="up"
+            />
+          </div>
+          <div class="position-absolute bottom-0 end-0">
+            <ats-orders-indicator [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+                                  [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
+                                  direction="down"
+            />
+          </div>
+
+          <div
+            #topFloatingPanelContainer
+            (cdkDragEnded)="saveFloatingPanelPosition($event, topFloatingPanelPositionStateKey)"
+            [cdkDragFreeDragPosition]="(topFloatingPanelPosition$ | async) ?? {x: 0, y: 0}"
+            cdkDrag
+            cdkDragBoundary=".container"
+            class="position-absolute top-0 p-3 z-3"
+          >
+            <ats-top-floating-panel [guid]="guid()"
+                                    [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+            />
+          </div>
+
+          <div
+            #bottomFloatingPanelContainer
+            (cdkDragEnded)="saveFloatingPanelPosition($event, bottomFloatingPanelPositionStateKey)"
+            [cdkDragFreeDragPosition]="(bottomFloatingPanelPosition$ | async) ?? {x: 0, y: 0}"
+            cdkDrag
+            cdkDragBoundary=".container"
+            class="position-absolute bottom-0 p-3 z-3"
+          >
+            <ats-bottom-floating-panel [dataContext]="dataContext" [guid]="guid()" [isActive]="isActive()"/>
+          </div>
+
+          <div class="position-absolute bottom-0 w-100" id="possible-actions-panel-container">
+            <ats-possible-actions-panel/>
+          </div>
+        </ng-container>
+        @if ((dataContext.orderBookBody$  | async)?.length === 0 && !shared.isLoading) {
+          <div
+            class="position-absolute top-0 w-100"
+          >
+            <nz-empty class="ant-list-empty-text"
+                      nzNotFoundImage="simple"
+            />
+          </div>
+        }
+      </nz-spin>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+<ng-container *transloco="let t; scope: 'instruments/instrument-select-dialog'">
+  <nz-modal
+    (nzOnCancel)="closeDialog()"
+    [nzFooter]="null"
+    [nzTitle]="t('instrumentsInstrumentSelectDialog.dialogTitle')"
+    [nzVisible]="searchParameters() != null"
+    nzDraggable
+  >
+    <ng-container *nzModalContent>
+      <form [formGroup]="searchForm" class="search-form" nz-form>
+        <nz-form-item>
+          <nz-form-control
+            [nzErrorTip]="instrumentNameError">
+            <nz-input-wrapper>
+              <input #instrumentNameControl
+                     [maxLength]="validationsOptions.instrumentName.maxLength"
+                     [placeholder]="t('instrumentsInstrumentSelectDialog.searchForm.instrumentName.placeholder')"
+                     formControlName="instrumentName"
+                     nz-input/>
+              <span nz-icon nzInputPrefix nzType="search"></span>
+
+              <ng-template #instrumentNameError let-control>
+                @if (control.hasError('maxlength')) {
+                  {{ t('validationErrors.stringMaxLength', {max: validationsOptions.instrumentName.maxLength}) }}
+                }
+              </ng-template>
+            </nz-input-wrapper>
+          </nz-form-control>
+        </nz-form-item>
+        <div [nzGutter]="10" nz-row>
+          <div nz-col nzSpan="12">
+            <nz-form-item>
+              <nz-form-control>
+                <nz-select
+                  [nzPlaceHolder]="t('form.exchange.label')"
+                  formControlName="exchange"
+                  nzAllowClear>
+                  @for (exchange of exchanges$ | async; track exchange) {
+                    <nz-option [nzLabel]="exchange"
+                               [nzValue]="exchange"/>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzSpan="12">
+            <nz-form-item>
+              <nz-form-control>
+                <nz-select
+                  formControlName="board"
+                  nzAllowClear
+                  nzPlaceHolder="{{ t('form.instrumentGroup.label') }}"
+                  nzShowSearch>
+                  @for (board of boards$ | async; track board) {
+                    <nz-option [nzLabel]="getBoardLabel(board)"
+                               [nzValue]="board"/>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </form>
+
+      <div>
+        <ng-container *ngrxLet="searchState$ as searchState">
+          <nz-spin [nzSpinning]="searchState.status === SearchStatuses.Loading">
+            @if ((searchState.status === SearchStatuses.Failed || searchState.status === SearchStatuses.Success)
+            && (searchState.results == null || searchState.results.length === 0)) {
+              <nz-empty [nzNotFoundContent]="t('instrumentsInstrumentSelectDialog.emptyResultsMessage')"
+                        nzNotFoundImage="simple"/>
+            }
+
+            @if (searchState.status === SearchStatuses.Success && searchState.results != null && searchState.results.length > 0) {
+              <ats-search-results-list [items]="searchState.results"/>
+            }
+          </nz-spin>
+        </ng-container>
+      </div>
+    </ng-container>
+  </nz-modal>
+</ng-container>

@@ -1,0 +1,30 @@
+<ng-container *transloco="let t; scope: 'invest-ideas/submit-order-for-symbol'">
+  @let targetInstrument = targetInstrument$ | async;
+  @let selectedPortfolio = this.selectedPortfolio$ | async;
+
+  @if (targetInstrument != null && selectedPortfolio != null) {
+    <span class="fs-5 heading-color">{{ t('investIdeaSubmitOrderForSymbol.title') }}
+      {{ targetInstrument.symbol }}
+      @if (targetInstrument.instrumentGroup != null && targetInstrument.instrumentGroup.length > 0) {
+        ({{ targetInstrument.instrumentGroup }})
+      }
+      {{ targetInstrument.shortName }}
+    </span>
+
+    <div class="mt-10 bordered">
+      <ats-compact-header (priceSelected)="setCommonParameters({price: $event})"
+                          (qtySelected)="setCommonParameters({quantity: $event})"
+                          [currentPortfolio]="selectedPortfolio"
+                          [instrument]="targetInstrument"
+      />
+    </div>
+
+    <div class="mt-10">
+      <ats-market-order-form [activated]="true"
+                             [instrument]="targetInstrument"
+                             [marketOrderConfig]="marketOrderConfig"
+                             [portfolioKey]="selectedPortfolio"
+      />
+    </div>
+  }
+</ng-container>

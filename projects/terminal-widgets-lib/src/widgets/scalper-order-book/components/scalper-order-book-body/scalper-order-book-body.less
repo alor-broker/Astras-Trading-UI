@@ -1,0 +1,41 @@
+@import 'scrollable';
+
+ats-scalper-order-book-body {
+  @border-width: 1px;
+
+  color: var(--ats-text-max-contrast-color);
+
+  .ant-spin-nested-loading {
+    height: 100%;
+
+    .ant-spin-container {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  .container {
+    height: 100%;
+    width: 100%;
+
+    .scrollable(var(--ats-scrollbar-color));
+
+    .cdk-virtual-scroll-viewport {
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        width: 0;
+      }
+    }
+
+    .cdk-virtual-scroll-content-wrapper {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+    }
+  }
+
+  #possible-actions-panel-container {
+    pointer-events: none;
+  }
+}

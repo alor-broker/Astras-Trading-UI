@@ -1,0 +1,18 @@
+@let settings = extendedSettings$ | async;
+
+<div (nzResizeObserve)="containerSizeChanged($event)"
+     class="container"
+     nzResizeObserver
+>
+  <ats-timeframes-panel (changeTimeframe)="selectedTimeframe.set($event)"
+                        [availableTimeframes]="(availableTimeFrames$ | async) ?? []"
+                        [displayMode]="settings?.chart?.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons"
+                        [selectedTimeframe]="selectedTimeframe()"
+  />
+  <div (mousedown)="$event.stopPropagation()" class="main-chart">
+    <div [id]="chartContainerId" class="chart-container"></div>
+  </div>
+</div>
+
+
+

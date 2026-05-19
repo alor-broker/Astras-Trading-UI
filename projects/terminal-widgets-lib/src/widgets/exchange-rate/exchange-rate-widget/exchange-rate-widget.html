@@ -1,0 +1,25 @@
+<ng-container *transloco="let t;">
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="content"
+      [header]="header"
+      [isBlockWidget]="isBlockWidget()"
+      [showContentScroll]="false"
+    >
+      <ng-template #header>
+        <ats-widget-header [badgeShape]="'square'"
+                           [guid]="guid"
+                           [hasSettings]="false"
+                           [selectedBadgeColor]="settings.badgeColor"
+                           [showBadgesMenu]="(showBadge$ | async) ?? false"
+                           [widgetMeta]="widgetInstance().widgetMeta"
+        />
+      </ng-template>
+      <ng-template #content>
+        <ats-exchange-rate [guid]="guid"/>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
+
+</ng-container>
+

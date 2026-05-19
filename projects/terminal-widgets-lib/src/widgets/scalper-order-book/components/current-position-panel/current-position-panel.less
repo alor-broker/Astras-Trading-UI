@@ -1,0 +1,40 @@
+ats-current-position-panel {
+  display: block;
+  width: 100%;
+
+  .container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 1px;
+    margin-top: 2px;
+
+    color: var(--ats-heading-color);
+
+    & > div {
+      border: var(--ats-border-color-base) solid 1px;
+      border-radius: var(--ats-border-radius-base);
+
+      &.qty, &.loss-or-profit {
+        &.positive {
+          background-color: color-mix(in srgb, var(--ats-buy-color-background-light) 70%, transparent);
+        }
+
+        &.negative {
+          background-color: color-mix(in srgb, var(--ats-sell-color) 70%, transparent);
+        }
+      }
+    }
+
+    & > div {
+      flex: 1;
+      width: 100%;
+      text-align: center;
+      font-size: larger;
+      cursor: default;
+    }
+  }
+}
+
+

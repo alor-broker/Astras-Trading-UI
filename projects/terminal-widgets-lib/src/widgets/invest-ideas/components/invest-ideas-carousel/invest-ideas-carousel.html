@@ -1,0 +1,75 @@
+<div *ngrxLet="ideas$ as ideas; suspenseTpl: loading" class="h-100 position-relative">
+  @if (ideas.length > 0) {
+
+    @if (ideas.length > 1) {
+      <span (click)="carousel.pre()" class="nav-buttons left">
+        <nz-icon nzTheme="outline" nzType="left"/>
+      </span>
+      <span (click)="carousel.next()" class="nav-buttons right">
+        <nz-icon nzTheme="outline" nzType="right"/>
+      </span>
+    }
+
+    <div class="h-100 overflow-hidden mx-15">
+      <nz-carousel
+        #carousel
+        [nzDotPosition]="'top'"
+        [nzDots]="true"
+        [nzEffect]="'fade'"
+        [nzEnableSwipe]="false"
+      >
+        @for (idea of ideas; track idea) {
+          <div nz-carousel-content>
+            <div class="idea pt-25">
+              <div class="d-flex flex-column h-100">
+                <div class="mb-10">
+                  <span class="fs-6 heading-color" nz-typography nzEllipsis>{{ idea.title }}</span>
+                </div>
+                <div>
+                  <p
+                    (click)="selectedIdea.set(idea)"
+                    [nzEllipsisRows]="3"
+                    class="cursor-pointer user-select-none"
+                    nz-typography
+                    nzEllipsis
+                  >
+                    {{ idea.body }}
+                  </p>
+                </div>
+
+                <div class="flex-fill d-flex flex-column flex-gap-10 show-scroll">
+                  @for (symbol of idea.symbols; track symbol) {
+                    <div
+                      (click)="instrumentSelected.emit({symbol: symbol.ticker, exchange: symbol.exchange})"
+                      class="symbol p-5 cursor-pointer"
+                    >
+                      <div
+                        class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5 overflow-hidden">
+                        <ats-instrument-icon [symbol]="symbol.ticker" size="large"/>
+                        <div class="d-flex flex-column overflow-hidden">
+                          <span class="heading-color" nz-typography
+                                nzEllipsis>{{ symbol.shortName ?? symbol.ticker }}</span>
+                          <span nz-typography nzEllipsis>{{ symbol.ticker }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </nz-carousel>
+    </div>
+
+  } @else {
+    <nz-empty nzNotFoundImage="simple"/>
+  }
+</div>
+
+<ng-template #loading>
+  <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"/>
+</ng-template>
+
+<ats-invest-ideas-details-dialog (symbolSelected)="selectSymbol($event)" [(displayIdea)]="selectedIdea"/>
+

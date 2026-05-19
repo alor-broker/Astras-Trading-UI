@@ -1,0 +1,23 @@
+@let displayMessage = message();
+<div
+  [class]="{
+  'right': displayMessage.isMe,
+  'left': !displayMessage.isMe
+  }"
+  class="d-flex flex-column flex-gap-5 align-items-start"
+>
+  @if (!displayMessage.isMe) {
+    <div class="avatar">
+      <nz-avatar [nzSrc]="displayMessage.avatarUri" nzIcon="user" nzSize="large"/>
+    </div>
+  }
+
+  <div class="content">
+    @switch (displayMessage.messageType) {
+      @case (messageTypes.Text) {
+        <atsd-ai-chat-text-message [content]="displayMessage.content"
+        />
+      }
+    }
+  </div>
+</div>

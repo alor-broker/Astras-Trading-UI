@@ -1,0 +1,116 @@
+﻿import {
+  DestroyRef,
+  Directive,
+  DOCUMENT,
+  ElementRef,
+  inject,
+  input,
+  OnInit,
+  output,
+  Renderer2,
+  SimpleChange
+} from '@angular/core';
+import {NzThMeasureDirective} from 'ng-zorro-antd/table';
+import {
+  asyncScheduler,
+  distinctUntilChanged,
+  finalize,
+  fromEvent,
+  map,
+  subscribeOn,
+  switchMap,
+  takeUntil,
+  tap
+} from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+
+@Directive({selector: 'th[atsResizeColumn]'})
+export class ResizeColumn implements OnInit {
+  readonly minWidth = input(0);
+
+  readonly atsResizeColumn = input<boolean | undefined>(true);
+
+  readonly atsWidthChanged = output<number>();
+
+  readonly atsWidthChanging = output<{
+    columnWidth: number;
+    delta: number | null;
+  }>();
+
+  private readonly el = inject(ElementRef);
+
+  private readonly renderer = inject(Renderer2);
+
+  private readonly dir = inject(NzThMeasureDirective);
+
+  private readonly documentRef = inject<Document>(DOCUMENT);
+
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly column: HTMLElement;
+
+  constructor() {
+    this.column = this.el.nativeElement as HTMLElement;
+  }
+
+  ngOnInit(): void {
+    if (!(this.atsResizeColumn() ?? false)) {
+      return;
+    }
+
+    const resizer = this.renderer.createElement("span") as HTMLElement;
+    this.renderer.addClass(resizer, "resize-holder");
+    this.renderer.appendChild(this.column, resizer);
+
+    fromEvent<MouseEvent>(resizer, 'click').pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    fromEvent<MouseEvent>(resizer, 'mousedown').pipe(
+      tap(e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }),
+      switchMap(() => {
+        const {width, right} = this.column.getBoundingClientRect();
+
+        return fromEvent<MouseEvent>(this.documentRef, 'mousemove').pipe(
+          tap(e => {
+            e.preventDefault();
+            e.stopPropagation();
+          }),
+          map(({clientX}) => width + clientX - right),
+          map(w => Math.round(w)),
+          map(w => w > 0 && w >= this.minWidth() ? w : this.minWidth()),
+          distinctUntilChanged(),
+          takeUntil(fromEvent(this.documentRef, 'mouseup')),
+          finalize(() => {
+            const lastWidth = Number(this.dir.nzWidth?.replace('px', ''));
+            this.atsWidthChanged.emit(lastWidth);
+          })
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef),
+      subscribeOn(asyncScheduler)
+    ).subscribe(w => {
+        const prev = this.dir.nzWidth;
+        this.dir.nzWidth = `${w}px`;
+        this.dir.ngOnChanges({
+            nzWidth: new SimpleChange(prev, this.dir.nzWidth, prev != null)
+          }
+        );
+
+        this.atsWidthChanging.emit({
+          columnWidth: w,
+          delta: prev ?? ''
+            ? (w - Number((prev as string).replace('px', '')))
+            : null
+        });
+      }
+    );
+  }
+}
+

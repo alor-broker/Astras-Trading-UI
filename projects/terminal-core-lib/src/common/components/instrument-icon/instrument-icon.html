@@ -1,0 +1,7 @@
+@let nzShape = shape();
+<nz-avatar [class.rounded-square]="nzShape ===  'rounded-square'"
+           [nzShape]="nzShape === 'rounded-square' ? 'square' : nzShape"
+           [nzSize]="size() ?? 'default'"
+           [nzSrc]="iconUrl()"
+           [nzText]="symbol()"
+/>

@@ -1,0 +1,135 @@
+{
+  "columns": {
+    "login": {
+      "displayName": "Մուտքանուն",
+      "tooltip": "Հաճախորդի մուտքանուն"
+    },
+    "clientName": {
+      "displayName": "Անուն",
+      "tooltip": "Հաճախորդի անուն"
+    },
+    "portfolio": {
+      "displayName": "Պորտֆել",
+      "tooltip": "Պորտֆել"
+    },
+    "exchange": {
+      "displayName": "Բորսա",
+      "tooltip": "Բորսա"
+    },
+    "market": {
+      "displayName": "Շուկա",
+      "tooltip": "Շուկա"
+    },
+    "clientRiskType": {
+      "displayName": "Ռիսկի մակարդակ",
+      "tooltip": "Ռիսկի մակարդակ"
+    },
+    "isQualifiedInvestor": {
+      "displayName": "Որակավորված ներդրող",
+      "tooltip": "Որակավորված ներդրող"
+    },
+    "buyingPowerAtMorning": {
+      "displayName": "Գնման ուժ առավոտյան",
+      "tooltip": "Գնման ուժ առավոտյան"
+    },
+    "buyingPower": {
+      "displayName": "Գնման ուժ",
+      "tooltip": "Գնման ուժ"
+    },
+    "profit": {
+      "displayName": "P/L օրվա համար",
+      "tooltip": "P/L օրվա համար"
+    },
+    "profitRate": {
+      "displayName": "P/L օրվա համար, %",
+      "tooltip": "P/L օրվա համար, %"
+    },
+    "portfolioEvaluation": {
+      "displayName": "Իրացվելի պորտֆելի գնահատում",
+      "tooltip": "Իրացվելի պորտֆելի գնահատում"
+    },
+    "portfolioLiquidationValue": {
+      "displayName": "Պորտֆելի գնահատում",
+      "tooltip": "Պորտֆելի գնահատում"
+    },
+    "initialMargin": {
+      "displayName": "Սկզբնական մարժա",
+      "tooltip": "Սկզբնական մարժա"
+    },
+    "minimalMargin": {
+      "displayName": "Նվազագույն մարժա",
+      "tooltip": "Նվազագույն մարժա"
+    },
+    "riskBeforeForcePositionClosing": {
+      "displayName": "НПР2 (մինչև փակումը)",
+      "tooltip": "НПР2 (մինչև փակումը)"
+    },
+    "commission": {
+      "displayName": "Միջնորդավճար",
+      "tooltip": "Միջնորդավճար"
+    },
+    "correctedMargin": {
+      "displayName": "Կարգավորված մարժա",
+      "tooltip": "Կարգավորված մարժա"
+    },
+    "turnover": {
+      "displayName": "Շրջանառություն",
+      "tooltip": "Շրջանառություն"
+    },
+    "moneyFree": {
+      "displayName": "Ազատ դրամական միջոցներ",
+      "tooltip": "Ազատ միջոցներ: Ռուբլու և գրավի գումարը, զեղչված ռուբլով, որը հասանելի է դիրքեր բացելու համար:"
+    },
+    "moneyOld": {
+      "displayName": "Ընդամենը դրամական միջոցներ (սկզբ.)",
+      "tooltip": "Ռուբլով և ռուբլով զեղչված գրավների ընդհանուր քանակը նստաշրջանի սկզբում"
+    },
+    "moneyBlocked": {
+      "displayName": "Երաշխիքային ապահովում",
+      "tooltip": "Երաշխիքային ապահովման ներքո արգելափակված միջոցներ"
+    },
+    "isLimitsSet": {
+      "displayName": "Դրամական և գրավային սահմանաչափեր",
+      "tooltip": "Սահմանված դրամական և գրավային սահմանաչափերի առկայություն"
+    },
+    "moneyAmount": {
+      "displayName": "Ընդամենը դրամական միջոցներ",
+      "tooltip": "Ռուբլով և ռուբլով զեղչված գրավների ընդհանուր քանակը"
+    },
+    "moneyPledgeAmount": {
+      "displayName": "Գրավներ",
+      "tooltip": "Ռուբլով զեղչված գրավների գումարը"
+    },
+    "vmCurrentPositions": {
+      "displayName": "Փոփոխական մարժա դիրքերով",
+      "tooltip": "Ընթացիկ դիրքերով համախմբված փոփոխական մարժա"
+    },
+    "varMargin": {
+      "displayName": "Արդյունքային փոփոխական մարժա",
+      "tooltip": "Փոփոխական մարժա"
+    },
+    "netOptionValue": {
+      "displayName": "NOV",
+      "tooltip": "Ընթացիկ քլիրինգային նստաշրջանի արդյունքներով հաշվարկված օպցիոնների տեսական գների և համապատասխան դիրքերի ծավալների արտադրյալների գումարը՝ հաշվի առնելով նշանը"
+    },
+    "indicativeVarMargin": {
+      "displayName": "Ինդիկատիվ մարժա",
+      "tooltip": "Ինդիկատիվ փոփոխական մարժա՝ հաշվի առնելով արժույթի ընթացիկ ինդիկատիվ փոխարժեքը, ռուբլի (հաշվարկվում է այնպես, ինչպես ընթացիկ ինդիկատիվ VM-ը, հաշվի է առնում նաև փակ դիրքերով փոփոխական մարժան)"
+    },
+    "fee": {
+      "displayName": "Միջնորդավճար",
+      "tooltip": "Գանձված վճար"
+    },
+    "vmInterCl": {
+      "displayName": "Փոփոխական մարժա",
+      "tooltip": "Փոփոխական մարժա, որը գանձվել կամ ստացվել է արդյունաբերական քլիրինգի ժամանակ"
+    },
+    "posRisk": {
+      "displayName": "Օպերատիվ ռիսկ",
+      "tooltip": "Ընթացիկ օպերատիվ ռիսկ"
+    }
+  },
+  "contextMenu": {
+    "openDashboard": "Բացել վահանակը"
+  }
+}

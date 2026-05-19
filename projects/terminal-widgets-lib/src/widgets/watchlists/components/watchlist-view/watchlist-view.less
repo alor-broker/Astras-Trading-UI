@@ -1,0 +1,42 @@
+ats-watchlist-view {
+  .container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .header {
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+      padding-bottom: 5px;
+
+      .search-field {
+        flex: 1;
+
+        .whole {
+          width: 100%;
+        }
+
+        .search-row {
+          display: flex;
+        }
+
+        .row-center {
+          flex-grow: 1;
+        }
+      }
+    }
+
+    .list {
+      flex: 1;
+      overflow: hidden;
+    }
+  }
+}
+
+.watchlist-collection-dropdown {
+  .selected {
+    background-color: var(--ats-select-item-selected-bg);
+  }
+}

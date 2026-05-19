@@ -1,0 +1,50 @@
+ats-blotter-positions {
+  height: 100%;
+
+  .container {
+    height: 100%;
+
+    .table-container {
+      height: 100%;
+      overflow: hidden;
+      min-height: 20px;
+
+      tr:hover {
+        cursor: pointer;
+      }
+
+      .symbol-name {
+        margin-right: 10px;
+      }
+
+      .export-button-container {
+        min-height: 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      ::ng-deep .ant-table-header {
+        overflow: hidden !important;
+      }
+
+      ::ng-deep .ant-table-footer {
+        padding-top: 0;
+        padding-bottom: 0;
+
+        .ant-btn {
+          padding-top: 0;
+          padding-bottom: 0;
+          height: 20px;
+        }
+      }
+    }
+
+    .sell {
+      color: var(--ats-sell-color);
+    }
+
+    .buy {
+      color: var(--ats-buy-color);
+    }
+  }
+}

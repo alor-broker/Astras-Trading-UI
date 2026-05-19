@@ -1,0 +1,22 @@
+<div
+  (nzResizeObserve)="containerSizeChanged($event)"
+  class="container"
+  nzResizeObserver
+>
+  @if (tableConfig$ | async; as tableConfig) {
+    <ats-infinite-scroll-table (columnWidthChange)="saveColumnWidth($event)"
+                               (filterApplied)="applyFilter($event)"
+                               (orderColumnChange)="changeColumnOrder($event)"
+                               (rowClick)="rowClick($event)"
+                               (rowContextMenu)="openContextMenu($event.event, contextMenu, $event.row)"
+                               (scrolled)="onScrolled()"
+                               [data]="(tableData$ | async) ?? []"
+                               [isLoading]="isLoading()"
+                               [tableConfig]="tableConfig"
+                               [tableContainerHeight]="(contentSize$ | async)?.height || 0"
+                               [tableContainerWidth]="(contentSize$ | async)?.width || 0"
+    />
+  }
+
+  <ats-add-to-watchlist-menu #contextMenu/>
+</div>

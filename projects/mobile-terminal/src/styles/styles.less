@@ -1,0 +1,101 @@
+@import "./ng-zorro-overrides/index";
+
+:root {
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+
+  body {
+    height: 100%;
+    position: fixed;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    margin: 0;
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
+
+    .ant-popover {
+      .ant-popover-inner-content {
+        width: 100%;
+      }
+    }
+
+    .ant-modal-wrap {
+      padding-top: var(--safe-area-top) !important;
+    }
+
+    .ant-message {
+      top: calc(24px + var(--safe-area-top)) !important;
+    }
+
+    .ant-notification-topRight,
+    .ant-notification-topLeft {
+      top: calc(24px + var(--safe-area-top)) !important;
+    }
+
+    .ant-drawer-content-wrapper {
+      top: var(--safe-area-top) !important;
+    }
+  }
+
+  .ant-input-affix-wrapper,
+  .ant-input,
+  .ant-select-selector,
+  .ant-picker,
+  .ant-radio-button-wrapper {
+    box-shadow: none !important;
+  }
+
+  .ant-btn {
+    min-height: var(--ats-input-height-mobile);
+    min-width: var(--ats-input-height-mobile);
+  }
+
+  .ant-input {
+    height: var(--ats-input-height-mobile);
+  }
+
+  .ant-input-affix-wrapper {
+    height: var(--ats-input-height-mobile);
+
+    .ant-input {
+      height: auto;
+    }
+  }
+
+  .ant-select,
+  .ant-select-selection-wrap,
+  .ant-picker {
+    min-height: var(--ats-input-height-mobile);
+  }
+
+  .ant-select-item {
+    min-height: var(--ats-input-height-mobile);
+    align-items: center;
+  }
+
+  .ant-radio-button-wrapper {
+    min-height: var(--ats-input-height-mobile);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ant-form {
+    .ant-form-item {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.cdk-drag-preview {
+  &.ant-table-cell {
+    overflow: hidden;
+  }
+}

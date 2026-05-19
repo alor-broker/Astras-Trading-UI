@@ -1,0 +1,12 @@
+{
+  "couponsTable": "Купоны",
+  "amortizationTable": "Амортизация",
+  "offersTable": "Оферты",
+  "date": "Дата",
+  "qty": "Кол-во",
+  "couponType": "Тип купона",
+  "accruedInterest": "НКД",
+  "parFraction": "% номинала",
+  "type": "Тип",
+  "description": "Описание"
+}

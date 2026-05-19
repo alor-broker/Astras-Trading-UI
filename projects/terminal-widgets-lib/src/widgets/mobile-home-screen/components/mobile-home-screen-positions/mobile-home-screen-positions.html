@@ -1,0 +1,63 @@
+<ng-container *transloco="let t; scope: 'mobile-home-screen/positions'">
+
+  <ng-container
+    *ngrxLet="{ itemsDisplayParams: itemsDisplayParams$, displayPositions: displayPositions$} as vm; suspenseTpl: loading"
+    class="mt-15"
+  >
+    @if (vm.displayPositions.totalItems > 0) {
+      <div class="positions-list mt-10">
+        @for (item of vm.displayPositions.items; track trackBy(item)) {
+          <div (click)="instrumentSelected.emit(item.targetInstrument)" class="position-row">
+            <div class="instrument-col">
+              <ats-instrument-icon [symbol]="item.targetInstrument.symbol" size="large"/>
+              <div class="instrument-info">
+                <span class="heading-color fs-6">
+                  {{ item.shortName }}
+                </span>
+                <span class="fs-10">
+                  {{ item.targetInstrument.symbol }}
+                </span>
+              </div>
+            </div>
+
+            <div class="value-col">
+              <span class="heading-color">{{ item.currentVolume | number }}</span>
+              <span
+                [class]="{
+                'positive-color': item.dailyUnrealisedPl >= 0,
+                'negative-color': item.dailyUnrealisedPl < 0
+                }"
+              >
+                @if (calculateDailyUnrealisedPlRatio(item); as dailyUnrealisedPlRatio) {
+                  @if (isFinite(dailyUnrealisedPlRatio)) {
+                    @if (dailyUnrealisedPlRatio > 0) {
+                      <span>+</span>
+                    }
+                    <span>{{ dailyUnrealisedPlRatio | percent: '1.1-2' }}</span>
+                  }
+                }
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+      @if (vm.itemsDisplayParams.itemsDisplayCount < vm.displayPositions.totalItems) {
+        <button
+          (click)="showMoreItems()"
+          class="mt-5"
+          nz-button
+          nzBlock
+        >
+          {{ t('mobileHomeScreenPositions.moreItemsButton.title') }}
+        </button>
+      }
+    } @else {
+      <nz-empty [nzNotFoundContent]="t('mobileHomeScreenPositions.noItemsToDisplayMessage')"
+                nzNotFoundImage="simple"/>
+    }
+  </ng-container>
+
+  <ng-template #loading>
+    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"/>
+  </ng-template>
+</ng-container>

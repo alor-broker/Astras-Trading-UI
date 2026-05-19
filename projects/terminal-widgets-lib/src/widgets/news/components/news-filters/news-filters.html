@@ -1,0 +1,84 @@
+<ng-container *transloco="let t; scope: 'news/news-filters'">
+  <nz-modal
+    (nzOnCancel)="cancel()"
+    (nzOnOk)="applyFilters()"
+    [nzMaskClosable]="false"
+    [nzOkText]="t('newsNewsFilters.apply')"
+    [nzTitle]="t('newsNewsFilters.dialogTitle')"
+    [nzVisible]="isVisible()"
+    nzClassName="ats-news-filters">
+    <ng-container *nzModalContent>
+      <div>
+        <div class="section-header">
+          <h4>{{ t('newsNewsFilters.includedKeywordsHeader') }}</h4>
+          @if (includedKeywords.length > 0) {
+            <button
+              (click)="clearIncludedWords()"
+              [nzTooltipTitle]="t('newsNewsFilters.clear')"
+              nz-button
+              nz-tooltip
+              nzType="text"
+            >
+              <nz-icon nzTheme="outline" nzType="clear"/>
+            </button>
+          }
+        </div>
+        <ats-keyword-filter (keywordAdded)="addIncludedKeyWord($event)"
+                            (keywordRemoved)="removeIncludedKeyWord($event)"
+                            [currentKeywords]="includedKeywords"
+                            [newKeywordPlaceholder]="t('newsNewsFilters.newKeywordPlaceholder')"
+                            [validationOptions]="validationOptions.keyword"
+                            tagColor="blue"
+        />
+      </div>
+
+      <div class="mt-10">
+        <div class="section-header">
+          <h4>{{ t('newsNewsFilters.excludedKeywordsHeader') }}</h4>
+          @if (excludedKeywords.length > 0) {
+            <button
+              (click)="clearExcludedWords()"
+              [nzTooltipTitle]="t('newsNewsFilters.clear')"
+              nz-button
+              nz-tooltip
+              nzType="text"
+            >
+              <nz-icon nzTheme="outline" nzType="clear"/>
+            </button>
+          }
+        </div>
+        <ats-keyword-filter (keywordAdded)="addExcludedKeyWord($event)"
+                            (keywordRemoved)="removeExcludedKeyWord($event)"
+                            [currentKeywords]="excludedKeywords"
+                            [newKeywordPlaceholder]="t('newsNewsFilters.newExcludedKeywordsPlaceholder')"
+                            [validationOptions]="validationOptions.keyword"
+                            tagColor="orange"
+        />
+      </div>
+
+      <div class="mt-10">
+        <div class="section-header">
+          <h4>{{ t('newsNewsFilters.symbolsHeader') }}</h4>
+          @if (symbols.length > 0) {
+            <button
+              (click)="clearSymbols()"
+              [nzTooltipTitle]="t('newsNewsFilters.clear')"
+              nz-button
+              nz-tooltip
+              nzType="text"
+            >
+              <nz-icon nzTheme="outline" nzType="clear"/>
+            </button>
+          }
+        </div>
+        <ats-keyword-filter (keywordAdded)="addSymbol($event)"
+                            (keywordRemoved)="removeSymbol($event)"
+                            [currentKeywords]="symbols"
+                            [newKeywordPlaceholder]="t('newsNewsFilters.newSymbolPlaceholder')"
+                            [validationOptions]="validationOptions.symbol"
+                            tagColor="green"
+        />
+      </div>
+    </ng-container>
+  </nz-modal>
+</ng-container>

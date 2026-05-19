@@ -1,0 +1,431 @@
+﻿import {
+  BaseExtension,
+  ChartContext
+} from "./base.extension";
+import {
+  Observable,
+  Subscription,
+  switchMap,
+  TeardownLogic
+} from "rxjs";
+import {
+  inject,
+  Injectable
+} from "@angular/core";
+import {
+  debounceTime,
+  map,
+  startWith
+} from "rxjs/operators";
+import {
+  IChartWidgetApi,
+  IOrderLineAdapter
+} from "@terminal-widgets-lib/assets/charting_library/charting_library";
+import {DASHBOARD_CONTEXT_SERVICE} from '@terminal-core-lib/features/dashboard/services/dashboard-context-service.types';
+import {PortfolioSubscriptionsService} from "@terminal-core-lib/features/portfolios/services/portfolio-subscriptions";
+import {ORDER_COMMAND_SERVICE_TOKEN} from "@terminal-core-lib/features/orders/types/order-command-service.types";
+import {OrdersDialogService} from "@terminal-core-lib/features/orders/services/orders-dialog.service";
+import {TranslatorService} from "@terminal-core-lib/features/translations/services/translator.service";
+import {TranslatorFn} from '@terminal-core-lib/features/translations/services/translator-service.types';
+import {InstrumentKey} from "@terminal-core-lib/common/types/instrument.types";
+import {LineMarkerPosition} from '@terminal-widgets-lib/widgets/tech-chart/widget-settings.types';
+import {
+  Order,
+  StopOrder
+} from '@terminal-core-lib/features/portfolios/types/order.types';
+import {OrderType} from '@terminal-core-lib/features/orders/types/orders.types';
+import {ThemeColors} from '@terminal-core-lib/features/themes/themes.types';
+import {Side} from '@terminal-core-lib/common/types/side.types';
+import {
+  EditOrderDialogParams,
+  OrderFormType
+} from '@terminal-core-lib/features/orders/services/orders-dialog-service.types';
+import {Condition} from '@terminal-core-lib/common/types/condition.types';
+import {ConditionHelper} from '@terminal-core-lib/common/utils/condition.helper';
+import {StopMarketOrderEdit} from '@terminal-core-lib/features/orders/types/edit-order.types';
+import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
+
+class OrdersState {
+  readonly limitOrders = new Map<string, IOrderLineAdapter>();
+
+  readonly stopOrders = new Map<string, IOrderLineAdapter>();
+
+  private readonly tearDown = new Subscription();
+
+  constructor() {
+    this.tearDown.add(() => this.clear());
+  }
+
+  destroy(): void {
+    this.tearDown.unsubscribe();
+  }
+
+  clear(): void {
+    this.clearOrders(this.limitOrders);
+    this.clearOrders(this.stopOrders);
+  }
+
+  onDestroy(teardown: TeardownLogic): void {
+    this.tearDown.add(teardown);
+  }
+
+  private clearOrders(orders: Map<string, IOrderLineAdapter>): void {
+    orders.forEach(value => {
+      try {
+        value.remove();
+      } catch { /* empty */
+      }
+    });
+
+    orders.clear();
+  }
+}
+
+@Injectable()
+export class OrdersDisplayExtension extends BaseExtension {
+  private readonly currentDashboardService = inject(DASHBOARD_CONTEXT_SERVICE);
+
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+
+  private readonly orderCommandService = inject(ORDER_COMMAND_SERVICE_TOKEN);
+
+  private readonly ordersDialogService = inject(OrdersDialogService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private ordersState: OrdersState | null = null;
+
+  private drawOrdersSub: Subscription | null = null;
+
+  apply(context: ChartContext): void {
+    if (!(context.settings.showPosition ?? true)) {
+      return;
+    }
+
+    this.drawOrdersSub?.unsubscribe();
+
+    this.drawOrdersSub = this.translatorService.getTranslator('tech-chart/tech-chart')
+      .subscribe(translator => {
+        this.ordersState?.destroy();
+        this.ordersState = new OrdersState();
+
+        this.ordersState.onDestroy(this.drawOrders(context, translator));
+      });
+  }
+
+  update(context: ChartContext): void {
+    this.apply(context);
+  }
+
+  destroyState(): void {
+    this.drawOrdersSub?.unsubscribe();
+    this.ordersState?.destroy();
+  }
+
+  private drawOrders(context: ChartContext, translator: TranslatorFn): TeardownLogic {
+    const tearDown = new Subscription();
+
+    const chartApi = this.getChartApi(context);
+    tearDown.add(this.setupOrdersUpdate(
+      chartApi,
+      this.getLimitOrdersStream(context.settings as InstrumentKey),
+      this.ordersState!.limitOrders,
+      (order, orderLineAdapter) => {
+        this.fillOrderBaseParameters(
+          order, orderLineAdapter,
+          context.theme.themeColors,
+          context.settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right
+        );
+        this.fillLimitOrder(
+          order,
+          orderLineAdapter,
+          translator,
+          context);
+      }
+    ));
+
+    tearDown.add(this.setupOrdersUpdate(
+      chartApi,
+      this.getStopOrdersStream(context.settings as InstrumentKey),
+      this.ordersState!.stopOrders,
+      (order, orderLineAdapter) => {
+        this.fillOrderBaseParameters(
+          order,
+          orderLineAdapter,
+          context.theme.themeColors,
+          context.settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right
+        );
+        this.fillStopOrder(
+          order,
+          orderLineAdapter,
+          translator,
+          context
+        );
+      }
+    ));
+
+    return tearDown;
+  }
+
+  private setupOrdersUpdate<T extends Order>(
+    chartApi: IChartWidgetApi,
+    data$: Observable<T[]>,
+    state: Map<string, IOrderLineAdapter>,
+    fillOrderLine: (order: T, orderLineAdapter: IOrderLineAdapter) => void): TeardownLogic {
+    const removeItem = (itemKey: string): void => {
+      try {
+        state.get(itemKey)?.remove();
+      } catch { /* empty */
+      }
+
+      state.delete(itemKey);
+    };
+
+    return data$.subscribe(
+      orders => {
+        Array.from(state.keys()).forEach(orderId => {
+          if (!orders.find(o => o.id === orderId)) {
+            removeItem(orderId);
+          }
+        });
+
+        orders.forEach(order => {
+          const existingOrderLine = state.get(order.id);
+          if (order.status !== 'working' && order.status !== 'rejected') {
+            if (existingOrderLine) {
+              removeItem(order.id);
+            }
+
+            return;
+          }
+
+          if (!existingOrderLine) {
+            const orderLine = chartApi.createOrderLine();
+            fillOrderLine(order, orderLine);
+            state.set(order.id, orderLine);
+          }
+        });
+      }
+    );
+  }
+
+  private getLimitOrdersStream(instrumentKey: InstrumentKey): Observable<Order[]> {
+    return this.currentDashboardService.selectedPortfolio$.pipe(
+      switchMap(portfolio => this.portfolioSubscriptionsService.getOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
+      map(orders => orders.allOrders.filter(o => o.type === OrderType.Limit)),
+      debounceTime(100),
+      map(orders => orders.filter(o => o.targetInstrument.symbol === instrumentKey.symbol && o.targetInstrument.exchange === instrumentKey.exchange)),
+      startWith([])
+    );
+  }
+
+  private getStopOrdersStream(instrumentKey: InstrumentKey): Observable<StopOrder[]> {
+    return this.currentDashboardService.selectedPortfolio$.pipe(
+      switchMap(portfolio => this.portfolioSubscriptionsService.getStopOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
+      map(orders => orders.allOrders),
+      debounceTime(100),
+      map(orders => orders.filter(o => o.targetInstrument.symbol === instrumentKey.symbol && o.targetInstrument.exchange === instrumentKey.exchange)),
+      startWith([])
+    );
+  }
+
+  private fillOrderBaseParameters(
+    order: Order,
+    orderLineAdapter:
+    IOrderLineAdapter,
+    themeColors: ThemeColors,
+    position: LineMarkerPosition
+  ): void {
+    orderLineAdapter
+      .setQuantity((order.qtyBatch - (order.filledQtyBatch ?? 0)).toString())
+      .setQuantityBackgroundColor(themeColors.componentBackground)
+      .setQuantityTextColor(themeColors.chartPrimaryTextColor)
+      .setQuantityBorderColor(themeColors.primaryColor)
+      .setBodyBorderColor(themeColors.primaryColor)
+      .setBodyBackgroundColor(themeColors.componentBackground)
+      .setLineStyle(2)
+      .setLineColor(themeColors.primaryColor)
+      .setCancelButtonBackgroundColor(themeColors.componentBackground)
+      .setCancelButtonBorderColor('transparent')
+      .setCancelButtonIconColor(themeColors.primaryColor)
+      .setBodyTextColor(order.side === Side.Buy ? themeColors.buyColor : themeColors.sellColor)
+      .setLineLength(this.getMarkerLineLengthPercent(position), "percentage")
+    ;
+  }
+
+  private fillLimitOrder(
+    order: Order,
+    orderLineAdapter: IOrderLineAdapter,
+    translator: TranslatorFn,
+    context: ChartContext
+  ): void {
+    const getEditCommand = (): EditOrderDialogParams => ({
+      orderId: order.id,
+      orderType: OrderFormType.Limit,
+      instrumentKey: order.targetInstrument,
+      portfolioKey: order.ownedPortfolio,
+      initialValues: {}
+    } as EditOrderDialogParams);
+
+    orderLineAdapter.setText('L')
+      .setTooltip(`${translator([order.side === Side.Buy ? 'buy' : 'sell'])} ${translator(['limit'])}`)
+      .setPrice(order.price)
+      .onCancel(() => this.orderCommandService.cancelOrders([{
+          orderId: order.id,
+          portfolio: order.ownedPortfolio.portfolio,
+          exchange: order.targetInstrument.exchange,
+          orderType: order.type
+        }]).subscribe()
+      )
+      .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
+      .onMove(() => {
+          if (context.settings.orders?.editWithoutConfirmation ?? false) {
+            const newPrice = orderLineAdapter.getPrice();
+            if (newPrice === order.price) {
+              return;
+            }
+
+            this.editLimitOrderPrice(order, newPrice);
+          } else {
+            const params = {
+              ...getEditCommand(),
+              cancelCallback: (): IOrderLineAdapter => orderLineAdapter.setPrice(order.price)
+            };
+
+            params.initialValues = {
+              ...params.initialValues,
+              price: orderLineAdapter.getPrice(),
+              hasPriceChanged: orderLineAdapter.getPrice() !== order.price
+            };
+            this.ordersDialogService.openEditOrderDialog(params);
+          }
+        }
+      );
+  }
+
+  private fillStopOrder(
+    order: StopOrder,
+    orderLineAdapter: IOrderLineAdapter,
+    translator: TranslatorFn,
+    context: ChartContext
+  ): void {
+    const conditionType: Condition = ConditionHelper.getConditionTypeByString(order.conditionType)!;
+    const orderText = 'S'
+      + (order.type === OrderType.StopLimit ? 'L' : 'M')
+      + ' '
+      + (ConditionHelper.getConditionSign(conditionType) as string);
+
+    const orderTooltip = translator([order.side === Side.Buy ? 'buy' : 'sell'])
+      + ' '
+      + translator([order.type === OrderType.StopLimit ? 'stopLimit' : 'stopMarket'])
+      + ' ('
+      + translator([(conditionType as Condition | null) ?? ''])
+      + ')';
+
+    const getEditCommand = (): EditOrderDialogParams => ({
+      orderId: order.id,
+      orderType: OrderFormType.Stop,
+      instrumentKey: order.targetInstrument,
+      portfolioKey: order.ownedPortfolio,
+      initialValues: {}
+    } as EditOrderDialogParams);
+
+    orderLineAdapter
+      .setText(orderText)
+      .setTooltip(orderTooltip)
+      .setPrice(order.triggerPrice)
+      .onCancel(() => this.orderCommandService.cancelOrders([{
+          orderId: order.id,
+          portfolio: order.ownedPortfolio.portfolio,
+          exchange: order.targetInstrument.exchange,
+          orderType: order.type
+        }]).subscribe()
+      )
+      .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
+      .onMove(() => {
+          if (context.settings.orders?.editWithoutConfirmation ?? false) {
+            const newPrice = orderLineAdapter.getPrice();
+            if (newPrice === order.triggerPrice) {
+              return;
+            }
+
+            this.editStopOrderPrice(order, newPrice);
+          } else {
+            const params = {
+              ...getEditCommand(),
+              cancelCallback: (): IOrderLineAdapter => orderLineAdapter.setPrice(order.triggerPrice)
+            };
+
+            params.initialValues = {
+              ...params.initialValues,
+              price: orderLineAdapter.getPrice(),
+              hasPriceChanged: orderLineAdapter.getPrice() !== order.price
+            };
+            this.ordersDialogService.openEditOrderDialog(params);
+          }
+        }
+      );
+  }
+
+  private getMarkerLineLengthPercent(position: LineMarkerPosition | undefined): number {
+    switch (position) {
+      case LineMarkerPosition.Left:
+        return 90;
+      case LineMarkerPosition.Middle:
+        return 40;
+      default:
+        return 10;
+    }
+  }
+
+  private editLimitOrderPrice(order: Order, newPrice: number): void {
+    this.orderCommandService.submitLimitOrderEdit(
+      {
+        orderId: order.id,
+        side: order.side,
+        quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
+        price: newPrice,
+        instrument: order.targetInstrument,
+        allowMargin: true
+      },
+      order.ownedPortfolio.portfolio
+    ).subscribe();
+  }
+
+  private editStopOrderPrice(order: StopOrder, newPrice: number): void {
+    const editOrder: StopMarketOrderEdit = {
+      orderId: order.id,
+      side: order.side,
+      quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
+      condition: ConditionHelper.getConditionTypeByString(order.conditionType)!,
+      triggerPrice: newPrice,
+      instrument: order.targetInstrument,
+      allowMargin: true
+    };
+
+    if (order.type === OrderType.StopMarket) {
+      this.orderCommandService.submitStopMarketOrderEdit(
+        editOrder,
+        order.ownedPortfolio.portfolio
+      ).subscribe();
+
+      return;
+    }
+
+    if (order.type === OrderType.StopLimit) {
+      this.orderCommandService.submitStopLimitOrderEdit({
+          ...editOrder,
+          price: MathHelper.round(
+            order.price! - (order.triggerPrice - newPrice),
+            Math.max(
+              MathHelper.getPrecision(order.price),
+              MathHelper.getPrecision(order.triggerPrice),
+              MathHelper.getPrecision(newPrice)
+            )
+          )
+        },
+        order.ownedPortfolio.portfolio
+      ).subscribe();
+    }
+  }
+}

@@ -1,0 +1,36 @@
+<div
+  (nzResizeObserve)="containerSizeChanged($event)"
+  *ngrxLet="{ tableConfig: tableConfig$, tableData: tableData$, contentSize: contentSize$ } as td"
+  class="container"
+  nzResizeObserver
+>
+  <ats-infinite-scroll-table #table
+                             (columnWidthChange)="saveColumnWidth($event)"
+                             (filterApplied)="applyFilter($event)"
+                             (orderColumnChange)="changeColumnOrder($event)"
+                             (rowClick)="rowClick($event)"
+                             (rowContextMenu)="openContextMenu($event.event, contextMenu, $event.row)"
+                             (scrolled)="onScrolled()"
+                             [data]="td.tableData"
+                             [isLoading]="isLoading()"
+                             [tableConfig]="td.tableConfig"
+                             [tableContainerHeight]="td.contentSize?.height || 0"
+                             [tableContainerWidth]="td.contentSize?.width || 0"
+  />
+
+  <div
+    (nzResizeObserve)="exportBtnSizeChange($event)"
+    *transloco="let t"
+    class="export-button-container"
+    nzResizeObserver
+  >
+    @if (td.tableData.length > 0) {
+      <button (click)="exportToFile()" nz-button nzType="link">
+        <i nz-icon nzType="download"></i>
+        {{ t('exportToFile') }}
+      </button>
+    }
+  </div>
+
+  <ats-add-to-watchlist-menu #contextMenu/>
+</div>

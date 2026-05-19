@@ -1,0 +1,113 @@
+<div class='panel'>
+  @let isMobile = (deviceInfo$ | async)?.isMobile ?? true;
+  <div class="buttons-group overflow-x-hidden">
+    @if (showBadgesMenu()) {
+      <nz-badge [class.square-badge]="badgeShape() === 'square'"
+                [nzColor]="selectedBadgeColor()!"
+                [nzDropdownMenu]="badgesMenu"
+                class="header-badge"
+                nz-dropdown
+                nzSize="small"
+      />
+    }
+
+    <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
+      <ul class="badge-menu" nz-menu>
+        @for (badge of badgeOptions$ | async; track badge) {
+          <li (click)="switchBadgeColor(badge.color)" nz-menu-item>
+            <nz-badge [class.square-badge]="badgeShape() === 'square'"
+                      [nzColor]="badge.color"
+            />
+            @if (badge.assignedInstrument) {
+              <span>{{ badge.assignedInstrument.symbol }}</span>
+            }
+            @if (badge.assignedInstrument?.instrumentGroup) {
+              <span>&nbsp;({{ badge.assignedInstrument!.instrumentGroup }})</span>
+            }
+          </li>
+        }
+      </ul>
+    </nz-dropdown-menu>
+
+    @let currentWidgetMeta = widgetMeta();
+    @if (currentWidgetMeta) {
+      <div class="title">
+        @if (currentWidgetMeta.desktopMeta?.headerIcon && !isMobile) {
+          <i
+            [nzPopoverContent]="getIconTooltip()"
+            [nzType]="currentWidgetMeta.desktopMeta!.headerIcon"
+            class="title-icon pr-8"
+            nz-icon
+            nz-popover
+            nzPopoverPlacement="bottom"
+            nzTheme="outline"
+          ></i>
+        }
+
+        @let currentTemplateTitle = titleTemplate();
+        @if (currentTemplateTitle != null) {
+          <ng-container *ngTemplateOutlet="currentTemplateTitle"/>
+        } @else {
+          <label
+            [nzPopoverContent]="title"
+            class="title-text"
+            nz-popover
+            nzPopoverPlacement="bottom">
+            {{ title }}
+          </label>
+        }
+      </div>
+    }
+  </div>
+
+  <div *transloco="let t" class="buttons-group">
+    @let isLinkToActive = linkToActive();
+    @if (isLinkToActive !== null && !isMobile) {
+      <button
+        (mousedown)="changeLinkToActive($event, !isLinkToActive)"
+        class="link-to-active-btn"
+        nz-button
+        nzSize="small"
+      >
+        <i [class.active]="isLinkToActive"
+           [nzTheme]="'outline'"
+           [nzType]="'link'"
+           nz-icon></i>
+      </button>
+    }
+    @if (hasSettings()) {
+      <button
+        (mousedown)="onSwitchSettings($event)"
+        nz-button
+        nzSize="small"
+      >
+        <i [nzTheme]="'outline'"
+           nz-icon
+           nzType="setting"></i>
+      </button>
+    }
+
+    @if (helpUrl$ | async; as helpUrl) {
+      <button
+        (mousedown)="openHelp($event, helpUrl)"
+        nz-button
+        nzSize="small"
+      >
+        <i [nzTheme]="'outline'"
+           nz-icon
+           nzType="question-circle"></i>
+      </button>
+    }
+
+    @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
+
+    @if (!isDashboardLocked && !isMobile) {
+      <button (mousedown)="removeItem($event)"
+              class="close-btn"
+              nz-button
+              nzSize="small">
+        <i [nzTheme]="'outline'" nz-icon nzType="close-circle"></i>
+      </button>
+    }
+  </div>
+</div>

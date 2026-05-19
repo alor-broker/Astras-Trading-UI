@@ -1,0 +1,31 @@
+<ng-container *transloco="let t; scope: 'ai-chat/side-chat-widget'">
+  <nz-drawer (nzOnClose)="close()"
+             (nzVisibleChange)="drawerVisibleChange($event)"
+             [nzClosable]="true"
+             [nzContent]="content"
+             [nzExtra]="extra"
+             [nzNoAnimation]="isResizing"
+             [nzSize]="'default'"
+             [nzTitle]="t('aiChatSideChatWidget.title')"
+             [nzVisible]="atsVisible()"
+             [nzWidth]="(drawerWidth$ | async) ?? 375"
+             [nzWrapClassName]="'ai-chat' + (isResizing ? ' resizing' : '')"
+             nzPlacement="right"
+  />
+  <ng-template #content>
+    <atsd-ai-chat [atsDisabled]="isChatDisabled"/>
+    <div
+      (mousedown)="isResizingChange(true)"
+      class="resize-trigger"
+    ></div>
+  </ng-template>
+
+  <ng-template #extra>
+    <span (click)="isTermOfUseDialogVisible.set(true)" class="cursor-pointer" nz-typography>
+      <u>{{ t('aiChatSideChatWidget.termsOfUseLink') }}</u>
+    </span>
+  </ng-template>
+</ng-container>
+
+<atsd-ai-chat-terms-of-use-dialog (confirmed)="setTermsOfUseAgreement($event)"
+                                  [(atsVisible)]="isTermOfUseDialogVisible"/>

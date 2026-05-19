@@ -1,0 +1,15 @@
+@if (aiChatAvailable) {
+  <button
+    (click)="aiChatVisible.set(true)"
+    *transloco="let tSc; scope: 'ai-chat/side-chat-widget'"
+    [nzTooltipTitle]="tSc('aiChatSideChatWidget.title')"
+    [nzType]="'text'"
+    nz-button
+    nz-tooltip
+  >
+    <i nz-icon nzType="comment"></i>
+  </button>
+
+  <atsd-ai-chat-side-panel [(atsVisible)]="aiChatVisible"/>
+}
+

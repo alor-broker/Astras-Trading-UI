@@ -1,0 +1,32 @@
+<atsd-ai-chat-container>
+  <atsd-ai-chat-usage-disclaimer/>
+
+  <atsd-ai-chat-start-new-conversation-button (clicked)="startNewConversation()"
+                                              [atsDisabled]="!canRestartConversation()"
+  />
+  @for (msg of displayMessages; track trackByMessage($index, msg)) {
+    <atsd-ai-chat-message-container [message]="msg"
+    />
+  }
+
+  @if (showSuggestedMessages()) {
+    <ng-container ngProjectAs="atsd-ai-chat-chat-suggested-message-container">
+      @for (suggestion of (suggestedMessages$ | async) ?? []; track $index) {
+        <atsd-ai-chat-chat-suggested-message-container (selected)="useSuggestedMessage($event)"
+                                                       [suggestedMessage]="suggestion"
+        />
+      }
+    </ng-container>
+  }
+
+
+  <atsd-ai-chat-status [status]="chatStatus$ | async"/>
+
+  <atsd-ai-chat-message-input (send)="sendMessage($event)"
+                              *transloco="let t; scope: 'ai-chat/message-input'"
+                              [atsDisabled]="atsDisabled()"
+                              [messagePlaceholder]="t('aiChatMessageInput.textPlaceholder')"
+  />
+</atsd-ai-chat-container>
+
+

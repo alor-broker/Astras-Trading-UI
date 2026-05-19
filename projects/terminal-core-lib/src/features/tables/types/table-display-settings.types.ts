@@ -1,0 +1,82 @@
+﻿import {
+  NzTableFilterList,
+  NzTableSortFn,
+  NzTableSortOrder
+} from "ng-zorro-antd/table";
+import {NzOptionComponent} from "ng-zorro-antd/select";
+
+export interface BaseColumnId {
+  id: string;
+  isDefault: boolean;
+  displayName?: string;
+}
+
+export interface ColumnDisplaySettings {
+  columnId: string;
+  columnWidth?: number | null;
+  columnOrder?: number;
+}
+
+export interface TableDisplaySettings {
+  columns: ColumnDisplaySettings[];
+}
+
+export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
+  displayName: string;
+  sourceField?: string;
+  transformFn?: (data: T) => string | null;
+  classFn?: (data: T) => string | null;
+  width?: number | null;
+  filterData?: FilterData;
+  showBadges?: boolean;
+  sortOrder?: NzTableSortOrder | null;
+  sortFn?: NzTableSortFn<T> | null;
+  sortChangeFn?: (direction: string | null) => any;
+  tooltip?: string;
+  minWidth?: number | null;
+  order?: number | null;
+  leftFixed?: boolean;
+  isResizable?: boolean;
+  hideTitle?: boolean;
+}
+
+export interface FilterData {
+  // Наименование фильтра для UI (placeholder для Search поля). Обычно содержит перевод по ID столбца
+  filterName: string;
+  // Ключ фильтра, который будет использоваться в общем объекте фильтров и отсылаться в API. НЕ ВСЕГДА ключ фильтра совпадает с именем столбца
+  filterKey?: string;
+  // Открыт ли фильтр
+  isOpenedFilter?: boolean;
+  filterType: FilterType;
+  filters?: NzTableFilterList;
+  intervalStartName?: string;
+  intervalEndName?: string;
+  inputFieldType?: InputFieldType;
+  filterWarning?: string | null;
+  multipleAutocompleteSelectedOptionLabelKey?: keyof NzOptionComponent;
+  initialValue?: string | number | boolean | string[] | number[];
+}
+
+export enum FilterType {
+  Default = 'default',
+  DefaultMultiple = 'defaultMultiple',
+  Interval = 'interval',
+  Search = 'search',
+  MultipleAutocomplete = 'multipleAutocomplete'
+}
+
+export enum InputFieldType {
+  String = 'string',
+  Number = 'number'
+}
+
+export type DefaultTableFilters = Record<string, string | string[] | number | boolean | null | undefined>;
+
+export interface RowConfig<T> {
+  rowClass?: (data: T) => string | null;
+}
+
+export interface TableConfig<T> {
+  columns: BaseColumnSettings<T>[];
+  rowConfig?: RowConfig<T> | null;
+}

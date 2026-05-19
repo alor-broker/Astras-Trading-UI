@@ -1,0 +1,39 @@
+<ng-container *transloco="let t;">
+  @if (settings$ | async; as widgetSettings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget()"
+      [settings]="settingsRef"
+      [showContentScroll]="false"
+      [showSettings]="showSettings()"
+    >
+      <ng-template #headerRef>
+        <ats-widget-header (switchSettings)="toggleSettings()"
+                           [guid]="guid"
+                           [hasSettings]="true"
+                           [linkToActive]="widgetSettings.linkToActive ?? null"
+                           [selectedBadgeColor]="widgetSettings.badgeColor"
+                           [showBadgesMenu]="(showBadge$ | async) ?? false"
+                           [titleTemplate]="titleTemplate"
+                           [widgetMeta]="widgetInstance().widgetMeta"
+        />
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch [widgetGuid]="guid"/>
+        </ng-template>
+      </ng-template>
+      <ng-template #contentRef>
+        @if (chartSettings$ | async; as chartSettings) {
+          <ats-light-chart
+            (selectedTimeframeChange)="updateSelectedTimeFrame($event)"
+            [selectedTimeframe]="widgetSettings.timeFrame"
+            [settings]="chartSettings"
+          />
+        }
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-light-chart-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
+</ng-container>

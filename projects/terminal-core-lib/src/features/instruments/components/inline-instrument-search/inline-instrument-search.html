@@ -1,0 +1,71 @@
+<div
+  (mousedown)='$event.stopPropagation()'
+  *transloco="let t; scope: 'shared/instrument-search'"
+  class="search-field"
+>
+  <nz-input-wrapper>
+    <input #searchInput
+           (blur)="checkInstrumentSelection()"
+           (input)="filterChanged(searchInput.value)"
+           (mousedown)="$event.stopPropagation()"
+           [formControl]="searchControl"
+           [nzAutocomplete]="auto"
+           [placeholder]="t('sharedInstrumentSearch.searchPlaceholder')"
+           class='whole ant-input'
+           nz-input
+    />
+
+    <ng-container nzInputSuffix>
+      @if (showHelpTooltip()) {
+        <span [nzTooltipTitle]="searchHelp" class="search-tooltip-icon" nz-icon nz-tooltip
+              nzType="question-circle"></span>
+        <ng-template #searchHelp>
+          <span>{{ t('sharedInstrumentSearch.helpParagraph1') }}</span>
+          <br/>
+          @if (!isExchangeSpecified) {
+            <span>{{ t('sharedInstrumentSearch.helpParagraph2') }}</span>
+            <br/>
+            <span nz-typography><code>[Exchange]:[Ticker]:[Board]</code></span>
+            <br/>
+            <span nz-typography>{{ t('sharedInstrumentSearch.forExample') }} MOEX:SBER:SMAL</span>
+            <br/>
+            <span>{{ t('sharedInstrumentSearch.helpParagraph3') }}</span>
+            <br/>
+            <span nz-typography><code>[Exchange]:[Ticker]</code></span>
+            <br/>
+            <span nz-typography>{{ t('sharedInstrumentSearch.forExample') }} MOEX:SBER</span>
+          }
+          @if (isExchangeSpecified) {
+            <span>{{ t('sharedInstrumentSearch.helpParagraph2') }}</span>
+            <br/>
+            <span nz-typography><code>[Ticker]:[Board]</code></span>
+            <br/>
+            <span nz-typography>{{ t('sharedInstrumentSearch.forExample') }} SBER:SMAL</span>
+          }
+        </ng-template>
+      }
+    </ng-container>
+  </nz-input-wrapper>
+  <nz-autocomplete
+    #auto
+    [nzOverlayClassName]="(isMobile$ | async) ? 'inline-instrument-search-options' : ''"
+    [nzWidth]="optionsBoxWidth()"
+  >
+    @for (option of filteredInstruments$ | async; track option) {
+      <nz-auto-option
+        (selectionChange)="onSelect($event, option)"
+        [nzLabel]="option.symbol"
+        [nzValue]="option.symbol"
+      >
+        <span class='search-row'>
+          <nz-tag>{{ option.symbol }}</nz-tag>
+          <span class='row-center'>{{ option.shortName }}&nbsp;</span>
+          @if (option.instrumentGroup) {
+            <nz-tag>{{ option.instrumentGroup }}</nz-tag>
+          }
+          <nz-tag>{{ option.exchange }}</nz-tag>
+        </span>
+      </nz-auto-option>
+    }
+  </nz-autocomplete>
+</div>

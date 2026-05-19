@@ -1,0 +1,17 @@
+{
+  "title": "Adequacy Level",
+  "statuses": {
+    "GREEN": "Normal",
+    "YELLOW": "Warning",
+    "RED": "Critical",
+    "RESTRICTED": "Restricted",
+    "CRITICAL": "Critically low margin",
+    "FORCED_CLOSE_RISK": "Risk of forced liquidation",
+    "NO_DATA": "No data"
+  },
+  "values": {
+    "adequacyRatioShort": "AL",
+    "noData": "No data",
+    "noMinimumMarginRequirement": "No minimum margin requirement"
+  }
+}

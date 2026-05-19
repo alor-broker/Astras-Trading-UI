@@ -1,0 +1,22 @@
+<ats-desktop-navbar>
+  <div class="left-side-item">
+    <ats-widgets-gallery-nav-btn/>
+  </div>
+
+  <div class="left-side-item">
+    <ats-open-orders-dialog-nav-btn [atsDisabled]="(isPortfolioSelected$ | async ) === false"/>
+  </div>
+
+  <div class="left-side-item">
+    <atsa-admin-dashboards-panel/>
+  </div>
+
+  <div class="right-side-item mr-10">
+    <ats-theme-switch-nav-btn/>
+  </div>
+
+  <div class="right-side-item">
+    <atsa-admin-profile-menu-nav-btn/>
+  </div>
+</ats-desktop-navbar>
+

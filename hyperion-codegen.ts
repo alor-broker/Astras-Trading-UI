@@ -1,10 +1,10 @@
-import type { CodegenConfig } from '@graphql-codegen/cli';
+﻿import type {CodegenConfig} from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
   schema: "https://apidev.alor.ru/hyperion/",
   generates: {
-    "src/generated/graphql.types.ts": {
+    "projects/terminal-core-lib/src/features/instruments/graphql/schema/graphql.types.ts": {
       plugins: [
         {
           add: {
@@ -17,15 +17,15 @@ const config: CodegenConfig = {
             declarationKind: 'interface',
             skipTypename: true,
             scalars: {
-              DateTime:  {
+              DateTime: {
                 input: 'string',
                 output: 'string'
               },
-              Decimal:  {
+              Decimal: {
                 input: 'number',
                 output: 'number'
               },
-              Long:  {
+              Long: {
                 input: 'number',
                 output: 'number'
               }
@@ -34,7 +34,7 @@ const config: CodegenConfig = {
         }
       ]
     },
-    "src/generated/graphql.schemas.ts": {
+    "projects/terminal-core-lib/src/features/instruments/graphql/schema/graphql.schemas.ts": {
       plugins: [
         {
           add: {

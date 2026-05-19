@@ -1,0 +1,165 @@
+﻿import {ComponentStore} from '@ngrx/component-store';
+import {Injectable} from '@angular/core';
+import {take} from 'rxjs';
+import {filter} from 'rxjs/operators';
+import {OrderBookScaleHelper} from "./order-book-scale.helper";
+import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
+import {PriceRow} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
+import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
+
+export interface PriceOptions {
+  startPrice: number;
+  expectedRangeMin: number;
+  expectedRangeMax: number;
+  scaledStep: number;
+  basePriceStep: number;
+  scaleFactor: number;
+}
+
+export interface PriceRowsState {
+  instrumentKey: InstrumentKey | null;
+  priceOptions: PriceOptions | null;
+  directionRowsCount: number;
+  rows: PriceRow[];
+  // rows were generated based on last price without actual data from orderbook
+  isDirty: boolean;
+}
+
+const initialState: PriceRowsState = {
+  instrumentKey: null,
+  priceOptions: null,
+  directionRowsCount: 100,
+  rows: [],
+  isDirty: true
+};
+
+@Injectable()
+export class PriceRowsStore extends ComponentStore<PriceRowsState> {
+  override readonly state$ = this.select(state => state);
+
+  constructor() {
+    super(initialState);
+  }
+
+  extendTop(itemsToAdd: number, callback?: (addedItemsCount: number) => void): void {
+    this.select(state => state).pipe(
+      take(1),
+      filter(s => s.priceOptions != null)
+    ).subscribe(state => {
+      const step = state.priceOptions!.scaledStep;
+      const topRows = this.generatePriceSequence(state.rows[0].price + step, step, itemsToAdd)
+        .reverse()
+        .map(price => (
+            {
+              price: price,
+              baseRange: OrderBookScaleHelper.scaledPriceToOriginal(price, state.priceOptions!.basePriceStep, state.priceOptions!.scaleFactor),
+              isStartRow: false
+            } as PriceRow
+          )
+        );
+
+      this.patchState({
+        rows: [
+          ...topRows,
+          ...state.rows
+        ]
+      });
+
+      if (callback) {
+        callback(itemsToAdd);
+      }
+    });
+  }
+
+  extendBottom(minItemsToAdd: number, callback?: (addedItemsCount: number) => void): void {
+    this.select(state => state).pipe(
+      take(1),
+      filter(s => s.priceOptions != null)
+    ).subscribe(state => {
+      const step = state.priceOptions!.scaledStep;
+      const lastElement = state.rows[state.rows.length - 1];
+
+      const itemsToAdd = Math.max(state.directionRowsCount, minItemsToAdd);
+      const bottomRows = this.generatePriceSequence(lastElement.price - step, -step, itemsToAdd)
+        .map(price => (
+            {
+              price: price,
+              baseRange: OrderBookScaleHelper.scaledPriceToOriginal(price, state.priceOptions!.basePriceStep, state.priceOptions!.scaleFactor),
+              isStartRow: false
+            } as PriceRow
+          )
+        );
+
+      this.patchState({
+        rows: [
+          ...state.rows,
+          ...bottomRows
+        ]
+      });
+
+      callback?.(itemsToAdd);
+    });
+  }
+
+  public initWithPriceRange(
+    instrumentKey: InstrumentKey,
+    priceOptions: PriceOptions | null,
+    isDirty: boolean,
+    minRowsCount: number,
+    complete?: () => void
+  ): void {
+    if (priceOptions) {
+      const priceRowsCountByRange = Math.ceil((priceOptions.expectedRangeMax - priceOptions.expectedRangeMin) / priceOptions.scaledStep);
+
+      const directionRowsCountMin = Math.ceil(minRowsCount / 2);
+
+      const rowsCount = Math.ceil(Math.max(priceRowsCountByRange + 5, directionRowsCountMin));
+
+      const topRows = this.generatePriceSequence(priceOptions.startPrice + priceOptions.scaledStep, priceOptions.scaledStep, rowsCount).reverse();
+      const bottomRows = this.generatePriceSequence(priceOptions.startPrice - priceOptions.scaledStep, -priceOptions.scaledStep, rowsCount);
+
+      const rows = [
+        ...topRows,
+        priceOptions.startPrice,
+        ...bottomRows
+      ].map(price => (
+          {
+            price: price,
+            baseRange: OrderBookScaleHelper.scaledPriceToOriginal(price, priceOptions.basePriceStep, priceOptions.scaleFactor),
+            isStartRow: false
+          } as PriceRow
+        )
+      );
+
+      rows[rowsCount].isStartRow = true;
+
+      this.setState({
+        instrumentKey,
+        priceOptions: priceOptions,
+        directionRowsCount: rowsCount,
+        rows: rows,
+        isDirty
+      });
+    } else {
+      this.setState({
+        instrumentKey,
+        priceOptions: null,
+        directionRowsCount: 0,
+        rows: [],
+        isDirty: true
+      });
+    }
+
+    if (complete) {
+      complete();
+    }
+  }
+
+  private generatePriceSequence(start: number, step: number, count: number): number[] {
+    const pricePrecision = MathHelper.getPrecision(step);
+    const roundedStart = MathHelper.round(start, pricePrecision);
+    return [...Array(count).keys()]
+      .map(i => roundedStart + (i * step))
+      .map(x => MathHelper.round(x, pricePrecision));
+  }
+}

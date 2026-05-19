@@ -1,0 +1,56 @@
+ats-descriptors-list {
+  .descriptors-list {
+    border: 1px solid var(--ats-border-color-split);
+    border-radius: var(--ats-border-radius-base);
+
+    table {
+      width: 100%;
+      table-layout: auto;
+      border-collapse: collapse;
+
+      td {
+        padding: 4px 8px;
+      }
+
+      .group-title-row,
+      .descriptor-row {
+        border-bottom: 1px solid var(--ats-border-color-split);
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      .group-title-row,
+      .descriptor-label {
+        color: var(--ats-text-color);
+        font-weight: normal;
+        font-size: var(--ats-font-size-base);
+        line-height: var(--ats-line-height-base);
+        text-align: start;
+      }
+
+      .group-title-row {
+        color: var(--ats-heading-color);
+      }
+
+      .descriptor-label {
+        background-color: var(--ats-descriptions-bg);
+        user-select: none;
+
+        &.with-tooltip {
+          cursor: help;
+        }
+      }
+
+      .descriptor-content {
+        flex: 1;
+        color: var(--ats-heading-color);
+        font-size: var(--ats-font-size-base);
+        line-height: var(--ats-line-height-base);
+        word-break: break-word;
+        overflow-wrap: break-word;
+      }
+    }
+  }
+}

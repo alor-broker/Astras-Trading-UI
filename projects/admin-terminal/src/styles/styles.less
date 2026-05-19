@@ -1,0 +1,35 @@
+@import "projects/terminal-styling-lib/src/styles/ng-zorro-overrides/desktop/index";
+/* You can add global styles to this file, and also import other style files */
+
+html {
+  height: 100%;
+  margin: 0;
+
+  body {
+    margin: 0;
+  }
+
+  .ant-input-affix-wrapper,
+  .ant-input,
+  .ant-select-selector,
+  .ant-picker,
+  .ant-radio-button-wrapper {
+    box-shadow: none !important;
+  }
+}
+
+.resize-holder {
+  cursor: col-resize;
+  width: 10px;
+  height: 100%;
+  position: absolute;
+  right: -5px;
+  top: 0;
+  z-index: 10;
+}
+
+.cdk-drag-preview {
+  &.ant-table-cell {
+    overflow: hidden;
+  }
+}

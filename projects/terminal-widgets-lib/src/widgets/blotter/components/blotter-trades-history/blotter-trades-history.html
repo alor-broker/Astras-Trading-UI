@@ -1,0 +1,145 @@
+<div *transloco="let t; scope: 'blotter/trades'" class="container">
+  <ng-container *transloco="let th; scope: 'blotter/trades-history'">
+    <ng-template #empty>
+      <nz-empty
+        [nzNotFoundContent]="isFilterDisabled() ? t('blotterTradesHistory.emptyTrades') : t('blotterTrades.emptyTradesWithFilters')"
+        class="ant-list-empty-text"
+        nzNotFoundImage="simple"/>
+    </ng-template>
+
+    <ng-container
+      *ngrxLet="{ contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, trades: tableData$ } as td">
+      <div
+        (nzResizeObserve)="containerSizeChanged($event)"
+        class="table-container"
+        nzResizeObserver
+      >
+        <nz-table
+          #nzTable
+          [nzData]="td.trades"
+          [nzFooter]="footer"
+          [nzFrontPagination]="false"
+          [nzLoading]="isLoading$ | async"
+          [nzNoResult]="empty"
+          [nzScroll]="{ x: (td.contentSize?.width ?? 0) + 'px', y: (td.contentSize?.height ?? 0) - 5 + 'px' }"
+          [nzShowPagination]="false"
+          [nzVirtualForTrackBy]="trackBy"
+          [nzVirtualItemSize]="rowHeight"
+          [nzVirtualMaxBufferPx]="td.contentSize?.height ?? 0"
+          [nzVirtualMinBufferPx]="td.contentSize?.height ?? 0"
+          nzSize="small"
+          nzTableLayout="fixed"
+        >
+          <thead>
+          <tr
+            (cdkDropListDropped)="changeColumnOrder($event)"
+            (nzResizeObserve)="headerSizeChanged($event)"
+            cdkDropList
+            cdkDropListOrientation="horizontal"
+            nzResizeObserver
+          >
+            <th nzWidth="5px"></th>
+            @for (column of td.tableConfig.columns; track column) {
+              <th
+                (atsWidthChanged)="saveColumnWidth({ columnId: column.id, width: $event })"
+                (nzFilterChange)="defaultFilterChange(column.id, $event)"
+                (nzSortOrderChange)="saveSortState(column.id, $event)"
+                [atsResizeColumn]
+                [minWidth]="column.minWidth ?? 50"
+                [nzCustomFilter]="column.filterData?.filterType !== filterTypes.Default"
+                [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+                [nzFilters]="column.filterData?.filters ?? []"
+                [nzShowFilter]="column.filterData?.filterType === filterTypes.Default"
+                [nzShowSort]="!!column.sortFn"
+                [nzSortFn]="column.sortFn ?? false"
+                [nzSortOrder]="column.sortOrder ?? null"
+                [nzWidth]="column.width ? column.width + 'px': null"
+                cdkDrag
+                cdkDragLockAxis="x"
+              >
+                  <span
+                    [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                    [nzTooltipTitle]="column.tooltip"
+                    nz-tooltip
+                  >
+                    {{ column.displayName }}
+                  </span>
+                @if (column.filterData != null && column.filterData.filterType !== filterTypes.DefaultMultiple) {
+                  <nz-filter-trigger
+                    (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
+                    [nzActive]="isFilterApplied(column)"
+                    [nzDropdownMenu]="searchMenu"
+                    [nzVisible]="!!column.filterData.isOpenedFilter"
+                  >
+                    <i nz-icon nzType="search"></i>
+                  </nz-filter-trigger>
+                }
+              </th>
+            }
+          </tr>
+          </thead>
+          <tbody>
+          <ng-template let-trd nz-virtual-scroll>
+            <tr
+              (click)="rowClick(trd)"
+              (contextmenu)="openContextMenu($event, contextMenu, trd)"
+            >
+              <td>
+                <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
+              </td>
+              @for (column of td.tableConfig.columns; track column) {
+                @if (column.id === "id") {
+                  <td>{{ trd.id }}</td>
+                }
+                @if (column.id === "orderNo") {
+                  <td>{{ trd.orderNo }}</td>
+                }
+                @if (column.id === "symbol") {
+                  <td class='fw-bold'>{{ trd.symbol }}</td>
+                }
+                @if (column.id === "shortName") {
+                  <td>{{ trd.shortName }}</td>
+                }
+                @if (column.id === "side") {
+                  <td [class]='trd.side.toString() === "sell" ? "sell" : "buy"'>{{ trd.side }}</td>
+                }
+                @if (column.id === "qty") {
+                  <td>{{ trd.qty | number }}</td>
+                }
+                @if (column.id === "price") {
+                  <td>{{ trd.price | number : '0.0-10' }}</td>
+                }
+                @if (column.id === "date") {
+                  <td>{{ formatDate(trd.displayDate) }}</td>
+                }
+                @if (column.id === "volume") {
+                  <td>{{ trd.volume | number }}</td>
+                }
+              }
+            </tr>
+          </ng-template>
+          </tbody>
+          <ng-template #footer>
+            <div
+              (nzResizeObserve)="footerSizeChanged($event)"
+              class="export-button-container"
+              nzResizeObserver
+            >
+              @if (canExport(td.trades)) {
+                <button (click)="exportToFile(td.trades)" nz-button nzType="link">
+                  <i nz-icon nzType="download"></i>
+                  {{ t('exportToFile') }}
+                </button>
+              }
+            </div>
+          </ng-template>
+        </nz-table>
+      </div>
+      <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+        <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"/>
+      </nz-dropdown-menu>
+
+      <ats-add-to-watchlist-menu #contextMenu/>
+    </ng-container>
+  </ng-container>
+</div>

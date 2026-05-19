@@ -1,0 +1,40 @@
+ats-money-input {
+  display: block;
+
+  .option-card.ant-btn {
+    height: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: transparent;
+    text-align: left;
+  }
+
+  .step-form .ant-form-item {
+    margin-bottom: 10px;
+  }
+
+  nz-form-label {
+    label {
+      display: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .option-card.ant-btn {
+    border-color: var(--ats-border-color-base);
+    color: var(--ats-heading-color);
+
+    &:hover,
+    &:focus {
+      border-color: color-mix(in srgb, var(--ats-primary-color) 45%, transparent);
+      background: color-mix(in srgb, var(--ats-primary-color) 6%, transparent);
+    }
+  }
+}

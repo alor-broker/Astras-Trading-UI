@@ -1,0 +1,9 @@
+<atsm-dashboard-page></atsm-dashboard-page>
+
+@if (isLoading()) {
+  <div
+    class="loading-indicator-container"
+  >
+    <nz-spin [nzSize]="'large'" nzSpinning="true"/>
+  </div>
+}

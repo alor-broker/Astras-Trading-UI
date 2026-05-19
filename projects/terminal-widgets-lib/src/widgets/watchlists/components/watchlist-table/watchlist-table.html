@@ -1,0 +1,297 @@
+<ng-container *transloco="let t; scope: 'instruments/select'">
+  <div
+    #tableContainer
+    (nzResizeObserve)="containerSizeChanged($event)"
+    *ngrxLet="{
+      settings: settings$,
+      tableConfig: tableConfig$,
+      contentSize: contentSize$,
+      collection: collection$,
+      currentList: currentWatchlist$,
+      updates: tableData$,
+      openedLists: openedLists$,
+      sort: sort$
+    } as vm"
+    class="table-container"
+    nzResizeObserver
+  >
+    <nz-table
+      #tableCmp
+      [nzData]="vm.updates"
+      [nzFrontPagination]="false"
+      [nzScroll]="{ y: (vm.contentSize?.height ?? 0) + 'px', x: (vm.contentSize?.width ?? 0) - 5 + 'px' }"
+      [nzShowPagination]="false"
+      [nzVirtualItemSize]="20"
+      [nzVirtualMaxBufferPx]="vm.contentSize?.height ?? 0"
+      [nzVirtualMinBufferPx]="vm.contentSize?.height ?? 0"
+      atsTableRowHeight
+      nzTableLayout="fixed"
+    >
+      <thead
+        *transloco="let t; scope: 'instruments/select'"
+      >
+      <tr
+        (cdkDropListDropped)="changeColumnOrder($event)"
+        (nzResizeObserve)="headerSizeChanged($event)"
+        cdkDropList
+        cdkDropListOrientation="horizontal"
+        nzResizeObserver
+      >
+        @if (vm.settings.showFavorites ?? false) {
+          <th
+            #col
+            (nzSortOrderChange)="sortChange($event, 'favorites')"
+            [nzShowSort]="vm.currentList.length > 1 || vm.currentList[0].type !== listTypes.HistoryList"
+            [nzSortDirections]="['ascend', null]"
+            [nzTooltipTitle]="t('instrumentsSelect.columns.favorites.tooltip')"
+            class="favorites"
+            nz-tooltip
+            nzWidth='15px'
+          >
+            <span
+              [class]="{
+              'btn': true,
+              'active': vm.sort == null || vm.sort.orderBy === 'favorites',
+              'disabled': vm.currentList.length <= 1 && vm.currentList[0].type === listTypes.HistoryList
+              }" nz-icon
+              nzTheme="outline"
+              nzType="star"
+            ></span>
+          </th>
+        }
+
+        @for (col of vm.tableConfig.columns; track col.id) {
+          <th
+            (atsWidthChanged)="saveColumnWidth({ columnId: col.id, width: $event })"
+            (nzSortOrderChange)="sortChange($event, col.id)"
+            [atsResizeColumn]
+            [minWidth]="col.minWidth ?? 50"
+            [nzShowSort]="sortFns[col.id] != null"
+            [nzSortOrder]="vm.sort?.orderBy !== col.id ? null : vm.sort!.descending ? 'descend' : 'ascend' "
+            [nzWidth]="col.width ? col.width + 'px' : null"
+            cdkDrag
+            cdkDragLockAxis="x"
+          >
+              <span [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })"
+                    nz-tooltip>
+                {{ t('instrumentsSelect.columns.' + col.id + '.name', {fallback: col.displayName}) }}
+              </span>
+          </th>
+        }
+
+        <th nzWidth="40px">
+            <span
+              [nzTooltipTitle]="t('instrumentsSelect.columns.remove.tooltip')"
+              nz-tooltip
+            >
+              {{ t('instrumentsSelect.columns.remove.name') }}
+            </span>
+        </th>
+      </tr>
+      </thead>
+      <tbody (cdkDropListDropped)="onDragDropped($event)" cdkDropList>
+      <ng-template let-watchlist nz-virtual-scroll>
+        @if (vm.updates.length > 1) {
+          <tr (mouseenter)="setWatchlistToDrop(watchlist.id)">
+            <td
+              [colSpan]="vm.tableConfig.columns.length + ((vm.settings.showFavorites ?? false) ? 2 : 1)"
+              [nzExpandIcon]="expandIcon"
+              [nzExpand]="vm.openedLists.includes(watchlist.id)"
+              [nzIndentSize]="0"
+              [nzShowExpand]="true"
+            >
+              {{ watchlist.title }}
+            </td>
+          </tr>
+        }
+
+        <ng-template #expandIcon>
+          @if (vm.openedLists.includes(watchlist.id)) {
+            <span
+              (click)="expandListChange(false, watchlist.id)"
+              nz-icon
+              nzTheme="outline"
+              nzType="down"
+            ></span>
+          } @else {
+            <span
+              (click)="expandListChange(true, watchlist.id)"
+              nz-icon
+              nzTheme="outline"
+              nzType="right"
+            ></span>
+          }
+        </ng-template>
+
+        @if (vm.openedLists.includes(watchlist.id) || vm.updates.length === 1) {
+          @for (inst of watchlist.items; track inst.recordId) {
+            <tr
+              (cdkDragStarted)="onDragStarted()"
+              (click)='onRowClick(inst)'
+              (contextmenu)="contextMenu($event, menu, inst, watchlist.id)"
+              (mouseenter)="setWatchlistToDrop(watchlist.id)"
+              [cdkDragData]="{ listId: watchlist.id, recordId: inst.recordId }"
+              cdkDrag
+            >
+              @if (vm.settings.showFavorites ?? false) {
+                <td class="favorites">
+                  @if (watchlist.type !== listTypes.HistoryList) {
+                    <span
+                      (click)="updateFavorites(watchlist.id, inst); $event.preventDefault(); $event.stopPropagation();"
+                      [class]="{
+                          'btn': true,
+                          'active': (inst.favoriteOrder ?? -1) >= 0
+                          }"
+                      [title]="(inst.favoriteOrder ?? -1) >= 0 ? t('instrumentsSelect.removeFromFavoritesTooltip') : t('instrumentsSelect.addToFavoritesTooltip')"
+                      nz-icon
+                      nzTheme="outline"
+                      nzType="star"
+                    >
+
+                        </span>
+                  }
+                </td>
+              }
+
+              @for (col of vm.tableConfig.columns; track col.id) {
+                @switch (col.id) {
+                  @case ('symbol') {
+                    <td class="pl-15">
+                      <span class="ticker-name">{{ inst.instrument.symbol }}</span>
+                      <ats-instrument-badge-display [instrumentKey]="inst.instrument"/>
+                    </td>
+                  }
+                  @case ('shortName') {
+                    <td>{{ inst.instrument.shortName }}</td>
+                  }
+                  @case ('price') {
+                    <td>
+                      @if ((inst.price ?? null) !== null && (inst.prevTickPrice ?? null) !== null) {
+                        <ats-price-diff [basePrice]="inst.prevTickPrice!"
+                                        [currentPrice]="inst.price!"
+                                        [showChangeForce]="false"
+                        />
+                      }
+                    </td>
+                  }
+                  @case ('priceChange') {
+                    <td
+                      [class]="inst.priceChange < 0 ? 'sell-color' : 'buy-color'">{{ inst.priceChange | number: '0.0-6' }}
+                    </td>
+                  }
+                  @case ('priceChangeRatio') {
+                    <td [class]="inst.priceChangeRatio < 0 ? 'sell-color' : 'buy-color'">
+                      {{ inst.priceChangeRatio | number: '0.0-3' }}
+                    </td>
+                  }
+                  @case ('maxPrice') {
+                    <td>{{ inst.maxPrice | number: '0.0-6' }}</td>
+                  }
+                  @case ('minPrice') {
+                    <td>{{ inst.minPrice | number: '0.0-6' }}</td>
+                  }
+                  @case ('volume') {
+                    <td style="white-space: nowrap;">
+                      <ats-short-number [allowRounding]="true" [roundPrecision]="3"
+                                        [value]="inst.volume"/>
+                    </td>
+                  }
+                  @case ('openPrice') {
+                    <td>{{ inst.openPrice | number: '0.0-6' }}</td>
+                  }
+                  @case ('closePrice') {
+                    <td>{{ inst.closePrice | number: '0.0-6' }}</td>
+                  }
+                  @default {
+                    <td></td>
+                  }
+
+                }
+              }
+              <td>
+                <a
+                  (click)="remove(watchlist.id, inst.recordId); $event.preventDefault(); $event.stopPropagation();">
+                  <i nz-icon nzTheme="outline" nzType="close"></i>
+                </a>
+              </td>
+            </tr>
+          }
+        }
+      </ng-template>
+      </tbody>
+    </nz-table>
+
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        @if (getListsForCopyMove(vm.collection); as lists) {
+          <ng-container *transloco="let tTitle; scope: 'instruments'">
+            @if (canMoveItem(vm.collection)) {
+              <li
+                #submenu
+                [nzTitle]="moveToItem"
+                nz-submenu
+              >
+                <ng-template #moveToItem>
+                  <span><i nz-icon nzTheme="outline"
+                           nzType="arrow-right"></i><label>&nbsp;{{ t('instrumentsSelect.contextMenu.moveToItemLabel') }}</label></span>
+                </ng-template>
+                <ul>
+                  @for (wl of lists; track wl.id) {
+                    <li (click)="moveItem(wl); submenu.nzOpen = false" nz-menu-item>
+                      {{ tTitle('instruments.' + getListTitleTranslationKey(wl), {fallback: wl.title}) }}
+                    </li>
+                  }
+                </ul>
+              </li>
+            }
+
+            <li
+              #submenu
+              [nzTitle]="copyToItem"
+              nz-submenu
+            >
+              <ng-template #copyToItem>
+                <span><i nz-icon nzTheme="outline"
+                         nzType="copy"></i>{{ t('instrumentsSelect.contextMenu.copyToItemLabel') }}</span>
+              </ng-template>
+              <ul>
+                @for (wl of lists; track wl.id) {
+                  <li (click)="copyItem(wl); submenu.nzOpen = false" nz-menu-item>
+                    {{ tTitle('instruments.' + getListTitleTranslationKey(wl), {fallback: wl.title}) }}
+                  </li>
+                }
+              </ul>
+            </li>
+          </ng-container>
+        }
+
+        @let menuWidgets = menuWidgets$ | async;
+        @if (menuWidgets != null && menuWidgets.length > 0) {
+          <li [nzTitle]="addWidgetItem" nz-submenu>
+            <ng-template #addWidgetItem>
+              <span><i nz-icon nzTheme="outline"
+                       nzType="appstore-add"></i>{{ t('instrumentsSelect.contextMenu.addWidgetItemLabel') }}</span>
+            </ng-template>
+            <ul>
+              @for (widget of menuWidgets; track widget.typeId) {
+                <li (click)="addWidget(widget.typeId)" nz-menu-item>
+                  <span><i [nzType]="widget.icon" nz-icon nzTheme="outline"></i>{{ widget.name }}</span>
+                </li>
+              }
+            </ul>
+          </li>
+        }
+
+        <li
+          (click)="remove(selectedItem!.listId, selectedItem!.instrument.recordId)"
+          nz-menu-item
+        >
+          <span nz-typography nzType="danger">
+            <i nz-icon nzTheme="outline" nzType="close"></i>
+            {{ t('instrumentsSelect.contextMenu.remove') }}
+          </span>
+        </li>
+      </ul>
+    </nz-dropdown-menu>
+  </div>
+</ng-container>

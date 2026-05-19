@@ -1,0 +1,51 @@
+<ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
+  @let terminalSettings = terminalSettings$ | async;
+  @let selectedDashboard = selectedDashboard$ | async;
+
+  <ats-desktop-navbar>
+    <div class="left-side-item">
+      <ats-widgets-gallery-nav-btn [atsDisabled]="selectedDashboard == null"
+      />
+    </div>
+
+    <div class="left-side-item">
+      <ats-open-orders-dialog-nav-btn [atsDisabled]="selectedDashboard?.selectedPortfolio == null"
+      />
+    </div>
+
+    <div class="left-side-item">
+      <ats-select-portfolio-menu-nav-btn/>
+    </div>
+
+    <div
+      class="left-side-item overflow-hidden"
+    >
+      <atsd-dashboards-panel/>
+    </div>
+
+    @if (terminalSettings?.showCurrentTime ?? false) {
+      <div class="right-side-item">
+        <ats-current-time/>
+      </div>
+    }
+
+    <div class="right-side-item">
+      <ats-network-indicator/>
+    </div>
+
+    <div class="right-side-item">
+      <ats-notifications-nav-btn/>
+    </div>
+
+    <div class="right-side-item">
+      <atsd-ai-chat-nav-btn/>
+    </div>
+
+    <div class="right-side-item">
+      <atsd-profile-menu-nav-btn/>
+    </div>
+
+  </ats-desktop-navbar>
+</ng-container>
+
+

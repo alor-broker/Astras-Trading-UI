@@ -1,0 +1,19 @@
+@if (yearChartData.labels?.length ?? -1 > 0) {
+  <div class="finance-chart">
+    <canvas [data]="yearChartData"
+            [options]="yearChartOptions"
+            [type]="barChartType"
+            baseChart>
+    </canvas>
+  </div>
+}
+
+@if (quarterChartData.labels?.length ?? -1 > 0) {
+  <div class="finance-chart">
+    <canvas [data]="quarterChartData"
+            [options]="quarterChartOptions"
+            [type]="barChartType"
+            baseChart>
+    </canvas>
+  </div>
+}

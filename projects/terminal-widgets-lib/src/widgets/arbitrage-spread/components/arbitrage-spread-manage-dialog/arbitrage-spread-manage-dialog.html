@@ -1,0 +1,37 @@
+<nz-modal
+  (nzOnCancel)="handleCancel()"
+  *transloco="let t; scope: 'arbitrage-spread/arbitrage-spread-modal-widget'"
+  [nzMaskClosable]='false'
+  [nzTitle]="header"
+  [nzVisible]='isVisible$ | async'
+  nzClosable="true"
+  nzDraggable
+>
+  <ng-template #header>
+    <div class="header">
+      {{
+        (spreadInfo$ | async)
+          ? t('arbitrageSpreadArbitrageSpreadModalWidget.editTitle')
+          : t('arbitrageSpreadArbitrageSpreadModalWidget.newTitle')
+      }}
+    </div>
+  </ng-template>
+  <ng-container *nzModalContent>
+    <ats-arbitrage-spread-manage (formChange)="formChange($event)" [spread]="spreadInfo$ | async"/>
+  </ng-container>
+  <ng-container *nzModalFooter>
+    <button
+      (click)="addOrEdit()"
+      [disabled]="!formData?.isValid"
+      nz-button
+      nzType="primary"
+    >
+      @if (spreadInfo$ | async) {
+        {{ t('saveBtnText') }}
+      } @else {
+        {{ t('addBtnText') }}
+      }
+    </button>
+    <button (click)="handleCancel()" nz-button nzType="default">{{ t('cancelBtnText') }}</button>
+  </ng-container>
+</nz-modal>

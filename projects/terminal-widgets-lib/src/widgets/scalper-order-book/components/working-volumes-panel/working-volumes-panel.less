@@ -1,0 +1,45 @@
+ats-working-volumes-panel {
+  .vertical {
+    flex-direction: column;
+    gap: 2px;
+
+    .working-volume-item {
+      text-align: end;
+    }
+  }
+
+  .horizontal {
+    flex-direction: row;
+    gap: 2px;
+
+    .working-volume-item {
+      text-align: center;
+    }
+  }
+
+  .working-volume-item {
+    opacity: 0.8;
+    color: var(--ats-text-color);
+    border: var(--ats-border-color-base) solid 1px;
+    border-radius: var(--ats-border-radius-base);
+    background-color: var(--ats-component-background);
+
+    &:hover, &.active {
+      opacity: 0.9;
+      border-color: var(--border-color-active);
+    }
+
+    &.active {
+      color: var(--ats-primary-color);
+      background-color: var(--ats-background-color-active);
+    }
+
+    &:hover {
+      color: var(--ats-text-max-contrast-color);
+    }
+  }
+}
+
+
+
+

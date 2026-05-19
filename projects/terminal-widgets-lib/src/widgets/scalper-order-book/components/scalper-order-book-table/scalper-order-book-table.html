@@ -1,0 +1,212 @@
+<ng-container *transloco="let t; scope: 'scalper-order-book/scalper-order-book-table'">
+  @if (dataContext().extendedSettings$ | async; as settings) {
+    @if (settings.widgetSettings.showRuler) {
+      <div class="position-absolute start">
+        <ats-table-ruler [activeRow]="hoveredRow$ | async"
+                         [dataContext]="dataContext()"
+                         [xAxisStep]="rowHeight()"
+        />
+      </div>
+    }
+    @if (displayItems$ | async; as displayItems) {
+      <div
+        (hoveredItemChanged)="updateHoveredItem($event?.item?.atsHoverItemData() ?? null)"
+        [atsHoverItemsGroup]="true"
+        class="user-select-none"
+        id="table-body-container"
+      >
+        <div class="table-col" id="volume-panel">
+          @for (row of displayItems; track $index) {
+            <div (contextmenu)="$event.preventDefault()"
+                 (mousedown)="mouseDown($event, row)"
+                 [atsHoverItemData]="{price: row.price}"
+                 [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+                 [style.height]="rowHeight() + 'px'"
+                 [style.line-height]="rowHeight() + 'px'"
+                 atsHoverItem
+                 class="table-row"
+            >
+              <div [class]="getVolumeCellClasses(row)"
+                   class="table-cell"
+              >
+                @if (row.isMajorLinePrice || row.isMinorLinePrice) {
+                  <span
+                    [class]="{
+            'grid-line': true,
+            'major': row.isMajorLinePrice,
+            'minor': row.isMinorLinePrice
+            }"
+                    class="z-1"
+                  >&nbsp;</span>
+                }
+                @if ((row.volume ?? 0) > 0) {
+                  <span [style]="row.getVolumeStyle()" class="highlighter z-1">&nbsp;</span>
+                  <span class="volume px-2 z-2">
+                    @if (row.rowType === rowTypes.Mixed) {
+                      <span [ngTemplateOutletContext]="{volume: row.askVolume ?? 0}"
+                            [ngTemplateOutlet]="volumeDisplay"></span>
+                      <span>&nbsp;|&nbsp;</span>
+                      <span [ngTemplateOutletContext]="{volume: row.bidVolume ?? 0}"
+                            [ngTemplateOutlet]="volumeDisplay"></span>
+                    } @else {
+                      @if (showGrowingVolume && (row.growingVolume ?? 0) > 0) {
+                        <span class="growing-volume">
+                          <ng-container [ngTemplateOutletContext]="{volume: row.growingVolume}"
+                                        [ngTemplateOutlet]="volumeDisplay"/>
+                        </span>
+                      }
+                      <ng-container [ngTemplateOutletContext]="{volume: row.volume}"
+                                    [ngTemplateOutlet]="volumeDisplay"/>
+                    }
+                  </span>
+                  <ng-template #volumeDisplay let-volume='volume'>
+                    @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
+                      <ats-short-number [allowRounding]="true"
+                                        [value]="volume"
+                      />
+                    } @else {
+                      <span>{{ volume }}</span>
+                    }
+                  </ng-template>
+                }
+              </div>
+            </div>
+          }
+        </div>
+        <div class="table-col" id="price-panel">
+          @for (row of displayItems; track $index) {
+            <div (contextmenu)="$event.preventDefault()"
+                 (dblclick)="$event.stopPropagation()"
+                 (mousedown)="mouseDown($event, row)"
+                 [atsHoverItemData]="{price: row.price}"
+                 [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+                 [style.height]="rowHeight() + 'px'"
+                 [style.line-height]="rowHeight() + 'px'"
+                 atsHoverItem
+                 class="table-row"
+            >
+              <div
+                [class]="getPriceCellClasses(row)"
+                class="table-cell"
+              >
+                @if (row.isMajorLinePrice || row.isMinorLinePrice) {
+                  <span
+                    [class]="{
+            'grid-line': true,
+            'major': row.isMajorLinePrice,
+            'minor': row.isMinorLinePrice
+            }"
+                    class="z-1"
+                  >&nbsp;</span>
+                }
+                @if (row.currentOrders.length > 0) {
+                  <span class="highlighter">&nbsp;</span>
+                }
+                <span
+                  [class.fw-bold]="row.isMajorLinePrice"
+                  class="px-2 position-relative z-2"
+                >
+                  {{ row.price | atsPrice: getPriceDecimalSymbolsCount(settings) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+        <div cdkDropListGroup class="table-col orders-drag-boundary" id="orders-panel">
+          @for (row of displayItems; track $index) {
+            <div (contextmenu)="$event.preventDefault()"
+                 (dblclick)="$event.stopPropagation()"
+                 [atsHoverItemData]="{price: row.price}"
+                 [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+                 [style.height]="rowHeight() + 'px'"
+                 [style.line-height]="rowHeight() + 'px'"
+                 atsHoverItem
+                 class="table-row"
+            >
+              <div
+                (cdkDropListDropped)="updateOrderPrice($event.item.data, row)"
+                [cdkDropListAutoScrollDisabled]="true"
+                [class]="getOrdersCellClasses(row)"
+                cdkDropList
+                class="table-cell"
+              >
+                @if (row.isMajorLinePrice || row.isMinorLinePrice) {
+                  <span
+                    [class]="{
+            'grid-line': true,
+            'major': row.isMajorLinePrice,
+            'minor': row.isMinorLinePrice
+            }"
+                    class="z-1"
+                  >&nbsp;</span>
+                }
+                <ng-container *ngTemplateOutlet="limitOrdersDisplay; context: {
+            orders:  getFilteredOrders(row.currentOrders, orderTypes.Limit)
+            }"
+                />
+                <ng-container *ngTemplateOutlet="stopOrdersDisplay; context: {
+            orders:  getFilteredOrders(row.currentOrders, orderTypes.StopLimit),
+            orderSymbol: 'SL',
+            tooltipKey: 'stopLimitOrderTooltip'
+            }"/>
+                <ng-container *ngTemplateOutlet="stopOrdersDisplay; context: {
+            orders:  getFilteredOrders(row.currentOrders, orderTypes.StopMarket),
+            orderSymbol: 'SM',
+            tooltipKey: 'stopMarketOrderTooltip'
+            }"/>
+                <ng-template #limitOrdersDisplay let-orders="orders">
+                  @if (orders.volume > 0) {
+                    <span (click)="cancelOrders($event, orders.orders)"
+                          (mousedown)="$event.stopPropagation()"
+                          *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
+                          [cdkDragData]="orders.orders"
+                          [cdkDragDisabled]="isDirty"
+                          [class]="{
+                    'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
+                    'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
+                    'multiple': orders.orders.length > 1,
+                    'dirty': isDirty
+                    }"
+                          [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
+                          [nzTooltipMouseEnterDelay]="1"
+                          [nzTooltipPlacement]="['right', 'left']"
+                          [nzTooltipTrigger]="isDirty ? null : 'hover'"
+                          cdkDrag
+                          cdkDragBoundary=".orders-drag-boundary"
+                          class="orders-indicator limit-order fw-bold px-1 position-relative z-2"
+                    >{{ orders.volume }}</span>
+                  }
+                </ng-template>
+                <ng-template #stopOrdersDisplay let-orderSymbol="orderSymbol" let-orders="orders"
+                             let-tooltipKey="tooltipKey">
+                  @if (orders.volume > 0) {
+                    <span (click)="cancelOrders($event, orders.orders)"
+                          (mousedown)="$event.stopPropagation()"
+                          *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
+                          [cdkDragData]="orders.orders"
+                          [cdkDragDisabled]="isDirty"
+                          [class]="{
+                    'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
+                    'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
+                    'multiple': orders.orders.length > 1,
+                    'dirty': isDirty
+                    }"
+                          [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
+                          [nzTooltipMouseEnterDelay]="1"
+                          [nzTooltipPlacement]="['right', 'left']"
+                          [nzTooltipTrigger]="isDirty ? null : 'hover'"
+                          cdkDrag
+                          cdkDragBoundary=".orders-drag-boundary"
+                          class="orders-indicator pl-2 position-relative z-2"
+                    >{{ orderSymbol }}({{ orders.volume }})</span>
+                  }
+                </ng-template>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</ng-container>
+

@@ -1,0 +1,225 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  model,
+  OnInit,
+  viewChild,
+  ViewEncapsulation
+} from '@angular/core';
+import {WatchlistCollectionService} from '../../services/watchlist-collection.service';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+import {TranslatorService} from '../../../translations/services/translator.service';
+import {
+  combineLatest,
+  map,
+  Observable,
+  of,
+  take
+} from "rxjs";
+import {InstrumentKey} from '../../../../common/types/instrument.types';
+import {NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {WatchlistType} from '../../types/watchlist.types';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {AsyncPipe} from '@angular/common';
+import {
+  NzMenuDirective,
+  NzMenuItemComponent,
+  NzSubMenuComponent
+} from 'ng-zorro-antd/menu';
+import {
+  NzModalComponent,
+  NzModalContentDirective
+} from 'ng-zorro-antd/modal';
+import {
+  NzFormControlComponent,
+  NzFormDirective,
+  NzFormItemComponent
+} from 'ng-zorro-antd/form';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+
+interface MenuItem {
+  title: string;
+  itemId?: string;
+  subItems: MenuItem[];
+  selectItem: (item: MenuItem) => void;
+}
+
+@Component({
+  selector: 'ats-add-to-watchlist-menu',
+  imports: [
+    TranslocoDirective,
+    AsyncPipe,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzSubMenuComponent,
+    NzModalComponent,
+    NzModalContentDirective,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzFormItemComponent,
+    NzFormControlComponent,
+    NzInputDirective,
+    NzButtonComponent,
+    NzIconDirective
+  ],
+  templateUrl: './add-to-watchlist-menu.html',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class AddToWatchlistMenu implements OnInit {
+  menuItems$!: Observable<MenuItem[]>;
+
+  showNewListDialog = false;
+
+  readonly itemToAdd = model<InstrumentKey | null>(null);
+
+  readonly allowAddToNewList = input(true);
+
+  readonly menuRef = viewChild(NzDropdownMenuComponent);
+
+  readonly titleInputEl = viewChild<ElementRef<HTMLInputElement>>('titleInput');
+
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService, {optional: true});
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly formBuilder = inject(FormBuilder);
+
+  readonly newListForm = this.formBuilder.group({
+    title: this.formBuilder.nonNullable.control(
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(100)
+      ]
+    )
+  });
+
+  ngOnInit(): void {
+    this.menuItems$ = this.getMenuItems();
+  }
+
+  selectItem(item: MenuItem): void {
+    const itemToAdd = this.itemToAdd();
+    if (item.itemId == null || itemToAdd == null) {
+      return;
+    }
+
+    this.watchlistCollectionService?.addItemsToList(item.itemId, [itemToAdd]);
+  }
+
+  addItemToNewList(): void {
+    if (this.watchlistCollectionService == null) {
+      return;
+    }
+
+    if (!this.newListForm.valid) {
+      return;
+    }
+
+    const itemToAdd = this.itemToAdd();
+
+    if (itemToAdd == null) {
+      return;
+    }
+
+    const newListTitle = this.newListForm.value.title!;
+
+    this.watchlistCollectionService.getWatchlistCollection().pipe(
+      take(1)
+    ).subscribe(collection => {
+      const existing = collection.collection.find(c => c.title === newListTitle);
+
+      if (existing != null) {
+        this.newListForm.controls.title.setErrors({
+          existing: true
+        });
+
+        return;
+      }
+
+      this.watchlistCollectionService?.createNewList(
+        newListTitle,
+        [
+          itemToAdd
+        ]
+      );
+
+      this.showNewListDialog = false;
+    });
+  }
+
+  afterNewListDialogOpen(): void {
+    setTimeout(() => {
+      this.titleInputEl()?.nativeElement.focus();
+    });
+  }
+
+  private getMenuItems(): Observable<MenuItem[]> {
+    if (this.watchlistCollectionService == null) {
+      return of([]);
+    }
+
+    return combineLatest({
+      watchlistCollection: this.watchlistCollectionService.getWatchlistCollection(),
+      translator: this.translatorService.getTranslator('instruments/add-to-watchlist-menu')
+    }).pipe(
+      map(x => {
+        const availableWatchlists = x.watchlistCollection.collection.filter(c => c.type != WatchlistType.HistoryList);
+
+        if (availableWatchlists.length === 0) {
+          return [];
+        }
+
+        const menu: MenuItem[] = [];
+
+        if (availableWatchlists.length === 1) {
+          menu.push({
+            title: x.translator(['addToList']),
+            itemId: availableWatchlists[0].id,
+            selectItem: item => this.selectItem(item),
+            subItems: []
+          });
+        } else {
+          menu.push({
+            title: x.translator(['addToList']),
+            selectItem: (): void => {
+            },
+            subItems: availableWatchlists
+              .map(list => ({
+                  title: list.title,
+                  itemId: list.id,
+                  selectItem: (item): void => this.selectItem(item),
+                  subItems: []
+                })
+              )
+          });
+        }
+
+        if (this.allowAddToNewList()) {
+          menu.push({
+            title: x.translator(['addToNewList']),
+            selectItem: () => {
+              this.newListForm.reset();
+              this.showNewListDialog = true;
+            },
+            subItems: []
+          });
+        }
+
+        return menu;
+      })
+    );
+  }
+}
+

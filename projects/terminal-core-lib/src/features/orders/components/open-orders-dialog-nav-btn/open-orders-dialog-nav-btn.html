@@ -1,0 +1,11 @@
+<ng-container *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'">
+  <button
+    (click)="openDialog()"
+    [disabled]="atsDisabled()"
+    [nzType]="'text'"
+    nz-button
+  >
+    <i class="left-side-icon" nz-icon nzTheme="outline" nzType="plus-circle"></i>
+    {{ tDesktop('dashboardNavbarDesktop.orderLabel') }}
+  </button>
+</ng-container>
