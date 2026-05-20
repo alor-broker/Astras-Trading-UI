@@ -7,15 +7,14 @@
     "lint": "ng lint --max-warnings 0",
     "codegen-hyperion": "graphql-codegen --config hyperion-codegen.ts",
     "codegen-news": "graphql-codegen --config news-codegen.ts",
-
     "start:desktop": "ng serve --project desktop-terminal",
     "start:mobile": "ng serve --project mobile-terminal",
     "start:admin": "ng serve --project admin-terminal --port 4220",
-
     "build:desktop": "ng build --project desktop-terminal",
     "build:mobile": "ng build --project mobile-terminal",
     "build:admin": "ng build --project admin-terminal",
-    "build:all": "pnpm build:desktop && pnpm build:mobile && pnpm build:admin"
+    "build:all": "pnpm build:desktop && pnpm build:mobile && pnpm build:admin",
+    "prepare": "husky"
   },
   "prettier": {
     "printWidth": 100,
@@ -102,14 +101,15 @@
     "angular-eslint": "^21.4.0",
     "browserslist": "^4.28.2",
     "eslint": "^10.3.0",
+    "glob": "^13.0.6",
     "graphql-codegen-typescript-validation-schema": "^0.19.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.0.0",
     "less": "^4.6.4",
     "ng-packagr": "^21.2.3",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.59.0",
-    "vitest": "^4.1.6",
-    "glob": "^13.0.6"
+    "vitest": "^4.1.6"
   },
   "browserslist": [
     "defaults"
