@@ -1,35 +1,5 @@
+@import "../../../styles/shared-styles";
+
 trade-screen-limit-order-form {
-  .buy-button,
-  .sell-button {
-    color: var(--ats-heading-color);
-  }
-
-  .buy-button {
-    background-color: color-mix(in srgb, var(--ats-buy-color) 15%, transparent);
-    border-color: var(--ats-buy-color);
-
-    &[disabled] {
-      color: var(--ats-btn-disable-color);
-      border-color: var(--ats-btn-disable-border);
-      background-color: var(--ats-btn-disable-bg);
-    }
-  }
-
-  .sell-button {
-    background-color: color-mix(in srgb, var(--ats-sell-color) 15%, transparent);
-    border-color: var(--ats-sell-color);
-
-    &[disabled] {
-      color: var(--ats-btn-disable-color);
-      border-color: var(--ats-btn-disable-border);
-      background-color: var(--ats-btn-disable-bg);
-    }
-  }
-
-  .evaluation-hint {
-    padding: 2px 4px 2px 4px;
-    background-color: var(--ats-descriptions-bg);
-    border: 1px solid var(--ats-border-color-base);
-    border-radius: var(--ats-border-radius-base);
-  }
+  .trade-screen-order-form-styles();
 }

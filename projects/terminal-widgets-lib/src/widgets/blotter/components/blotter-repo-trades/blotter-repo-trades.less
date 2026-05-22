@@ -1,3 +1,5 @@
+@import "../../styles/shared-styles";
+
 ats-blotter-repo-trades {
   height: 100%;
 
@@ -5,14 +7,10 @@ ats-blotter-repo-trades {
     height: 100%;
 
     .table-container {
-      height: 100%;
-      overflow: hidden;
-      min-height: 20px;
+      .blotter-table-container-base();
 
       .export-button-container {
-        min-height: 20px;
-        display: flex;
-        justify-content: center;
+        .blotter-export-button-container();
       }
 
       ant-table-header {
@@ -20,14 +18,7 @@ ats-blotter-repo-trades {
       }
 
       .ant-table-footer {
-        padding-top: 0;
-        padding-bottom: 0;
-
-        .ant-btn {
-          padding-top: 0;
-          padding-bottom: 0;
-          height: 20px;
-        }
+        .blotter-table-footer();
       }
     }
   }

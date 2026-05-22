@@ -1,3 +1,5 @@
+@import "../../styles/shared-styles";
+
 ats-blotter-positions {
   height: 100%;
 
@@ -5,9 +7,7 @@ ats-blotter-positions {
     height: 100%;
 
     .table-container {
-      height: 100%;
-      overflow: hidden;
-      min-height: 20px;
+      .blotter-table-container-base();
 
       tr:hover {
         cursor: pointer;
@@ -18,9 +18,7 @@ ats-blotter-positions {
       }
 
       .export-button-container {
-        min-height: 20px;
-        display: flex;
-        justify-content: center;
+        .blotter-export-button-container();
       }
 
       ::ng-deep .ant-table-header {
@@ -28,14 +26,7 @@ ats-blotter-positions {
       }
 
       ::ng-deep .ant-table-footer {
-        padding-top: 0;
-        padding-bottom: 0;
-
-        .ant-btn {
-          padding-top: 0;
-          padding-bottom: 0;
-          height: 20px;
-        }
+        .blotter-table-footer();
       }
     }
 

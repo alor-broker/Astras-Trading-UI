@@ -1,3 +1,5 @@
+@import "../../styles/shared-styles";
+
 ats-scalper-order-book-table {
   @border-width: 1px;
 
@@ -19,18 +21,7 @@ ats-scalper-order-book-table {
         width: 100%;
         height: 50%;
         border-bottom-style: solid;
-
-        &.minor {
-          @minor-border-width: @border-width;
-          border-bottom-width: @minor-border-width;
-          height: calc(50% + @minor-border-width);
-        }
-
-        &.major {
-          @major-border-width: @border-width * 2;
-          border-bottom-width: @major-border-width;
-          height: calc(50% + @major-border-width);
-        }
+        .scalper-order-book-grid-line-levels(@border-width);
       }
     }
 

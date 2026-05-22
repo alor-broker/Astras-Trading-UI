@@ -1,3 +1,5 @@
+@import "../../styles/shared-styles";
+
 ats-trades-cluster {
   .container {
     display: block;
@@ -41,18 +43,7 @@ ats-trades-cluster {
       border-bottom-style: solid;
       border-color: var(--ats-table-border-color);
       @border-width: 1px;
-
-      &.minor {
-        @minor-border-width: @border-width;
-        border-bottom-width: @minor-border-width;
-        height: calc(50% + @minor-border-width);
-      }
-
-      &.major {
-        @major-border-width: @border-width * 2;
-        border-bottom-width: @major-border-width;
-        height: calc(50% + @major-border-width);
-      }
+      .scalper-order-book-grid-line-levels(@border-width);
     }
   }
 }

@@ -1,0 +1,19 @@
+.scalper-order-book-hover-surface() {
+  box-shadow: 0 0 2px 1px var(--ats-border-color-base);
+  border-radius: var(--ats-border-radius-base);
+  background-color: var(--ats-component-background);
+}
+
+.scalper-order-book-grid-line-levels(@border-width) {
+  &.minor {
+    @minor-border-width: @border-width;
+    border-bottom-width: @minor-border-width;
+    height: calc(50% + @minor-border-width);
+  }
+
+  &.major {
+    @major-border-width: @border-width * 2;
+    border-bottom-width: @major-border-width;
+    height: calc(50% + @major-border-width);
+  }
+}

@@ -1,3 +1,5 @@
+@import "../../styles/shared-styles";
+
 ats-blotter-push-notifications {
   height: 100%;
 
@@ -5,9 +7,7 @@ ats-blotter-push-notifications {
     height: 100%;
 
     .table-container {
-      height: 100%;
-      overflow: hidden;
-      min-height: 20px;
+      .blotter-table-container-base();
 
       tr:hover {
         cursor: pointer;
@@ -22,14 +22,7 @@ ats-blotter-push-notifications {
       }
 
       .ant-table-footer {
-        padding-top: 0;
-        padding-bottom: 0;
-
-        .ant-btn {
-          padding-top: 0;
-          padding-bottom: 0;
-          height: 20px;
-        }
+        .blotter-table-footer();
       }
     }
   }

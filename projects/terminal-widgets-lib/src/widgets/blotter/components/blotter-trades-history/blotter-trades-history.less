@@ -1,3 +1,5 @@
+@import "../../styles/shared-styles";
+
 ats-blotter-trades-history {
   height: 100%;
 
@@ -5,30 +7,7 @@ ats-blotter-trades-history {
     height: 100%;
 
     .table-container {
-      height: 100%;
-      overflow: hidden;
-      min-height: 20px;
-
-      .export-button-container {
-        min-height: 20px;
-        display: flex;
-        justify-content: center;
-      }
-
-      .ant-table-header {
-        overflow: hidden !important;
-      }
-
-      .ant-table-footer {
-        padding-top: 0;
-        padding-bottom: 0;
-
-        .ant-btn {
-          padding-top: 0;
-          padding-bottom: 0;
-          height: 20px;
-        }
-      }
+      .blotter-exportable-table-container();
     }
   }
 
