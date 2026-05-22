@@ -1,64 +1,39 @@
-# TerminalI18n
+Данный проект содержит только общие переводы для всех приложений.
+Переводы для виджетов (содержимое проекта terminal-widgets-lib), а также переводы для core компонентов ((содержимое проекта terminal-core-lib)) должны добавляться в данный проект.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+Содержимое данного проекта копируется в output папку /assets/i18n каждого приложения (см. разделы architect/options/ файла angular.json) и доступно для загрузчика transloco.
+Если приложение имеет свои переводы, то они должны быть добавлены в соответсвующую папку такого приложения, которая находится по пути ./public/assets/i118n относительно приложения.
 
-## Code scaffolding
+Каждый файл перевода содержит JSON объект, значения свойств которых и является либо переводами, либо вложенными JSON объектами.
+При добавлении новых переводов должна соблюдаться иерархия папок.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Уровень 1. Папка должна иметь название фичи/виджета/core компонента.
+Папка этого уровня включает общие переводы фичи/виджета/core компонента, а также папки уровня 2.
+Уровень 2. Папка должна иметь название дочернего компонента или прочей дочерней функциональности. Данный уровень может отсвуствовать (см. money-operations для примера).
 
-```bash
-ng generate component component-name
-```
+Большее количество уровней создавать можно, но не рекомендуется т.к. в шаблонах увеличивает длинну ключей.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Пример:
+Для виджета mobile-home-screen создан перевод.
+Создана папка 1 уровня mobile-home-screen.
+В ней расположены общие переводы (ru.json, en.json, hy.json).
+Также в ней расположены папки 2 уровня соотвествующие отдельным частям виджета news, portfolio-evaluation и positions.
 
-```bash
-ng generate --help
-```
+При добавлении переводов должны соблюдаться следующие правила:
 
-## Building
+1. Переводы всегда должны включать русский (ru.json), английский (en.json) и армянский (hy.json) варианты.
+2. При ручном добавлении рекомендуется добавлять файл ru.json, а затем, когда все содержимое заполенено, запускать скрипт ../../scripts/generate-translations.js, который сгенерирует en и hy переводы (ТРЕБУЕТСЯ OPEN ROUTER КЛЮЧ).
+3. Папки перевода должны именоваться в kebab case
+4. Для перечислений (enum) рекомендуется создавать вложенные JSON объекты (см. ключ statuses в projects/terminal-i18n/i18n/portfolio-risk-gauge/ru.json)
 
-To build the library, run:
+Для использования переводов в классе компонента или сервиса необходимо инжектировать TranslatorService (projects/terminal-core-lib/src/features/translations/services/translator.service.ts) и вызвать метод getTranslator.
+См. пример использования projects/terminal-core-lib/src/features/orders/services/margin-order-notification.service.ts.
+Метод getTranslator принимает scope аргумент (путь до папки перевода относительно папки i18n) и возвращает функцию-переводчик.
+Функция переводчик принимает массив, каждое значение которого это наименование свойства JSON объекта.
 
-```bash
-ng build terminal-i18n
-```
+Для использования переводов в шаблоне компонента необходимо использовать TranslocoDirective.
+См. пример использования projects/terminal-widgets-lib/src/widgets/mobile-home-screen/components/mobile-home-screen-content/mobile-home-screen-content.html.
+Рекомендуется объявлять transloco директиву внутри ng-container.
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
 
-### Publishing the Library
 
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-
-   ```bash
-   cd dist/terminal-i18n
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

@@ -1,64 +1,46 @@
-# TerminalWidgetsLib
+Данный проект содержит виджеты, доступные для всех приложений.
+Виджет - элемент дашборда, который может быть добавлен/удален пользователем.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+Папка projects/terminal-widgets-lib/src/assets содержит общее содержимое, которые будет доступно по пути /assets из приложения (см. angular.json).
 
-## Code scaffolding
+Папка common содержит общие части виджетов и вспомогательные утилиты.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Среди них компоненты:
+общий скелет виджета (WidgetSkeleton),
+заголовок виджета (WidgetHeader, WidgetHeaderInstrumentSwitch),
+оболочка для настроек виджета (WidgetSettings).
 
-```bash
-ng generate component component-name
-```
+Базовые классы:
+WidgetBase для виджета
+WidgetSettingsBase для настроек виджета.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Крайне рекомендуется использовать содержимое данной папки при создании новых виджетов.
+См. projects/terminal-widgets-lib/src/widgets/orders-basket в качестве примера при создании виджета.
 
-```bash
-ng generate --help
-```
+Каждому виджету соответствует своя папка.
+Папка может содержать:
 
-## Building
+Файл widget-settings.types.ts - описывает типы настроек виджетов. Каждый тип должен расширять базовый класс WidgetSettings.
 
-To build the library, run:
+Папка с файлами оболочки виджета. Оболочка виджета определяет отображение самого виджета, его заголовок, переключение на настройки.
+Также оболочка виджета отвечает за создание дефолтных настроек виджета, если они отсутствуют. Крайне рекомендуется наслетовать класс компонента виджет от WidgetBase.
+Папка должна иметь название вида общее_имя-widget.
+У виджета может быть несколько представлений/вариаций (см. projects/terminal-widgets-lib/src/widgets/order-commands). Тогда следует создать подпапку widgets и размещать папки виджетов в ней.
 
-```bash
-ng build terminal-widgets-lib
-```
+Папка types - содержит файлы с определениями типов, используемых дынным виджетом.
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
+Папка services - используемые только данным виджетом сервиса. Если сервис используется несколькими виджетами, или приложением, то он должен быть размещен в проекте projects/terminal-core-lib.
 
-### Publishing the Library
+Папка utils - вспомогательные классы, используемые только данным виджетом.
 
-Once the project is built, you can publish your library by following these steps:
+Папка components - компоненты, определяемые внутреннее содержимое виджета, в также компонент настроек, если доступно редактирование настроек пользователем.
 
-1. Navigate to the `dist` directory:
 
-   ```bash
-   cd dist/terminal-widgets-lib
-   ```
+При добавлении виджета, чтобы он был доступен пользователям, информация о нем должнв быть добавлена в projects/terminal-widgets-lib/src/assets/widgets-meta-config.json, который определяет доступность виджета и его представление в галлерее виджетов.
+Также виджет должен быть указан в WIDGET_COMPONENT_REGISTRY соотвествующего проекта-приложения, если он в нем доступен (см. projects/desktop-terminal/src/app/widget-registry.ts). Это требуется для сокращения размера бандлов приложений за счет исключения неиспользуемых в них виджетов.
 
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
 
-## Running unit tests
+ВАЖНО: этот проект доступен всем приложениям.
+В нем не должно быть импортов никаких приложений репозитория.
+Допускаются только импорты из projects/terminal-core-lib.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

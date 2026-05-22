@@ -1,48 +1,26 @@
-## Best Practices
+Данный проект содержит общие стили и иконки для приложений.
 
-1. Css-переменные должны начинаться с префикса "ats". Большая вероятность, что в будущих релизах ng-zorro темы будут настраиваться через css-переменные. Префикс нужен чтобы избежать конфликтов именования.
+Папка themes содержит базовые настройки для светлой и темной тем.
+Настройки разделены на несколько файлов. Это базовые настройки для desktop версии.
 
-### Architecture Diagram
+Файлы projects/terminal-styling-lib/src/styles/themes/dark-theme.less и projects/terminal-styling-lib/src/styles/themes/light-theme.less
+подключают данные файлы в нужной последовательности и затем подключаются к приложения в виде css файлов (см. angular.json).
+Приложение может переопределить настроенные переменные (см. projects/mobile-terminal/src/styles/themes/light-theme.less для примера).
+Важно помнить, что компоненты не имеют доступ к объявленным less переменным, в  том числе переменным ng-zorro.
+Доступ к переменным должен осуществляться через css кастомные переменные через var функуию.
+Если требуется предоставить доступ к nz-zorro переменной или просто добавить общедоступную переменную, то это требуется сделать в projects/terminal-styling-lib/src/styles/themes/css-vars-mapping.less.
+Все добавляемые в данный файл переменные должны иметь префикс --ats.
 
-```mermaid
-graph TD
-    subgraph terminal-styling-lib - src/styles/themes
-        LV[light/variables.less<br/>Less variable overrides]
-        DV[dark/variables.less<br/>Less variable overrides]
-        CVM[css-vars-mapping.less<br/>Less vars to CSS custom props]
-        CV[const-variables.less<br/>theme-independent constants]
-        LT[light-theme.less<br/>entry file]
-        DT[dark-theme.less<br/>entry file]
-    end
 
-    subgraph ng-zorro
-        NZL[ng-zorro-antd/ng-zorro-antd.less<br/>default light theme]
-        NZD[ng-zorro-antd/ng-zorro-antd.dark.less<br/>dark theme]
-    end
+Папка utils содержит вспомогательные классы, которые рекомендуется использовать в шаблонах компонентов вместо дублирования стилей в каждом компоненте.
+Содержимое данной папки можно дополнять по мере необходимости.
+Именование стилей соответствует именованию  в  https://getbootstrap.com/docs/5.3/utilities.
 
-    subgraph UI Project - angular.json styles
-        LB[light-theme.css bundle<br/>inject: false]
-        DB[dark-theme.css bundle<br/>inject: false]
-        PS[project styles.less<br/>optional overrides]
-    end
+Папка ng-zorro-overrides содержит корректировки стилей ng-zorro компонентов.
+Корректировки группируются в файлы, название которого отражает к какому компоненту они относятся.
 
-    subgraph Runtime
-        ATH[ApplyThemeHook<br/>toggles link tags]
-    end
+Папка mixins содержит less миксины с группами общих часто используемых стилей.
 
-    NZL --> LT
-    LV --> LT
-    CVM --> LT
-    CV --> LT
-    
-    NZD --> DT
-    NZL --> DT
-    DV --> DT
-    CVM --> DT
-    CV --> DT
-    
-    LT --> LB
-    DT --> DB
-    ATH --> LB
-    ATH --> DB
-```
+Данный проект содержит общие настройки и стили. Менять их можно либо добавляя новые, либо с учетом того, что эти стили будут применены во всех приложениях.
+Приложение может переопределять и дополнять данные стили (см. projects/mobile-terminal/src/styles для примера).
+Если приложение дополняет или переопределяет файлы из данного проекта,то должна поддерживаться такая же иерархия папок и именование файлов чтобы можно было понимать что конкретно переопределено.

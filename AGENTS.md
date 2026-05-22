@@ -16,18 +16,13 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `NgOptimizedImage` for all static images.
   - `NgOptimizedImage` does not work for inline base64 images.
 
-## Accessibility Requirements
-
-- It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
-
 ### Components
 
 - Keep components small and focused on a single responsibility
 - Use `input()` and `output()` functions instead of decorators
 - Use `computed()` for derived state
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
-- Prefer inline templates for small components
+- Set `encapsulation: ViewEncapsulation.None` in `@Component` decorator
 - Prefer Reactive forms instead of Template-driven ones
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
@@ -47,6 +42,16 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the async pipe to handle observables
 - Do not assume globals like (`new Date()`) are available.
 - Do not write arrow functions in templates (they are not supported).
+- Prefer using css utilities from projects/terminal-styling-lib/src/styles/utils
+
+## Styles
+
+- Wrap all styles into component selector
+- If nz-modal or nz-dropdown or any other overlay component is using then add component name as class and wrap styles into it.
+- Use CSS variables from included css-vars-mapping.less file
+- Keep styles simple and avoid complex logic
+- Keep selectors hierarchy
+- Avoid styles duplication
 
 ## Services
 
