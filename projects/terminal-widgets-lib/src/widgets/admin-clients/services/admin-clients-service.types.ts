@@ -86,4 +86,7 @@ export enum RestrictionOrigin {
 export interface ClientRestriction {
   restrictionOrigin: RestrictionOrigin;
   expiresAt?: Date;
+  reason?: string;
+  comment?: string;
+  additionalContext?: string;
 }

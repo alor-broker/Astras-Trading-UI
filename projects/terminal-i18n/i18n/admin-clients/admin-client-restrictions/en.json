@@ -10,5 +10,9 @@
     "Manual": "Manual Block",
     "SocialRating": "Automatic Block by Social Rating",
     "Error": "Automatic Block by Number of Errors"
-  }
+  },
+  "detailsTitle": "Details",
+  "reasonTitle": "Reason",
+  "commentTitle": "Comment",
+  "additionalContextTitle": "Other"
 }

@@ -29,6 +29,7 @@ import {NzResultComponent} from "ng-zorro-antd/result";
 import {NzTableModule} from "ng-zorro-antd/table";
 import {Client} from '@terminal-widgets-lib/widgets/admin-clients/services/admin-clients-service.types';
 import {AdminClientsService} from '@terminal-widgets-lib/widgets/admin-clients/services/admin-clients.service';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 
 @Component({
   selector: 'ats-admin-client-restrictions',
@@ -42,7 +43,8 @@ import {AdminClientsService} from '@terminal-widgets-lib/widgets/admin-clients/s
     AsyncPipe,
     NzResultComponent,
     DatePipe,
-    NzTableModule
+    NzTableModule,
+    NzTypographyComponent
   ],
   templateUrl: './admin-client-restrictions.html',
   styleUrl: './admin-client-restrictions.less',
