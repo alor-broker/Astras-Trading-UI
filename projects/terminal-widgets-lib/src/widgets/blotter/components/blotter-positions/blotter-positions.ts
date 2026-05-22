@@ -75,6 +75,7 @@ import {InstrumentIcon} from '@terminal-core-lib/common/components/instrument-ic
 import {InstrumentBadgeDisplay} from '@terminal-core-lib/common/components/instrument-badge-display/instrument-badge-display';
 import {TableSearchFilter} from '@terminal-core-lib/features/tables/components/table-search-filter/table-search-filter';
 import {AddToWatchlistMenu} from '@terminal-core-lib/features/watchlist/components/add-to-watchlist-menu/add-to-watchlist-menu';
+import {TableRowHeight} from '@terminal-core-lib/common/directives/table-row-height';
 
 interface PositionDisplay extends Position {
   id: string;
@@ -105,7 +106,8 @@ interface PositionDisplay extends Position {
     InstrumentIcon,
     InstrumentBadgeDisplay,
     TableSearchFilter,
-    AddToWatchlistMenu
+    AddToWatchlistMenu,
+    TableRowHeight
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
