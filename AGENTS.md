@@ -1,60 +1,92 @@
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+# Инструкции для AI агентов
 
-## TypeScript Best Practices
+Этот репозиторий содержит Angular/TypeScript приложения и общие библиотеки терминала. AI агент должен писать поддерживаемый, типобезопасный, производительный и доступный код, соблюдая правила ниже и локальную документацию проекта.
 
-- Use strict type checking
-- Prefer type inference when the type is obvious
-- Avoid the `any` type; use `unknown` when type is uncertain
+## Перед началом изменений
 
-## Angular Best Practices
+1. Определи, какой проект затрагивается: приложение, `terminal-core-lib`, `terminal-widgets-lib`, `terminal-styling-lib` или `terminal-i18n`.
+2. Прочитай README соответствующего проекта перед изменениями.
+3. Если работа связана с общими сервисами, проверь `projects/terminal-core-lib/CORE_SERVICES.md` перед созданием нового сервиса.
+4. Если работа связана со стилями, проверь правила `projects/terminal-styling-lib/README.md`.
+5. Если работа связана с переводами, проверь правила `projects/terminal-i18n/README.md`.
 
-- Always use standalone components over NgModules
-- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
-- Use `NgOptimizedImage` for all static images.
-  - `NgOptimizedImage` does not work for inline base64 images.
+## Границы проектов
 
-### Components
+| Проект | Назначение | Важное ограничение |
+| --- | --- | --- |
+| `terminal-core-lib` | Общие компоненты, сервисы, типы, утилиты, features и assets для всех приложений | Не импортирует другие проекты репозитория |
+| `terminal-widgets-lib` | Общие виджеты дашбордов | Не импортирует приложения; допускаются импорты из `terminal-core-lib` |
+| `terminal-styling-lib` | Общие темы, CSS variables, utility classes, mixins и overrides | Изменения влияют на все приложения |
+| `terminal-i18n` | Общие переводы для приложений, виджетов и core компонентов | Для каждого scope нужны `ru.json`, `en.json`, `hy.json` |
 
-- Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators
-- Use `computed()` for derived state
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
-- Set `encapsulation: ViewEncapsulation.None` in `@Component` decorator
-- Prefer Reactive forms instead of Template-driven ones
-- Do NOT use `ngClass`, use `class` bindings instead
-- Do NOT use `ngStyle`, use `style` bindings instead
-- When using external templates/styles, use paths relative to the component TS file.
+## TypeScript
+
+- Используй strict type checking.
+- Предпочитай вывод типов, когда тип очевиден.
+- Не используй `any`; если тип неизвестен, используй `unknown`.
+- Держи преобразования данных чистыми и предсказуемыми.
+
+## Angular
+
+- Используй standalone components.
+- Не указывай `standalone: true` в декораторах Angular: в Angular v20+ это значение по умолчанию.
+- Для feature routes используй lazy loading.
+- Не используй `@HostBinding` и `@HostListener`; host bindings задавай через `host` в `@Component` или `@Directive`.
+- Для статических изображений используй `NgOptimizedImage`.
+- Не используй `NgOptimizedImage` для inline base64 изображений.
+
+## Components
+
+- Компонент должен быть небольшим и отвечать за одну задачу.
+- Используй `input()` и `output()` вместо decorator-based inputs/outputs.
+- Для производных значений используй `computed()`.
+- В `@Component` указывай `changeDetection: ChangeDetectionStrategy.OnPush`.
+- В `@Component` указывай `encapsulation: ViewEncapsulation.None`.
+- Предпочитай Reactive Forms вместо Template-driven Forms.
+- Не используй `ngClass`; используй bindings для `class`.
+- Не используй `ngStyle`; используй bindings для `style`.
+- Пути к внешним templates/styles должны быть относительными к TS файлу компонента.
 
 ## State Management
 
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-- Do NOT use `mutate` on signals, use `update` or `set` instead
+- Для локального состояния используй signals.
+- Для производного состояния используй `computed()`.
+- Не используй `mutate` на signals; используй `update` или `set`.
 
 ## Templates
 
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Do not assume globals like (`new Date()`) are available.
-- Do not write arrow functions in templates (they are not supported).
-- Prefer using css utilities from projects/terminal-styling-lib/src/styles/utils
+- Держи шаблоны простыми, без сложной логики.
+- Используй native control flow: `@if`, `@for`, `@switch`.
+- Не используй `*ngIf`, `*ngFor`, `*ngSwitch`.
+- Для observables используй async pipe.
+- Не предполагай, что globals вроде `new Date()` доступны в шаблоне.
+- Не пиши arrow functions в шаблонах.
+- Для часто повторяющихся CSS правил предпочитай utilities из `projects/terminal-styling-lib/src/styles/utils`.
+- Все пользовательские текстовые метки, подписи, заголовки, placeholders, tooltips, сообщения об ошибках и пустых состояниях должны идти через переводы.
+- Для каждой новой или измененной текстовой метки должны быть добавлены переводы на три языка: русский `ru.json`, английский `en.json`, армянский `hy.json`.
 
 ## Styles
 
-- Wrap all styles into component selector
-- If nz-modal or nz-dropdown or any other overlay component is using then add component name as class and wrap styles into it.
-- Use CSS variables from included css-vars-mapping.less file
-- Keep styles simple and avoid complex logic
-- Keep selectors hierarchy
-- Avoid styles duplication
+- Все стили компонента оборачивай в selector компонента.
+- Если используется `nz-modal`, `nz-dropdown` или другой overlay component, добавляй class компонента и оборачивай overlay styles в него.
+- Используй CSS variables из `css-vars-mapping.less`.
+- Новые общедоступные CSS variables должны иметь префикс `--ats`.
+- Не обращайся из компонентов напрямую к Less переменным, включая переменные ng-zorro.
+- Держи selectors простыми, сохраняй иерархию и избегай дублирования styles.
 
 ## Services
 
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Use the `inject()` function instead of constructor injection
+- Сервис должен иметь одну ответственность.
+- Для singleton services используй `@Injectable({ providedIn: 'root' })`.
+- Используй `inject()` вместо constructor injection.
+- Перед созданием нового общего сервиса проверь, нет ли подходящего сервиса в `CORE_SERVICES.md`.
+- Если сервис не может быть `providedIn: 'root'`, выноси providers в отдельный файл с суффиксом `.providers`.
+
+## AI checklist перед завершением
+
+- Проверены README затронутых проектов.
+- Не нарушены границы импортов между проектами.
+- Для UI изменений соблюдены Angular, template и style правила.
+- Для всех новых или измененных пользовательских текстовых меток добавлены переводы на `ru`, `en`, `hy`.
+- Для виджетов обновлены metadata и registry там, где это требуется по README.
+- Изменения не создают дублирующий сервис, utility class или переводческий scope без необходимости.

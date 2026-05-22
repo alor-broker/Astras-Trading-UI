@@ -1,39 +1,80 @@
-Данный проект содержит только общие переводы для всех приложений.
-Переводы для виджетов (содержимое проекта terminal-widgets-lib), а также переводы для core компонентов ((содержимое проекта terminal-core-lib)) должны добавляться в данный проект.
+# terminal-i18n
 
-Содержимое данного проекта копируется в output папку /assets/i18n каждого приложения (см. разделы architect/options/ файла angular.json) и доступно для загрузчика transloco.
-Если приложение имеет свои переводы, то они должны быть добавлены в соответсвующую папку такого приложения, которая находится по пути ./public/assets/i118n относительно приложения.
+`terminal-i18n` содержит общие переводы для всех приложений терминала.
 
-Каждый файл перевода содержит JSON объект, значения свойств которых и является либо переводами, либо вложенными JSON объектами.
-При добавлении новых переводов должна соблюдаться иерархия папок.
+Сюда добавляются:
 
-Уровень 1. Папка должна иметь название фичи/виджета/core компонента.
-Папка этого уровня включает общие переводы фичи/виджета/core компонента, а также папки уровня 2.
-Уровень 2. Папка должна иметь название дочернего компонента или прочей дочерней функциональности. Данный уровень может отсвуствовать (см. money-operations для примера).
+- переводы виджетов из `terminal-widgets-lib`;
+- переводы core компонентов и сервисов из `terminal-core-lib`;
+- общие переводы, которые должны быть доступны всем приложениям.
 
-Большее количество уровней создавать можно, но не рекомендуется т.к. в шаблонах увеличивает длинну ключей.
+Если перевод относится только к одному приложению, добавляй его в папку этого приложения: `./public/assets/i18n` относительно приложения.
 
-Пример:
-Для виджета mobile-home-screen создан перевод.
-Создана папка 1 уровня mobile-home-screen.
-В ней расположены общие переводы (ru.json, en.json, hy.json).
-Также в ней расположены папки 2 уровня соотвествующие отдельным частям виджета news, portfolio-evaluation и positions.
+## Как переводы попадают в приложения
 
-При добавлении переводов должны соблюдаться следующие правила:
+Содержимое `terminal-i18n` копируется в output папку `/assets/i18n` каждого приложения через настройки `architect/options` в `angular.json`.
 
-1. Переводы всегда должны включать русский (ru.json), английский (en.json) и армянский (hy.json) варианты.
-2. При ручном добавлении рекомендуется добавлять файл ru.json, а затем, когда все содержимое заполенено, запускать скрипт ../../scripts/generate-translations.js, который сгенерирует en и hy переводы (ТРЕБУЕТСЯ OPEN ROUTER КЛЮЧ).
-3. Папки перевода должны именоваться в kebab case
-4. Для перечислений (enum) рекомендуется создавать вложенные JSON объекты (см. ключ statuses в projects/terminal-i18n/i18n/portfolio-risk-gauge/ru.json)
+Переводы загружаются через transloco loader.
 
-Для использования переводов в классе компонента или сервиса необходимо инжектировать TranslatorService (projects/terminal-core-lib/src/features/translations/services/translator.service.ts) и вызвать метод getTranslator.
-См. пример использования projects/terminal-core-lib/src/features/orders/services/margin-order-notification.service.ts.
-Метод getTranslator принимает scope аргумент (путь до папки перевода относительно папки i18n) и возвращает функцию-переводчик.
-Функция переводчик принимает массив, каждое значение которого это наименование свойства JSON объекта.
+## Структура scope
 
-Для использования переводов в шаблоне компонента необходимо использовать TranslocoDirective.
-См. пример использования projects/terminal-widgets-lib/src/widgets/mobile-home-screen/components/mobile-home-screen-content/mobile-home-screen-content.html.
-Рекомендуется объявлять transloco директиву внутри ng-container.
+Каждый файл перевода содержит JSON object. Значения свойств — строки переводов или вложенные JSON objects.
 
+При добавлении переводов соблюдай иерархию папок:
 
+| Уровень | Назначение | Пример |
+| --- | --- | --- |
+| 1 | Feature, widget или core component | `mobile-home-screen` |
+| 2 | Дочерний component или дочерняя функциональность | `news`, `portfolio-evaluation`, `positions` |
 
+Можно создавать больше уровней, но это не рекомендуется: в шаблонах увеличивается длина translation keys.
+
+Пример: для виджета `mobile-home-screen` создана папка первого уровня `mobile-home-screen`. В ней находятся общие `ru.json`, `en.json`, `hy.json`, а также папки второго уровня для частей виджета: `news`, `portfolio-evaluation`, `positions`.
+
+## Правила добавления переводов
+
+- Каждый scope должен включать русский, английский и армянский варианты: `ru.json`, `en.json`, `hy.json`.
+- Папки переводов именуй в kebab case.
+- Для enum values рекомендуется создавать вложенные JSON objects. Пример: ключ `statuses` в `projects/terminal-i18n/i18n/portfolio-risk-gauge/ru.json`.
+- При ручном добавлении сначала заполни `ru.json`, затем сгенерируй `en.json` и `hy.json` скриптом `../../scripts/generate-translations.js`, если доступен Open Router key.
+- При добавлении новых ключей сохраняй одинаковую структуру во всех языковых файлах scope.
+
+## Использование в классе
+
+Для переводов в component class или service используй `TranslatorService`.
+
+Путь сервиса: `projects/terminal-core-lib/src/features/translations/services/translator.service.ts`.
+
+Порядок:
+
+1. Инжектируй `TranslatorService`.
+2. Вызови `getTranslator(scope)`, где `scope` — путь до папки перевода относительно папки `i18n`.
+3. Используй возвращенную функцию-переводчик.
+4. Передавай в функцию массив, где каждое значение — имя свойства JSON object.
+
+Пример использования: `projects/terminal-core-lib/src/features/orders/services/margin-order-notification.service.ts`.
+
+## Использование в шаблоне
+
+Для переводов в template используй `TranslocoDirective`.
+
+Рекомендуется объявлять transloco directive внутри `ng-container`.
+
+Пример использования: `projects/terminal-widgets-lib/src/widgets/mobile-home-screen/components/mobile-home-screen-content/mobile-home-screen-content.html`.
+
+## AI checklist перед изменениями
+
+- Определен correct scope: общий, widget, core component или app-specific.
+- App-specific перевод не добавлен в `terminal-i18n`.
+- Папки scope названы в kebab case.
+- Добавлены или обновлены все три файла: `ru.json`, `en.json`, `hy.json`.
+- Структура ключей одинакова во всех языках.
+- Для enum-like значений использованы вложенные JSON objects.
+- В class code используется `TranslatorService`.
+- В template используется `TranslocoDirective`.
+
+## Связанные документы
+
+- `AGENTS.md` — общие правила для AI агентов.
+- `projects/terminal-core-lib/README.md` — правила core библиотеки.
+- `projects/terminal-widgets-lib/README.md` — правила переводов для общих виджетов.

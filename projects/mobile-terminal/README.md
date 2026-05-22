@@ -1,10 +1,23 @@
-﻿Данный проект является UI-приложением для Web-терминала и Android/iOs приложений для мобильных устройств.
+# mobile-terminal
 
-Запуск проекта на локальной машине:
+UI-приложение Web-терминала и Android/iOS приложений для мобильных устройств.
+
+## Команды
+
+### Локальный запуск
+
+```bash
 pnpm start:mobile
+```
 
-Сборка проекта в production конфигурации:
+### Production сборка
+
+```bash
 pnpm build:mobile
+```
 
-Сборка проекта в devContour конфигурации:
+### DevContour сборка
+
+```bash
 pnpm build:mobile --configuration devContour
+```

@@ -14,3 +14,16 @@
 * 25 индикаторов на одном графике
 * 7 основных видов графиков
   <img width="1100" alt="Frame 103" src="https://user-images.githubusercontent.com/115227067/195321028-ce360e3f-bfba-4ccf-9dec-73e26e1f34cc.png">
+
+## Документация
+
+- [Инструкции для AI агентов](AGENTS.md)
+- [Desktop terminal](projects/desktop-terminal/README.md)
+- [Mobile terminal](projects/mobile-terminal/README.md)
+- [Mobile native build](projects/mobile-terminal/BUILD_NATIVE.md)
+- [Admin terminal](projects/admin-terminal/README.md)
+- [Core library](projects/terminal-core-lib/README.md)
+- [Core services](projects/terminal-core-lib/CORE_SERVICES.md)
+- [Widgets library](projects/terminal-widgets-lib/README.md)
+- [Styling library](projects/terminal-styling-lib/README.md)
+- [I18n library](projects/terminal-i18n/README.md)

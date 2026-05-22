@@ -1,10 +1,23 @@
-﻿Данный проект является UI-приложение для терминала менеджеров.
+# admin-terminal
 
-Запуск проекта на локальной машине:
+UI-приложение терминала менеджеров.
+
+## Команды
+
+### Локальный запуск
+
+```bash
 pnpm start:admin
+```
 
-Сборка проекта в production конфигурации:
+### Production сборка
+
+```bash
 pnpm build:admin
+```
 
-Сборка проекта в devContour конфигурации:
+### DevContour сборка
+
+```bash
 pnpm build:admin --configuration devContour
+```

@@ -1,10 +1,23 @@
-﻿Данный проект является UI-приложением для Web-терминала (desktop версия).
+# desktop-terminal
 
-Запуск проекта на локальной машине:
+UI-приложение Web-терминала для desktop версии.
+
+## Команды
+
+### Локальный запуск
+
+```bash
 pnpm start:desktop
+```
 
-Сборка проекта в production конфигурации:
+### Production сборка
+
+```bash
 pnpm build:desktop
+```
 
-Сборка проекта в devContour конфигурации:
+### DevContour сборка
+
+```bash
 pnpm build:desktop --configuration devContour
+```
