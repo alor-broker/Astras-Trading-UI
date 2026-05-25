@@ -12,7 +12,7 @@ export interface InstrumentTradesItem {
   existing: boolean;
   id: number;
   oi: number;
-  orderNo: number;
+  orderno?: number | string;
   price: number;
   qty: number;
   side: string;

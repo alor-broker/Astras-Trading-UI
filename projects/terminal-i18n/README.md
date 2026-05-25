@@ -35,7 +35,15 @@
 
 - Каждый scope должен включать русский, английский и армянский варианты: `ru.json`, `en.json`, `hy.json`.
 - Папки переводов именуй в kebab case.
+- В JSON файле scope храни только ключи этого scope без дополнительной обертки. Например
+  `i18n/orderbook/settings/ru.json` содержит `"depthLabel": "Глубина"`, а не
+  `{ "orderbookSettings": { "depthLabel": "Глубина" } }`.
+- В template для scoped `TranslocoDirective` обращайся к ключам через alias scope, который использует
+  Transloco. Например при `scope: 'orderbook/settings'` значение из `depthLabel` вызывается как
+  `t('orderbookSettings.depthLabel')`.
 - Для enum values рекомендуется создавать вложенные JSON objects. Пример: ключ `statuses` в `projects/terminal-i18n/i18n/portfolio-risk-gauge/ru.json`.
+- Не хардкодь числа, лимиты, интервалы и другие константы в переводах. Храни их в component/service code
+  и передавай в перевод параметрами, например `t('settings.intervalError', {min, max})`.
 - При ручном добавлении сначала заполни `ru.json`, затем сгенерируй `en.json` и `hy.json` скриптом `../../scripts/generate-translations.js`, если доступен Open Router key.
 - При добавлении новых ключей сохраняй одинаковую структуру во всех языковых файлах scope.
 

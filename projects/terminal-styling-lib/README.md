@@ -40,6 +40,8 @@
 
 Именование utilities соответствует подходу Bootstrap utilities: `https://getbootstrap.com/docs/5.3/utilities`.
 
+Для стандартных смысловых цветов текста используй готовые классы из `src/styles/utils/color-utils.less`: `buy-color`, `sell-color`, `positive-color`, `negative-color`, `warning-color` и другие. Не создавай локальные классы компонента вроде `buy`, `sell`, `positive`, `negative`, если они только повторяют эти utilities.
+
 ## ng-zorro overrides
 
 Папка `ng-zorro-overrides` содержит корректировки стилей ng-zorro компонентов.
@@ -74,6 +76,7 @@
 - Для component styles используются CSS variables через `var(...)`, а не Less variables.
 - Новая общедоступная CSS variable добавлена в `css-vars-mapping.less` и имеет префикс `--ats`.
 - Повторяющиеся component styles вынесены в `utils`, если это действительно общий pattern.
+- Стандартные смысловые цвета текста заданы через utility-классы из `color-utils.less`, а не через локальные классы компонента.
 - ng-zorro overrides размещены в `ng-zorro-overrides` и сгруппированы по компоненту.
 - App-specific overrides сохраняют структуру папок и именование исходных файлов.
 

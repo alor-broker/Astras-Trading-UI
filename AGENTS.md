@@ -24,6 +24,7 @@
 - Используй strict type checking.
 - Предпочитай вывод типов, когда тип очевиден.
 - Не используй `any`; если тип неизвестен, используй `unknown`.
+- Для ограниченных наборов доменных значений предпочитай `enum`, а не union из строковых литералов.
 - Держи преобразования данных чистыми и предсказуемыми.
 
 ## Angular
@@ -52,6 +53,7 @@
 - Для локального состояния используй signals.
 - Для производного состояния используй `computed()`.
 - Не используй `mutate` на signals; используй `update` или `set`.
+- Функции работы с signals, которым нужен Angular injection context, вызывай только в injection context; если вызов вне него необходим, передавай `Injector` через options.
 
 ## Templates
 
@@ -73,6 +75,7 @@
 - Используй CSS variables из `css-vars-mapping.less`.
 - Новые общедоступные CSS variables должны иметь префикс `--ats`.
 - Не обращайся из компонентов напрямую к Less переменным, включая переменные ng-zorro.
+- Для стандартных смысловых цветов текста используй готовые utility-классы из `projects/terminal-styling-lib/src/styles/utils/color-utils.less`, например `buy-color`, `sell-color`, `positive-color`, `negative-color`, вместо локальных классов компонента вроде `buy`, `sell`, `positive`, `negative`.
 - Держи selectors простыми, сохраняй иерархию и избегай дублирования styles.
 - Используй только flexbox. Не используй grid
 
@@ -83,6 +86,10 @@
 - Используй `inject()` вместо constructor injection.
 - Перед созданием нового общего сервиса проверь, нет ли подходящего сервиса в `CORE_SERVICES.md`.
 - Если сервис не может быть `providedIn: 'root'`, выноси providers в отдельный файл с суффиксом `.providers`.
+
+## Общие рекомендации рекомендации
+
+- Для получения нормализованного ключа инструмента из объектов с `symbol`, `exchange`, `isin`, `instrumentGroup` используй `InstrumentKeyHelper.toInstrumentKey`, а не ручную сборку объекта `InstrumentKey`.
 
 ## AI checklist перед завершением
 
