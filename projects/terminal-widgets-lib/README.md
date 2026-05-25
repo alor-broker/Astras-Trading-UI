@@ -77,6 +77,10 @@
 
 Если виджет зависит от текущего выбранного портфеля или имеет привязку к нему, интерфейс его настроек должен явно включать поля `exchange` и `portfolio`.
 
+Для числовых настроек обязательно определяй минимальное и максимальное значение. Храни эти границы в `readonly` поле класса компонента настроек, например `validationOptions`, и используй одно и то же значение в валидаторах, в ограничениях контрола и в сообщениях об ошибках валидации. Пример: `projects/terminal-widgets-lib/src/widgets/scalper-order-book/components/scalper-order-book-settings/scalper-order-book-settings.ts`.
+
+Для настроек диапазона предпочтительно использовать `nz-slider` с явно заданными `nzMin`, `nzMax`, `nzStep` и marks на основе тех же validation options. Пример: `projects/terminal-widgets-lib/src/widgets/news/components/news-settings/news-settings.ts`.
+
 ## Добавление нового виджета
 
 1. Создай папку виджета в `projects/terminal-widgets-lib/src/widgets`.
@@ -99,6 +103,8 @@
 - Settings type расширяет базовый `WidgetSettings`, если настройки есть.
 - Settings type расширяет `InstrumentKey` или включает `symbol` и `exchange`, если виджет привязан к текущему инструменту.
 - Settings type включает `exchange` и `portfolio`, если виджет привязан к текущему портфелю.
+- Для числовых настроек заданы `min` и `max` в `readonly` validation options компонента, и эти значения используются в валидаторах, контролах и ошибках валидации.
+- Для настроек диапазона используется `nz-slider`, если нет причины выбрать другой контрол.
 - Wrapper наследуется от `WidgetBase`, если нет причины не делать этого.
 - Metadata добавлена или обновлена в `widgets-meta-config.json`, если виджет должен быть доступен пользователям.
 - `WIDGET_COMPONENT_REGISTRY` обновлен в приложении, где виджет доступен.

@@ -9,6 +9,7 @@
 3. Если работа связана с общими сервисами, проверь `projects/terminal-core-lib/CORE_SERVICES.md` перед созданием нового сервиса.
 4. Если работа связана со стилями, проверь правила `projects/terminal-styling-lib/README.md`.
 5. Если работа связана с переводами, проверь правила `projects/terminal-i18n/README.md`.
+6. Если работа связана с API-контрактами, HTTP/WebSocket методами, DTO или клиентскими сервисами, проверь [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
 
 ## Границы проектов
 
@@ -47,6 +48,7 @@
 - Не используй `ngClass`; используй bindings для `class`.
 - Не используй `ngStyle`; используй bindings для `style`.
 - Пути к внешним templates/styles должны быть относительными к TS файлу компонента.
+- При использовании ng-zorro компонентов форм и таблиц импортируй NzFormModule и NzTableModule целиком, а не отдельные компоненты.
 
 ## State Management
 
@@ -91,6 +93,7 @@
 
 - Для получения нормализованного ключа инструмента из объектов с `symbol`, `exchange`, `isin`, `instrumentGroup` используй `InstrumentKeyHelper.toInstrumentKey`, а не ручную сборку объекта `InstrumentKey`.
 
+
 ## AI checklist перед завершением
 
 - Проверены README затронутых проектов.
@@ -98,4 +101,5 @@
 - Для UI изменений соблюдены Angular, template и style правила.
 - Для всех новых или измененных пользовательских текстовых меток добавлены переводы на `ru`, `en`, `hy`.
 - Для виджетов обновлены metadata и registry там, где это требуется по README.
+- Если изменения затрагивают внешние API-контракты, они сверены с [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
 - Изменения не создают дублирующий сервис, utility class или переводческий scope без необходимости.
