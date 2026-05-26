@@ -2,6 +2,7 @@
   inject,
   Injectable
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {
   HttpClient,
   HttpContext
@@ -26,6 +27,7 @@ interface Suggestion {
 @Injectable()
 export class AiChatSuggestionsService {
   private readonly httpClient = inject(HttpClient);
+  private readonly location = inject(Location);
 
   private readonly errorHandlerService = inject(ErrorHandlerService);
 
@@ -33,11 +35,11 @@ export class AiChatSuggestionsService {
 
   getSuggestions(): Observable<string[] | null> {
     const allSuggestions$ = this.httpClient.get<Suggestion[]>(
-      '/assets/ai-chat/request-suggestions.json',
+      this.location.prepareExternalUrl('/assets/ai-chat/request-suggestions.json'),
       {
         headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
         context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
       }

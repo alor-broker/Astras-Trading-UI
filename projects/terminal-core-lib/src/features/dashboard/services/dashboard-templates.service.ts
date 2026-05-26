@@ -2,6 +2,7 @@
   inject,
   Injectable
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {
   Observable,
   shareReplay
@@ -16,6 +17,7 @@ import {HttpContextTokens} from '../../http-requests/constants/http.constants';
 @Injectable({providedIn: 'root'})
 export class DashboardTemplatesService {
   private readonly httpClient = inject(HttpClient);
+  private readonly location = inject(Location);
 
   private defaultConfig$?: Observable<DashboardTemplateConfig[]>;
 
@@ -29,11 +31,11 @@ export class DashboardTemplatesService {
 
   private readTemplatesConfig(): void {
     this.defaultConfig$ = this.httpClient.get<DashboardTemplateConfig[]>(
-      '/assets/default-dashboards-config.json',
+      this.location.prepareExternalUrl('/assets/default-dashboards-config.json'),
       {
         headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
         context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
       }

@@ -12,6 +12,7 @@ import {
   viewChild,
   ViewEncapsulation
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -182,6 +183,8 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
   private readonly instrumentSearchService = inject(InstrumentSearchService);
 
   private readonly document = inject<Document>(DOCUMENT);
+
+  private readonly location = inject(Location);
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -384,7 +387,7 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
       symbol: selectedInstrumentSymbol,
       interval: (chartLayout?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state?.interval ?? '1D') as ResolutionString,
       locale: this.translatorService.getActiveLang() as LanguageCode,
-      library_path: '/assets/charting_library/',
+      library_path: this.location.prepareExternalUrl('/assets/charting_library/'),
       datafeed: this.techChartDatafeedService,
       // additional options
       fullscreen: false,

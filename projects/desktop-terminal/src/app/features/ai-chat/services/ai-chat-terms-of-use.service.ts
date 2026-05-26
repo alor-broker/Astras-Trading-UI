@@ -2,6 +2,7 @@
   inject,
   Injectable
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {
   HttpClient,
   HttpContext
@@ -20,6 +21,7 @@ import {catchHttpError} from '@terminal-core-lib/common/utils/observable/catch-h
 @Injectable()
 export class AiChatTermsOfUseService {
   private readonly httpClient = inject(HttpClient);
+  private readonly location = inject(Location);
 
   private readonly errorHandlerService = inject(ErrorHandlerService);
 
@@ -31,12 +33,12 @@ export class AiChatTermsOfUseService {
     this.content$ ??= this.translatorService.getLangChanges().pipe(
       switchMap(lang => {
           return this.httpClient.get(
-            `/assets/ai-chat/terms-of-use_${lang}.md`,
+            this.location.prepareExternalUrl(`/assets/ai-chat/terms-of-use_${lang}.md`),
             {
               responseType: 'text',
               headers: {
-                "Cache-Control": "no-cache",
-                "Pragma": "no-cache"
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
               },
               context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
             }

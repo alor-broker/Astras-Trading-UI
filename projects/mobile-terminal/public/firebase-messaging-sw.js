@@ -11,6 +11,7 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
+const defaultIconUrl = new URL('assets/outline/ats-logo.svg', self.registration.scope).toString();
 
 messaging.onBackgroundMessage((payload) => {
   if (payload.notification != null) {
@@ -29,7 +30,7 @@ messaging.onBackgroundMessage((payload) => {
       messageData.title,
       {
         ...messageData,
-        icon: '/assets/outline/ats-logo.svg'
+        icon: defaultIconUrl
       }
     );
   }

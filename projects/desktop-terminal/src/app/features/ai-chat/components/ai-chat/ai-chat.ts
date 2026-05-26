@@ -29,7 +29,10 @@ import {
 } from 'rxjs';
 import {TranslatorFn} from '@terminal-core-lib/features/translations/services/translator-service.types';
 import {GuidGenerator} from '@terminal-core-lib/common/utils/guid-generator';
-import {AsyncPipe} from '@angular/common';
+import {
+  AsyncPipe,
+  Location
+} from '@angular/common';
 import {AiChatContainer} from '../ai-chat-container/ai-chat-container';
 import {AiChatUsageDisclaimer} from '../ai-chat-usage-disclaimer/ai-chat-usage-disclaimer';
 import {AiChatStartNewConversationButton} from '../ai-chat-start-new-conversation-button/ai-chat-start-new-conversation-button';
@@ -78,6 +81,8 @@ export class AiChat implements OnInit, OnDestroy {
   private readonly aiChatService = inject(AiChatService);
 
   private readonly suggestionsService = inject(AiChatSuggestionsService);
+
+  private readonly location = inject(Location);
 
   private translator$!: Observable<TranslatorFn>;
 
@@ -202,7 +207,7 @@ export class AiChat implements OnInit, OnDestroy {
     return {
       date: new Date(),
       isMe: false,
-      avatarUri: '/assets/outline/ats-logo.svg',
+      avatarUri: this.location.prepareExternalUrl('/assets/outline/ats-logo.svg'),
       messageType,
       content
     };

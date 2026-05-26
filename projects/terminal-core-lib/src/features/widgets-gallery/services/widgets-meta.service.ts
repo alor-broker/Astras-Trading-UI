@@ -2,6 +2,7 @@
   inject,
   Injectable
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {WidgetMeta} from './widgets-meta-service.types';
 import {
   HttpClient,
@@ -18,6 +19,7 @@ import {ErrorHandlerService} from '@terminal-core-lib/features/errors-handler/er
 @Injectable({providedIn: 'root'})
 export class WidgetsMetaService {
   private readonly httpClient = inject(HttpClient);
+  private readonly location = inject(Location);
 
   private readonly errorHandlerService = inject(ErrorHandlerService);
 
@@ -33,11 +35,11 @@ export class WidgetsMetaService {
 
   private readMeta(): void {
     this.meta$ = this.httpClient.get<WidgetMeta[]>(
-      'assets/widgets-meta-config.json',
+      this.location.prepareExternalUrl('/assets/widgets-meta-config.json'),
       {
         headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
         context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
       }

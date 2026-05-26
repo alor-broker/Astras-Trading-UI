@@ -2,6 +2,7 @@
   inject,
   Injectable
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {
   HttpClient,
   HttpContext
@@ -26,6 +27,8 @@ export class HelpService {
   private readonly httpClient = inject(HttpClient);
 
   private readonly errorHandlerService = inject(ErrorHandlerService);
+
+  private readonly location = inject(Location);
 
   private readonly helpUrl = this.externalLinksConfig.help;
 
@@ -63,11 +66,11 @@ export class HelpService {
 
   private getHelpLinks(): Observable<HelpLinks> {
     this.helpLinks ??= this.httpClient.get<HelpLinks>(
-      '/assets/help-links.json',
+      this.location.prepareExternalUrl('/assets/help-links.json'),
       {
         headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
         context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
       }

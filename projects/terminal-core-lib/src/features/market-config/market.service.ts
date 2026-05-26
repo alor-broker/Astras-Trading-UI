@@ -2,6 +2,7 @@
   inject,
   Injectable
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {
   filter,
   map,
@@ -22,16 +23,17 @@ import {
 @Injectable({providedIn: 'root'})
 export class MarketService {
   private readonly httpClient = inject(HttpClient);
+  private readonly location = inject(Location);
 
   private settings$?: Observable<MarketSettings>;
 
   getMarketSettings(): Observable<MarketSettings> {
     this.settings$ ??= this.httpClient.get<MarketSettings>(
-      '/assets/market-settings-config.json',
+      this.location.prepareExternalUrl('/assets/market-settings-config.json'),
       {
         headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
         context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
       }

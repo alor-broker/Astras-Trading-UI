@@ -6,6 +6,7 @@ import {
   inject,
   Injectable
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {
   HttpClient,
   HttpContext
@@ -16,6 +17,7 @@ import {HttpContextTokens} from '../../http-requests/constants/http.constants';
 @Injectable()
 export class TranslationsLoaderService implements TranslocoLoader {
   private readonly httpClient = inject(HttpClient);
+  private readonly location = inject(Location);
 
   getTranslation(langPath: string): Observable<Translation> {
     const path = langPath.startsWith('/')
@@ -23,12 +25,12 @@ export class TranslationsLoaderService implements TranslocoLoader {
       : langPath;
 
     return this.httpClient.get<Translation>(
-      `/assets/i18n/${path}.json`,
+      this.location.prepareExternalUrl(`/assets/i18n/${path}.json`),
       {
         context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
         headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
       }
     );
