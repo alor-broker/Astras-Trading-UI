@@ -1,5 +1,7 @@
-﻿export interface TokenState {
+import {Observable} from 'rxjs';
+
+export interface TokenState {
   token: string;
   expirationTime: number;
-  refreshCallback: () => void;
+  refreshCallback: () => Observable<boolean>;
 }

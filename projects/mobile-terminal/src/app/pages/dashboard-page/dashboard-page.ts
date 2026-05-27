@@ -12,13 +12,7 @@ import {ACTIONS_CONTEXT,} from '@terminal-core-lib/features/dashboard/types/dash
 import {GlobalLoadingIndicatorService} from '@terminal-core-lib/common/services/global-loading-indicator.service';
 import {GuidGenerator} from '@terminal-core-lib/common/utils/guid-generator';
 import {Hook} from '@terminal-core-lib/common/types/hook.types';
-import {
-  fromEvent,
-  map,
-  Observable,
-  startWith,
-  take
-} from 'rxjs';
+import {take} from 'rxjs';
 import {LocalStorageCommonConstants} from '@terminal-core-lib/features/local-storage/local-storage.constants';
 import {MobileActionsContextService} from "../../services/mobile-actions-context.service";
 import {SettingsBrokerService} from '../../settings-brokers/settings-broker.service';
@@ -29,11 +23,16 @@ import {PortfoliosStoreFacade} from '@terminal-core-lib/features/portfolios/stor
 import {UserPortfoliosHelper} from '@terminal-core-lib/features/portfolios/utils/user-portfolios.helper';
 import {NzConfigService} from 'ng-zorro-antd/core/config';
 import {OrdersDialogService} from '@terminal-core-lib/features/orders/services/orders-dialog.service';
-import {AsyncPipe} from '@angular/common';
 import {NzLayoutComponent} from 'ng-zorro-antd/layout';
-import {UrgentNotificationDialogComponent} from '@terminal-core-lib/features/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog';
-import {OrderEditDialogWidget} from '@terminal-widgets-lib/widgets/order-commands/widgets/order-edit-dialog-widget/order-edit-dialog-widget';
-import {ApplicationUpdatedWidgetComponent} from '@terminal-core-lib/features/app-releases/components/application-updated-dialog/application-updated-dialog';
+import {
+  UrgentNotificationDialogComponent
+} from '@terminal-core-lib/features/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog';
+import {
+  OrderEditDialogWidget
+} from '@terminal-widgets-lib/widgets/order-commands/widgets/order-edit-dialog-widget/order-edit-dialog-widget';
+import {
+  ApplicationUpdatedWidgetComponent
+} from '@terminal-core-lib/features/app-releases/components/application-updated-dialog/application-updated-dialog';
 import {FeedbackDialog} from '@terminal-core-lib/features/feedback/components/feedback-dialog/feedback-dialog';
 import {Navbar} from '../../components/navbar/navbar';
 import {InstrumentsHistory} from '../../components/instruments-history/instruments-history';
@@ -44,7 +43,6 @@ const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
 @Component({
   selector: 'atsm-dashboard-page',
   imports: [
-    AsyncPipe,
     NzLayoutComponent,
     UrgentNotificationDialogComponent,
     OrderEditDialogWidget,
@@ -68,8 +66,6 @@ const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
   ]
 })
 export class DashboardPage implements OnInit, OnDestroy {
-  protected screenHeight$!: Observable<number>;
-
   private readonly clientAuthService = inject(ClientAuthService);
 
   private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
@@ -119,12 +115,6 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.widgetLocalStateService.init({
       storageKey: LocalStorageCommonConstants.WidgetsLocalStateStorageKey
     });
-
-    this.screenHeight$ = fromEvent(window, 'resize')
-      .pipe(
-        map(() => (window.screen.height / window.devicePixelRatio)),
-        startWith(window.screen.height / window.devicePixelRatio)
-      );
 
     this.ordersDialogService.setDialogOptions({
       isNewOrderDialogSupported: false

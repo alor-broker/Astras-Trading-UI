@@ -26,7 +26,8 @@ import {
   of,
   shareReplay,
   switchMap,
-  take
+  take,
+  tap
 } from "rxjs";
 import {
   Role,
@@ -145,30 +146,44 @@ export class AdminAuthService implements UserContext, SessionContext, OnDestroy 
     return this.localStorage.getItem<IdentityState>(this.ssoTokenStorageKey) ?? null;
   }
 
-  private refreshJwt(): void {
-    this.state.select(s => s)
-      .pipe(
-        take(1)
-      ).subscribe(state => {
-      if (state.status === AuthStateStatus.Refreshing
-        || state.status === AuthStateStatus.Exited
-        || state.state == null) {
-        return;
-      }
-
-      this.state.patchState({
-        status: AuthStateStatus.Refreshing
-      });
-
-      this.adminIdentityService.refresh(state.state.refreshToken, state.state.jwt).subscribe(result => {
-        if (result == null) {
-          this.requestCredentials();
-          return;
+  private refreshJwt(): Observable<boolean> {
+    return this.state.select(s => s).pipe(
+      take(1),
+      switchMap(state => {
+        if (state.status === AuthStateStatus.Refreshing) {
+          return this.state.select(s => s).pipe(
+            filter(s => s.status !== AuthStateStatus.Refreshing),
+            take(1),
+            map(s => s.status === AuthStateStatus.Ready && s.state != null)
+          );
         }
 
-        this.setJwt(state.state!.refreshToken, result.jwt);
-      });
-    });
+        if (state.status === AuthStateStatus.Exited || state.state == null) {
+          return of(false);
+        }
+
+        this.state.patchState({
+          status: AuthStateStatus.Refreshing
+        });
+
+        return this.adminIdentityService.refresh(state.state.refreshToken, state.state.jwt).pipe(
+          tap(result => {
+            if (result == null) {
+              this.state.patchState({
+                status: AuthStateStatus.Exited,
+                state: null
+              });
+
+              this.requestCredentials();
+              return;
+            }
+
+            this.setJwt(state.state!.refreshToken, result.jwt);
+          }),
+          map(result => result != null)
+        );
+      })
+    );
   }
 
   private requestCredentials(): void {

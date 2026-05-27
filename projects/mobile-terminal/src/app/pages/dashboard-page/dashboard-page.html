@@ -1,30 +1,28 @@
-@if (screenHeight$ | async; as height) {
-  <nz-layout [style]="{height: height}">
-    <div class="d-flex flex-column content-wrapper">
-      <div class="fixed-height">
-        <atsm-navbar/>
-      </div>
-      <div class="instruments-history fixed-height">
-        <atsm-instruments-history/>
-      </div>
-      <div class="content">
-        <atsm-dashboard-content/>
-      </div>
+<nz-layout>
+  <div class="d-flex flex-column content-wrapper">
+    <div class="fixed-height">
+      <atsm-navbar/>
     </div>
-    @defer {
-      <ats-feedback-dialog/>
-    }
+    <div class="instruments-history fixed-height">
+      <atsm-instruments-history/>
+    </div>
+    <div class="content">
+      <atsm-dashboard-content/>
+    </div>
+  </div>
+  @defer {
+    <ats-feedback-dialog/>
+  }
 
-    @defer {
-      <ats-application-updated-dialog/>
-    }
+  @defer {
+    <ats-application-updated-dialog/>
+  }
 
-    @defer {
-      <ats-order-edit-dialog-widget/>
-    }
+  @defer {
+    <ats-order-edit-dialog-widget/>
+  }
 
-    @defer {
-      <ats-urgent-notification-dialog/>
-    }
-  </nz-layout>
-}
+  @defer {
+    <ats-urgent-notification-dialog/>
+  }
+</nz-layout>

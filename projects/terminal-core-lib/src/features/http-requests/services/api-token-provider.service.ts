@@ -6,12 +6,16 @@ import {
   BehaviorSubject,
   interval,
   Observable,
+  of,
   shareReplay
 } from "rxjs";
 import {
   distinct,
+  exhaustMap,
   filter,
-  map
+  map,
+  switchMap,
+  take
 } from "rxjs/operators";
 import {TokenState} from "./api-token-provider.types";
 import {mapWith} from '@terminal-core-lib/common/utils/observable/map-with';
@@ -29,17 +33,27 @@ export class ApiTokenProviderService implements OnDestroy {
 
   getToken(): Observable<string> {
     this.tokenRefresh$ ??= this.state$.pipe(
-      filter(s => s != null),
+      filter((s): s is TokenState => s != null),
       mapWith(() => interval(1000), (state,) => state),
-      map(state => {
+      exhaustMap(state => {
         if (this.isTokenNotExpired(state)) {
-          return state;
+          return of(state);
         }
 
-        state.refreshCallback();
-        return null;
+        return state.refreshCallback().pipe(
+          switchMap(refreshResult => {
+            if (!refreshResult) {
+              return of(null);
+            }
+
+            return this.state$.pipe(
+              filter((s): s is TokenState => s != null),
+              take(1)
+            );
+          })
+        );
       }),
-      filter(t => t != null),
+      filter((t): t is TokenState => t != null),
       distinct(),
       shareReplay(1)
     );

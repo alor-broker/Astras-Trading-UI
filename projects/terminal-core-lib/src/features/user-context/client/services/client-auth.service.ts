@@ -7,6 +7,7 @@ import {
   shareReplay,
   switchMap,
   take,
+  tap,
 } from 'rxjs';
 import {
   inject,
@@ -102,41 +103,56 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
     this.state.ngOnDestroy();
   }
 
-  setRefreshToken(refreshToken: string): void {
-    this.state.select(s => s)
-      .pipe(
-        take(1)
-      ).subscribe(state => {
-      if (state.status === AuthStateStatus.Refreshing || state.status === AuthStateStatus.Exited) {
-        return;
-      }
+  setRefreshToken(refreshToken: string): Observable<boolean> {
+    return this.state.select(s => s).pipe(
+      take(1),
+      switchMap(state => {
+        if (state.status === AuthStateStatus.Refreshing) {
+          return this.state.select(s => s).pipe(
+            filter(s => s.status !== AuthStateStatus.Refreshing),
+            take(1),
+            map(s => s.status === AuthStateStatus.Ready && s.state != null)
+          );
+        }
 
-      this.state.patchState({
-        status: AuthStateStatus.Refreshing
-      });
+        if (state.status === AuthStateStatus.Exited) {
+          return of(false);
+        }
 
-      this.refreshJwt(refreshToken)
-        .subscribe(s => {
-          if (s == null) {
-            this.requestCredentials();
-            return;
-          }
-
-          this.saveIdentity(s);
-
-          this.apiTokenProviderService.clearToken();
-          this.apiTokenProviderService.updateTokenState({
-            token: s.jwt,
-            expirationTime: s.expirationTime,
-            refreshCallback: () => this.setRefreshToken(s.refreshToken)
-          });
-
-          this.state.patchState({
-            status: AuthStateStatus.Ready,
-            state: s
-          });
+        this.state.patchState({
+          status: AuthStateStatus.Refreshing
         });
-    });
+
+        return this.refreshJwt(refreshToken).pipe(
+          tap(s => {
+            if (s == null) {
+              this.state.patchState({
+                status: AuthStateStatus.Exited,
+                state: null
+              });
+
+              this.requestCredentials();
+              return;
+            }
+
+            this.saveIdentity(s);
+
+            this.apiTokenProviderService.clearToken();
+            this.apiTokenProviderService.updateTokenState({
+              token: s.jwt,
+              expirationTime: s.expirationTime,
+              refreshCallback: () => this.setRefreshToken(s.refreshToken)
+            });
+
+            this.state.patchState({
+              status: AuthStateStatus.Ready,
+              state: s
+            });
+          }),
+          map(s => s != null)
+        );
+      })
+    );
   }
 
   checkAccess(): Observable<boolean> {
@@ -154,8 +170,7 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
           return of(false);
         }
 
-        this.setRefreshToken(savedIdentity.refreshToken);
-        return of(true);
+        return this.setRefreshToken(savedIdentity.refreshToken);
       })
     );
   }
