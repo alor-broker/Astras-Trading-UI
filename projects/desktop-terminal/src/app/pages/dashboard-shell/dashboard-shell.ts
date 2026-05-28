@@ -83,7 +83,7 @@ export class DashboardShell implements OnInit, OnDestroy {
   private redirectToMobileTerminal(): void {
     const currentUrl = this.window.location.href;
     const targetUrl = `${this.window.location.origin}${MOBILE_TERMINAL_PATH}`;
-/*
+
     if (this.isMobileTerminalPath(this.window.location.pathname)) {
       this.logMobileRedirectError(currentUrl, targetUrl);
       return;
@@ -100,7 +100,7 @@ export class DashboardShell implements OnInit, OnDestroy {
       this.logMobileRedirectError(currentUrl, targetUrl);
       return;
     }
-*/
+
     this.window.location.assign(targetUrl);
   }
 
