@@ -8,6 +8,7 @@ import {
 } from '@angular/service-worker';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
 import {
+  delay,
   filter,
   Subscription,
   take
@@ -32,7 +33,9 @@ export class SwUpdateHook implements Hook {
 
     this.updateSub = this.swUpdate.versionUpdates
       .pipe(
-        filter((event): event is VersionReadyEvent => event.type === 'VERSION_READY')
+        filter((event): event is VersionReadyEvent => event.type === 'VERSION_READY'),
+        delay(5 * 60 * 1000),
+        take(1)
       )
       .subscribe(() => {
         this.translatorService.getTranslator('').pipe(
