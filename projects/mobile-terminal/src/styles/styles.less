@@ -29,7 +29,11 @@ html {
       height: 100%;
       box-sizing: border-box;
       overflow: hidden;
-      padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left);
+
+      padding: var(--safe-area-top) var(--safe-area-right) 0 var(--safe-area-left);
+      &.capacitor {
+        padding-bottom:  var(--safe-area-bottom);
+      }
 
       > :not(router-outlet) {
         display: block;
@@ -117,4 +121,3 @@ html {
     overflow: hidden;
   }
 }
-

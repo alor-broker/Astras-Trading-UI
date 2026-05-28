@@ -2,12 +2,13 @@
   "name": "Astras",
   "short_name": "Astras",
   "description": "Astras Trading Terminal",
-  "theme_color": "#141414",
-  "background_color": "#141414",
-  "display": "fullscreen",
-  "display_override": ["fullscreen", "standalone", "minimal-ui", "browser"],
+  "theme_color": "#34363d",
+  "background_color": "#40444f",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui", "browser"],
   "scope": "/",
   "start_url": "/",
+  "gcm_sender_id": "766412584747",
   "icons": [
     {
       "src": "assets/pwa-icons/icon-72x72.png",
@@ -59,4 +60,3 @@
     }
   ]
 }
-
