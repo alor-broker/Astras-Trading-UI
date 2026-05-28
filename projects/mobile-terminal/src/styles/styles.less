@@ -30,14 +30,33 @@ html {
       box-sizing: border-box;
       overflow: hidden;
 
-      padding: var(--safe-area-top) var(--safe-area-right) 0 var(--safe-area-left);
-      &.capacitor {
-        padding-bottom:  var(--safe-area-bottom);
-      }
-
       > :not(router-outlet) {
         display: block;
         height: 100%;
+      }
+    }
+
+    &.capacitor {
+      app-root {
+        padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left);
+      }
+
+      .ant-modal-wrap {
+        padding-top: var(--safe-area-top) !important;
+      }
+
+      .ant-message {
+        top: calc(24px + var(--safe-area-top)) !important;
+      }
+
+      .ant-notification-topRight,
+      .ant-notification-topLeft,
+      .ant-notification-top {
+        top: calc(24px + var(--safe-area-top)) !important;
+      }
+
+      .ant-drawer-content-wrapper {
+        top: var(--safe-area-top) !important;
       }
     }
 
@@ -47,23 +66,6 @@ html {
       }
     }
 
-    .ant-modal-wrap {
-      padding-top: var(--safe-area-top) !important;
-    }
-
-    .ant-message {
-      top: calc(24px + var(--safe-area-top)) !important;
-    }
-
-    .ant-notification-topRight,
-    .ant-notification-topLeft,
-    .ant-notification-top {
-      top: calc(24px + var(--safe-area-top)) !important;
-    }
-
-    .ant-drawer-content-wrapper {
-      top: var(--safe-area-top) !important;
-    }
   }
 
   .ant-input-affix-wrapper,
