@@ -1,8 +1,10 @@
 @import "./ng-zorro-overrides/index";
 
 :root {
-  --safe-area-top: env(safe-area-inset-top);
-  --safe-area-bottom: env(safe-area-inset-bottom);
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
 }
 
 html {
@@ -12,13 +14,28 @@ html {
   overflow: hidden;
 
   body {
-    height: 100%;
     position: fixed;
-    overflow-y: scroll;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     -webkit-overflow-scrolling: touch;
     margin: 0;
-    padding-top: var(--safe-area-top);
-    padding-bottom: var(--safe-area-bottom);
+    background: var(--atsm-mobile-background-gradient);
+
+    app-root {
+      display: block;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+      padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left);
+
+      > :not(router-outlet) {
+        display: block;
+        height: 100%;
+      }
+    }
 
     .ant-popover {
       .ant-popover-inner-content {
@@ -35,7 +52,8 @@ html {
     }
 
     .ant-notification-topRight,
-    .ant-notification-topLeft {
+    .ant-notification-topLeft,
+    .ant-notification-top {
       top: calc(24px + var(--safe-area-top)) !important;
     }
 
@@ -99,3 +117,4 @@ html {
     overflow: hidden;
   }
 }
+

@@ -4,8 +4,8 @@
   "description": "Astras Trading Terminal",
   "theme_color": "#141414",
   "background_color": "#141414",
-  "display": "standalone",
-  "display_override": ["standalone", "fullscreen", "minimal-ui", "browser"],
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone", "minimal-ui", "browser"],
   "scope": "/",
   "start_url": "/",
   "icons": [
@@ -59,3 +59,4 @@
     }
   ]
 }
+
