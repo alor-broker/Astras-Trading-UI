@@ -64,7 +64,7 @@ const frameworkProviders = [
   provideHttpClient(withInterceptorsFromDi()),
   provideServiceWorker('ngsw-worker.js', {
     enabled: !isDevMode(),
-    registrationStrategy: 'registerWhenStable:30000',
+    registrationStrategy: 'registerWithDelay:60000',
   }),
   {
     provide: Window, useValue: window
