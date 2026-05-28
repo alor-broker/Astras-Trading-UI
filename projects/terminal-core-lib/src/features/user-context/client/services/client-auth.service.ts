@@ -95,7 +95,6 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
         state: null
       });
 
-      console.debug('fullLogout');
       this.redirectToSso(false);
     });
   }
@@ -105,7 +104,6 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
   }
 
   setRefreshToken(refreshToken: string): Observable<boolean> {
-    console.trace();
     return this.state.select(s => s).pipe(
       take(1),
       switchMap(state => {
@@ -133,7 +131,6 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
                 state: null
               });
 
-              console.debug('setRefreshToken, refreshJwt, Exited')
               this.requestCredentials();
               return;
             }
@@ -169,7 +166,6 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
 
         const savedIdentity = this.getSavedIdentity();
         if (savedIdentity == null) {
-          console.debug('checkAccess, savedIdentity == null')
           this.requestCredentials();
           return of(false);
         }
@@ -186,7 +182,6 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
     });
 
     this.localStorage.removeItem(this.ssoTokenStorageKey);
-    console.debug('logout');
     this.redirectToSso(true);
   }
 
@@ -203,7 +198,6 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
   }
 
   private requestCredentials(): void {
-    console.debug('requestCredentials');
     this.redirectToSso(false);
   }
 
@@ -221,7 +215,6 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
         state: null
       });
 
-      console.debug('initForceLogout');
       this.redirectToSso(false);
     });
   }
@@ -280,7 +273,6 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
   }
 
   private redirectToSso(withSsoExitScreen: boolean): void {
-    console.trace();
     this.window.location.assign(
       this.clientDataUrlsProvider.ssoUrl
       + `?url=${window.location.origin}/auth/sso&scope=Astras`
