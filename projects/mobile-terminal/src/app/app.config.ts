@@ -12,6 +12,8 @@ import {provideServiceWorker} from '@angular/service-worker';
 
 import {routes} from './app.routes';
 import {registerLocaleData} from '@angular/common';
+import en from '@angular/common/locales/en';
+import hy from '@angular/common/locales/hy';
 import ru from '@angular/common/locales/ru';
 import {
   provideHttpClient,
@@ -51,6 +53,8 @@ import {provideRemoteStorage} from '@terminal-core-lib/features/remote-storage/r
 import {REMOTE_STORAGE_URL_PROVIDER} from '@terminal-core-lib/features/remote-storage/remote-storage-url-provider';
 import {EnvironmentService} from './services/environment.service';
 
+registerLocaleData(en);
+registerLocaleData(hy);
 registerLocaleData(ru);
 
 const frameworkProviders = [

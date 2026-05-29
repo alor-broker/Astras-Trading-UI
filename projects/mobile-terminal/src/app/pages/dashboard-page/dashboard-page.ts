@@ -37,6 +37,7 @@ import {FeedbackDialog} from '@terminal-core-lib/features/feedback/components/fe
 import {Navbar} from '../../components/navbar/navbar';
 import {InstrumentsHistory} from '../../components/instruments-history/instruments-history';
 import {DashboardContent} from '../../components/dashboard-content/dashboard-content';
+import {TranslationHook} from '@terminal-core-lib/features/translations/hooks/translation-hook';
 
 const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
 
@@ -59,6 +60,11 @@ const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
   providers: [
     SettingsBrokerService,
     MobileActionsContextService,
+    {
+      provide: PAGE_HOOK,
+      useClass: TranslationHook,
+      multi: true
+    },
     {
       provide: ACTIONS_CONTEXT,
       useExisting: MobileActionsContextService

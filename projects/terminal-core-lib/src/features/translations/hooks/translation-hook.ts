@@ -55,10 +55,10 @@ export class TranslationHook implements Hook {
           });
         }),
         map(settings => settings.language),
-        filter(lang => !!lang),
+        filter(lang => lang != null),
       )
       .subscribe(lang => {
-        this.translatorService.setActiveLang(lang!);
+        this.translatorService.setActiveLang(lang);
       });
 
     this.langChangeSubscription.add(

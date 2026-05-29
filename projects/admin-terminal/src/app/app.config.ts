@@ -10,6 +10,8 @@ import {
 
 import {routes} from './app.routes';
 import {registerLocaleData} from '@angular/common';
+import en from '@angular/common/locales/en';
+import hy from '@angular/common/locales/hy';
 import ru from '@angular/common/locales/ru';
 import {
   provideHttpClient,
@@ -54,6 +56,8 @@ import {
 } from '@terminal-core-lib/features/user-context/user-context.types';
 import {AdminAuthService} from './services/admin-auth.service';
 
+registerLocaleData(en);
+registerLocaleData(hy);
 registerLocaleData(ru);
 
 const frameworkProviders = [
