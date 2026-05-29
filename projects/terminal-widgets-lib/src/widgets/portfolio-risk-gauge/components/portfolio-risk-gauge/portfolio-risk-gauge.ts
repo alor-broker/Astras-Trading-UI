@@ -38,38 +38,7 @@ interface GaugeArc {
 export class PortfolioRiskGauge {
   readonly view = input.required<PortfolioRiskGaugeView>();
 
-  protected readonly riskStates = PortfolioRiskStatus;
-
-  protected readonly trackPath = this.getArcPath(0, 100);
-
-  protected readonly segments: GaugeSegment[] = [
-    {
-      path: this.getArcPath(0, 13.333),
-      className: 'green'
-    },
-    {
-      path: this.getArcPath(13.333, 33.333),
-      className: 'yellow'
-    },
-    {
-      path: this.getArcPath(33.333, 60),
-      className: 'restricted'
-    },
-    {
-      path: this.getArcPath(60, 66.667),
-      className: 'red'
-    },
-    {
-      path: this.getArcPath(66.667, 76.667),
-      className: 'forced-close-risk'
-    },
-    {
-      path: this.getArcPath(76.667, 100),
-      className: 'critical'
-    }
-  ];
-
-  private readonly gaugeArc = arc<GaugeArc>()
+  private static readonly gaugeArc = arc<GaugeArc>()
     .innerRadius(d => d.innerRadius)
     .outerRadius(d => d.outerRadius)
     .startAngle(d => d.startAngle)
@@ -77,20 +46,51 @@ export class PortfolioRiskGauge {
     .cornerRadius(3)
     .padAngle(0.02);
 
+  protected readonly riskStates = PortfolioRiskStatus;
+
+  protected readonly trackPath = PortfolioRiskGauge.getArcPath(0, 100);
+
+  protected readonly segments: GaugeSegment[] = [
+    {
+      path: PortfolioRiskGauge.getArcPath(0, 13.333),
+      className: 'green'
+    },
+    {
+      path: PortfolioRiskGauge.getArcPath(13.333, 33.333),
+      className: 'yellow'
+    },
+    {
+      path: PortfolioRiskGauge.getArcPath(33.333, 60),
+      className: 'restricted'
+    },
+    {
+      path: PortfolioRiskGauge.getArcPath(60, 66.667),
+      className: 'red'
+    },
+    {
+      path: PortfolioRiskGauge.getArcPath(66.667, 76.667),
+      className: 'forced-close-risk'
+    },
+    {
+      path: PortfolioRiskGauge.getArcPath(76.667, 100),
+      className: 'critical'
+    }
+  ];
+
   protected getNeedleTransform(view: PortfolioRiskGaugeView): string {
     return `rotate(${this.valueToAngle(view.gaugeValuePercent ?? 0)})`;
   }
 
-  private getArcPath(startPercent: number, endPercent: number): string {
-    return this.gaugeArc({
-      startAngle: this.percentToRadians(startPercent),
-      endAngle: this.percentToRadians(endPercent),
+  private static getArcPath(startPercent: number, endPercent: number): string {
+    return PortfolioRiskGauge.gaugeArc({
+      startAngle: PortfolioRiskGauge.percentToRadians(startPercent),
+      endAngle: PortfolioRiskGauge.percentToRadians(endPercent),
       innerRadius: 69,
       outerRadius: 82
     }) ?? '';
   }
 
-  private percentToRadians(percent: number): number {
+  private static percentToRadians(percent: number): number {
     return (-90 + percent * 1.8) * Math.PI / 180;
   }
 
