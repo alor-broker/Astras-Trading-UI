@@ -68,13 +68,13 @@
             ],
             "styles": [
               {
-                "input": "projects/terminal-styling-lib/src/styles/themes/light-theme.less",
-                "bundleName": "light-theme",
-                "inject": false
-              },
-              {
                 "input": "projects/terminal-styling-lib/src/styles/themes/dark-theme.less",
                 "bundleName": "dark-theme",
+                "inject": true
+              },
+              {
+                "input": "projects/terminal-styling-lib/src/styles/themes/light-theme.less",
+                "bundleName": "light-theme",
                 "inject": false
               },
               {
@@ -102,8 +102,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -123,8 +123,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -232,13 +232,13 @@
             ],
             "styles": [
               {
-                "input": "projects/mobile-terminal/src/styles/themes/light-theme.less",
-                "bundleName": "light-theme",
-                "inject": false
-              },
-              {
                 "input": "projects/mobile-terminal/src/styles/themes/dark-theme.less",
                 "bundleName": "dark-theme",
+                "inject": true
+              },
+              {
+                "input": "projects/mobile-terminal/src/styles/themes/light-theme.less",
+                "bundleName": "light-theme",
                 "inject": false
               },
               {
@@ -266,8 +266,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -287,8 +287,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -391,13 +391,13 @@
             ],
             "styles": [
               {
-                "input": "projects/terminal-styling-lib/src/styles/themes/light-theme.less",
-                "bundleName": "light-theme",
-                "inject": false
-              },
-              {
                 "input": "projects/terminal-styling-lib/src/styles/themes/dark-theme.less",
                 "bundleName": "dark-theme",
+                "inject": true
+              },
+              {
+                "input": "projects/terminal-styling-lib/src/styles/themes/light-theme.less",
+                "bundleName": "light-theme",
                 "inject": false
               },
               {
@@ -424,8 +424,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -445,8 +445,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
