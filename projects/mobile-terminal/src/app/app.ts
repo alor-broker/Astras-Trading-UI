@@ -12,7 +12,6 @@ import {Hook} from '@terminal-core-lib/common/types/hook.types';
 import {TitleHook} from '@terminal-core-lib/common/hooks/set-title.hook';
 import {SwEventsLoggingHook} from '@terminal-core-lib/features/pwa/hooks/sw-events-logging-hook';
 import {SwUpdateHook} from '@terminal-core-lib/features/pwa/hooks/sw-update.hook';
-import {CapacitorBodyClassHook} from './hooks/capacitor-body-class.hook';
 
 const APP_INIT_HOOK = new InjectionToken<Hook[]>('APP_INIT_HOOK');
 
@@ -38,12 +37,7 @@ const APP_INIT_HOOK = new InjectionToken<Hook[]>('APP_INIT_HOOK');
       provide: APP_INIT_HOOK,
       useClass: SwEventsLoggingHook,
       multi: true
-    },
-    {
-      provide: APP_INIT_HOOK,
-      useClass: CapacitorBodyClassHook,
-      multi: true
-    },
+    }
   ],
 })
 export class App implements OnInit, OnDestroy {
