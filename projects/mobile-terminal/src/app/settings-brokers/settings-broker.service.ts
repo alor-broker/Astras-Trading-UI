@@ -149,6 +149,11 @@ export class SettingsBrokerService {
     this.terminalSettingsService.onReset().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
+      this.localStorageService.removeItem(LocalStorageMobileConstants.TerminalSettingsStorageKey);
+      this.localStorageService.removeItem(LocalStorageMobileConstants.WidgetsSettingsStorageKey);
+      this.localStorageService.removeItem(LocalStorageMobileConstants.DashboardsSettingsStorageKey);
+      this.localStorageService.removeItem(LocalStorageMobileConstants.InstrumentsHistoryStorageKey);
+      this.localStorageService.removeItem(LocalStorageMobileConstants.MigrationsSettingsStorageKey);
       this.terminalSettingsService.notifyResetSuccess();
     });
 
