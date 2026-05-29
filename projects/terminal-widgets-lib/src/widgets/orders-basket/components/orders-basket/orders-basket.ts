@@ -354,19 +354,23 @@ export class OrdersBasket implements OnInit, OnDestroy {
     }
 
     const formValue = this.form.value as OrdersBasketType;
+    const side = formValue.side ?? Side.Buy;
+
     return {
       ...formValue,
       budget: Number(formValue.budget),
-      side: formValue.side,
-      mode: formValue.mode,
+      side,
+      mode: this.getModeBySide(side, formValue.mode),
       items: formValue.items
     };
   }
 
   private restoreFormValue(savedBasket: OrdersBasketType): void {
+    const side = savedBasket.side ?? Side.Buy;
+
     this.form.controls.budget.setValue(savedBasket.budget);
-    this.form.controls.side.setValue(savedBasket.side ?? Side.Buy);
-    this.form.controls.mode.setValue(savedBasket.mode ?? CalculationMode.Margin);
+    this.form.controls.side.setValue(side);
+    this.form.controls.mode.setValue(this.getModeBySide(side, savedBasket.mode));
 
     const items = this.form.controls.items;
     items.clear();
@@ -390,6 +394,7 @@ export class OrdersBasket implements OnInit, OnDestroy {
     this.form.controls.items.clear();
     this.form.controls.items.push(this.createItemDraftControl({quota: 50}));
     this.form.controls.items.push(this.createItemDraftControl({quota: 50}));
+    this.updateModeControlBySide(this.form.controls.side.value);
 
     this.formSubscriptions = this.form.statusChanges.subscribe(status => {
       // submit button disabled status for some reason lagging behind by 1 status when updating budget
@@ -404,7 +409,34 @@ export class OrdersBasket implements OnInit, OnDestroy {
     });
 
     this.formSubscriptions.add(saveSub);
+    this.formSubscriptions.add(this.initForcedCashModeForSell());
     this.formSubscriptions.add(this.initQuantityCalculation(settings));
+  }
+
+  private initForcedCashModeForSell(): Subscription {
+    return this.form.controls.side.valueChanges.subscribe(side => {
+      this.updateModeControlBySide(side);
+    });
+  }
+
+  private updateModeControlBySide(side: Side): void {
+    const modeControl = this.form.controls.mode;
+
+    if (side === Side.Sell) {
+      if (modeControl.value !== CalculationMode.Cash) {
+        modeControl.setValue(CalculationMode.Cash, {emitEvent: false});
+      }
+
+      if (modeControl.enabled) {
+        modeControl.disable({emitEvent: false});
+      }
+
+      return;
+    }
+
+    if (modeControl.disabled) {
+      modeControl.enable({emitEvent: false});
+    }
   }
 
   private initQuantityCalculation(settings: OrdersBasketWidgetSettings): Subscription {
@@ -441,7 +473,7 @@ export class OrdersBasket implements OnInit, OnDestroy {
       )
     ).subscribe(({items, evaluation}) => {
       const side = this.form.value.side ?? Side.Buy;
-      const mode = this.form.value.mode ?? CalculationMode.Margin;
+      const mode = this.getModeBySide(side, this.form.value.mode);
 
       const setQuantity = (id: string, quantity: number): void => {
         const itemsControl = this.form.controls.items;
@@ -474,6 +506,12 @@ export class OrdersBasket implements OnInit, OnDestroy {
         setQuantity(i.id, 0);
       });
     });
+  }
+
+  private getModeBySide(side: Side, mode: CalculationMode | undefined | null): CalculationMode {
+    return side === Side.Sell
+      ? CalculationMode.Cash
+      : mode ?? CalculationMode.Margin;
   }
 
   private createItemDraftControl(item: Partial<OrdersBasketItemType>): FormControl<Partial<OrdersBasketItemType> | null> {
