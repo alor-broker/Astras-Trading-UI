@@ -12,7 +12,6 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {GlobalLoadingIndicatorService} from '@terminal-core-lib/common/services/global-loading-indicator.service';
 import {DashboardPage} from '../dashboard-page/dashboard-page';
 import {Hook,} from '@terminal-core-lib/common/types/hook.types';
-import {ApplyThemeHook} from '@terminal-core-lib/features/themes/hooks/apply-theme.hook';
 import {dashboardProviders} from '../../dashboard.providers';
 import {take} from 'rxjs';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
@@ -30,12 +29,7 @@ const SHELL_INIT_HOOK = new InjectionToken<Hook[]>('SHELL_INIT_HOOK');
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
-    dashboardProviders,
-    {
-      provide: SHELL_INIT_HOOK,
-      useClass: ApplyThemeHook,
-      multi: true
-    },
+    dashboardProviders
   ],
 })
 export class DashboardShell implements OnInit, OnDestroy {
