@@ -3,7 +3,6 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  HostListener,
   inject,
   input,
   OnDestroy,
@@ -32,6 +31,9 @@ import {ResizedEvent} from '@terminal-widgets-lib/widgets/scalper-order-book/com
       useExisting: Panel
     }
   ],
+  host: {
+    '(dblclick)': 'expand()'
+  },
   imports: [PanelResizeHandler],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
@@ -92,7 +94,6 @@ export class Panel implements PanelResizeContext, OnInit, OnDestroy {
     return this.host.nativeElement.getBoundingClientRect();
   }
 
-  @HostListener('dblclick')
   expand(): void {
     if (!this.expandable()) {
       return;

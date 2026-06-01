@@ -39,7 +39,6 @@ import {InputNumber} from '@terminal-core-lib/common/components/input-number/inp
 
 @Component({
   selector: 'ats-money-withdrawal',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     NzButtonModule,

@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  HostBinding,
   input,
   ViewEncapsulation
 } from '@angular/core';
@@ -26,6 +25,9 @@ import {AiChatTextMessage} from '../ai-chat-text-message/ai-chat-text-message';
     AiChatTextMessage
   ],
   templateUrl: './ai-chat-message-container.html',
+  host: {
+    '[@flyIn]': 'true'
+  },
   animations: [
     trigger('flyIn', [
       state('in', style({transform: 'translateX(0)', opacity: 1})),
@@ -40,7 +42,4 @@ export class AiChatMessageContainer {
   readonly message = input.required<Message<any>>();
 
   readonly messageTypes = MessageType;
-
-  @HostBinding('@flyIn')
-  readonly flyIn = true;
 }

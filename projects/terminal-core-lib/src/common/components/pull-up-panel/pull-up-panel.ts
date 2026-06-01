@@ -4,7 +4,6 @@ import {
   Component,
   computed,
   ElementRef,
-  HostListener,
   inject,
   input,
   model,
@@ -27,7 +26,11 @@ import {NgTemplateOutlet} from "@angular/common";
   host: {
     '[class.expanded]': 'isExpanded()',
     '[style.transition-duration.s]': 'currentTransitionDuration()',
-    '[style.--header-height.px]': 'headerHeight()'
+    '[style.--header-height.px]': 'headerHeight()',
+    '(document:mousemove)': 'onDocumentPointerMove($event)',
+    '(document:touchmove)': 'onDocumentPointerMove($event)',
+    '(document:mouseup)': 'onDocumentPointerUp($event)',
+    '(document:touchend)': 'onDocumentPointerUp($event)'
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
@@ -83,8 +86,6 @@ export class PullUpPanel implements AfterViewInit, OnDestroy {
     this.isExpanded.update(v => !v);
   }
 
-  @HostListener('document:mousemove', ['$event'])
-  @HostListener('document:touchmove', ['$event'])
   onDocumentPointerMove(event: MouseEvent | TouchEvent): void {
     if (!this.isDragging()) return;
 
@@ -106,8 +107,6 @@ export class PullUpPanel implements AfterViewInit, OnDestroy {
     this.renderer.setStyle(this.elementRef.nativeElement, 'transform', `translateY(${translateY}px)`);
   }
 
-  @HostListener('document:mouseup', ['$event'])
-  @HostListener('document:touchend', ['$event'])
   onDocumentPointerUp(event: MouseEvent | TouchEvent): void {
     if (!this.isDragging()) return;
 

@@ -37,8 +37,7 @@ import {
   toObservable
 } from "@angular/core/rxjs-interop";
 import {
-  AsyncPipe,
-  NgClass
+  AsyncPipe
 } from '@angular/common';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {
@@ -87,7 +86,6 @@ import {InputNumber} from '@terminal-core-lib/common/components/input-number/inp
     },
   ],
   imports: [
-    NgClass,
     TranslocoDirective,
     FormsModule,
     NzFormDirective,

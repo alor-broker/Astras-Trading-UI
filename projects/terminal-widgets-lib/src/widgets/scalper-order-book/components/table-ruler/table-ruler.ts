@@ -23,8 +23,7 @@ import {
   toObservable
 } from "@angular/core/rxjs-interop";
 import {
-  AsyncPipe,
-  NgClass
+  AsyncPipe
 } from '@angular/common';
 import {PriceUnits} from '@terminal-widgets-lib/widgets/scalper-order-book/widget-settings.types';
 import {
@@ -46,7 +45,6 @@ interface MarkerDisplay {
   templateUrl: './table-ruler.html',
   styleUrls: ['./table-ruler.less'],
   imports: [
-    NgClass,
     AsyncPipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

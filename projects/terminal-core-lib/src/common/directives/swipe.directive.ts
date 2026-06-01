@@ -1,11 +1,14 @@
 import {
   Directive,
-  HostListener,
   output
 } from '@angular/core';
 
 @Directive({
-  selector: '[atsSwipe]'
+  selector: '[atsSwipe]',
+  host: {
+    '(touchstart)': 'onTouchStart($event)',
+    '(touchend)': 'onTouchEnd($event)'
+  }
 })
 export class Swipe {
   swipeLeft = output<void>();
@@ -14,12 +17,10 @@ export class Swipe {
 
   private touchStartX = 0;
 
-  @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent): void {
     this.touchStartX = event.touches[0].clientX;
   }
 
-  @HostListener('touchend', ['$event'])
   onTouchEnd(event: TouchEvent): void {
     const deltaX = event.changedTouches[0].clientX - this.touchStartX;
     if (deltaX > 50) this.swipeRight.emit();

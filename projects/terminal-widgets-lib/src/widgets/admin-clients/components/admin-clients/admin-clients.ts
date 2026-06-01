@@ -108,7 +108,6 @@ interface ColumnBase {
 
 @Component({
   selector: 'ats-admin-clients',
-  standalone: true,
   imports: [
     NzResizeObserverDirective,
     LetDirective,

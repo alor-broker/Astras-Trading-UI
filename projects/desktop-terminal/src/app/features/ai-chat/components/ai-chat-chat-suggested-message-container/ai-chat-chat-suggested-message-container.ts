@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  HostBinding,
   input,
   output,
   ViewEncapsulation
@@ -22,6 +21,9 @@ import {AiChatTextMessage} from '../ai-chat-text-message/ai-chat-text-message';
     AiChatTextMessage
   ],
   templateUrl: './ai-chat-chat-suggested-message-container.html',
+  host: {
+    '[@flyInOut]': 'true'
+  },
   styleUrl: './ai-chat-chat-suggested-message-container.less',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +39,4 @@ export class AiChatChatSuggestedMessageContainer {
   readonly suggestedMessage = input.required<TextMessageContent>();
 
   readonly selected = output<TextMessageContent>();
-
-  @HostBinding('@flyInOut')
-  readonly flyInOut = true;
 }

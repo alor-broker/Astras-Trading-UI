@@ -3,7 +3,8 @@
     @if (markerPosition$ | async; as markerPosition) {
       @if (displayMarker$ | async; as displayMarker) {
         <div
-          [ngClass]="markerPosition"
+          [class.left]="markerPosition === 'left'"
+          [class.right]="markerPosition === 'right'"
           [style]="{
           'height': xAxisStep() + 'px',
           'line-height': xAxisStep() + 'px',
@@ -24,5 +25,4 @@
     }
   </div>
 }
-
 
