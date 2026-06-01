@@ -23,7 +23,7 @@ import {provideNamedApollo} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {environment} from '../environments/environment';
 import {InMemoryCache} from '@apollo/client';
-import {provideDesktopWidgetRegistry} from './widget-registry';
+import {provideAdminWidgetRegistry} from './widget-registry';
 import {provideBlotterSharedServices} from '@terminal-widgets-lib/widgets/blotter/blotter.providers';
 import {OrderInstantTranslatableNotificationsService} from '@terminal-core-lib/features/orders/services/order-instant-translatable-notifications.service';
 import {ORDER_COMMAND_SERVICE_TOKEN} from '@terminal-core-lib/features/orders/types/order-command-service.types';
@@ -112,6 +112,6 @@ export const dashboardProviders: Provider[] = [
   ...featureProviders,
   ...thirdPartyProviders,
   ...notificationProviders,
-  ...provideDesktopWidgetRegistry(),
+  ...provideAdminWidgetRegistry(),
   ...widgetServicesProviders
 ];

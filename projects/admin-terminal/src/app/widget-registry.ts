@@ -56,7 +56,7 @@ const DESKTOP_WIDGET_REGISTRY: Map<string, Type<any>> = new Map<string, Type<any
  * Provides the desktop widget registry to the application.
  * This ensures only desktop widgets are included in the desktop terminal bundle.
  */
-export function provideDesktopWidgetRegistry(): Provider[] {
+export function provideAdminWidgetRegistry(): Provider[] {
   return [
     {
       provide: WIDGET_COMPONENT_REGISTRY,

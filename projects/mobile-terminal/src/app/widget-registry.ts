@@ -48,7 +48,7 @@ const MOBILE_WIDGET_REGISTRY: Map<string, Type<any>> = new Map<string, Type<any>
  * Provides the mobile widget registry to the application.
  * This ensures only mobile widgets are included in the mobile terminal bundle.
  */
-export function provideDesktopWidgetRegistry(): Provider[] {
+export function provideMobileWidgetRegistry(): Provider[] {
   return [
     {
       provide: WIDGET_COMPONENT_REGISTRY,

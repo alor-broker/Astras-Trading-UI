@@ -34,7 +34,7 @@ import {provideNamedApollo} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {environment} from '../environments/environment';
 import {InMemoryCache} from '@apollo/client';
-import {provideDesktopWidgetRegistry} from './widget-registry';
+import {provideMobileWidgetRegistry} from './widget-registry';
 import {provideBlotterSharedServices} from '@terminal-widgets-lib/widgets/blotter/blotter.providers';
 import {provideMobileSettingsMigrations} from '@terminal-core-lib/features/settings-sync/migrations/settings-migrations.providers';
 import {MobilePushNotificationsConnector} from './services/mobile-push-notifications-connector';
@@ -137,6 +137,6 @@ export const dashboardProviders: Provider[] = [
   ...thirdPartyProviders,
   ...appProviders,
   ...notificationProviders,
-  ...provideDesktopWidgetRegistry(),
+  ...provideMobileWidgetRegistry(),
   ...widgetServicesProviders
 ];
