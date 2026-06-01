@@ -476,7 +476,7 @@ export class ScalperCommandProcessorService {
   }
 
   private getActionMethod(action: ScalperOrderBookMouseAction): (row: {
-    price: number
+    price: number;
   }, dataContext: ScalperOrderBookDataContext) => void {
     switch (action) {
       case ScalperOrderBookMouseAction.StopLimitBuyOrder:

@@ -9,7 +9,7 @@ import {
   CORE_API_URL_PROVIDER,
   CoreApiUrlProvider
 } from '../../../config/api-url-providers';
-import {InstrumentsService} from '../../instruments/services/instruments.service'
+import {InstrumentsService} from '../../instruments/services/instruments.service';
 import {
   filter,
   forkJoin,

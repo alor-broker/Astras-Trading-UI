@@ -97,4 +97,3 @@ export class InstrumentBoardSelect implements OnInit, ControlValueAccessor {
   private onTouched = (): void => {
   };
 }
-

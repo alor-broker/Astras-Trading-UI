@@ -7,13 +7,12 @@ import {
   tap
 } from 'rxjs';
 
-import {CacheOptions} from './cache-service.types'
+import {CacheOptions} from './cache-service.types';
 
 interface CachedData {
   expirationTime?: Date;
   data$: Observable<any>;
 }
-
 
 @Injectable({providedIn: 'root'})
 export class CacheService {

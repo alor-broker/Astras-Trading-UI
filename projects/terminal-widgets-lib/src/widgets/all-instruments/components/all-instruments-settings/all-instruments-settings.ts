@@ -74,7 +74,6 @@ export class AllInstrumentsSettings extends WidgetSettingsBase<AllInstrumentsWid
     return this.form.valid;
   }
 
-
   protected getUpdatedSettings(initialSettings: AllInstrumentsWidgetSettings): Partial<AllInstrumentsWidgetSettings> {
     const newSettings = {
       ...this.form.value,

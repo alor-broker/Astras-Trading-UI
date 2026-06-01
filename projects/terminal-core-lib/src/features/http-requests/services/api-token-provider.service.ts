@@ -20,7 +20,6 @@ import {
 import {TokenState} from "./api-token-provider.types";
 import {mapWith} from '@terminal-core-lib/common/utils/observable/map-with';
 
-
 @Injectable()
 export class ApiTokenProviderService implements OnDestroy {
   private readonly state$ = new BehaviorSubject<TokenState | null>(null);

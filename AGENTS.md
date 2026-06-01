@@ -20,6 +20,17 @@
 | `terminal-styling-lib` | Общие темы, CSS variables, utility classes, mixins и overrides | Изменения влияют на все приложения |
 | `terminal-i18n` | Общие переводы для приложений, виджетов и core компонентов | Для каждого scope нужны `ru.json`, `en.json`, `hy.json` |
 
+## Внутренние library-проекты и проверки
+
+`terminal-core-lib`, `terminal-widgets-lib`, `terminal-styling-lib` и `terminal-i18n` являются внутренними container libraries workspace. Они группируют общий код, стили, assets и переводы для UI-приложений, но не публикуются как отдельные npm-пакеты и не являются самостоятельными release artifacts.
+
+- Не считай отсутствие `build` target у этих проектов проблемой. Их работоспособность проверяется через consuming UI-приложения: `desktop-terminal`, `mobile-terminal` и `admin-terminal`.
+- `terminal-core-lib` и `terminal-widgets-lib` имеют собственные `lint` targets, потому что содержат TypeScript и Angular templates.
+- `terminal-styling-lib` и `terminal-i18n` не имеют Angular lint targets, потому что текущий ESLint pipeline проверяет TS/HTML, а эти проекты содержат стили/assets и JSON-переводы.
+- `pnpm lint` запускает `ng lint --max-warnings 0` и должен затрагивать как UI-приложения, так и `terminal-core-lib`/`terminal-widgets-lib`.
+- Локальные `tsconfig.json` в `terminal-core-lib` и `terminal-widgets-lib` нужны для type-aware ESLint project service. Не удаляй их как лишние build-конфиги.
+- Если изменение в общей библиотеке может повлиять на приложение, запускай build соответствующего consuming приложения. Для общих изменений с широким охватом используй `pnpm build:all`.
+
 ## TypeScript
 
 - Используй strict type checking.

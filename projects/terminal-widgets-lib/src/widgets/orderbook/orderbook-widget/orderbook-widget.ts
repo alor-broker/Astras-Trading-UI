@@ -34,7 +34,6 @@ import {SelectedPriceData} from '@terminal-core-lib/features/widgets-communicati
 import {OrderbookSettings} from '@terminal-widgets-lib/widgets/orderbook/components/orderbook-settings/orderbook-settings';
 import {OrderBookComponent} from '@terminal-widgets-lib/widgets/orderbook/components/orderbook/orderbook';
 
-
 @Component({
   selector: 'ats-orderbook-widget',
   templateUrl: './orderbook-widget.html',
@@ -60,7 +59,7 @@ export class OrderbookWidget extends WidgetBase<OrderbookWidgetSettings> {
 
   private readonly widgetsSharedDataService = inject(WidgetSharedDataService);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
 
     this.orderbookDisplaySettings$ = this.settings$.pipe(

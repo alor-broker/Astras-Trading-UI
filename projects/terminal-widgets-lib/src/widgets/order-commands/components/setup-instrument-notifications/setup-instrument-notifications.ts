@@ -302,5 +302,4 @@ export class SetupInstrumentNotifications implements OnInit, OnDestroy {
       )
       .subscribe(() => this.refresh$.next(null));
   }
-
 }

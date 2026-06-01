@@ -5,4 +5,3 @@
   warn = 'warn',
   error = 'error'
 }
-

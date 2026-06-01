@@ -62,5 +62,4 @@ export class MobileTradeScreenWidget extends WidgetBase<MobileTradeScreenWidgetS
       this.widgetSettingsService
     );
   }
-
 }

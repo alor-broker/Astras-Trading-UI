@@ -43,14 +43,13 @@ export class DesktopManageDashboardsService {
 
   private readonly actions = inject(Actions);
 
-
   get allDashboards$(): Observable<Dashboard[]> {
     return DashboardsStreams.getAllDashboards(this.store);
   }
 
   addWidget(widgetType: string, initialSettings?: Record<string, any>, initialSize?: {
-    cols: number,
-    rows: number
+    cols: number;
+    rows: number;
   }): void {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
@@ -198,6 +197,6 @@ export class DesktopManageDashboardsService {
     return this.actions.pipe(
       ofType(DashboardsEventsActions.updated),
       map(a => ({dashboards: a.dashboards}))
-    )
+    );
   }
 }

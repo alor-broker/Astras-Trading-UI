@@ -40,7 +40,7 @@ export class MobileHomeScreenWidget extends WidgetBase<MobileHomeScreenWidgetSet
 
   private readonly userPortfoliosService = inject(PortfoliosStoreFacade);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
     this.title$ = combineLatest({
       selectedPortfolio: this.dashboardContextService.selectedPortfolio$,

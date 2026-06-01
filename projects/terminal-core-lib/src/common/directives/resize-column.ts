@@ -113,4 +113,3 @@ export class ResizeColumn implements OnInit {
     );
   }
 }
-

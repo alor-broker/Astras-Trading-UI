@@ -38,5 +38,4 @@ export class InstrumentsCorrelationWidget extends WidgetBase<InstrumentsCorrelat
       this.widgetSettingsService
     );
   }
-
 }

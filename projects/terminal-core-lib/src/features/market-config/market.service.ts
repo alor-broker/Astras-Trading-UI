@@ -69,5 +69,4 @@ export class MarketService {
       map(x => x.exchanges.find(ex => ex.settings.isDefault ?? false)?.exchange)
     );
   }
-
 }

@@ -46,5 +46,4 @@ export class WatchlistsWidget extends WidgetBase<WatchlistsWidgetSettings> {
       this.widgetSettingsService
     );
   }
-
 }

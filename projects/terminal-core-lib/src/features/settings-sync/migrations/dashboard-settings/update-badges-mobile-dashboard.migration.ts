@@ -15,7 +15,7 @@ import {
 import {
   Dashboard,
   InstrumentGroups
-} from '../../../dashboard/dashboard.types';
+} from '../../../dashboard/types/dashboard.types';
 import {DefaultBadge} from '../../../instruments/constants/badges.constants';
 
 @Injectable()

@@ -66,7 +66,7 @@ import {
   InstrumentKeyHelper
 } from '@terminal-core-lib/common/utils/instrument-key.helper';
 import {priceStepMultiplicityAsync} from '@terminal-core-lib/features/forms/validators/price-step-multiplicity';
-import {OrdersBasketItem as OrdersBasketItemType} from '../../types/orders-basket-form.types'
+import {OrdersBasketItem as OrdersBasketItemType} from '../../types/orders-basket-form.types';
 import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/components/inline-instrument-search/inline-instrument-search';
 import {InputNumber} from '@terminal-core-lib/common/components/input-number/input-number';
 

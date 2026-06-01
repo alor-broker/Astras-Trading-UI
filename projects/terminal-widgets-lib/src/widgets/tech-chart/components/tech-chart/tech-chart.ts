@@ -113,8 +113,8 @@ import {SelectedPriceData} from '@terminal-core-lib/features/widgets-communicati
 import {InstrumentSearchModal} from '@terminal-widgets-lib/widgets/tech-chart/components/instrument-search-modal/instrument-search-modal';
 
 interface ExtendedSettings {
-  widgetSettings: TechChartWidgetSettings,
-  instrument: Instrument
+  widgetSettings: TechChartWidgetSettings;
+  instrument: Instrument;
 }
 
 interface ChartState {
@@ -195,8 +195,8 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
   private settings$!: Observable<ExtendedSettings>;
 
   private chartEventSubscriptions: {
-    event: (keyof SubscribeEventsMap),
-    callback: SubscribeEventsMap[keyof SubscribeEventsMap]
+    event: (keyof SubscribeEventsMap);
+    callback: SubscribeEventsMap[keyof SubscribeEventsMap];
   }[] = [];
 
   private lastTheme?: ThemeSettings;
@@ -227,7 +227,8 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
         this.positionDisplayExtension.destroyState();
         this.tradesDisplayExtension.destroyState();
         this.chartState.widget.remove();
-      } catch (error) {
+      } catch {
+        // Ignore cleanup errors from the embedded chart widget.
       }
     }
 
@@ -483,9 +484,9 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
             this.tradesDisplayExtension.apply(extensionsContext);
           }
         );
-      } catch (e) {
+      } catch {
+        // Ignore extension errors from the embedded chart widget.
       }
-
 
       if (!deviceInfo.isMobile && (settings.panels?.headerSymbolSearch ?? true)) {
         chartWidget.headerReady().then(() => SearchButtonHelper.create(
@@ -557,7 +558,7 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private readonly intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: {
-    timeframe?: TimeFrameValue
+    timeframe?: TimeFrameValue;
   }) => void =
     (interval, timeframeObj) => {
       if (interval.includes('S')) {
@@ -658,8 +659,9 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
   private clearChartEventsSubscription(target: IChartingLibraryWidget): void {
     this.chartEventSubscriptions.forEach(subscription => {
       try {
-        target.unsubscribe(subscription.event, subscription.callback)
-      } catch (e) {
+        target.unsubscribe(subscription.event, subscription.callback);
+      } catch {
+        // Ignore unsubscribe errors from the embedded chart widget.
       }
     });
     this.chartEventSubscriptions = [];
@@ -802,8 +804,8 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private getFeatures(settings: TechChartWidgetSettings): {
-    enabled: ChartingLibraryFeatureset[],
-    disabled: ChartingLibraryFeatureset[]
+    enabled: ChartingLibraryFeatureset[];
+    disabled: ChartingLibraryFeatureset[];
   } {
     const enabled = new Set<ChartingLibraryFeatureset>([
       'side_toolbar_in_fullscreen_mode',

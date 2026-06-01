@@ -181,9 +181,9 @@ export class PortfolioSubscriptionsService {
   }
 
   getOrdersSubscription(portfolio: string, exchange: string): Observable<{
-    allOrders: Order[],
-    existingOrder?: Order,
-    lastOrder?: Order
+    allOrders: Order[];
+    existingOrder?: Order;
+    lastOrder?: Order;
   }> {
     const ownedPortfolio: PortfolioKey = {portfolio, exchange};
 
@@ -248,9 +248,9 @@ export class PortfolioSubscriptionsService {
   }
 
   getStopOrdersSubscription(portfolio: string, exchange: string): Observable<{
-    allOrders: StopOrder[],
-    existingOrder?: StopOrder,
-    lastOrder?: StopOrder
+    allOrders: StopOrder[];
+    existingOrder?: StopOrder;
+    lastOrder?: StopOrder;
   }> {
     const ownedPortfolio: PortfolioKey = {portfolio, exchange};
 

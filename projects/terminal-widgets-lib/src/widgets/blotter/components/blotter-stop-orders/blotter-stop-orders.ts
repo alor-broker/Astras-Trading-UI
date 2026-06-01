@@ -317,7 +317,6 @@ export class BlotterStopOrders extends BlotterBaseTable<DisplayOrder, OrderFilte
     return true;
   }
 
-
   override rowClick(row: DisplayOrder): void {
     this.settings$
       .pipe(

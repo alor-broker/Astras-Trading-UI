@@ -1,8 +1,8 @@
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 
 interface ShortPriceFormat {
-  minMove: number,
-  precision: number
+  minMove: number;
+  precision: number;
 }
 
 export class PriceFormatHelper {

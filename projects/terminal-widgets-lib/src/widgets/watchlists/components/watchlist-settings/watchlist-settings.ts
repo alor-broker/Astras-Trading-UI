@@ -89,7 +89,6 @@ export class WatchlistSettings extends WidgetSettingsBase<WatchlistsWidgetSettin
     return this.settingsForm.valid;
   }
 
-
   protected getUpdatedSettings(initialSetting: WatchlistsWidgetSettings): Partial<WatchlistsWidgetSettings> {
     const newSettings = {
       ...this.settingsForm!.value

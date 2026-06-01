@@ -24,9 +24,9 @@ import {debounceTime} from 'rxjs/operators';
 import {Candle} from '@terminal-core-lib/features/instruments/services/candles-service.types';
 import {
   HistoryMetadata,
-  LightChartConfig
+  LightChartConfig,
+  TimeframeValue
 } from '@terminal-widgets-lib/widgets/light-chart/types/light-chart.types';
-import {TimeframeValue} from '@terminal-core-lib/common/types/timeframe.types';
 
 interface ChartSeries {
   candlestickSeries: ISeriesApi<"Candlestick">;

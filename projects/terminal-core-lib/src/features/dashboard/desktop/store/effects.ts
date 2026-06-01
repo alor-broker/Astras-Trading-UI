@@ -7,7 +7,7 @@ import {
   Actions,
   createEffect,
   ofType
-} from '@ngrx/effects'
+} from '@ngrx/effects';
 import {MarketService} from '../../../market-config/market.service';
 import {PortfoliosStoreFacade} from '../../../portfolios/store/portfolios-store-facade';
 import {

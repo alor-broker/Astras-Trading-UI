@@ -27,7 +27,6 @@ import {
 import {GuidGenerator} from '../../../../common/utils/guid-generator';
 import {InstrumentKeyHelper} from '../../../../common/utils/instrument-key.helper';
 
-
 export interface State extends EntityState<Dashboard> {
   status: EntityStatus;
 }

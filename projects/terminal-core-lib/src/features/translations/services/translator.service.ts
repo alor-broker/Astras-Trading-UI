@@ -10,7 +10,6 @@ import {
 import {TranslatorFn} from './translator-service.types';
 import {HashMap} from '@jsverse/transloco/lib/utils/type.utils';
 
-
 export class TranslatorService {
   private readonly translocoService = inject(TranslocoService);
 

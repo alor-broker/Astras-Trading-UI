@@ -51,5 +51,4 @@ export class PortfolioSummaryWidget extends WidgetBase<PortfolioSummaryWidgetSet
       this.widgetSettingsService
     );
   }
-
 }

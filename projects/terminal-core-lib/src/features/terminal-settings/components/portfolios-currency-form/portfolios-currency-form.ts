@@ -173,4 +173,3 @@ export class PortfoliosCurrencyForm extends ControlValueAccessorBase<PortfolioCu
       );
   }
 }
-

@@ -265,7 +265,7 @@ export class BlotterOrders extends BlotterBaseTable<DisplayOrder, OrderFilter> i
 
   override fileSuffix = 'orders';
 
-  protected readonly groupIdToView = model<string | null>(null)
+  protected readonly groupIdToView = model<string | null>(null);
 
   protected readonly userContext = inject(USER_CONTEXT);
 
@@ -281,11 +281,9 @@ export class BlotterOrders extends BlotterBaseTable<DisplayOrder, OrderFilter> i
 
   private orders: Order[] = [];
 
-
   get restoreFiltersAndSortOnLoad(): boolean {
     return true;
   }
-
 
   override rowClick(row: DisplayOrder): void {
     this.settings$
@@ -315,7 +313,7 @@ export class BlotterOrders extends BlotterBaseTable<DisplayOrder, OrderFilter> i
     event.preventDefault();
     event.stopPropagation();
 
-    if (order.type !== OrderType.Limit.toString()) {
+    if (order.type !== OrderType.Limit) {
       return;
     }
 
@@ -351,7 +349,7 @@ export class BlotterOrders extends BlotterBaseTable<DisplayOrder, OrderFilter> i
   }
 
   isMarketOrder(order: DisplayOrder): boolean {
-    return order.type === OrderType.Market.toString();
+    return order.type === OrderType.Market;
   }
 
   openOrdersGroup(groupId: string, event: MouseEvent): void {

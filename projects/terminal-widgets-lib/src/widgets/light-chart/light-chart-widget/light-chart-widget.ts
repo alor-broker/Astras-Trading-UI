@@ -50,9 +50,8 @@ export class LightChartWidget extends WidgetBase<LightChartWidgetSettings> {
 
   protected readonly dashboardContextService = inject(DASHBOARD_CONTEXT_SERVICE);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
-
 
     this.chartSettings$ = this.settings$.pipe(
       map(s => {

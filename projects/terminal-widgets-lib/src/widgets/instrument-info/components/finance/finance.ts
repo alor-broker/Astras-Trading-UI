@@ -205,4 +205,3 @@ export class Finance implements OnInit {
     return this.currencyPipe.transform(value, currencyCode, 'symbol-narrow', '0.1-2', this.locale) ?? '';
   }
 }
-

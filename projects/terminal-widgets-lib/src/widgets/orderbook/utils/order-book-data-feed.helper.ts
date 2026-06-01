@@ -1,6 +1,6 @@
-import {Order} from "../../../shared/models/orders/order.model";
+import {Order} from '@terminal-core-lib/features/portfolios/types/order.types';
 import {OrderbookRequest} from '../models/orderbook-data.model';
-import {CurrentOrder} from '../models/orderbook-view-row.model';
+import {CurrentOrder} from '../types/orderbook.types';
 
 export class OrderBookDataFeedHelper {
   public static getRealtimeDateRequest(symbol: string,
@@ -34,8 +34,9 @@ export class OrderBookDataFeedHelper {
       price: order.price,
       volume: order.qty - (order.filledQtyBatch ?? 0),
       type: order.type,
-      side: order.side
-    } as CurrentOrder;
+      side: order.side,
+      symbol: order.targetInstrument.symbol
+    };
   }
 
   public static getOrderbookSubscriptionId: (request: OrderbookRequest) => string = request =>

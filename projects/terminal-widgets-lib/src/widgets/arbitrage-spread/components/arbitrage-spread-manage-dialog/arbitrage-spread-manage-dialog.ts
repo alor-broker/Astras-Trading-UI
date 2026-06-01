@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  ViewEncapsulation
+  ViewEncapsulation, OnInit
 } from '@angular/core';
 import {ArbitrageSpreadService} from '@terminal-widgets-lib/widgets/arbitrage-spread/services/arbitrage-spread.service';
 import {
@@ -30,7 +30,7 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ArbitrageSpreadManageDialog {
+export class ArbitrageSpreadManageDialog implements OnInit {
   isVisible$: Observable<boolean> = of(false);
 
   spreadInfo$: Observable<ArbitrageSpread | null> = of(null);

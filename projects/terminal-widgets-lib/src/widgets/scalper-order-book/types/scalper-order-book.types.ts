@@ -4,8 +4,7 @@ import {OrderType} from '@terminal-core-lib/features/orders/types/orders.types';
 import {Side} from '@terminal-core-lib/common/types/side.types';
 import {Condition} from '@terminal-core-lib/common/types/condition.types';
 import {OrderMeta} from '@terminal-core-lib/features/orders/types/new-order.types';
-import {Range} from '@terminal-core-lib/common/types/range.types'
-
+import {Range} from '@terminal-core-lib/common/types/range.types';
 
 export interface CurrentOrderDisplay {
   orderId: string;

@@ -111,8 +111,8 @@ export class SessionTrackService {
   }
 
   private getTimeTrackPipe(defaultCheckPeriod$: Observable<number>, nextCheckPeriod$: Observable<number | null>): Observable<{
-    checkPeriod: number,
-    lastActivityUnixTime: number | null
+    checkPeriod: number;
+    lastActivityUnixTime: number | null;
   }> {
     return combineLatest([defaultCheckPeriod$, nextCheckPeriod$]).pipe(
       map(([defaultCheckPeriod, nextCheckPeriod]) => ({

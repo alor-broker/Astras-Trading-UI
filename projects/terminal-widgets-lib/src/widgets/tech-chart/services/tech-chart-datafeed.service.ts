@@ -422,4 +422,3 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     ];
   }
 }
-

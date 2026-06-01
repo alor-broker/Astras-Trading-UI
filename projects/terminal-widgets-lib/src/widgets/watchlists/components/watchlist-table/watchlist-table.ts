@@ -647,4 +647,3 @@ export class WatchlistTable extends BaseTableComponent<DisplayWatchlist> impleme
     }
   }
 }
-

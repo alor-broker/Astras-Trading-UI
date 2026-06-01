@@ -77,7 +77,6 @@ export class InstrumentTradesSettings extends WidgetSettingsBase<InstrumentTrade
     return this.form.valid;
   }
 
-
   protected getUpdatedSettings(initialSettings: InstrumentTradesWidgetSettings): Partial<InstrumentTradesWidgetSettings> {
     const newSettings = {
       ...this.form.value,

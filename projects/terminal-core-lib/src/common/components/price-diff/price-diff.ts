@@ -152,4 +152,3 @@ export class PriceDiff implements OnChanges {
     return 1;
   }
 }
-

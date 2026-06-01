@@ -6,7 +6,6 @@ import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {AuthInterceptor} from "./interceptors/auth.interceptor";
 import {ApiTokenProviderService} from './services/api-token-provider.service';
 
-
 export function provideAuthHttpRequests(): EnvironmentProviders {
   return makeEnvironmentProviders([
     ApiTokenProviderService,

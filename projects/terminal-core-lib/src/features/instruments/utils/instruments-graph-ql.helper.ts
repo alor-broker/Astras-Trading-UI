@@ -126,7 +126,7 @@ export class InstrumentsGraphQlHelper {
   }
 
   static parseToGqlFiltersIntersection<T extends {
-    and?: InputMaybe<T[]>
+    and?: InputMaybe<T[]>;
   }>(filters: DefaultTableFilters, schema: ZodObject<ZodRawShape>): T {
     const schemaKeys = this.zodKeys(schema);
 

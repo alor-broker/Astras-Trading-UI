@@ -195,4 +195,3 @@ export class WidgetHeader implements OnInit {
     return this.titleText;
   }
 }
-

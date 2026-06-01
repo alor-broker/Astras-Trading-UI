@@ -42,5 +42,4 @@ export class ArbitrageSpreadWidget extends WidgetBase<ArbitrageSpreadWidgetSetti
       this.widgetSettingsService
     );
   }
-
 }

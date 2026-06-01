@@ -36,11 +36,11 @@ import {OrdersBasketSettings} from '@terminal-widgets-lib/widgets/orders-basket/
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrdersBasketWidget extends WidgetBase<OrdersBasketWidgetSettings> {
-  title$!: Observable<string>
+  title$!: Observable<string>;
 
   private readonly dashboardContextService = inject(DASHBOARD_CONTEXT_SERVICE);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
     this.title$ = this.settings$.pipe(
       map(s => `${s.portfolio} (${s.exchange})`),

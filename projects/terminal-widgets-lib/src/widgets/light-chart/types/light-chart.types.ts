@@ -1,21 +1,9 @@
 ﻿import {Candle} from '@terminal-core-lib/features/instruments/services/candles-service.types';
+import {TimeframeValue} from '@terminal-core-lib/common/types/timeframe.types';
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
 import {ThemeColors} from '@terminal-core-lib/features/themes/themes.types';
 import {LightChartDatafeed} from '@terminal-widgets-lib/widgets/light-chart/services/light-chart-datafeed';
-
-export enum TimeframeValue {
-  S1 = '1',
-  S5 = '5',
-  S10 = '10',
-  M1 = '60',
-  M5 = '300',
-  M15 = '900',
-  H = '3600',
-  H4 = '14400',
-  Day = 'D',
-  W = 'W',
-  Month = 'M'
-}
+export {TimeframeValue} from '@terminal-core-lib/common/types/timeframe.types';
 
 export interface PeriodParams {
   from: number;

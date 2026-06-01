@@ -47,7 +47,7 @@ export class AllPositionsService {
             return of(null);
           }
 
-          return this.httpClient.get<PositionWarpResponse[]>(`${this.baseUrl}/${u.login}/positions`)
+          return this.httpClient.get<PositionWarpResponse[]>(`${this.baseUrl}/${u.login}/positions`);
         }
       ),
       catchHttpError<PositionWarpResponse[] | null>(null, this.errorHandlerService),

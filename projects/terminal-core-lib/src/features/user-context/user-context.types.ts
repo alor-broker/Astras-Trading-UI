@@ -2,7 +2,6 @@
 import {User} from "./user.types";
 import {InjectionToken} from '@angular/core';
 
-
 export interface UserContext {
   getUser(): Observable<User>;
 }
@@ -16,5 +15,3 @@ export interface SessionContext {
 }
 
 export const SESSION_CONTEXT = new InjectionToken<SessionContext>('SessionContext');
-
-

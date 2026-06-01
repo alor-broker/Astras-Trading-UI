@@ -20,10 +20,10 @@ export class InstrumentKeyHelper {
    * Cleans shape from extra fields
    */
   static toInstrumentKey(shape: {
-    symbol: string,
-    exchange: string,
-    isin?: string,
-    instrumentGroup?: string | null
+    symbol: string;
+    exchange: string;
+    isin?: string;
+    instrumentGroup?: string | null;
   }): InstrumentKey {
     return {
       symbol: shape.symbol,

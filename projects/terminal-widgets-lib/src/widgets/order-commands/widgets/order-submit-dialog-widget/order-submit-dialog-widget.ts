@@ -204,4 +204,3 @@ export class OrderSubmitDialogWidget implements OnInit, OnDestroy {
     this.orderTabs()?.setSelectedIndex(targetTab.position);
   }
 }
-

@@ -12,7 +12,7 @@ import {DeviceDetectorService,} from 'ngx-device-detector';
 import {
   DeviceInfo,
   DeviceType
-} from './device-service-types'
+} from './device-service-types';
 import {Capacitor} from '@capacitor/core';
 
 @Injectable({providedIn: 'root'})

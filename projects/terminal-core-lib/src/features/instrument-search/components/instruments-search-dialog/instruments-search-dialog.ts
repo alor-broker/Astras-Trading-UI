@@ -94,7 +94,7 @@ export class InstrumentsSearchDialog implements OnInit, AfterViewInit, OnDestroy
 
   boards$!: Observable<Board[]>;
 
-  searchParameters = model<SearchParameters | null>(null);
+  readonly searchParameters = model<SearchParameters | null>(null);
 
   readonly SearchStatuses = SearchStatus;
 

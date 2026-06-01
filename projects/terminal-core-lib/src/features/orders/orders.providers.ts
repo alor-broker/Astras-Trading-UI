@@ -10,7 +10,6 @@ import {MarginOrderConfirmationService} from '@terminal-core-lib/features/orders
 import {ConfirmableOrderCommandsService} from '@terminal-core-lib/features/orders/services/confirmable-order-commands.service';
 import {OrderDetailsService} from '@terminal-core-lib/features/orders/services/order-details.service';
 
-
 export function provideClientOrders(): Provider[] {
   return [
     WsOrdersConnector,

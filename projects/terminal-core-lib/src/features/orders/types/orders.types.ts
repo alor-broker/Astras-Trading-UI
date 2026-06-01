@@ -12,4 +12,3 @@ export enum TimeInForce {
   AtTheClose = 'attheclose',
   GoodTillCancelled = 'goodtillcancelled'
 }
-

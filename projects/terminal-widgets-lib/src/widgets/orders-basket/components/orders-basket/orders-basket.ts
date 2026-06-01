@@ -88,7 +88,6 @@ import {Presets} from '@terminal-widgets-lib/widgets/orders-basket/components/pr
 import {OrdersBasketItem} from '@terminal-widgets-lib/widgets/orders-basket/components/orders-basket-item/orders-basket-item';
 import {InputNumber} from '@terminal-core-lib/common/components/input-number/input-number';
 
-
 @Component({
   selector: 'ats-orders-basket',
   templateUrl: './orders-basket.html',

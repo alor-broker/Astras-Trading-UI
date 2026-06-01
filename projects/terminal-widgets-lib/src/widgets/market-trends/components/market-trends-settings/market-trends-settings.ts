@@ -102,7 +102,6 @@ export class MarketTrendsSettingsComponent extends WidgetSettingsBase<MarketTren
     return this.form.valid;
   }
 
-
   protected getUpdatedSettings(initialSettings: MarketTrendsWidgetSettings): Partial<MarketTrendsWidgetSettings> {
     const formValue = this.form.value;
 

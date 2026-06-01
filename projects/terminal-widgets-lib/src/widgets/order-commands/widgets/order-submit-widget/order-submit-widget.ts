@@ -123,7 +123,7 @@ export class OrderSubmitWidget extends WidgetBase<OrderSubmitWidgetSettings> imp
 
   private readonly orderTabsChanges$ = toObservable(this.orderTabs);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
 
     this.currentPortfolio$ = this.dashboardContextService.selectedPortfolio$.pipe(

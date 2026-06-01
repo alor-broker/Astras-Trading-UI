@@ -60,7 +60,7 @@ export class InstrumentInfoWidget extends WidgetBase<InstrumentInfoWidgetSetting
 
   private readonly instrumentService = inject(InstrumentsService);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
 
     this.instrumentSummary$ = this.settings$.pipe(

@@ -58,9 +58,9 @@ interface Safe extends GridsterConfig {
 }
 
 interface WidgetItem {
-  instance: WidgetInstance,
-  gridsterItem: GridsterItemConfig,
-  componentType: Type<any> | null
+  instance: WidgetInstance;
+  gridsterItem: GridsterItemConfig;
+  componentType: Type<any> | null;
 }
 
 @Component({

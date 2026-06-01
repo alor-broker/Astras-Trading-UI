@@ -279,7 +279,7 @@ export class TradeClustersPanel implements OnInit, OnDestroy, AfterViewInit {
   ): Observable<TradesClusterType[]> {
     const lastHistoryPoint = history.length > 0
       ? history[0].timestamp
-      : getUnixTime(new Date())
+      : getUnixTime(new Date());
 
     const updatesSubscription$ = this.tradeClustersService.getClustersSubscription(
       settings,

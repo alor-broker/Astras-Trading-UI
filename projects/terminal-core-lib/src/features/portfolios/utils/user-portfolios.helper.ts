@@ -50,12 +50,12 @@ export class UserPortfoliosHelper {
             }
 
             return prev;
-          }, [] as PortfolioExtended[])
+          }, [] as PortfolioExtended[]);
         }
 
         return null;
       })
-    )
+    );
   }
 
   private static formatPortfolioMarket(market: string, exchange: string): string {

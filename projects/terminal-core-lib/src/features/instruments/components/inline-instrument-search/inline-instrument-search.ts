@@ -221,4 +221,3 @@ export class InlineInstrumentSearch implements OnInit, OnDestroy, ControlValueAc
     this.selectedValue = null;
   }
 }
-

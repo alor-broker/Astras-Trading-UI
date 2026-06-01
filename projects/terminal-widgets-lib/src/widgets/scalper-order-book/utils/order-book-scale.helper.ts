@@ -1,10 +1,10 @@
 ﻿import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
-import {Range} from '@terminal-core-lib/common/types/range.types'
+import {Range} from '@terminal-core-lib/common/types/range.types';
 
 export class OrderBookScaleHelper {
   static getStartPrice(bestAsk: number, bestBid: number, priceStep: number, scaleFactor: number, majorLinesStep: number): {
-    startPrice: number,
-    step: number
+    startPrice: number;
+    step: number;
   } {
     const pricePrecision = MathHelper.getPrecision(priceStep);
 

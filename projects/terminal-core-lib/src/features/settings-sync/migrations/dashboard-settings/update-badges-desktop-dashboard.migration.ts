@@ -21,9 +21,8 @@ import {
 import {
   Dashboard,
   InstrumentGroups
-} from '../../../dashboard/dashboard.types';
+} from '../../../dashboard/types/dashboard.types';
 import {InstrumentKey} from '../../../../common/types/instrument.types';
-
 
 @Injectable()
 export class UpdateBadgesDesktopDashboardMigration extends MigrationBase {

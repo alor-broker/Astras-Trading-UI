@@ -248,7 +248,6 @@ export class AdminClientPositions extends BaseTableComponent<PositionDisplay, Po
 
   private tableState$!: Observable<TableState | null>;
 
-
   override ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<AdminClientPositionsWidgetSettings>(this.guid()).pipe(
       shareReplay({bufferSize: 1, refCount: true})

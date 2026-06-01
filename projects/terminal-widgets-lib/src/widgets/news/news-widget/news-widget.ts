@@ -44,7 +44,7 @@ import {NewsSettings} from '@terminal-widgets-lib/widgets/news/components/news-s
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewsWidget extends WidgetBase<NewsWidgetSettings> {
-  widgetName = signal('');
+  readonly widgetName = signal('');
 
   titleSuffix$: Observable<string> = of('');
 
@@ -56,14 +56,14 @@ export class NewsWidget extends WidgetBase<NewsWidgetSettings> {
 
   private readonly destroyRef = inject(DestroyRef);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
 
     this.translatorService.getLangChanges().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      this.widgetName.set(WidgetsHelper.getWidgetName(this.widgetInstance().widgetMeta.widgetName, x))
-    })
+      this.widgetName.set(WidgetsHelper.getWidgetName(this.widgetInstance().widgetMeta.widgetName, x));
+    });
   }
 
   sectionChange(section: NewsSection): void {

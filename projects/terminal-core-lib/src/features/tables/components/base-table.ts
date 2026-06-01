@@ -157,8 +157,8 @@ export abstract class BaseTableComponent<
   }
 
   saveColumnWidth<T extends WidgetSettings>(event: {
-    columnId: string,
-    width: number
+    columnId: string;
+    width: number;
   }, settings$?: Observable<T>): void {
     settings$?.pipe(
       take(1)

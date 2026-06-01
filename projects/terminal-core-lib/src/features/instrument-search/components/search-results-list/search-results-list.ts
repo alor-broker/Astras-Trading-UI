@@ -117,4 +117,3 @@ export class SearchResultsList implements OnInit {
     );
   }
 }
-

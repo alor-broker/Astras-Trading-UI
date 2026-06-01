@@ -12,21 +12,18 @@ import {MobileMigrationManager} from './mobile-migration-manager';
 export const DASHBOARD_SETTINGS_DESKTOP_MIGRATION_MANAGER = new InjectionToken<MigrationManagerBase>('DASHBOARD_SETTINGS_DESKTOP_MIGRATION_MANAGER');
 export const DASHBOARD_SETTINGS_MOBILE_MIGRATION_MANAGER = new InjectionToken<MigrationManagerBase>('DASHBOARD_SETTINGS_MOBILE_MIGRATION_MANAGER');
 
-
 export const TERMINAL_SETTINGS_DESKTOP_MIGRATION_MANAGER = new InjectionToken<MigrationManagerBase>('TERMINAL_SETTINGS_DESKTOP_MIGRATION_MANAGER');
 export const TERMINAL_SETTINGS_MOBILE_MIGRATION_MANAGER = new InjectionToken<MigrationManagerBase>('TERMINAL_SETTINGS_MOBILE_MIGRATION_MANAGER');
 
-
 export const WIDGETS_SETTINGS_DESKTOP_MIGRATION_MANAGER = new InjectionToken<MigrationManagerBase>('WIDGETS_SETTINGS_DESKTOP_MIGRATION_MANAGER');
 export const WIDGETS_SETTINGS_MOBILE_MIGRATION_MANAGER = new InjectionToken<MigrationManagerBase>('WIDGETS_SETTINGS_MOBILE_MIGRATION_MANAGER');
-
 
 export function provideDesktopSettingsMigrations(): Provider[] {
   return [
     AppliedMigrationsRemoteStorageService,
     {
       provide: DASHBOARD_SETTINGS_DESKTOP_MIGRATION_MANAGER,
-      useFactory: () => {
+      useFactory: (): MigrationManagerBase => {
         return new DesktopMigrationManager([
           // inject(UpdateBadgesDesktopDashboardMigration)
         ]);
@@ -34,13 +31,13 @@ export function provideDesktopSettingsMigrations(): Provider[] {
     },
     {
       provide: TERMINAL_SETTINGS_DESKTOP_MIGRATION_MANAGER,
-      useFactory: () => {
+      useFactory: (): MigrationManagerBase => {
         return new DesktopMigrationManager([]);
       }
     },
     {
       provide: WIDGETS_SETTINGS_DESKTOP_MIGRATION_MANAGER,
-      useFactory: () => {
+      useFactory: (): MigrationManagerBase => {
         return new DesktopMigrationManager([
           // inject(UpdateBadgesWidgetsSettingsMigration)
         ]);
@@ -54,7 +51,7 @@ export function provideMobileSettingsMigrations(): Provider[] {
     AddTradeScreenWidgetMigration,
     {
       provide: DASHBOARD_SETTINGS_MOBILE_MIGRATION_MANAGER,
-      useFactory: () => {
+      useFactory: (): MigrationManagerBase => {
         return new MobileMigrationManager([
           inject(AddTradeScreenWidgetMigration)
         ]);
@@ -62,13 +59,13 @@ export function provideMobileSettingsMigrations(): Provider[] {
     },
     {
       provide: TERMINAL_SETTINGS_MOBILE_MIGRATION_MANAGER,
-      useFactory: () => {
+      useFactory: (): MigrationManagerBase => {
         return new MobileMigrationManager([]);
       }
     },
     {
       provide: WIDGETS_SETTINGS_MOBILE_MIGRATION_MANAGER,
-      useFactory: () => {
+      useFactory: (): MigrationManagerBase => {
         return new MobileMigrationManager([
           // inject(UpdateBadgesWidgetsSettingsMigration)
         ]);

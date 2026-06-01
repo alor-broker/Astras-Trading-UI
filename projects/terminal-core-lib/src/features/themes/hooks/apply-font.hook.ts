@@ -35,10 +35,11 @@ export class ApplyFontHook implements Hook {
       .pipe(
         map(s => s.designSettings?.fontFamily ?? null),
         startWith(this.localStorageService.getStringItem(DesignSettingsConstants.LastFontStorageKey)),
+        map(fontFamily => this.toFontFamily(fontFamily) ?? FontFamilies.NotoSans),
         distinctUntilChanged()
       )
       .subscribe(fontFamily => {
-        this.applyFont(fontFamily ?? FontFamilies.NotoSans);
+        this.applyFont(fontFamily);
       });
   }
 
@@ -48,8 +49,8 @@ export class ApplyFontHook implements Hook {
     this.document.documentElement.style.fontFamily = '';
   }
 
-  private applyFont(fontFamily: string | null): void {
-    if (!fontFamily) {
+  private applyFont(fontFamily: FontFamilies | null): void {
+    if (fontFamily == null) {
       this.removeFontLink();
       this.document.documentElement.style.fontFamily = '';
       return;
@@ -69,7 +70,7 @@ export class ApplyFontHook implements Hook {
     this.document.body.style.fontFamily = `"${fontFamily}", ${defaultFontFamilies}`;
   }
 
-  private loadGoogleFont(fontFamily: string): void {
+  private loadGoogleFont(fontFamily: FontFamilies): void {
     this.removeFontLink();
 
     const encodedFamily = encodeURIComponent(fontFamily);
@@ -81,6 +82,16 @@ export class ApplyFontHook implements Hook {
     linkEl.id = FONT_LINK_ID;
     this.document.head.appendChild(linkEl);
     this.activeLinkEl = linkEl;
+  }
+
+  private toFontFamily(fontFamily: string | null): FontFamilies | null {
+    if (fontFamily == null) {
+      return null;
+    }
+
+    return (Object.values(FontFamilies) as string[]).includes(fontFamily)
+      ? fontFamily as FontFamilies
+      : null;
   }
 
   private removeFontLink(): void {

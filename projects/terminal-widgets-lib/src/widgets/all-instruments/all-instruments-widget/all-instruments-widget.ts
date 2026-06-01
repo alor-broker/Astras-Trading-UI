@@ -50,5 +50,4 @@ export class AllInstrumentsWidget extends WidgetBase<AllInstrumentsWidgetSetting
       this.widgetSettingsService
     );
   }
-
 }

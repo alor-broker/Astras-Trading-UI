@@ -219,4 +219,3 @@ export class ImportWatchlistDialog implements OnInit {
     return false;
   };
 }
-

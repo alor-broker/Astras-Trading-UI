@@ -39,7 +39,7 @@ export class PortfolioRiskGaugeWidget extends WidgetBase<PortfolioRiskGaugeWidge
 
   private readonly portfolioRiskGaugeService = inject(PortfolioRiskGaugeService);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
     this.view$ = this.settings$.pipe(
       switchMap(settings => this.portfolioRiskGaugeService.getGaugeView(settings)),

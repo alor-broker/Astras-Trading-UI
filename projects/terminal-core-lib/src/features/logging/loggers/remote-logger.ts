@@ -121,7 +121,7 @@ export class RemoteLogger extends LoggerBase {
     try {
       const config = this.getConfig()!;
 
-      do {
+      while (this.buffer.length > 0) {
         const data = this.buffer.splice(0, 5);
 
         if (data.length === 0) {
@@ -154,7 +154,7 @@ export class RemoteLogger extends LoggerBase {
           catchError(() => of(null))
         )
           .subscribe();
-      } while (true);
+      }
     } catch (e) {
       console.error(e);
     }

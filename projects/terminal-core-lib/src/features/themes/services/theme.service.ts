@@ -36,7 +36,7 @@ export class ThemeService {
     map(v => v ?? ThemeType.dark),
     distinctUntilChanged(),
     shareReplay(1)
-  )
+  );
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -44,7 +44,7 @@ export class ThemeService {
       takeUntilDestroyed(destroyRef)
     ).subscribe(theme => {
       this.localStorageService.setStringItem(DesignSettingsConstants.LastThemeStorageKey, theme as string);
-    })
+    });
   }
 
   getCurrentTheme(): Observable<ThemeType> {
@@ -52,8 +52,7 @@ export class ThemeService {
   }
 
   getThemeSettings(): Observable<ThemeSettings> {
-    if (!this.themeSettings$) {
-      this.themeSettings$ = this.currentTheme$.pipe(
+    this.themeSettings$ ??= this.currentTheme$.pipe(
         map(t => {
           const styles = window.getComputedStyle(this.document.documentElement);
           const cssVar = (name: string): string => styles.getPropertyValue(name).trim();
@@ -86,11 +85,10 @@ export class ThemeService {
               textMaxContrastColor: cssVar('--ats-text-max-contrast-color'),
               tableGridColor: cssVar('--ats-table-grid-color'),
             }
-          }
+          };
         }),
         shareReplay({bufferSize: 1, refCount: true})
       );
-    }
 
     return this.themeSettings$;
   }

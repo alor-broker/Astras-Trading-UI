@@ -3,12 +3,12 @@
   Injectable
 } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {CacheService} from '../../../common/services/cache.service'
+import {CacheService} from '../../../common/services/cache.service';
 import {
   CORE_API_URL_PROVIDER,
   CoreApiUrlProvider
-} from '../../../config/api-url-providers'
-import {ErrorHandlerService} from '../../errors-handler/error-handler.service'
+} from '../../../config/api-url-providers';
+import {ErrorHandlerService} from '../../errors-handler/error-handler.service';
 import {
   map,
   Observable
@@ -22,7 +22,7 @@ import {
   Board,
   InstrumentSearchResponse,
   SearchFilter
-} from './instruments-service.types'
+} from './instruments-service.types';
 
 @Injectable({providedIn: 'root'})
 export class InstrumentsService {
@@ -33,7 +33,6 @@ export class InstrumentsService {
   private readonly errorHandlerService = inject(ErrorHandlerService);
 
   private readonly cacheService = inject(CacheService);
-
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {
     const params: Record<string, string> = {};

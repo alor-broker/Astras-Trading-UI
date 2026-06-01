@@ -69,14 +69,14 @@ export class TerminalSettingsService {
     return this.actions$.pipe(
       ofType(TerminalSettingsServicesActions.update),
       map(() => undefined)
-    )
+    );
   }
 
   onReset(): Observable<void> {
     return this.actions$.pipe(
       ofType(TerminalSettingsServicesActions.reset),
       map(() => undefined)
-    )
+    );
   }
 
   notifySaveSuccess(): void {

@@ -8,7 +8,7 @@ import {
   ofType
 } from '@ngrx/effects';
 import {Store} from "@ngrx/store";
-import {concatLatestFrom,} from "@ngrx/operators"
+import {concatLatestFrom,} from "@ngrx/operators";
 import {
   WidgetSettingsEventsActions,
   WidgetSettingsInternalActions,

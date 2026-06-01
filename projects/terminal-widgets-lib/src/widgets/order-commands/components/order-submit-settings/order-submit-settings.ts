@@ -108,7 +108,6 @@ export class OrderSubmitSettings extends WidgetSettingsBase<OrderSubmitWidgetSet
     workingVolumes: this.formBuilder.nonNullable.array([]),
   });
 
-
   override get canSave(): boolean {
     return this.form.valid;
   }

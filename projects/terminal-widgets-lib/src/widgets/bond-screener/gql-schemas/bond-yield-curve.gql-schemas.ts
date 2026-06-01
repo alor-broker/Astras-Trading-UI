@@ -20,7 +20,6 @@ import {
   BondYieldSchema
 } from '@terminal-core-lib/features/instruments/graphql/schema/graphql.schemas';
 
-
 const GetBondsYieldCurveBasicInformationSchema = BasicInformationSchema().pick({
   symbol: true,
   exchange: true,

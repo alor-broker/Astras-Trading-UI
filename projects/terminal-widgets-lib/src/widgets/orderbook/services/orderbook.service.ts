@@ -42,7 +42,7 @@ export class OrderbookService {
 
   private readonly quotesService = inject(QuotesService);
 
-  private readonly orderbookSubscriptionService = inject(OrderbookSubscriptionService)
+  private readonly orderbookSubscriptionService = inject(OrderbookSubscriptionService);
 
   getOrderBook(targetInstrument: InstrumentKey, depth: number): Observable<OrderBook> {
     const ob$ = this.orderbookSubscriptionService.getOrderbookSubscription(

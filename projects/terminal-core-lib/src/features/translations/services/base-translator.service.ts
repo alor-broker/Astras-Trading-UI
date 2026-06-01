@@ -10,7 +10,7 @@ import {inject} from '@angular/core';
 export abstract class BaseTranslatorService {
   protected translator$?: Observable<TranslatorFn>;
 
-  protected readonly translatorService = inject(TranslatorService)
+  protected readonly translatorService = inject(TranslatorService);
 
   protected abstract translationsPath: string;
 

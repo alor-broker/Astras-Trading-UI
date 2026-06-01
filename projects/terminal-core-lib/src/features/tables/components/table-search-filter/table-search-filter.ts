@@ -86,7 +86,7 @@ export class TableSearchFilter implements OnChanges, OnDestroy {
 
   reset(): void {
     const columnId = this.activeColumnId();
-    if (columnId) {
+    if (columnId != null) {
       this.filtersForm?.get(columnId)?.reset();
     }
   }
@@ -95,4 +95,3 @@ export class TableSearchFilter implements OnChanges, OnDestroy {
     this.changesSubscription?.unsubscribe();
   }
 }
-

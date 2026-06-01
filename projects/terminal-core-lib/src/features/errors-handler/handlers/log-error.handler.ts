@@ -10,7 +10,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class LogErrorHandler implements ApplicationErrorHandler {
   private readonly logger = inject(LoggerService);
 
-  handleError(error: Error | HttpErrorResponse/* | GraphQLError*/): void {
+  handleError(error: Error | HttpErrorResponse/* | GraphQLError */): void {
     this.logger.error('[General Error]', error);
   }
 }

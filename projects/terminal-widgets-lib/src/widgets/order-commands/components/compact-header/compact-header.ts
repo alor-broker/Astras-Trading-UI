@@ -29,7 +29,6 @@ import {QuotesService} from '@terminal-core-lib/features/instruments/services/qu
 import {PortfolioSubscriptionsService} from '@terminal-core-lib/features/portfolios/services/portfolio-subscriptions';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 
-
 @Component({
   selector: 'ats-compact-header',
   templateUrl: './compact-header.html',

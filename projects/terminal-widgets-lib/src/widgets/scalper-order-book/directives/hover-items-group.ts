@@ -14,9 +14,9 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {HoverItem} from '@terminal-widgets-lib/widgets/scalper-order-book/directives/hover-item';
 
-export const HOVER_ITEMS_GROUP = new InjectionToken<HoverItemsGroup>('HoverItemsGroup');
+export const HOVER_ITEMS_GROUP = new InjectionToken<HoverItemsGroupHandler>('HoverItemsGroup');
 
-export interface HoverItemsGroup<T = any> {
+export interface HoverItemsGroupHandler<T = never> {
   setHoveredItem(item: HoverItem<T>): void;
 
   removeItemHover(item: HoverItem<T>): void;
@@ -26,7 +26,7 @@ export interface HoverItemsGroup<T = any> {
   selector: '[atsHoverItemsGroup]',
   providers: [{provide: HOVER_ITEMS_GROUP, useExisting: HoverItemsGroup}]
 })
-export class HoverItemsGroup<T = any> implements HoverItemsGroup<T>, OnInit {
+export class HoverItemsGroup<T = never> implements HoverItemsGroupHandler<T>, OnInit {
   readonly atsHoverItemsGroup = input<boolean | undefined>(true);
 
   readonly hoveredItemChanged = output<{

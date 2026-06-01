@@ -8,18 +8,18 @@
 } from '@angular/core';
 import {
   HOVER_ITEMS_GROUP,
-  HoverItemsGroup
+  HoverItemsGroupHandler
 } from '@terminal-widgets-lib/widgets/scalper-order-book/directives/hover-items-group';
 import {fromEvent} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Directive({selector: '[atsHoverItem]'})
-export class HoverItem<T = any> implements OnInit {
+export class HoverItem<T = unknown> implements OnInit {
   readonly atsHoverItemData = input<T>();
 
   private readonly el = inject(ElementRef);
 
-  private readonly group = inject<HoverItemsGroup>(HOVER_ITEMS_GROUP, {skipSelf: true});
+  private readonly group = inject<HoverItemsGroupHandler<T>>(HOVER_ITEMS_GROUP, {skipSelf: true});
 
   private readonly destroyRef = inject(DestroyRef);
 

@@ -36,7 +36,6 @@ interface ChartSettings {
   chartOptions: ChartOptions<'bar' | 'line'>;
 }
 
-// @ts-ignore
 @Component({
   selector: 'ats-dividends-chart',
   imports: [

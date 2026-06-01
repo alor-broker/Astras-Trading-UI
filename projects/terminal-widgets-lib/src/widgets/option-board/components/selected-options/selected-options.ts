@@ -151,7 +151,6 @@ export class SelectedOptions extends BaseTableComponent<DetailsDisplay> {
 
   protected readonly nzContextMenuService = inject(NzContextMenuService);
 
-
   protected allColumns: BaseColumnSettings<DetailsDisplay>[] = [
     {
       id: 'symbol',

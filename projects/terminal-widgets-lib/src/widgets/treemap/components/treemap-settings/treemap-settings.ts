@@ -16,7 +16,7 @@ import {
   NzSliderComponent
 } from 'ng-zorro-antd/slider';
 import {Observable} from 'rxjs';
-import {TreemapWidgetSettings} from '../../widget-settings.types'
+import {TreemapWidgetSettings} from '../../widget-settings.types';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';

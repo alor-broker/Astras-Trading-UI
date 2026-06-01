@@ -61,8 +61,8 @@ export class PortfolioSummaryService {
   }
 
   private getExchangeRate(portfolio: string, exchange: string): Observable<{
-    currencyFormat: CurrencyFormat | null,
-    quote: number
+    currencyFormat: CurrencyFormat | null;
+    quote: number;
   }> {
     return combineLatest({
       terminalSettings: this.terminalSettingsService.getSettings(),

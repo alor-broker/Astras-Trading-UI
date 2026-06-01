@@ -29,4 +29,3 @@ export interface GetRecordResult {
   status: GetRecordStatus;
   record: StorageRecord | null;
 }
-

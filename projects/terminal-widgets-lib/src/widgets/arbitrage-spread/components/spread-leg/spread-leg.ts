@@ -43,10 +43,9 @@ import {Side} from '@terminal-core-lib/common/types/side.types';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {InputNumberValidation} from '@terminal-core-lib/common/constants/validation.constants';
 import {Exchange} from '@terminal-core-lib/features/instruments/graphql/schema/graphql.types';
-import {SpreadLeg as SpreadLegType} from '../../types/arbitrage-spread.types'
+import {SpreadLeg as SpreadLegType} from '../../types/arbitrage-spread.types';
 import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/components/inline-instrument-search/inline-instrument-search';
 import {InputNumber} from '@terminal-core-lib/common/components/input-number/input-number';
-
 
 @Component({
   selector: 'ats-spread-leg',

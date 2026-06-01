@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
-import {TableRowHeight as TableRowHeightType} from '../../features/terminal-settings/terminal-settings.types'
+import {TableRowHeight as TableRowHeightType} from '../../features/terminal-settings/terminal-settings.types';
 
 @Directive({
   selector: '[atsTableRowHeight]',

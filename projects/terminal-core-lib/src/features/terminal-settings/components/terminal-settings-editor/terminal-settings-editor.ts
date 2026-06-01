@@ -116,7 +116,7 @@ export class TerminalSettingsEditor implements OnInit, OnDestroy {
 
   tabSetHeight$ = new BehaviorSubject(300);
 
-  exportSettingsLoading = signal(false);
+  readonly exportSettingsLoading = signal(false);
 
   private readonly accountService = inject(AccountService);
 

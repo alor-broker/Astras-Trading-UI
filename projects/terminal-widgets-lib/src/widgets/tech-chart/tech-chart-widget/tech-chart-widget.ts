@@ -51,7 +51,7 @@ export class TechChartWidget extends WidgetBase<TechChartWidgetSettings> {
 
   private readonly dashboardContextService = inject(DASHBOARD_CONTEXT_SERVICE);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
 
     this.headerTitle$ = this.settings$.pipe(

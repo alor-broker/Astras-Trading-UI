@@ -78,7 +78,7 @@ export abstract class BaseOrderForm implements OnDestroy {
 
   protected readonly commonParametersService = inject(CommonParametersService);
 
-  protected readonly destroyRef = inject(DestroyRef)
+  protected readonly destroyRef = inject(DestroyRef);
 
   abstract get canSubmit(): boolean;
 

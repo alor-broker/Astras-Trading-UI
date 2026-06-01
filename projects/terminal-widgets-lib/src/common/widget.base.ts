@@ -19,7 +19,6 @@ export interface Widget {
   readonly isActive: InputSignal<boolean>;
 }
 
-
 @Component({
   template: ''
 })

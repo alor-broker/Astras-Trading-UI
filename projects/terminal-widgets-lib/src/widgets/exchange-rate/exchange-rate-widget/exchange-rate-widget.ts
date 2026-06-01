@@ -39,5 +39,4 @@ export class ExchangeRateWidget extends WidgetBase<ExchangeRateWidgetSettings> {
       this.widgetSettingsService
     );
   }
-
 }

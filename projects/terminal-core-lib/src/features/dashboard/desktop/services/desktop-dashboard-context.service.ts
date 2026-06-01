@@ -63,8 +63,8 @@ export class DesktopDashboardContextService implements DashboardContextService {
       this.store.dispatch(DashboardsCurrentSelectionActions.selectPortfolio({
         dashboardGuid: dashboard.guid,
         portfolioKey
-      }))
-    })
+      }));
+    });
   }
 
   protected getSelectedDashboardInternal(): Observable<Dashboard> {

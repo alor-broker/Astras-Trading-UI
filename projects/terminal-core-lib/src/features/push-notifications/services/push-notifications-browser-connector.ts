@@ -140,7 +140,7 @@ export class PushNotificationsBrowserConnector implements PushNotificationsConne
       messageId: firebasePayload.messageId,
       title: messageData.title ?? '',
       body: messageData.body ?? ''
-    }
+    };
   }
 
   private getWebMessaging(): firebase.messaging.Messaging {

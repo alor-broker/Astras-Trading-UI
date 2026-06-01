@@ -44,7 +44,7 @@ export class PortfolioChartsWidget extends WidgetBase<PortfolioChartsWidgetSetti
 
   private readonly portfoliosStoreFacade = inject(PortfoliosStoreFacade);
 
-  override ngOnInit() {
+  override ngOnInit(): void {
     super.ngOnInit();
 
     this.title$ = this.settings$.pipe(

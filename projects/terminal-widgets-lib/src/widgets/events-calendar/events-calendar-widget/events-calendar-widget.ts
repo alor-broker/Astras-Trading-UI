@@ -38,5 +38,4 @@ export class EventsCalendarWidget extends WidgetBase<EventsCalendarWidgetSetting
       this.widgetSettingsService
     );
   }
-
 }

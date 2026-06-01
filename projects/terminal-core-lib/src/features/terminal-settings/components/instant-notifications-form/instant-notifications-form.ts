@@ -145,4 +145,3 @@ export class InstantNotificationsForm extends ControlValueAccessorBase<InstantNo
     return false;
   }
 }
-

@@ -100,7 +100,6 @@ export class PushNotificationsProvider implements NotificationsProvider {
     this.pushNotificationsService.getMessages().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(payload => {
-
       const notifications = [
         ...this.getSavedNotifications(),
         {

@@ -4,7 +4,6 @@
   WidgetSettings
 } from '../widget-settings.types';
 
-
 export class WidgetSettingsHelper {
   /**
    * A guard which checks if settings depends on an instrument

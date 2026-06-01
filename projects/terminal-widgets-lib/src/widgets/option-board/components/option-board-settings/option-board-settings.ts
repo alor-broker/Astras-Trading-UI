@@ -73,7 +73,6 @@ export class OptionBoardSettings extends WidgetSettingsBase<OptionBoardWidgetSet
     return this.form.valid;
   }
 
-
   instrumentSelected(instrument: InstrumentKey | null): void {
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }

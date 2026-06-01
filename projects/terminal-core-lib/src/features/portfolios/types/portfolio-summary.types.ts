@@ -72,4 +72,3 @@ export interface Risks {
   // Ok, Demand, ToClose
   riskStatus: string;
 }
-

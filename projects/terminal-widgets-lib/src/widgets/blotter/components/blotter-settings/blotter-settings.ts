@@ -124,7 +124,7 @@ export class BlotterSettings extends WidgetSettingsBase<BlotterWidgetSettings> i
 
   protected settings$!: Observable<BlotterWidgetSettings>;
 
-  private readonly portfoliosStoreFacade = inject(PortfoliosStoreFacade)
+  private readonly portfoliosStoreFacade = inject(PortfoliosStoreFacade);
 
   private readonly deviceService = inject(DeviceService);
 

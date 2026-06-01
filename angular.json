@@ -510,22 +510,13 @@
       "sourceRoot": "projects/terminal-core-lib/src",
       "prefix": "ats",
       "architect": {
-        "build": {
-          "builder": "@angular/build:ng-packagr",
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/terminal-core-lib/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/terminal-core-lib/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test",
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": "projects/terminal-core-lib/tsconfig.spec.json"
+            "lintFilePatterns": [
+              "projects/terminal-core-lib/src/**/*.ts",
+              "projects/terminal-core-lib/src/**/*.html"
+            ]
           }
         }
       }
@@ -544,22 +535,13 @@
         }
       },
       "architect": {
-        "build": {
-          "builder": "@angular/build:ng-packagr",
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/terminal-widgets-lib/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/terminal-widgets-lib/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test",
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": "projects/terminal-widgets-lib/tsconfig.spec.json"
+            "lintFilePatterns": [
+              "projects/terminal-widgets-lib/src/**/*.ts",
+              "projects/terminal-widgets-lib/src/**/*.html"
+            ]
           }
         }
       }
@@ -570,24 +552,6 @@
       "sourceRoot": "projects/terminal-styling-lib/src",
       "prefix": "ats",
       "architect": {
-        "build": {
-          "builder": "@angular/build:ng-packagr",
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/terminal-styling-lib/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/terminal-styling-lib/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test",
-          "options": {
-            "tsConfig": "projects/terminal-styling-lib/tsconfig.spec.json"
-          }
-        }
       }
     },
     "terminal-i18n": {

@@ -150,4 +150,3 @@ export class ExportWatchlistDialog implements OnInit {
       .join(';');
   }
 }
-

@@ -42,9 +42,9 @@ import {catchHttpError} from '@terminal-core-lib/common/utils/observable/catch-h
 import {
   CLIENT_DATA_URLS_PROVIDER,
   ClientDataUrlsProvider
-} from '../../../../config/api-url-providers'
+} from '../../../../config/api-url-providers';
 
-import {LocalStorageSsoConstants} from '../../../local-storage/local-storage.constants'
+import {LocalStorageSsoConstants} from '../../../local-storage/local-storage.constants';
 
 @Injectable()
 export class ClientAuthService implements UserContext, SessionContext, OnDestroy {
