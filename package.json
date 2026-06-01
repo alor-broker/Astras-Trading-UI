@@ -14,6 +14,12 @@
     "build:mobile": "ng build --project mobile-terminal",
     "build:admin": "ng build --project admin-terminal",
     "build:all": "ng build --project desktop-terminal && ng build --project mobile-terminal && ng build --project admin-terminal",
+    "test": "ng test desktop-terminal --no-watch && ng test mobile-terminal --no-watch && ng test admin-terminal --no-watch && ng test terminal-core-lib --no-watch && ng test terminal-widgets-lib --no-watch",
+    "test:desktop": "ng test desktop-terminal",
+    "test:mobile": "ng test mobile-terminal",
+    "test:admin": "ng test admin-terminal",
+    "test:core-lib": "ng test terminal-core-lib",
+    "test:widgets-lib": "ng test terminal-widgets-lib",
     "prepare": "husky"
   },
   "prettier": {

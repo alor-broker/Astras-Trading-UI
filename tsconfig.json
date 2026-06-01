@@ -23,6 +23,9 @@
       "@terminal-styling-lib/*": [
         "./projects/terminal-styling-lib/src/*"
       ],
+      "@testing-lib/*": [
+        "./projects/testing-lib/src/*"
+      ],
       "@jsverse/transloco/*": [
         "./node_modules/@jsverse/transloco/*"
       ],
@@ -58,10 +61,10 @@
       "path": "./projects/admin-terminal/tsconfig.spec.json"
     },
     {
-      "path": "./projects/terminal-i18n/tsconfig.lib.json"
+      "path": "./projects/terminal-core-lib/tsconfig.spec.json"
     },
     {
-      "path": "./projects/terminal-i18n/tsconfig.spec.json"
+      "path": "./projects/terminal-widgets-lib/tsconfig.spec.json"
     }
   ]
 }

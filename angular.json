@@ -518,6 +518,13 @@
               "projects/terminal-core-lib/src/**/*.html"
             ]
           }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "desktop-terminal:build:development",
+            "tsConfig": "projects/terminal-core-lib/tsconfig.spec.json"
+          }
         }
       }
     },
@@ -543,6 +550,13 @@
               "projects/terminal-widgets-lib/src/**/*.html"
             ]
           }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "desktop-terminal:build:development",
+            "tsConfig": "projects/terminal-widgets-lib/tsconfig.spec.json"
+          }
         }
       }
     },
@@ -559,6 +573,14 @@
       "root": "projects/terminal-i18n",
       "sourceRoot": "projects/terminal-i18n/i18n",
       "prefix": "lib",
+      "architect": {
+      }
+    },
+    "testing-lib": {
+      "projectType": "library",
+      "root": "projects/testing-lib",
+      "sourceRoot": "projects/testing-lib/src",
+      "prefix": "ats",
       "architect": {
       }
     }

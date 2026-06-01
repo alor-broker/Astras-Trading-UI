@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+commit_msg_file="$1"
+subject="$(sed -n '1p' "$commit_msg_file")"
+
+issue_ref='(#[0-9]+|[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+#[0-9]+|https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/issues/[0-9]+)'
+closing_keyword='(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)'
+closing_ref="(${closing_keyword}:?[[:space:]]+${issue_ref})"
+issue_prefix="(${issue_ref}|${closing_ref})"
+issue_prefixes="^${issue_prefix}([[:space:]]*,[[:space:]]*${issue_prefix})*([[:space:]]*[:;-][[:space:]]*|[[:space:]]+).+"
+no_issue='^NO_ISSUE([[:space:]]*[:;-][[:space:]]*|[[:space:]]+).+'
+
+if printf '%s' "$subject" | grep -Eq "$no_issue"; then
+  exit 0
+fi
+
+if printf '%s' "$subject" | grep -Eiq "$issue_prefixes"; then
+  exit 0
+fi
+
+cat <<'EOF'
+Commit message must start with a GitHub issue reference or NO_ISSUE.
+
+Valid examples:
+  #123: update order form validation
+  owner/repo#123: sync shared contract
+  https://github.com/owner/repo/issues/123: fix portfolio filter
+  #123, #456: update related widgets
+  Fixes #123: handle empty response
+  NO_ISSUE: update generated assets
+
+Use closing keywords (Fixes/Closes/Resolves) only when the commit should close the issue
+after it reaches the default branch.
+EOF
+
+exit 1

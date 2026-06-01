@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [24.x.x]
+        node-version: [24.x]
 
     steps:
     - uses: actions/checkout@v5
@@ -25,5 +25,5 @@ jobs:
       uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node-version }}
-    - run: pnpm install
+    - run: pnpm install --frozen-lockfile
     - run: pnpm lint
