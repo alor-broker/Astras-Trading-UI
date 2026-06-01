@@ -31,7 +31,6 @@ import {
 } from "../../utils/aggregated-trades-iterator";
 import {ThemeService} from '@terminal-core-lib/features/themes/services/theme.service';
 import {ScalperOrderBookDataContext} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book-data-context.types';
-import {ContentSize} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
 import {TradesPanelSettings} from '@terminal-widgets-lib/widgets/scalper-order-book/widget-settings.types';
 import {BodyRow} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
 import {
@@ -70,6 +69,12 @@ interface TradeDisplay {
   volume: number;
 
   color: 'red' | 'green';
+}
+
+interface CanvasSize {
+  width: number;
+
+  height: number;
 }
 
 @Component({
@@ -114,7 +119,7 @@ export class TradesPanel implements OnInit, AfterViewInit, OnDestroy {
     }
   };
 
-  private readonly contentSize$ = new BehaviorSubject<ContentSize>({width: 0, height: 0});
+  private readonly contentSize$ = new BehaviorSubject<CanvasSize>({width: 0, height: 0});
 
   private displayPriceItems$!: Observable<BodyRow[]>;
 
@@ -157,12 +162,18 @@ export class TradesPanel implements OnInit, AfterViewInit, OnDestroy {
       }
       const context = canvas.getContext('2d')!;
 
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      canvas.width = x.size!.width;
-      canvas.height = x.priceItems.length * this.xAxisStep();
+      const canvasSize = this.prepareCanvas(
+        canvas,
+        context,
+        {
+          width: x.size.width,
+          height: x.priceItems.length * this.xAxisStep()
+        }
+      );
 
       this.draw(
-        canvas,
+        canvasSize,
+        context,
         x.themeSettings,
         x.panelSettings,
         x.priceItems,
@@ -180,8 +191,8 @@ export class TradesPanel implements OnInit, AfterViewInit, OnDestroy {
       if (entries.length > 0) {
         const entry = entries[entries.length - 1];
         this.contentSize$.next({
-          width: Math.floor(entry.contentRect.width),
-          height: Math.floor(entry.contentRect.height)
+          width: entry.contentRect.width,
+          height: entry.contentRect.height
         });
       }
     });
@@ -205,8 +216,36 @@ export class TradesPanel implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  private draw(
+  private prepareCanvas(
     canvas: HTMLCanvasElement,
+    context: CanvasRenderingContext2D,
+    size: CanvasSize
+  ): CanvasSize {
+    const canvasSize = {
+      width: Math.round(size.width),
+      height: Math.round(size.height)
+    };
+
+    canvas.style.width = `${canvasSize.width}px`;
+    canvas.style.height = `${canvasSize.height}px`;
+
+    if (canvas.width !== canvasSize.width) {
+      canvas.width = canvasSize.width;
+    }
+
+    if (canvas.height !== canvasSize.height) {
+      canvas.height = canvasSize.height;
+    }
+
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.clearRect(0, 0, canvasSize.width, canvasSize.height);
+
+    return canvasSize;
+  }
+
+  private draw(
+    canvasSize: CanvasSize,
+    context: CanvasRenderingContext2D,
     themeSettings: ThemeSettings,
     panelSettings: TradesPanelSettings,
     priceItems: BodyRow[],
@@ -214,10 +253,9 @@ export class TradesPanel implements OnInit, AfterViewInit, OnDestroy {
     ownTrades: Trade[],
     position: Position | null
   ): void {
-    const context = canvas.getContext('2d')!;
-    const xScale = scaleLinear([0, canvas.width])
-      .domain([0, canvas.width]);
-    const yScale = scaleLinear([0, canvas.height])
+    const xScale = scaleLinear([0, canvasSize.width])
+      .domain([0, canvasSize.width]);
+    const yScale = scaleLinear([0, canvasSize.height])
       .domain([0, priceItems.length]);
 
     let layers: LayerDrawer[] = [
@@ -738,7 +776,11 @@ export class TradesPanel implements OnInit, AfterViewInit, OnDestroy {
 
       context.fillStyle = themeColors.textMaxContrastColor;
       context.textAlign = 'center';
-      context.fillText(itemText, this.getCenter(xLeft, xRight), this.getCenter(yTop, yTop + itemHeight));
+      context.fillText(
+        itemText,
+        Math.round(this.getCenter(xLeft, xRight)),
+        Math.round(this.getCenter(yTop, yTop + itemHeight))
+      );
 
       return xLeft;
     };
