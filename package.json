@@ -13,7 +13,7 @@
     "build:desktop": "ng build --project desktop-terminal",
     "build:mobile": "ng build --project mobile-terminal",
     "build:admin": "ng build --project admin-terminal",
-    "build:all": "pnpm build:desktop && pnpm build:mobile && pnpm build:admin",
+    "build:all": "ng build --project desktop-terminal && ng build --project mobile-terminal && ng build --project admin-terminal",
     "prepare": "husky"
   },
   "prettier": {
