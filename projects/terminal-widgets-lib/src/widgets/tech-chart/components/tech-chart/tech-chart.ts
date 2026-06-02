@@ -72,7 +72,7 @@ import {
 import {WidgetSettingsService} from "@terminal-core-lib/features/widget-settings/services/widget-settings.service";
 import {ThemeService} from "@terminal-core-lib/features/themes/services/theme.service";
 import {OrdersDialogService} from '@terminal-core-lib/features/orders/services/orders-dialog.service';
-import {WidgetSharedDataService} from '@terminal-core-lib/features/widgets-communication/services/widget-shared-data.service';
+import {EventsBusService} from '@terminal-core-lib/common/services/events-bus.service';
 import {InstrumentsService} from "@terminal-core-lib/features/instruments/services/instruments.service";
 import {DASHBOARD_CONTEXT_SERVICE} from '@terminal-core-lib/features/dashboard/services/dashboard-context-service.types';
 import {TimezoneConverterService} from "@terminal-core-lib/features/timezones/services/timezone-converter.service";
@@ -109,7 +109,10 @@ import {
 import {DefaultBadge} from '@terminal-core-lib/features/instruments/constants/badges.constants';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {OrderFormType} from '@terminal-core-lib/features/orders/services/orders-dialog-service.types';
-import {SelectedPriceData} from '@terminal-core-lib/features/widgets-communication/services/widget-shared-data-service.types';
+import {
+  SelectedPriceData,
+  SelectedPriceEventKey
+} from '@terminal-core-lib/features/orders/types/selected-price-event.types';
 import {InstrumentSearchModal} from '@terminal-widgets-lib/widgets/tech-chart/components/instrument-search-modal/instrument-search-modal';
 
 interface ExtendedSettings {
@@ -154,7 +157,7 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
 
   private readonly syntheticInstrumentsService = inject(SyntheticInstrumentsService);
 
-  private readonly widgetsSharedDataService = inject(WidgetSharedDataService);
+  private readonly eventsBusService = inject(EventsBusService);
 
   private readonly ordersDialogService = inject(OrdersDialogService);
 
@@ -187,8 +190,6 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
   private readonly location = inject(Location);
 
   private readonly destroyRef = inject(DestroyRef);
-
-  private readonly selectedPriceProviderName = 'selectedPrice';
 
   private chartState?: ChartState;
 
@@ -711,9 +712,12 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
         }
       }
 
-      this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>(this.selectedPriceProviderName, {
-        price: roundedPrice,
-        badgeColor: x.settings.widgetSettings.badgeColor!
+      this.eventsBusService.publish({
+        key: SelectedPriceEventKey,
+        payload: {
+          price: roundedPrice,
+          badgeColor: x.settings.widgetSettings.badgeColor!
+        } as SelectedPriceData
       });
     });
   }

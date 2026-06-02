@@ -29,8 +29,11 @@ import {InstrumentKeyHelper} from '@terminal-core-lib/common/utils/instrument-ke
 import {DefaultBadge} from '@terminal-core-lib/features/instruments/constants/badges.constants';
 import {OrdersDialogService} from '@terminal-core-lib/features/orders/services/orders-dialog.service';
 import {OrderFormType} from '@terminal-core-lib/features/orders/services/orders-dialog-service.types';
-import {WidgetSharedDataService} from '@terminal-core-lib/features/widgets-communication/services/widget-shared-data.service';
-import {SelectedPriceData} from '@terminal-core-lib/features/widgets-communication/services/widget-shared-data-service.types';
+import {EventsBusService} from '@terminal-core-lib/common/services/events-bus.service';
+import {
+  SelectedPriceData,
+  SelectedPriceEventKey
+} from '@terminal-core-lib/features/orders/types/selected-price-event.types';
 import {OrderbookSettings} from '@terminal-widgets-lib/widgets/orderbook/components/orderbook-settings/orderbook-settings';
 import {OrderBookComponent} from '@terminal-widgets-lib/widgets/orderbook/components/orderbook/orderbook';
 
@@ -57,7 +60,7 @@ export class OrderbookWidget extends WidgetBase<OrderbookWidgetSettings> {
 
   protected orderbookDisplaySettings$!: Observable<OrderbookDisplaySettings>;
 
-  private readonly widgetsSharedDataService = inject(WidgetSharedDataService);
+  private readonly eventsBusService = inject(EventsBusService);
 
   override ngOnInit(): void {
     super.ngOnInit();
@@ -103,9 +106,12 @@ export class OrderbookWidget extends WidgetBase<OrderbookWidgetSettings> {
         return;
       }
 
-      this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>('selectedPrice', {
-        price,
-        badgeColor: settings.badgeColor ?? DefaultBadge
+      this.eventsBusService.publish({
+        key: SelectedPriceEventKey,
+        payload: {
+          price,
+          badgeColor: settings.badgeColor ?? DefaultBadge
+        } as SelectedPriceData
       });
     });
   }

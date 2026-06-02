@@ -54,10 +54,10 @@
 | `DashboardTemplatesService` | `projects/terminal-core-lib/src/features/dashboard/services/dashboard-templates.service.ts` | Загружает доступные шаблоны дашбордов | Когда нужен список или данные dashboard templates |
 | `DesktopDashboardContextService` | `projects/terminal-core-lib/src/features/dashboard/desktop/services/desktop-dashboard-context.service.ts` | Получает и изменяет данные текущего desktop дашборда: выбранный портфель, инструменты | Только для desktop. Для универсального контекста используй token `DASHBOARD_CONTEXT_SERVICE` |
 | `DesktopManageDashboardsService` | `projects/terminal-core-lib/src/features/dashboard/desktop/services/desktop-manage-dashboards.service.ts` | Управляет дашбордами пользователя | Только для desktop dashboard management |
+| `EventsBusService` | `projects/terminal-core-lib/src/common/services/events-bus.service.ts` | Публикует и слушает события для обмена данными между виджетами и компонентами | Когда виджеты или компоненты должны передавать друг другу данные через события. Для позднего подписчика, которому нужно последнее значение, используй `subscribe(predicate, {replayLast: true})` |
 | `NavigationStackService` | `projects/terminal-core-lib/src/common/services/navigation-stack.service.ts` | Отслеживает переключение пользователя между виджетами | Только для mobile приложений |
 | `WidgetLocalStateService` | `projects/terminal-core-lib/src/features/widget-local-state/widget-local-state.service.ts` | Читает и записывает локальное состояние виджета | Когда состояние виджета не является пользовательскими настройками |
 | `WidgetSettingsService` | `projects/terminal-core-lib/src/features/widget-settings/services/widget-settings.service.ts` | Читает и записывает текущие настройки виджета | Когда нужно сохранять настройки виджета |
-| `WidgetSharedDataService` | `projects/terminal-core-lib/src/features/widgets-communication/services/widget-shared-data.service.ts` | Обменивается данными между виджетами | Когда виджеты должны передавать друг другу данные |
 | `WidgetsMetaService` | `projects/terminal-core-lib/src/features/widgets-gallery/services/widgets-meta.service.ts` | Читает metadata виджетов для галереи и дашборда | Когда нужна информация о доступности или представлении виджетов |
 
 ## Рыночные данные и инструменты

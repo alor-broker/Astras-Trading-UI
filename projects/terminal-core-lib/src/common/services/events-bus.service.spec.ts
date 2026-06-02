@@ -53,4 +53,46 @@ describe('EventsBusService', () => {
 
     expect(received).toHaveLength(0);
   });
+
+  it('should replay the last matching event to a late subscriber when replayLast is set', () => {
+    service.publish({key: 'selectedPrice', payload: {price: 100}});
+    service.publish({key: 'selectedPrice', payload: {price: 200}});
+
+    const received: StoredEvent[] = [];
+    const sub = service
+      .subscribe(e => e.key === 'selectedPrice', {replayLast: true})
+      .subscribe(e => received.push(e));
+    sub.unsubscribe();
+
+    expect(received).toHaveLength(1);
+    expect(received[0]).toMatchObject({key: 'selectedPrice', payload: {price: 200}});
+  });
+
+  it('should replay the last event and then deliver subsequent live events when replayLast is set', () => {
+    service.publish({key: 'selectedPrice', payload: {price: 100}});
+
+    const received: StoredEvent[] = [];
+    const sub = service
+      .subscribe(e => e.key === 'selectedPrice', {replayLast: true})
+      .subscribe(e => received.push(e));
+
+    service.publish({key: 'selectedPrice', payload: {price: 200}});
+    sub.unsubscribe();
+
+    expect(received).toHaveLength(2);
+    expect(received[0]).toMatchObject({payload: {price: 100}});
+    expect(received[1]).toMatchObject({payload: {price: 200}});
+  });
+
+  it('should not replay events that do not match the predicate when replayLast is set', () => {
+    service.publish({key: 'other', payload: {price: 100}});
+
+    const received: StoredEvent[] = [];
+    const sub = service
+      .subscribe(e => e.key === 'selectedPrice', {replayLast: true})
+      .subscribe(e => received.push(e));
+    sub.unsubscribe();
+
+    expect(received).toHaveLength(0);
+  });
 });

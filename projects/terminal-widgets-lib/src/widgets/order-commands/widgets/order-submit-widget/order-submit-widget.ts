@@ -40,7 +40,7 @@ import {
 } from '@terminal-widgets-lib/widgets/order-commands/services/common-parameters.service';
 import {ORDER_COMMAND_SERVICE_TOKEN} from '@terminal-core-lib/features/orders/types/order-command-service.types';
 import {PUSH_NOTIFICATIONS_CONFIG} from '@terminal-core-lib/features/push-notifications/types/push-notifications-config.types';
-import {WidgetSharedDataService} from '@terminal-core-lib/features/widgets-communication/services/widget-shared-data.service';
+import {EventsBusService} from '@terminal-core-lib/common/services/events-bus.service';
 import {PortfolioKeyEqualityComparer} from '@terminal-core-lib/common/utils/portfolio-key.helper';
 import {InstrumentsService} from '@terminal-core-lib/features/instruments/services/instruments.service';
 import {ArrayHelper} from '@terminal-core-lib/common/utils/array.helper';
@@ -48,7 +48,10 @@ import {
   filter,
   map
 } from 'rxjs/operators';
-import {SelectedPriceData} from '@terminal-core-lib/features/widgets-communication/services/widget-shared-data-service.types';
+import {
+  SelectedPriceData,
+  SelectedPriceEventKey
+} from '@terminal-core-lib/features/orders/types/selected-price-event.types';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {AsyncPipe} from '@angular/common';
 import {WidgetSkeleton} from '@terminal-widgets-lib/common/components/widget-skeleton/widget-skeleton';
@@ -111,7 +114,7 @@ export class OrderSubmitWidget extends WidgetBase<OrderSubmitWidgetSettings> imp
 
   private readonly commonParametersService = inject(CommonParametersService);
 
-  private readonly widgetsSharedDataService = inject(WidgetSharedDataService);
+  private readonly eventsBusService = inject(EventsBusService);
 
   private readonly orderCommandService = inject(ORDER_COMMAND_SERVICE_TOKEN);
 
@@ -142,7 +145,8 @@ export class OrderSubmitWidget extends WidgetBase<OrderSubmitWidgetSettings> imp
     this.currentInstrument$.pipe(
       take(1)
     ).subscribe(() => {
-      this.widgetsSharedDataService.getDataProvideValues<SelectedPriceData>('selectedPrice').pipe(
+      this.eventsBusService.subscribe(event => event.key === SelectedPriceEventKey, {replayLast: true}).pipe(
+        map(event => event.payload as SelectedPriceData),
         withLatestFrom(this.settings$),
         filter(([priceData,]) => priceData != null),
         filter(([priceData, settings]) => priceData!.badgeColor === settings.badgeColor),

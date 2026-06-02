@@ -32,7 +32,8 @@ import {WidgetsMetaService} from "@terminal-core-lib/features/widgets-gallery/se
 import {TranslatorService} from "@terminal-core-lib/features/translations/services/translator.service";
 import {MobileActionsContextService} from "../../services/mobile-actions-context.service";
 import {MobileDashboardManageService} from '../../features/dashboard/services/mobile-dashboard-manage.service';
-import {WidgetSharedDataService} from '@terminal-core-lib/features/widgets-communication/services/widget-shared-data.service';
+import {EventsBusService} from '@terminal-core-lib/common/services/events-bus.service';
+import {SelectedPriceEventKey} from '@terminal-core-lib/features/orders/types/selected-price-event.types';
 import {WidgetSettingsService} from "@terminal-core-lib/features/widget-settings/services/widget-settings.service";
 import {NavigationStackService} from "@terminal-core-lib/common/services/navigation-stack.service";
 import {TerminalSettingsService} from "@terminal-core-lib/features/terminal-settings/services/terminal-settings.service";
@@ -97,7 +98,7 @@ export class DashboardContent implements OnInit {
 
   private readonly mobileDashboardService = inject(MobileDashboardManageService);
 
-  private readonly widgetsSharedDataService = inject(WidgetSharedDataService);
+  private readonly eventsBusService = inject(EventsBusService);
 
   private readonly widgetSettingsService = inject(WidgetSettingsService);
 
@@ -188,8 +189,7 @@ export class DashboardContent implements OnInit {
       }
     });
 
-    this.widgetsSharedDataService.getDataProvideValues('selectedPrice').pipe(
-      filter(x => x != null),
+    this.eventsBusService.subscribe(event => event.key === SelectedPriceEventKey).pipe(
       takeUntilDestroyed(this.destroyRef)
     )
       .subscribe(() => {
