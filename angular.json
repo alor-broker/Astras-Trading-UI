@@ -70,7 +70,7 @@
               {
                 "input": "projects/terminal-styling-lib/src/styles/themes/dark-theme.less",
                 "bundleName": "dark-theme",
-                "inject": true
+                "inject": false
               },
               {
                 "input": "projects/terminal-styling-lib/src/styles/themes/light-theme.less",
@@ -240,7 +240,7 @@
               {
                 "input": "projects/mobile-terminal/src/styles/themes/dark-theme.less",
                 "bundleName": "dark-theme",
-                "inject": true
+                "inject": false
               },
               {
                 "input": "projects/mobile-terminal/src/styles/themes/light-theme.less",
@@ -405,7 +405,7 @@
               {
                 "input": "projects/terminal-styling-lib/src/styles/themes/dark-theme.less",
                 "bundleName": "dark-theme",
-                "inject": true
+                "inject": false
               },
               {
                 "input": "projects/terminal-styling-lib/src/styles/themes/light-theme.less",

@@ -73,7 +73,7 @@ export class ApplyThemeHook implements Hook {
   private insertThemeLink(linkEl: HTMLLinkElement): void {
     const defaultThemeLink = this.getThemeLink(ThemeType.dark);
 
-    // dark-theme is injected by Angular into index.html before app bootstrap.
+    // dark-theme is linked manually in index.html before app bootstrap.
     // New theme links must stay near it to keep framework styles available as early as possible.
     if (defaultThemeLink != null) {
       defaultThemeLink.after(linkEl);
