@@ -14,11 +14,23 @@ permissions:
 
 jobs:
   test:
+    # The job (and its summary) is named after the project, so each Vitest report is
+    # clearly attributed instead of being stacked anonymously in a single summary.
+    name: ${{ matrix.project }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     strategy:
+      # Run every project even if one fails, so a single red project does not hide the rest.
+      fail-fast: false
       matrix:
         node-version: [24.x]
+        project:
+          - desktop-terminal
+          - mobile-terminal
+          - admin-terminal
+          - terminal-core-lib
+          - terminal-widgets-lib
 
     steps:
       - uses: actions/checkout@v5
@@ -31,4 +43,14 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test
+
+      - name: Report header
+        run: |
+          {
+            echo "## 🧪 ${{ matrix.project }}"
+            echo ""
+            echo "Node ${{ matrix.node-version }} · commit \`${GITHUB_SHA::7}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Test ${{ matrix.project }}
+        run: pnpm exec ng test ${{ matrix.project }} --no-watch

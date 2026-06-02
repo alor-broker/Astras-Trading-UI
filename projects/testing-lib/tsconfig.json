@@ -1,0 +1,16 @@
+/* Type-aware config for testing-lib. This project is test-only and has no build/lint
+   target, but the files must belong to a tsconfig so the ESLint project service and
+   IDEs can type-check them. */
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/testing-lib",
+    "types": [
+      "vitest/globals",
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

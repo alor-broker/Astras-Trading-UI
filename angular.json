@@ -170,7 +170,13 @@
           }
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "reporters": [
+              "default",
+              "github-actions"
+            ]
+          }
         }
       }
     },
@@ -334,7 +340,13 @@
           }
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "reporters": [
+              "default",
+              "github-actions"
+            ]
+          }
         }
       }
     },
@@ -492,7 +504,13 @@
           }
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "reporters": [
+              "default",
+              "github-actions"
+            ]
+          }
         }
       }
     },
@@ -523,7 +541,11 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "buildTarget": "desktop-terminal:build:development",
-            "tsConfig": "projects/terminal-core-lib/tsconfig.spec.json"
+            "tsConfig": "projects/terminal-core-lib/tsconfig.spec.json",
+            "reporters": [
+              "default",
+              "github-actions"
+            ]
           }
         }
       }
@@ -555,7 +577,11 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "buildTarget": "desktop-terminal:build:development",
-            "tsConfig": "projects/terminal-widgets-lib/tsconfig.spec.json"
+            "tsConfig": "projects/terminal-widgets-lib/tsconfig.spec.json",
+            "reporters": [
+              "default",
+              "github-actions"
+            ]
           }
         }
       }

@@ -65,6 +65,9 @@
     },
     {
       "path": "./projects/terminal-widgets-lib/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/testing-lib/tsconfig.json"
     }
   ]
 }

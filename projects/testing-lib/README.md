@@ -193,6 +193,30 @@ describe('Badge', () => {
 - Компонент тестируется только если он простой (без сложной RxJS-логики, сложной анимации и сложного сетапа `input()`) и тест отрабатывает одинаково без зависаний; иначе тесты для компонента не пишутся.
 - Переиспользуемые фикстуры/моки/билдеры вынесены в `testing-lib` (через `@testing-lib/*`), а не продублированы.
 
+## Доступные хелперы
+
+Импорт — через alias `@testing-lib/*` (правило 11). Наполняется по факту переиспользования (правило 9).
+
+Хелперы оформлены **статическими методами классов** (не свободными функциями).
+
+| Импорт | Класс / методы | Назначение |
+| --- | --- | --- |
+| `@testing-lib/fixtures/instrument` | `InstrumentFixtures.createInstrumentKey(overrides?)` | Билдер `InstrumentKey` с дефолтами. |
+| `@testing-lib/fixtures/portfolio` | `PortfolioFixtures.createPortfolioKey(overrides?)`, `createPortfolioExtended(overrides?)` | Билдеры `PortfolioKey` / `PortfolioExtended`. |
+| `@testing-lib/fixtures/position` | `PositionFixtures.createPosition(overrides?)` | Билдер `Position` (все количества по умолчанию `0`). |
+| `@testing-lib/angular/terminal-settings-service.mock` | `TerminalSettingsServiceMock.create(settings?)` | Мок `TerminalSettingsService`; `.provider` — готовый провайдер для `TestBed`. |
+
+```ts
+import {PositionFixtures} from '@testing-lib/fixtures/position';
+import {TerminalSettingsServiceMock} from '@testing-lib/angular/terminal-settings-service.mock';
+
+const position = PositionFixtures.createPosition({avgPrice: 290});
+
+TestBed.configureTestingModule({
+  providers: [TerminalSettingsServiceMock.create({timezoneDisplayOption: TimezoneDisplayOption.MskTime}).provider]
+});
+```
+
 ## Связанные документы
 
 - [`AGENTS.md`](../../AGENTS.md) — общие правила для AI агентов.
