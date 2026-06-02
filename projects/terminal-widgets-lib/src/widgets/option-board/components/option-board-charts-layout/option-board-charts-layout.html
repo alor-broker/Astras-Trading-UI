@@ -1,0 +1,11 @@
+<div *transloco="let t; scope: 'option-board/option-board-chart'" class="w-100 h-100 d-flex flex-column">
+  <div class="flex-fill overflow-hidden">
+    <ats-option-board-chart [dataContext]="dataContext()"/>
+  </div>
+  <nz-alert
+    [nzMessage]="t('optionBoardOptionBoardChart.betaNotice')"
+    [nzNoAnimation]="true"
+    nzCloseable
+    nzType="warning"
+  />
+</div>

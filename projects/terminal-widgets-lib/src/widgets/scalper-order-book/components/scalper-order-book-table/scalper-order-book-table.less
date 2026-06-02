@@ -1,0 +1,213 @@
+@import "../../styles/shared-styles";
+
+ats-scalper-order-book-table {
+  @border-width: 1px;
+
+  #table-body-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    .table-cell {
+      position: relative;
+      height: 100%;
+      width: 100%;
+
+      .grid-line {
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 50%;
+        border-bottom-style: solid;
+        .scalper-order-book-grid-line-levels(@border-width);
+      }
+    }
+
+
+    #volume-panel {
+      flex-grow: 1;
+
+      .table-cell {
+        .highlighter {
+          display: inline-block;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 0;
+        }
+
+        .volume {
+          position: relative;
+          white-space: nowrap;
+
+          .growing-volume {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 100%;
+            padding-right: 5px;
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+
+    #price-panel {
+      .table-cell {
+        text-align: right;
+
+        .highlighter {
+          display: inline-block;
+          position: absolute;
+          left: 0;
+          top: (-1 * @border-width);
+          width: 100%;
+          height: calc(100% + @border-width);
+        }
+      }
+    }
+
+    #orders-panel {
+      min-width: 20px;
+
+      .table-row {
+        .table-cell {
+          .orders-indicator {
+            cursor: pointer;
+          }
+
+          &:not(.best-row) {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+  }
+
+  .table-col {
+    &:not(:first-child) {
+      .table-row {
+        border-left: none;
+      }
+    }
+
+    .table-row {
+      box-sizing: border-box;
+      border: var(--ats-table-border-color) @border-width solid;
+      border-bottom: none;
+      border-top: none;
+
+      &.hovered {
+        background-color: color-mix(in srgb, var(--ats-primary-color) 15%, transparent);
+      }
+
+      .table-cell {
+        &.trade-item {
+          &.ask-side-item {
+            background-color: color-mix(in srgb, var(--ats-sell-color) 15%, transparent);
+
+            &.best-row {
+              background-color: color-mix(in srgb, var(--ats-sell-color) 50%, transparent);
+            }
+          }
+
+          &.bid-side-item {
+            background-color: color-mix(in srgb, var(--ats-buy-color-background-light) 15%, transparent);
+
+            &.best-row {
+              background-color: color-mix(in srgb, var(--ats-buy-color-background-light) 50%, transparent);
+            }
+          }
+
+          &.mixed-item {
+            background-color: color-mix(in srgb, var(--ats-mix-color) 50%, transparent);
+          }
+        }
+
+        &.spread-item {
+          background-color: color-mix(in srgb, var(--ats-disabled-color) 7%, transparent);
+        }
+
+        &.current-position-range-item {
+          border-right: (@border-width * 3) solid var(--ats-border-color-base);
+
+          &.positive {
+            border-right-color: var(--ats-buy-color);
+          }
+
+          &.negative {
+            border-right-color: var(--ats-sell-color);
+          }
+        }
+
+        .grid-line {
+          border-color: var(--ats-table-border-color);
+        }
+      }
+    }
+  }
+
+  #price-panel {
+    .table-cell {
+      .highlighter {
+        border-top: @border-width solid red;
+        border-bottom: @border-width solid red;
+      }
+
+      :not(.fw-bold) {
+        color: color-mix(in srgb, var(--ats-text-max-contrast-color) 80%, transparent);
+      }
+    }
+  }
+
+  #orders-panel {
+    .table-cell {
+      width: 100%;
+      height: 100%;
+
+      .orders-indicator {
+        &.bid {
+          color: var(--ats-buy-color-accent);
+        }
+
+        &.ask {
+          color: var(--ats-sell-color-accent);
+        }
+
+        &.dirty {
+          color: var(--ats-disabled-color);
+        }
+
+        &.limit-order {
+          color: var(--ats-text-max-contrast-color);
+
+          &.bid {
+            background-color: color-mix(in srgb, var(--ats-buy-color) 60%, transparent);
+          }
+
+          &.ask {
+            background-color: color-mix(in srgb, var(--ats-sell-color) 60%, transparent);
+          }
+
+          &.dirty {
+            background-color: var(--ats-disabled-color);
+          }
+        }
+
+        &.multiple::after {
+          content: "*";
+        }
+
+
+        &:hover {
+          text-decoration: line-through;
+        }
+      }
+    }
+  }
+}
+
+

@@ -1,0 +1,50 @@
+<nz-modal
+  (nzOnCancel)="handleClose()"
+  *transloco="let t; scope: 'dashboard/empty-portfolios-warning-modal'"
+  [nzTitle]="t('dashboardEmptyPortfoliosWarningModal.title')"
+  [nzVisible]='atsVisible()'>
+  <ng-container *nzModalContent>
+    <div class="empty-portfolios-modal-content">
+      <p nz-typography nzType="warning">{{ t('dashboardEmptyPortfoliosWarningModal.explanation') }}</p>
+      <p>{{ t('dashboardEmptyPortfoliosWarningModal.stepsTitle') }}</p>
+      <p>1. {{ t('dashboardEmptyPortfoliosWarningModal.point1') }}</p>
+
+      @if (videoTutorialLink) {
+        <p>
+          2. {{ t('dashboardEmptyPortfoliosWarningModal.point2WithVideoPrefix') }}
+          <ats-external-link [href]="videoTutorialLink" klass="link">
+            {{ t('dashboardEmptyPortfoliosWarningModal.point2VideoLinkText') }}
+          </ats-external-link>
+          {{ t('dashboardEmptyPortfoliosWarningModal.point2WithVideoMiddle') }}
+          <ats-external-link [href]="(helpLink$ | async) ?? ''" klass="link">
+            {{ t('dashboardEmptyPortfoliosWarningModal.point2DocsLinkText') }}
+          </ats-external-link>
+          {{ t('dashboardEmptyPortfoliosWarningModal.point2DocsSuffix') }}
+        </p>
+      } @else {
+        <p>
+          2. {{ t('dashboardEmptyPortfoliosWarningModal.point2WithoutVideoPrefix') }}
+          <ats-external-link [href]="(helpLink$ | async) ?? ''" klass="link">
+            {{ t('dashboardEmptyPortfoliosWarningModal.point2DocsLinkText') }}
+          </ats-external-link>
+          {{ t('dashboardEmptyPortfoliosWarningModal.point2DocsSuffix') }}
+        </p>
+      }
+
+      <p>
+        {{ t('dashboardEmptyPortfoliosWarningModal.supportPrefix') }}
+        @if (supportLink) {
+          <ats-external-link [href]="supportLink" klass="link">
+            {{ t('dashboardEmptyPortfoliosWarningModal.supportLinkText') }}
+          </ats-external-link>
+        } @else {
+          {{ t('dashboardEmptyPortfoliosWarningModal.supportLinkText') }}
+        }
+        {{ t('dashboardEmptyPortfoliosWarningModal.supportSuffix') }}
+      </p>
+    </div>
+  </ng-container>
+  <div *nzModalFooter>
+    <button (click)="handleClose()" nz-button nzType="primary">{{ t('okBtnText') }}</button>
+  </div>
+</nz-modal>

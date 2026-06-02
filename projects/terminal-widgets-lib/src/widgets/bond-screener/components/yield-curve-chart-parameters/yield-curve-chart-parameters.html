@@ -1,0 +1,34 @@
+<div *transloco="let t; scope: 'bond-screener/yield-curve-chart'" class="d-flex justify-content-end">
+  <form [formGroup]="parametersForm" nz-form nzLayout="inline">
+    <nz-form-item>
+      <nz-form-control>
+        <nz-select
+          [nz-tooltip]="t('bondScreenerYieldCurveChart.durationTypeLabel')"
+          [nzDropdownMatchSelectWidth]="false"
+          [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+          formControlName="durationType"
+        >
+          @for (durationType of durationTypes; track durationType) {
+            <nz-option [nzLabel]="t('bondScreenerYieldCurveChart.durationTypeOptions.' + durationType)"
+                       [nzValue]="durationType"/>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control>
+        <nz-select
+          [nz-tooltip]="t('bondScreenerYieldCurveChart.yieldTypeLabel')"
+          [nzDropdownMatchSelectWidth]="false"
+          [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+          formControlName="yieldType"
+        >
+          @for (yieldType of yieldTypes; track yieldType) {
+            <nz-option [nzLabel]="t('bondScreenerYieldCurveChart.yieldTypeOptions.' + yieldType)"
+                       [nzValue]="yieldType"/>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>

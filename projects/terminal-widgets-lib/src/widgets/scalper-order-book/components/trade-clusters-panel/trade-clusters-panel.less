@@ -1,0 +1,38 @@
+ats-trade-clusters-panel {
+  .container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+
+    & > div {
+      flex: 1;
+    }
+
+    &.has-left-scroll {
+      box-shadow: 5px 0 5px -5px var(--ats-primary-color) inset;
+    }
+
+    &.has-right-scroll {
+      box-shadow: -5px 0 5px -5px var(--ats-primary-color) inset;
+    }
+
+    .cluster-wrapper {
+      border-right: var(--ats-border-color-base) 1px solid;
+    }
+  }
+}
+
+.ats-trade-clusters-panel {
+  .ant-dropdown-menu {
+    .ant-menu-title-content {
+      width: 100%;
+    }
+  }
+}
+
+
+

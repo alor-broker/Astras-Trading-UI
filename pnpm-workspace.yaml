@@ -1,9 +1,9 @@
-onlyBuiltDependencies:
-  - '@firebase/util'
-  - '@parcel/watcher'
-  - esbuild
-  - less
-  - lmdb
-  - msgpackr-extract
-  - protobufjs
-  - sharp
+allowBuilds:
+  '@firebase/util': true
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
+  protobufjs: true
+  sharp: true
+minimumReleaseAge: 4320

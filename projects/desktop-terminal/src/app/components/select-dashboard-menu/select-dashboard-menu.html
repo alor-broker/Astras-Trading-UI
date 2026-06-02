@@ -1,0 +1,92 @@
+<ng-container *transloco="let t; scope: 'dashboard/select-dashboard-menu'">
+  @if ((allDashboards$ | async); as allDashboards) {
+    <ul class="dashboard-selection" nz-menu>
+      @for (dashboard of allDashboards; track dashboard.guid) {
+        <li (click)="selectDashboard(dashboard.guid)" nz-menu-item>
+          <div class="dashboard-selection-row">
+            <div class="title heading-color">
+              <ats-editable-string (contentChanged)="renameDashboard(dashboard.guid, $event)"
+                                   [content]="dashboard.title"
+                                   [lengthRestrictions]="{
+              minLength: validationOptions.title.minLength,
+              maxLength: validationOptions.title.maxLength
+            }"
+                                   inputClass="edit-title-input"
+              />
+            </div>
+            <span class="actions">
+              <button
+                (click)="copyDashboard(dashboard); $event.stopPropagation();"
+                nz-button
+                nzSize='small'
+                nzType="link"
+              >
+                <i nz-icon nzType="copy"></i>
+              </button>
+              <button
+                (click)="changeFavoriteDashboard(dashboard);$event.stopPropagation(); "
+                class="favorite-btn"
+                nz-button
+                nzSize='small'
+                nzType="link"
+              >
+                <i [class.active]="dashboard.isFavorite" nz-icon nzTheme="outline" nzType="star"></i>
+              </button>
+              <button
+                (click)="toggleDashboardLock(dashboard);$event.stopPropagation(); "
+                class="lock-btn"
+                nz-button
+                nzSize='small'
+                nzType="link"
+              >
+                <i [class.active]="dashboard.isLocked ?? false" nz-icon nzTheme="outline" nzType="lock"></i>
+              </button>
+              @if (allDashboards.length > 1) {
+                <button
+                  (click)="removeDashboard(dashboard); $event.stopPropagation();"
+                  nz-button
+                  nzSize='small'
+                  nzType="link"
+                >
+                  <i nz-icon nzType="close"></i>
+                </button>
+              }
+            </span>
+          </div>
+        </li>
+      }
+      <li nz-menu-divider></li>
+      <li>
+        <div class="new-dashboard-menu-item">
+          <form [formGroup]="newDashboardForm" [nzLayout]="'inline'" nz-form>
+            <nz-form-item>
+              <nz-form-control [nzErrorTip]="titleError">
+                <input (blur)="isNewDashboardFocused.emit(false)"
+                       (focus)="isNewDashboardFocused.emit(true)"
+                       (keyup)="checkInputComplete($event)"
+                       [placeholder]="t('dashboardSelectDashboardMenu.newDashboardTitlePlaceholder')"
+                       class="title-input"
+                       formControlName="title"
+                       nz-input
+                       type="text"/>
+              </nz-form-control>
+              <ng-template #titleError>
+                <span>{{
+                    t(
+                      'dashboardSelectDashboardMenu.stringLenghtError',
+                      {
+                        min: validationOptions.title.minLength,
+                        max: validationOptions.title.maxLength
+                      })
+                  }}</span>
+              </ng-template>
+            </nz-form-item>
+          </form>
+          <button (click)="addDashboard()" [disabled]="!newDashboardForm.valid" nz-button nzSize='small' nzType="link">
+            <span nz-icon nzType="plus"></span></button>
+        </div>
+      </li>
+    </ul>
+  }
+</ng-container>
+

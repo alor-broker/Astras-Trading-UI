@@ -1,0 +1,59 @@
+ats-instrument-trades {
+  .container {
+    width: 100%;
+    height: 100%;
+  }
+
+  tr:not(.buy-row):not(.sell-row) {
+    .buy {
+      color: var(--ats-buy-color);
+    }
+
+    .bg-buy {
+      span {
+        background-color: var(--ats-buy-color);
+      }
+    }
+
+    .sell {
+      color: var(--ats-sell-color);
+    }
+
+    .bg-sell {
+      span {
+        background-color: var(--ats-sell-color);
+      }
+    }
+
+    .side-indicator {
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+
+      span {
+        display: inline-block;
+        min-width: 3px;
+      }
+    }
+  }
+
+  .buy-row, .sell-row {
+    .side-indicator {
+      span {
+        display: none;
+      }
+    }
+  }
+
+  .buy-row, .buy-row:hover > td {
+    background-color: color-mix(in srgb, var(--ats-buy-color-background-light) 40%, transparent);
+  }
+
+  .sell-row, .sell-row:hover > td {
+    background-color: color-mix(in srgb, var(--ats-sell-color) 40%, transparent);
+  }
+}
+
+
+
+
+

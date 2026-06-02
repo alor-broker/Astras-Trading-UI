@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
-const { glob } = require('glob');
+const {glob} = require('glob');
 
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const API_KEY = '';
 const MODEL = 'google/gemini-3-flash-preview';
 const LANGUAGES = [
-  { code: 'en', name: 'English' },
-  { code: 'hy', name: 'Armenian' }
+  {code: 'en', name: 'English'},
+  {code: 'hy', name: 'Armenian'}
 ];
 
 async function findAllRuFiles(dir) {
@@ -24,8 +24,14 @@ async function translateObject(obj, langName) {
   const body = JSON.stringify({
     model: MODEL,
     messages: [
-      { role: 'system', content: `You are a helpful assistant that translates JSON file values from Russian to ${langName}. All translations are targeted for trading terminal. Return ONLY the translated JSON object, without any extra text or explanations.` },
-      { role: 'user', content: `Translate the values in this JSON object to ${langName}:\n${JSON.stringify(obj, null, 2)}` }
+      {
+        role: 'system',
+        content: `You are a helpful assistant that translates JSON file values from Russian to ${langName}. All translations are targeted for trading terminal. Return ONLY the translated JSON object, without any extra text or explanations.`
+      },
+      {
+        role: 'user',
+        content: `Translate the values in this JSON object to ${langName}:\n${JSON.stringify(obj, null, 2)}`
+      }
     ]
   });
 
@@ -60,11 +66,11 @@ async function processFile(filePath, langCode, langName) {
     const dir = path.dirname(filePath);
     const newFilePath = path.join(dir, `${langCode}.json`);
 
-    const sourceContent = await fs.promises.readFile(filePath, { encoding: 'utf8' });
+    const sourceContent = await fs.promises.readFile(filePath, {encoding: 'utf8'});
     const sourceObj = JSON.parse(removeUTF8BOM(sourceContent));
 
     if (fs.existsSync(newFilePath)) {
-      const existingContent = await fs.promises.readFile(newFilePath, { encoding: 'utf8' });
+      const existingContent = await fs.promises.readFile(newFilePath, {encoding: 'utf8'});
       const existingObj = JSON.parse(removeUTF8BOM(existingContent));
 
       const missingKeys = findMissingKeys(sourceObj, existingObj);
@@ -119,18 +125,18 @@ function findMissingKeys(source, target) {
 }
 
 function mergeDeep(target, source) {
-  const output = { ...target };
+  const output = {...target};
 
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach(key => {
       if (isObject(source[key])) {
         if (!(key in target)) {
-          Object.assign(output, { [key]: source[key] });
+          Object.assign(output, {[key]: source[key]});
         } else {
           output[key] = mergeDeep(target[key], source[key]);
         }
       } else {
-        Object.assign(output, { [key]: source[key] });
+        Object.assign(output, {[key]: source[key]});
       }
     });
   }
@@ -148,7 +154,7 @@ async function main() {
     process.exit(1);
   }
 
-  const i18nDir = path.resolve('../src/assets/i18n/');
+  const i18nDir = path.resolve('../projects/terminal-i18n/i18n/');
   console.log(`Searching for ru.json files in ${i18nDir}...`);
 
   const ruFiles = await findAllRuFiles(i18nDir);
@@ -166,7 +172,7 @@ async function main() {
     for (const lang of LANGUAGES) {
       const result = await processFile(file, lang.code, lang.name);
       if (result) {
-        failedFiles.push({ file, lang: lang.code });
+        failedFiles.push({file, lang: lang.code});
       }
     }
   }

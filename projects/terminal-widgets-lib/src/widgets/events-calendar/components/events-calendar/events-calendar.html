@@ -1,0 +1,65 @@
+<ng-container *transloco="let t; scope: 'events-calendar'">
+  <nz-tabs>
+    <nz-tab [nzTitle]="t('eventsCalendar.calendarViewTabTitle')">
+      <div class="portfolio-filter">
+        <button
+          [nzDropdownMenu]="menu"
+          nz-button
+          nz-dropdown
+          nzSize='small'
+          nzTrigger="click"
+          nzType="text"
+        >
+          @if (selectedPortfolio$ | async; as selectedPortfolio) {
+            <span>
+              {{ selectedPortfolio.portfolio }} ({{ selectedPortfolio.exchange }})
+            </span>
+          } @else {
+            {{ t('eventsCalendar.allPortfolios') }}
+          }
+
+        </button>
+      </div>
+      @if (symbolsOfSelectedPortfolio$ | async; as symbols) {
+        <ats-events-calendar-view [symbols]="symbols"/>
+      }
+    </nz-tab>
+    <nz-tab [nzTitle]="t('eventsCalendar.listViewTabTitle')">
+      <div class="portfolio-filter">
+        <button
+          [nzDropdownMenu]="menu"
+          nz-button
+          nz-dropdown
+          nzSize='small'
+          nzTrigger="click"
+          nzType="text"
+        >
+          @if (selectedPortfolio$ | async; as selectedPortfolio) {
+            <span>
+              {{ selectedPortfolio.portfolio }} ({{ selectedPortfolio.exchange }})
+            </span>
+          } @else {
+            {{ t('eventsCalendar.allPortfolios') }}
+          }
+
+        </button>
+      </div>
+      @if (symbolsOfSelectedPortfolio$ | async; as symbols) {
+        <ats-events-list-view [symbols]="symbols"/>
+      }
+    </nz-tab>
+  </nz-tabs>
+
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+      <li (click)="selectPortfolio(null)" nz-menu-item>
+        {{ t('eventsCalendar.allPortfolios') }}
+      </li>
+      @for (portfolio of portfolios$ | async; track portfolioTrackByFn($index, portfolio)) {
+        <li (click)="selectPortfolio(portfolio)" nz-menu-item>
+          {{ portfolio.portfolio }} ({{ portfolio.exchange }})
+        </li>
+      }
+    </ul>
+  </nz-dropdown-menu>
+</ng-container>

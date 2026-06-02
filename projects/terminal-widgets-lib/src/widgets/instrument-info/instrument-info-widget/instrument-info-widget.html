@@ -1,0 +1,53 @@
+<ng-container *transloco="let t;">
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget()"
+      [showContentScroll]="true"
+    >
+      <ng-template #headerRef>
+        <ats-widget-header [guid]="guid"
+                           [hasSettings]="false"
+                           [linkToActive]="settings.linkToActive ?? null"
+                           [selectedBadgeColor]="settings.badgeColor"
+                           [showBadgesMenu]="(showBadge$ | async) ?? false"
+                           [titleTemplate]="titleTemplate"
+                           [widgetMeta]="widgetInstance().widgetMeta"
+        />
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch [widgetGuid]="guid"/>
+        </ng-template>
+      </ng-template>
+      <ng-template #contentRef>
+        @if (instrumentSummary$ | async; as instrumentSummary) {
+          <nz-spin [nzSpinning]="isLoading()">
+            <ats-info-header [info]="instrumentSummary"/>
+            @switch (instrumentSummary.typeByCfi) {
+              @case (InstrumentTypes.Stock) {
+                <ats-stock-info (loadingChange)="setLoading($event)"
+                                [instrumentKey]="instrumentSummary"/>
+              }
+              @case (InstrumentTypes.Bond) {
+                <ats-bond-info (loadingChange)="setLoading($event)"
+                               [instrumentKey]="instrumentSummary"/>
+              }
+              @case (InstrumentTypes.Futures) {
+                <ats-derivative-info (loadingChange)="setLoading($event)"
+                                     [instrumentKey]="instrumentSummary"/>
+              }
+              @case (InstrumentTypes.Options) {
+                <ats-derivative-info (loadingChange)="setLoading($event)"
+                                     [instrumentKey]="instrumentSummary"/>
+              }
+              @default {
+                <ats-common-info (loadingChange)="setLoading($event)"
+                                 [instrumentKey]="instrumentSummary"/>
+              }
+            }
+          </nz-spin>
+        }
+      </ng-template>
+    </ats-widget-skeleton>
+  }
+</ng-container>

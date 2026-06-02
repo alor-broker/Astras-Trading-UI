@@ -1,0 +1,41 @@
+@import "../../styles/shared-styles";
+
+ats-blotter-repo-trades {
+  height: 100%;
+
+  .container {
+    height: 100%;
+
+    .table-container {
+      .blotter-table-container-base();
+
+      .export-button-container {
+        .blotter-export-button-container();
+      }
+
+      ant-table-header {
+        overflow: hidden !important;
+      }
+
+      .ant-table-footer {
+        .blotter-table-footer();
+      }
+    }
+  }
+
+  .sell {
+    color: var(--ats-sell-color);
+  }
+
+  .bg-sell {
+    background-color: var(--ats-sell-color);
+  }
+
+  .buy {
+    color: var(--ats-buy-color);
+  }
+
+  .bg-buy {
+    background-color: var(--ats-buy-color);
+  }
+}

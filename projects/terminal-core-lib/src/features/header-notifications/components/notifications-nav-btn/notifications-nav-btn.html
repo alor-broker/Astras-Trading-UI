@@ -1,0 +1,32 @@
+<nz-badge
+  [(nzPopoverVisible)]="isTableVisible"
+  [nzCount]="(notReadNotificationsCount$ | async) || 0"
+  [nzOffset]="[-2, 10]"
+  [nzPopoverContent]="contentTemplate"
+  [nzPopoverTitle]="titleTemplate"
+  nz-popover
+  nzPopoverOverlayClassName="ats-notification-list"
+  nzPopoverPlacement="bottomRight"
+  nzPopoverTrigger="click"
+>
+  <button [nzType]="'text'" nz-button>
+    <i nz-icon nzType="ats-bell"></i>
+  </button>
+</nz-badge>
+
+<ng-template #titleTemplate>
+  <div *transloco="let t; scope: 'notifications'" class="dialog-title">
+    <div>
+      <h3>{{ t('notifications.header') }}</h3>
+    </div>
+    <div>
+      <button (click)="isTableVisible = false" aria-label="Close" nz-button>
+        <i [nzTheme]="'outline'" nz-icon nzType="close"></i>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #contentTemplate>
+  <ats-notification-list/>
+</ng-template>

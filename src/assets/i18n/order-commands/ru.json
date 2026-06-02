@@ -1,9 +1,0 @@
-{
-  "limitOrderTabTitle": "Лимитная",
-  "marketOrderTabTitle": "Рыночная",
-  "stopOrderTabTitle": "Условная",
-  "notificationsTabTitle": "Уведомления",
-
-  "marginOrderConfirmationTitle": "Подтверждение",
-  "marginOrderConfirmationContent": "Я проинформирован, что данная сделка может привести к открытию непокрытой позиции."
-}

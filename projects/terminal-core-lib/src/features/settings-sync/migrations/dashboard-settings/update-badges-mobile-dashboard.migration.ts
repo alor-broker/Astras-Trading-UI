@@ -1,0 +1,66 @@
+﻿import {
+  OpPatch,
+  ReplacePatch
+} from "json-patch";
+import {
+  ApplyOptions,
+  ApplyStrategyType,
+  MigrationBase
+} from '../migration.types';
+import {Injectable} from '@angular/core';
+import {
+  Observable,
+  of
+} from 'rxjs';
+import {
+  Dashboard,
+  InstrumentGroups
+} from '../../../dashboard/types/dashboard.types';
+import {DefaultBadge} from '../../../instruments/constants/badges.constants';
+
+@Injectable()
+export class UpdateBadgesMobileDashboardMigration extends MigrationBase {
+  get migrationId(): string {
+    return "update_badge_colors_dashboard_mobile";
+  }
+
+  get applyOptions(): ApplyOptions {
+    // November 27, 2023
+    const expirationDate = new Date(Date.UTC(2023, 10, 27));
+    expirationDate.setMonth(expirationDate.getMonth() + 3);
+
+    return {
+      strategy: ApplyStrategyType.ApplyOnce,
+      expirationDate: expirationDate
+    };
+  }
+
+  getPatches(current: unknown): Observable<OpPatch[]> {
+    if (!current) {
+      return of([]);
+    }
+
+    const dashboard = current as Dashboard;
+    if (dashboard.instrumentsSelection == null || dashboard.instrumentsSelection[DefaultBadge] != null) {
+      return of([]);
+    }
+
+    const currentBadge = Object.keys(dashboard.instrumentsSelection).find(x => dashboard.instrumentsSelection![x] != null);
+
+    if (currentBadge == null) {
+      return of([]);
+    }
+
+    const newSelections: InstrumentGroups = {
+      [DefaultBadge]: dashboard.instrumentsSelection[currentBadge]
+    };
+
+    const patch: ReplacePatch = {
+      op: 'replace',
+      path: '/instrumentsSelection',
+      value: newSelections
+    };
+
+    return of([patch]);
+  }
+}

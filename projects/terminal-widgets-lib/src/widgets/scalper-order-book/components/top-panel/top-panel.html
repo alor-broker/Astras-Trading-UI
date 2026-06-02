@@ -1,0 +1,19 @@
+<div *ngrxLet="dataContext().extendedSettings$ as extendedSettings" class="px-1">
+  @if (showWorkingVolumes(extendedSettings.widgetSettings)) {
+    <div
+      class="d-flex flex-row flex-nowrap py-2 user-select-none"
+    >
+      <ats-working-volumes-panel [dataContext]="dataContext()"
+                                 [guid]="guid()"
+                                 [isActive]="isActive()"
+                                 orientation="horizontal"
+      />
+      <ats-modifiers-indicator/>
+    </div>
+  }
+  @if (showShortLongIndicators(extendedSettings.widgetSettings)) {
+    <div class="py-2">
+      <ats-short-long-indicator [dataContext]="dataContext()" orientation="horizontal"/>
+    </div>
+  }
+</div>

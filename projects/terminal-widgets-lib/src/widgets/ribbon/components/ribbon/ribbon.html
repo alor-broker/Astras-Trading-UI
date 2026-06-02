@@ -1,0 +1,37 @@
+<ats-scrollable-row [showScrollButtons]="showScrollButtons()">
+  @for (index of indices$ | async; track index) {
+    <div atsScrollableItem>
+      <ng-container [ngTemplateOutlet]="layout() === 'singleRow' ? singleRow : twoRow"/>
+      <ng-template #singleRow>
+        <div class="row">
+          <span nz-typography><strong>{{ index.name }}</strong></span>
+          <span>{{ index.value | number: '1.0-2' }}</span>
+          <span [class]="{
+          'change': true,
+          'positive': index.changePercent > 0,
+          'negative': index.changePercent < 0
+          }">
+            <span>{{ index.changePercent < 0 ? '&#9660;' : '&#9650;' }}</span>
+            <span>{{ index.changePercent > 0 ? '+' : '' }}{{ index.changePercent | number: '1.0-2' }}%</span>
+          </span>
+        </div>
+      </ng-template>
+      <ng-template #twoRow>
+        <div class="col">
+          <span nz-typography><strong>{{ index.name }}</strong></span>
+          <div class="row">
+            <span>{{ index.value | number: '1.0-2' }}</span>
+            <span [class]="{
+          'change': true,
+          'positive': index.changePercent > 0,
+          'negative': index.changePercent < 0
+          }">
+              <span>{{ index.changePercent < 0 ? '&#9660;' : '&#9650;' }}</span>
+              <span>{{ index.changePercent > 0 ? '+' : '' }}{{ index.changePercent | number: '1.0-2' }}%</span>
+            </span>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  }
+</ats-scrollable-row>

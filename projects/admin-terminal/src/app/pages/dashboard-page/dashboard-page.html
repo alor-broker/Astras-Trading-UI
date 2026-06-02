@@ -1,0 +1,15 @@
+<nz-layout>
+  <nz-header>
+    <atsa-navbar/>
+  </nz-header>
+
+  <nz-content>
+    <ats-customizable-dashboard/>
+    @defer {
+      <ats-order-submit-dialog-widget/>
+    }
+    @defer {
+      <ats-order-edit-dialog-widget/>
+    }
+  </nz-content>
+</nz-layout>

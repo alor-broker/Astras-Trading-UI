@@ -1,0 +1,22 @@
+<nz-input-wrapper [nzAllowClear]="allowClear()">
+  <input
+    #inputElement
+    (blur)="atsBlur.emit()"
+    (keydown)="processKeydown($event)"
+    (keydown.enter)="atsEnter.emit()"
+    (mousedown)="$event.stopPropagation()"
+    (ngModelChange)="onModelChange($event)"
+    (wheel)="processWheel($event)"
+    [ngModel]="displayValue"
+    [placeholder]="placeholder()"
+    [readOnly]="readonly()"
+    autocomplete="off"
+    inputmode="decimal"
+    nz-input
+  />
+
+  @let suffixRef = suffix();
+  @if (suffixRef != null) {
+    <ng-container *ngTemplateOutlet="suffixRef" nzInputSuffix/>
+  }
+</nz-input-wrapper>

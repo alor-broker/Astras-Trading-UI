@@ -1,0 +1,35 @@
+ats-network-indicator {
+  .icon-wrapper {
+    &.online {
+      .anticon {
+        color: lime !important;
+      }
+    }
+
+    &.offline {
+      .anticon {
+        color: var(--ats-error-color) !important;
+      }
+
+      i {
+        border-radius: 15px;
+        animation: pulse 2s infinite;
+      }
+    }
+
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--ats-error-color) 70%, transparent);
+    }
+
+    70% {
+      box-shadow: 0 0 0 10px color-mix(in srgb, var(--ats-error-color) 0%, transparent);
+    }
+
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--ats-error-color) 0%, transparent);
+    }
+  }
+}

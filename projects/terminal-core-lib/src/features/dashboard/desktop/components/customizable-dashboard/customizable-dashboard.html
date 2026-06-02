@@ -1,0 +1,28 @@
+@if (options$ | async; as options) {
+  <div class='inner-content'>
+    <gridster [options]="options">
+      <div>
+        @let activeGuid = activeWidgetGuid();
+        @for (item of displayItems(); track getItemTrackKey($index, item)) {
+          <gridster-item [item]="item.gridsterItem">
+            @let isActiveWidget = activeGuid === item.instance.instance.guid;
+            <div (mouseenter)="onWidgetMouseEnter(item.instance.instance.guid)"
+                 (mouseleave)="onWidgetMouseLeave(item.instance.instance.guid)"
+                 [class.active]="isActiveWidget"
+                 [class.zero-paddings]="item.instance.widgetMeta.desktopMeta?.hasZeroPaddings"
+                 class="widget-container">
+              @if (item.componentType) {
+                <ng-container [ngComponentOutletInputs]="{
+                                widgetInstance: item.instance,
+                                isBlockWidget: isBlockWidget(),
+                                isActive: isActiveWidget
+                              }"
+                              [ngComponentOutlet]="item.componentType"/>
+              }
+            </div>
+          </gridster-item>
+        }
+      </div>
+    </gridster>
+  </div>
+}

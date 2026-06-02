@@ -1,0 +1,113 @@
+<nz-modal
+  (nzAfterOpen)="modalOpened()"
+  (nzOnCancel)="handleCancel()"
+  *transloco="let t; scope: 'tech-chart/instrument-search-modal'"
+  [nzTitle]="t('techChartInstrumentSearchModal.title')"
+  [nzVisible]='isVisible$ | async'
+  nzClassName="instrument-search-modal"
+  nzDraggable
+>
+  <ng-container *nzModalContent>
+    <nz-form-item>
+      <nz-form-control
+        [nzErrorTip]="searchError"
+        [nzWarningTip]="searchWarning"
+      >
+        <nz-input-wrapper>
+          <input #searchInput
+                 (keyup)="filterChanged()"
+                 (mousedown)="$event.stopPropagation()"
+                 [formControl]="searchControl"
+                 [nzAutocomplete]="autoComplete"
+                 nz-input
+          />
+
+          <nz-autocomplete
+            #autoComplete
+            [nzWidth]="searchInput.clientWidth"
+          >
+            @for (option of filteredInstruments$ | async; track option) {
+              <nz-auto-option
+                (selectionChange)="onSelect($event, option)"
+                [nzLabel]="option.symbol"
+                [nzValue]="option.symbol"
+              >
+
+                @if (isFuturesGluing(option)) {
+                  <div>
+                    <nz-tag>{{ option.symbol }}</nz-tag>
+                    <nz-tag>{{ option.exchange }}</nz-tag>
+                    <span class="heading-color pl-5">{{ t('techChartInstrumentSearchModal.futuresGluingTitle') }}</span>
+                  </div>
+                  @if (getGluingType(option); as gluingType) {
+                    <div class="pt-5">
+                      <span
+                        class="primary-color">{{ t('techChartInstrumentSearchModal.futuresGluingTypesDescription.' + gluingType) }}</span>
+                    </div>
+                  }
+                } @else {
+                  <div>
+                    <nz-tag>{{ option.symbol }}</nz-tag>
+                    <span class='pr-5'>{{ option.shortName }}&nbsp;</span>
+                    @if (option.instrumentGroup) {
+                      <nz-tag>{{ option.instrumentGroup }}</nz-tag>
+                    }
+                    <nz-tag>{{ option.exchange }}</nz-tag>
+                  </div>
+                }
+
+              </nz-auto-option>
+            }
+          </nz-autocomplete>
+
+          <ats-loading-indicator
+            [isLoading]="autocompleteLoading$ | async"
+            className="autocomplete-loader"
+            nzInputSuffix
+          />
+
+          <span nzInputAddonAfter>
+            <button (click)="addSpreadOperator('+')" class="spread-operator-btn" nz-button>
+              +
+            </button>
+            <button (click)="addSpreadOperator(minusSign)" class="spread-operator-btn" nz-button>
+              －
+            </button>
+            <button (click)="addSpreadOperator('*')" class="spread-operator-btn" nz-button>
+              ∗
+            </button>
+            <button (click)="addSpreadOperator('/')" class="spread-operator-btn" nz-button>
+              /
+            </button>
+          </span>
+        </nz-input-wrapper>
+      </nz-form-control>
+    </nz-form-item>
+
+    <ng-template #searchError>
+      @if (searchControl.errors?.required) {
+        <span>{{ t('validationErrors.emptyFieldError') }}</span>
+      }
+    </ng-template>
+    <ng-template #searchWarning>
+      @if (searchControl.errors?.expressionInvalid) {
+        <span>{{ t('techChartInstrumentSearchModal.expressionInvalid') }}</span>
+      }
+    </ng-template>
+
+    <p>{{ t('techChartInstrumentSearchModal.simpleInstrumentSearchInstruction') }}</p>
+    <p>{{ t('techChartInstrumentSearchModal.syntheticInstrumentSearchInstruction') }}</p>
+    <p>{{ t('techChartInstrumentSearchModal.additionalInfo') }}</p>
+  </ng-container>
+
+  <div *nzModalFooter>
+    <button (click)="handleCancel()" nz-button>{{ t('cancelBtnText') }}</button>
+    <button
+      (click)="handleOk()"
+      [disabled]="searchControl.invalid"
+      nz-button
+      nzType="primary"
+    >{{ t('okBtnText') }}
+    </button>
+  </div>
+</nz-modal>

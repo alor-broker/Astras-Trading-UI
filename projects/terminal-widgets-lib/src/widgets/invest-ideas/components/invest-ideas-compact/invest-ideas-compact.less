@@ -1,0 +1,29 @@
+@import "../../styles/shared-styles";
+
+ats-invest-ideas-compact {
+  .idea {
+    width: 100%;
+    height: 100%;
+    padding: 8px 10px;
+
+    .symbol {
+      width: 75px;
+    }
+  }
+
+  .ant-carousel {
+    height: 220px;
+    overflow: hidden;
+  }
+
+  .section {
+    border: 1px solid var(--ats-border-color-split);
+    border-radius: 10px;
+  }
+
+  .ant-carousel {
+    .slick-dots {
+      .invest-ideas-carousel-dots();
+    }
+  }
+}

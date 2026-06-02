@@ -1,0 +1,26 @@
+@import "buy-sell-button";
+
+ats-buy-sell-buttons {
+  .buttons-wrapper {
+    width: 100%;
+
+    display: flex;
+    gap: 6px;
+
+    .ant-btn {
+      width: 50%;
+      flex-grow: 1;
+    }
+  }
+
+  .buy-button {
+    .buySellButton(var(--ats-buy-color), var(--ats-buy-sell-btn-text-color), var(--ats-buy-color-disabled), var(--ats-buy-color-background-disabled));
+  }
+
+  .sell-button {
+    .buySellButton(var(--ats-sell-color), var(--ats-buy-sell-btn-text-color), var(--ats-sell-color-disabled), var(--ats-sell-color-background-disabled));
+  }
+}
+
+
+

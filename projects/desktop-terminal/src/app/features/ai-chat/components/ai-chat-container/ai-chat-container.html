@@ -1,0 +1,27 @@
+<div class="d-flex flex-column h-100">
+  <div class="px-5">
+    <ng-content select="atsd-ai-chat-usage-disclaimer"/>
+  </div>
+
+  <div class="d-flex justify-content-center mb-8">
+    <ng-content select="atsd-ai-chat-start-new-conversation-button"/>
+  </div>
+
+  <div #messagesContainer class="flex-fill d-flex scrollable mb-10">
+    <div class="messages w-100 d-flex flex-column flex-gap-10 pr-5">
+      <ng-content select="atsd-ai-chat-message-container"/>
+    </div>
+  </div>
+
+  <div class="suggestions w-100 d-flex flex-column flex-gap-10 pr-5">
+    <ng-content select="atsd-ai-chat-chat-suggested-message-container"/>
+  </div>
+
+  <div class="status">
+    <ng-content select="atsd-ai-chat-status"/>
+  </div>
+
+  <div class="message-input">
+    <ng-content select="atsd-ai-chat-message-input"/>
+  </div>
+</div>

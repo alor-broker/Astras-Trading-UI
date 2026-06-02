@@ -1,0 +1,56 @@
+<ng-container *transloco="let t; scope: 'orders-basket/presets'">
+  <div class="d-flex flex-row flex-wrap justify-content-start flex-gap-8">
+    @for (preset of presets(); track preset) {
+      <nz-tag
+        (click)="presetSelected.emit(preset)"
+        [nzTooltipMouseEnterDelay]="1"
+        [nzTooltipTitle]="preset.title"
+        nz-tooltip
+      >
+        {{ sliceTagName(preset.title) }}
+        <span
+          (click)="$event.preventDefault(); $event.stopPropagation()"
+          (nzOnConfirm)="removePreset.emit(preset)"
+          [nzCancelText]="t('no')"
+          [nzOkText]="t('yes')"
+          [nzPopconfirmTitle]="t('ordersBasketPresets.removeConfirmationText')"
+          class="remove-btn"
+          nz-icon
+          nz-popconfirm
+          nzPopconfirmPlacement="bottom"
+          nzTheme="outline"
+          nzType="close"
+        >
+        </span>
+      </nz-tag>
+    }
+    @if (!inputVisible) {
+      <nz-tag
+        (click)="showInput()"
+        [class.disabled]="!canAddPreset()"
+        [nzTooltipMouseEnterDelay]="1"
+        [nzTooltipTitle]="t('ordersBasketPresets.savePresetTooltip')"
+        class="editable-tag"
+        nz-tooltip
+      >
+        <span nz-icon nzType="plus"></span>
+        <span>{{ t('ordersBasketPresets.savePresetTag') }}</span>
+      </nz-tag>
+    }
+    @if (inputVisible) {
+      <input
+        #inputElement
+        (blur)="handleInputConfirm()"
+        (keydown.enter)="handleInputConfirm()"
+        [(ngModel)]="inputValue"
+        [maxlength]="50"
+        [placeholder]="t('ordersBasketPresets.titlePlaceholder')"
+        id="new-preset-title-input"
+        nz-input
+        nzSize="small"
+        type="text"
+      />
+    }
+  </div>
+</ng-container>
+

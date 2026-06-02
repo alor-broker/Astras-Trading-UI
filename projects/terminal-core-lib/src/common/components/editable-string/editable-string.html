@@ -1,0 +1,51 @@
+<ng-container *transloco="let t; scope: 'shared/editable-string'">
+  @if ((isEditMode$ | async) === false) {
+    <div class="display-mode">
+      <div class="content">{{ content() }}</div>
+      <div class="edit-icon">
+        <button (click)="setEditMode(true); $event.stopPropagation();" nz-button nzSize='small' nzType="link">
+          <i nz-icon nzType="edit"></i>
+        </button>
+      </div>
+    </div>
+  }
+  @if ((isEditMode$ | async)) {
+    <div class="edit-mode">
+      <form [formGroup]="editForm" nz-form nzLayout="inline">
+        <nz-form-item>
+          <nz-form-control [nzErrorTip]="contentError">
+            <nz-input-group [nzSuffix]="suffix">
+              <input #editInput
+                     (blur)="emitValueIfValid()"
+                     (click)="$event.stopPropagation()"
+                     (keyup)="checkInputCompleteOrCancel($event)"
+                     [class]="inputClass()"
+                     formControlName="content"
+                     nz-input
+                     type="text"
+              />
+              <ng-template #suffix>
+                <span nz-icon nzType="enter"></span>
+              </ng-template>
+            </nz-input-group>
+          </nz-form-control>
+          <ng-template #contentError>
+            @let restrictions = lengthRestrictions();
+            @if (restrictions) {
+              <span>{{
+                  t(
+                    'sharedEditableString.stringLengthError',
+                    {
+                      min: restrictions.minLength,
+                      max: restrictions.maxLength
+                    })
+                }}</span>
+            }
+          </ng-template>
+        </nz-form-item>
+      </form>
+    </div>
+  }
+</ng-container>
+
+

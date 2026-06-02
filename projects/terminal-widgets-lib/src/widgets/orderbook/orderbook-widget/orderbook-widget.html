@@ -1,0 +1,40 @@
+<ng-container *transloco="let t;">
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget()"
+      [settings]="settingsRef"
+      [showContentScroll]="true"
+      [showSettings]="showSettings()"
+    >
+      <ng-template #headerRef>
+        <ats-widget-header (switchSettings)="toggleSettings()"
+                           [guid]="guid"
+                           [hasSettings]="true"
+                           [linkToActive]="settings.linkToActive ?? null"
+                           [selectedBadgeColor]="settings.badgeColor"
+                           [showBadgesMenu]="(showBadge$ | async) ?? false"
+                           [titleTemplate]="titleTemplate"
+                           [widgetMeta]="widgetInstance().widgetMeta"
+        />
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid"/>
+        </ng-template>
+      </ng-template>
+      <ng-template #contentRef>
+        @if (orderbookDisplaySettings$ | async; as orderbookSettings) {
+          <ats-order-book
+            (rowSelected)="createOrder($event.price)"
+            [settings]="orderbookSettings"
+          />
+        }
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-orderbook-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
+
+</ng-container>
+

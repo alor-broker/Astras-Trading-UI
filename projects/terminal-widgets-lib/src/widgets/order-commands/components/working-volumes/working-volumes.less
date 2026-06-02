@@ -1,0 +1,37 @@
+ats-working-volumes {
+  .container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
+
+    .item {
+      flex-grow: 1;
+      text-align: center;
+      cursor: pointer;
+      padding-left: 2px;
+      padding-right: 2px;
+
+      border: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-base);
+      border-radius: var(--ats-tag-border-radius);
+
+      &:hover {
+        color: var(--ats-heading-color);
+        border-color: var(--ats-primary-color);
+      }
+
+      &.bid {
+        color: var(--ats-buy-color);
+      }
+
+      &.ask {
+        color: var(--ats-sell-color);
+      }
+    }
+  }
+}
+
+
+

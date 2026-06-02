@@ -1,0 +1,212 @@
+﻿[
+  {
+    "id": "home_desktop_dashboard",
+    "type": "desktop",
+    "isStandard": false,
+    "isFavorite": true,
+    "name": "Home",
+    "widgets": [
+      {
+        "widgetTypeId": "light-chart",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 18,
+          "rows": 15
+        },
+        "initialSettings": {
+          "symbol": "IMOEX",
+          "exchange": "MOEX",
+          "instrumentGroup": "TQBR",
+          "linkToActive": false
+        }
+      },
+      {
+        "widgetTypeId": "order-submit",
+        "position": {
+          "x": 19,
+          "y": 0,
+          "cols": 14,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "treemap",
+        "position": {
+          "x": 34,
+          "y": 0,
+          "cols": 16,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "portfolio-charts",
+        "position": {
+          "x": 0,
+          "y": 16,
+          "cols": 10,
+          "rows": 14
+        },
+        "initialSettings": {
+          "activeTabIndex": 0
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 10,
+          "y": 16,
+          "cols": 29,
+          "rows": 14
+        },
+        "initialSettings": {
+          "activeTabIndex": 3
+        }
+      },
+      {
+        "widgetTypeId": "market-trends",
+        "position": {
+          "x": 40,
+          "y": 16,
+          "cols": 10,
+          "rows": 14
+        }
+      }
+    ]
+  },
+  {
+    "id": "default_desktop_dashboard",
+    "type": "desktop",
+    "isStandard": true,
+    "isFavorite": true,
+    "name": "Trading",
+    "widgets": [
+      {
+        "widgetTypeId": "tech-chart",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 30,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "order-book",
+        "position": {
+          "x": 30,
+          "y": 0,
+          "cols": 10,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "instrument-info",
+        "position": {
+          "x": 40,
+          "y": 0,
+          "cols": 10,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 0,
+          "y": 18,
+          "cols": 25,
+          "rows": 12
+        },
+        "initialSettings": {
+          "activeTabIndex": 1
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 25,
+          "y": 18,
+          "cols": 15,
+          "rows": 12
+        },
+        "initialSettings": {
+          "activeTabIndex": 0
+        }
+      },
+      {
+        "widgetTypeId": "instrument-select",
+        "position": {
+          "x": 40,
+          "y": 18,
+          "cols": 10,
+          "rows": 12
+        }
+      }
+    ]
+  },
+  {
+    "id": "lite_desktop_dashboard",
+    "type": "desktop",
+    "isStandard": false,
+    "isFavorite": true,
+    "name": "Lite Dashboard",
+    "widgets": [
+      {
+        "widgetTypeId": "portfolio-summary",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 50,
+          "rows": 1
+        }
+      },
+      {
+        "widgetTypeId": "light-chart",
+        "position": {
+          "x": 0,
+          "y": 1,
+          "cols": 24,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "all-instruments",
+        "position": {
+          "x": 24,
+          "y": 1,
+          "cols": 26,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 0,
+          "y": 16,
+          "cols": 24,
+          "rows": 14
+        },
+        "initialSettings": {
+          "activeTabIndex": 3
+        }
+      },
+      {
+        "widgetTypeId": "order-submit",
+        "position": {
+          "x": 24,
+          "y": 16,
+          "cols": 10,
+          "rows": 14
+        }
+      },
+      {
+        "widgetTypeId": "instrument-select",
+        "position": {
+          "x": 34,
+          "y": 16,
+          "cols": 16,
+          "rows": 14
+        }
+      }
+    ]
+  }
+]

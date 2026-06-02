@@ -1,0 +1,63 @@
+<div
+  (cdkDropListDropped)="changeDashboardsOrder($event)"
+  cdkDropList
+  cdkDropListOrientation="horizontal"
+  class="max-w-100 min-w-0"
+>
+  @if (options$ | async; as options) {
+    <nz-segmented
+      (nzValueChange)="selectDashboard($event)"
+      [ngModel]="selectedValue$ | async"
+      class="max-w-100 min-w-0"
+    >
+      @for (option of options; track option.value) {
+        <label [nzDisabled]="option.disabled" [nzValue]="option.value" nz-segmented-item>
+          @if ($index !== (options.length - 1)) {
+            <div
+              [nzTooltipPlacement]="['bottom', 'bottomLeft', 'bottomRight']"
+              [nzTooltipTitle]="options[$index].label"
+              cdkDrag
+              cdkDragLockAxis="x"
+              class="dashboard-label"
+              nz-tooltip
+            >
+              {{ options[$index].label }}
+            </div>
+          } @else {
+            <button
+              (nzVisibleChange)="changeDashboardSelectionMenuVisibility($event)"
+              [nzClickHide]="false"
+              [nzDropdownMenu]="dashboardsMenu"
+              [nzTrigger]="dropdownTrigger()"
+              [nzVisible]="isDashboardSelectionMenuVisible()"
+              class="dropdown-btn"
+              id="dashboard-select-btn"
+              nz-button
+              nz-dropdown
+              nzSize="small"
+              nzType="text"
+            >
+              @if (lastSelectedNonFavoriteDashboard$ | async; as lastSelectedNonFavoriteDashboard) {
+                <span
+                  (click)="selectDashboard(lastSelectedNonFavoriteDashboard.guid)"
+                  class="dashboard-label"
+                  nz-typography
+                  nzEllipsis
+                >
+                  {{ lastSelectedNonFavoriteDashboard.title }}&nbsp;
+                </span>
+              }
+              <span><i class="arrow-icon" nz-icon nzTheme="outline" nzType="down"></i></span>
+              <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
+                <atsd-select-dashboard-menu (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
+                                            (isNewDashboardFocused)="dropdownTrigger.set($event ? 'click' : 'hover')"
+                                            [visibilityChange]="isDashboardSelectionMenuVisible()"
+                />
+              </nz-dropdown-menu>
+            </button>
+          }
+        </label>
+      }
+    </nz-segmented>
+  }
+</div>

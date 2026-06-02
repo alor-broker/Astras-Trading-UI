@@ -1,0 +1,10 @@
+<nz-switch
+  (ngModelChange)="changeTheme()"
+  [ngModel]="isDarkThemeApplied"
+  [nzCheckedChildren]="checkedTemplate"
+  [nzLoading]="isLoading()"
+  [nzUnCheckedChildren]="unCheckedTemplate"
+>
+  <ng-template #checkedTemplate><span class="pt-2" nz-icon nzType="moon"></span></ng-template>
+  <ng-template #unCheckedTemplate><span class="pt-2" nz-icon nzType="sun"></span></ng-template>
+</nz-switch>

@@ -1,0 +1,48 @@
+@import "buy-sell-button";
+
+ats-compact-header {
+  .selectable {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .sell {
+    color: var(--ats-sell-color);
+  }
+
+  .buy {
+    color: var(--ats-buy-color);
+  }
+
+  label {
+    color: var(--ats-heading-color);
+  }
+
+  .position-badge {
+    cursor: pointer;
+    padding: 0 6px;
+    z-index: var(--ats-zindex-badge);
+    min-width: var(--ats-badge-height);
+    height: var(--ats-badge-height);
+    color: var(--ats-badge-text-color);
+    font-weight: var(--ats-badge-font-weight);
+    font-size: var(--ats-badge-font-size);
+    line-height: var(--ats-badge-height);
+    white-space: nowrap;
+    text-align: center;
+    background: var(--ats-badge-color);
+    border-radius: calc(var(--ats-badge-height) / 2);
+    box-shadow: 0 0 0 1px var(--ats-shadow-color-inverse);
+
+    &.long {
+      background: var(--ats-buy-color);
+    }
+
+    &.short {
+      background: var(--ats-sell-color);
+    }
+  }
+}
+
+
+

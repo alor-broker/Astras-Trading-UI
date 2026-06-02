@@ -1,12 +1,21 @@
 name: Lint
 
 on:
+  # Direct pushes only on the main branch; every other branch is covered by its pull request.
+  # This avoids running twice (push + pull_request) for branches that have an open PR.
   push:
-    branch:
-      - '**'
+    branches:
+      - master
+  pull_request:
   workflow_dispatch:
-    branch:
-      - '**'
+
+permissions:
+  contents: read
+
+# A newer commit on the same ref cancels the previous, still-running lint.
+concurrency:
+  group: lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -15,15 +24,26 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.12.x]
+        node-version: [24.x]
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@v4
+    - uses: actions/checkout@v5
+    - uses: pnpm/action-setup@v5
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node-version }}
-    - run: pnpm install
-    - run: pnpm lint
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+
+    # Turn ESLint's `unix` output into inline PR-diff annotations.
+    - name: Register ESLint problem matcher
+      run: echo "::add-matcher::.github/eslint-unix.json"
+
+    - name: Lint
+      run: pnpm exec ng lint --max-warnings 0 --format unix
+
+    - name: Remove ESLint problem matcher
+      if: always()
+      run: echo "::remove-matcher owner=eslint-unix::"

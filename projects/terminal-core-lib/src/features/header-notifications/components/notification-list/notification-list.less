@@ -1,0 +1,56 @@
+ats-notification-list {
+  .notifications-table {
+    .notification {
+      border-bottom: 1px solid var(--ats-border-color-base);
+    }
+  }
+
+  .notification {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    padding-top: 3px;
+    padding-bottom: 5px;
+    width: 100%;
+
+    &.read {
+      cursor: initial;
+    }
+
+    .read-status {
+      padding-left: 3px;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .header {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+
+        .date {
+          margin-left: auto;
+          white-space: nowrap;
+        }
+      }
+
+      .body {
+        display: inline-flex;
+        flex-direction: row;
+        padding-top: 3px;
+      }
+    }
+  }
+}
+
+.mobile {
+  ats-notification-list {
+    .notifications-table {
+      width: 100%;
+      max-width: 500px;
+    }
+  }
+}

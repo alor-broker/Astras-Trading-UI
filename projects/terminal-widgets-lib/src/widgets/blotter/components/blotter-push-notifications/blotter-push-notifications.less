@@ -1,0 +1,31 @@
+@import "../../styles/shared-styles";
+
+ats-blotter-push-notifications {
+  height: 100%;
+
+  .container {
+    height: 100%;
+
+    .table-container {
+      .blotter-table-container-base();
+
+      tr:hover {
+        cursor: pointer;
+      }
+
+      .symbol-name {
+        margin-right: 10px;
+      }
+
+      .ant-table-header {
+        overflow: hidden !important;
+      }
+
+      .ant-table-footer {
+        .blotter-table-footer();
+      }
+    }
+  }
+}
+
+

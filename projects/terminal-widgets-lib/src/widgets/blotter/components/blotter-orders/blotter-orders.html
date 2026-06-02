@@ -1,0 +1,224 @@
+<ng-container *transloco="let t; scope: 'blotter/blotter-common'">
+  <div
+    *ngrxLet="{ contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, orders: tableData$ } as td"
+    class="container">
+    <ng-template #empty>
+      <nz-empty
+        [nzNotFoundContent]="isFilterDisabled() ? t('blotterBlotterCommon.emptyOrders') : t('blotterBlotterCommon.emptyOrdersWithFilters')"
+        class="ant-list-empty-text"
+        nzNotFoundImage="simple"/>
+    </ng-template>
+
+    <div
+      (nzResizeObserve)="containerSizeChanged($event)"
+      class="table-container"
+      nzResizeObserver
+    >
+      @let user = userContext.getUser() | async;
+      <nz-table
+        [nzData]="td.orders"
+        [nzFooter]="footer"
+        [nzFrontPagination]="false"
+        [nzNoResult]="empty"
+        [nzScroll]="{ x: (td.contentSize?.width ?? 0) + 'px', y: (td.contentSize?.height ?? 0) + 'px' }"
+        [nzShowPagination]="false"
+        [nzVirtualForTrackBy]="trackBy"
+        [nzVirtualItemSize]="20"
+        [nzVirtualMaxBufferPx]="td.contentSize?.height ?? 0"
+        [nzVirtualMinBufferPx]="td.contentSize?.height ?? 0"
+        atsTableRowHeight
+        nzTableLayout="fixed"
+      >
+        <thead>
+        <tr
+          (cdkDropListDropped)="changeColumnOrder($event)"
+          (nzResizeObserve)="headerSizeChanged($event)"
+          cdkDropList
+          cdkDropListOrientation="horizontal"
+          nzResizeObserver
+        >
+          <th nzWidth="5px"></th>
+
+          <th nzWidth="65px">
+            @if (canCancelOrders(user)) {
+              <span>
+                <a (nzOnConfirm)="cancelAllOrders()"
+                   [nzCancelText]="t('no')"
+                   [nzCondition]="td.settings.cancelOrdersWithoutConfirmation ?? false"
+                   [nzOkText]="t('yes')"
+                   [nzPopconfirmTitle]="t('blotterBlotterCommon.cancelConfirm')"
+                   nz-popconfirm>{{ t('blotterBlotterCommon.cancelAll') }}</a>
+                  </span>
+            }
+          </th>
+
+          @for (column of td.tableConfig.columns; track column) {
+            <th (atsWidthChanged)="saveColumnWidth({ columnId: column.id, width: $event})"
+                (nzFilterChange)="defaultFilterChange(column.id, $event)"
+                (nzSortOrderChange)="saveSortState(column.id, $event)"
+                [atsResizeColumn]
+                [minWidth]="column.minWidth ?? 50"
+                [nzCustomFilter]="column.filterData?.filterType !== filterTypes.DefaultMultiple"
+                [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+                [nzFilters]="column.filterData?.filters ?? []"
+                [nzShowFilter]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+                [nzSortFn]="column.sortFn ?? false"
+                [nzSortOrder]="column.sortOrder ?? null"
+                [nzWidth]="column.width ? column.width + 'px': null"
+                cdkDrag
+                cdkDragLockAxis="x"
+            >
+                <span
+                  [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                  [nzTooltipTitle]="column.tooltip"
+                  nz-tooltip
+                >
+                  {{ column.displayName }}
+                </span>
+              @if (column.filterData != null && column.filterData.filterType !== filterTypes.DefaultMultiple) {
+                <nz-filter-trigger
+                  (nzVisibleChange)="onFilterVisibilityChange(column, $event)"
+                  [nzActive]="isFilterApplied(column)"
+                  [nzDropdownMenu]="searchMenu"
+                  [nzVisible]="column.filterData.isOpenedFilter ?? false"
+                >
+                  <i nz-icon nzType="search"></i>
+                </nz-filter-trigger>
+              }
+            </th>
+          }
+        </tr>
+        </thead>
+        <tbody>
+        <ng-template let-ord nz-virtual-scroll>
+          <tr
+            (click)="rowClick(ord)"
+            (contextmenu)="openContextMenu($event, contextMenu, ord)"
+          >
+            <td>
+                <span
+                  [class.cancelled-status]="ord.status.toString() === 'canceled'"
+                  [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'>&nbsp;</span>
+            </td>
+            <td>
+              <div class="d-flex flex-row flex-no-wrap flex-gap-5">
+                @if (ord.status.toString() === "working" && ord.type === "limit" && canEditOrders(user)) {
+                  <a (click)="editOrder(ord, $event)">
+                    <i nz-icon nzTheme="outline" nzType="edit"></i>
+                  </a>
+                }
+
+                @if (ord.status.toString() === "working" && canCancelOrders(user)) {
+                  <a (click)="$event.preventDefault(); $event.stopPropagation()"
+                     (nzOnConfirm)="cancelOrder(ord)"
+                     [nzCancelText]="t('no')"
+                     [nzCondition]="td.settings.cancelOrdersWithoutConfirmation ?? false"
+                     [nzOkText]="t('yes')"
+                     [nzPopconfirmTitle]="t('blotterBlotterCommon.cancelConfirm')"
+                     nz-popconfirm>
+                    <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+                  </a>
+                }
+
+                @if (ord.groupId) {
+                  <a
+                    (click)="openOrdersGroup(ord.groupId, $event)"
+                    [nzTooltipOverlayStyle]="{ display: isModalOpened() ? 'none' : 'block' }"
+                    [nzTooltipTitle]="t('blotterBlotterCommon.orderGroupsTooltip')"
+                    nz-tooltip=""
+                  >
+                    <i nz-icon nzTheme="outline" nzType="apartment"></i>
+                  </a>
+                }
+              </div>
+            </td>
+
+            @for (column of td.tableConfig.columns; track column) {
+              @if (column.id === "id") {
+                <td>{{ ord.id }}</td>
+              }
+              @if (column.id === "symbol") {
+                <td class='fw-bold'>
+                  <span class="symbol-name">{{ ord.symbol }}</span>
+                  <ats-instrument-badge-display [instrumentKey]="ord"/>
+                </td>
+              }
+              @if (column.id === "side") {
+                <td
+                  [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}
+                </td>
+              }
+              @if (column.id === "residue") {
+                <td>{{ ord.residue }}</td>
+              }
+              @if (column.id === "volume") {
+                <td>{{ (ord.volume | number) }}</td>
+              }
+              @if (column.id === "qty") {
+                <td>{{ ord.qty | number }}</td>
+              }
+              @if (column.id === "price") {
+                <td>{{ isMarketOrder(ord) ? '' : (ord.price | number : '0.0-10') }}</td>
+              }
+              @if (column.id === "status") {
+                <td [class]='ord.status.toString() === "filled"
+                    ? (ord.status.toString() === "sell" ? "sell" : "buy") :
+                    (ord.status.toString() === "canceled" ? "cancelled" : "fw-bold" )'>
+                  @if (ord.status === 'rejected') {
+                    <span
+                      [nzTooltipTitle]="t('blotterBlotterCommon.rejectedStatusHint')"
+                      nz-tooltip=""
+                    >
+                        {{ t('blotterBlotterCommon.orderStatus.' + ord.status, {fallback: ord.status}) }}
+                      </span>
+                  } @else {
+                    {{ t('blotterBlotterCommon.orderStatus.' + ord.status, {fallback: ord.status}) }}
+                  }
+                </td>
+              }
+              @if (column.id === "transTime") {
+                <td>{{ formatDate(ord.transTime) }}</td>
+              }
+              @if (column.id === "exchange") {
+                <td>{{ ord.exchange }}</td>
+              }
+              @if (column.id === "type") {
+                <td>{{ ord.type }}</td>
+              }
+              @if (column.id === "endTime") {
+                <td>{{ formatDate(ord.endTime) }}</td>
+              }
+            }
+          </tr>
+        </ng-template>
+        </tbody>
+        <ng-template #footer>
+          <div
+            (nzResizeObserve)="footerSizeChanged($event)"
+            class="export-button-container"
+            nzResizeObserver
+          >
+            @if (canExport(td.orders)) {
+              <button (click)="exportToFile(td.orders)" nz-button nzType="link">
+                <i nz-icon nzType="download"></i>
+                {{ t('exportToFile') }}
+              </button>
+            }
+          </div>
+        </ng-template>
+      </nz-table>
+    </div>
+
+    <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+      <ats-table-search-filter (filterChange)="filterChange($event)" [activeColumnId]="activeFilterColumnId()"
+                               [columns]="td.tableConfig.columns"/>
+    </nz-dropdown-menu>
+
+    <ats-add-to-watchlist-menu #contextMenu/>
+
+    <ats-blotter-orders-group-modal [(groupId)]="groupIdToView"
+                                    [portfolioKey]="td.settings"></ats-blotter-orders-group-modal>
+  </div>
+</ng-container>
+
+

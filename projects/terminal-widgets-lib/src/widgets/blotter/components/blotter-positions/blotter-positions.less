@@ -1,0 +1,41 @@
+@import "../../styles/shared-styles";
+
+ats-blotter-positions {
+  height: 100%;
+
+  .container {
+    height: 100%;
+
+    .table-container {
+      .blotter-table-container-base();
+
+      tr:hover {
+        cursor: pointer;
+      }
+
+      .symbol-name {
+        margin-right: 10px;
+      }
+
+      .export-button-container {
+        .blotter-export-button-container();
+      }
+
+      ::ng-deep .ant-table-header {
+        overflow: hidden !important;
+      }
+
+      ::ng-deep .ant-table-footer {
+        .blotter-table-footer();
+      }
+    }
+
+    .sell {
+      color: var(--ats-sell-color);
+    }
+
+    .buy {
+      color: var(--ats-buy-color);
+    }
+  }
+}

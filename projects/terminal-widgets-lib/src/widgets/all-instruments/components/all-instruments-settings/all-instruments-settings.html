@@ -1,0 +1,39 @@
+<ats-widget-settings
+  (copyClick)="createWidgetCopy()"
+  (saveClick)="updateSettings()"
+  [canCopy]="canCopy"
+  [canSave]="canSave"
+  [showCopy]="showCopy"
+>
+  <ng-container *transloco="let t">
+    <div>
+      <form [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+        <nz-form-item *transloco="let tSettings; scope: 'all-instruments/all-instruments-settings'" class="compact">
+          <nz-form-control [nzErrorTip]="tSettings('allInstrumentsAllInstrumentsSettings.selectColumnsError')">
+            <nz-form-label nzFor="allInstrumentsColumns"
+                           nzRequired>{{ tSettings('allInstrumentsAllInstrumentsSettings.selectColumnLabel') }}
+            </nz-form-label>
+            <nz-select
+              [nzMaxTagCount]="10"
+              [nzMaxTagPlaceholder]="tagPlaceHolder"
+              [nzPlaceHolder]="tSettings('allInstrumentsAllInstrumentsSettings.selectColumnPlaceholder')"
+              formControlName="allInstrumentsColumns"
+              nzMode="multiple"
+            >
+              <ng-container *transloco="let tInstruments; scope: 'all-instruments/all-instruments'">
+                @for (item of allInstrumentsColumns; track item) {
+                  <nz-option [nzLabel]="tInstruments('allInstrumentsAllInstruments.columns.' + item.id + '.name')"
+                             [nzValue]="item.id"
+                  />
+                }
+              </ng-container>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+
+    <ng-template #tagPlaceHolder let-selectedList>{{ t('maxTagPlaceholder', {count: selectedList.length}) }}
+    </ng-template>
+  </ng-container>
+</ats-widget-settings>

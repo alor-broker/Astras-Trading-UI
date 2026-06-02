@@ -1,0 +1,3 @@
+<ng-container *ngrxLet="{ selectedInstruments: selectedInstruments$, badgesColors: badgesColors$ } as bd">
+  <ats-merged-badge [colors]="getApplicableBadges(bd.selectedInstruments, bd.badgesColors)"/>
+</ng-container>

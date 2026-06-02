@@ -1,0 +1,17 @@
+@if (filtersForm) {
+  <div *transloco="let t" class="ant-table-filter-dropdown custom-filter">
+    @for (column of columns(); track column) {
+      @if (!!column.filterData && column.id === activeColumnId()) {
+        <div [formGroup]="filtersForm" class="search-box">
+          <input
+            [formControlName]="column.id"
+            [placeholder]="column.filterData.filterName" class="mb-10"
+            nz-input
+            type="text"
+          />
+        </div>
+      }
+    }
+    <button (click)="reset()" nz-button nzSize="small" nzType="text">{{ t('resetBtnText') }}</button>
+  </div>
+}

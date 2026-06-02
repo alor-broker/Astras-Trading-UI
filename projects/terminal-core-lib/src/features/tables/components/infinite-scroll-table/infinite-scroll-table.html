@@ -1,0 +1,194 @@
+@let config = tableConfig();
+@if (config) {
+  <nz-table
+    #dataTable
+    [nzData]="data"
+    [nzFrontPagination]="false"
+    [nzLoading]="isLoading()"
+    [nzScroll]="{y: scrollHeight + 'px'}"
+    [nzShowPagination]="false"
+    [nzVirtualForTrackBy]="trackByFn()"
+    [nzVirtualItemSize]="itemHeight"
+    [nzVirtualMaxBufferPx]="scrollHeight"
+    [nzVirtualMinBufferPx]="scrollHeight"
+    atsTableRowHeight
+    nzTableLayout="fixed"
+  >
+    <thead>
+    <tr
+      #headerRow
+      (cdkDropListDropped)="orderColumnChange.emit($event)"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+    >
+      @for (column of config.columns; track column.id) {
+        <th
+          (atsWidthChanged)="columnWidthChange.emit({columnId: column.id, width: $event})"
+          (nzFilterChange)="defaultFilterChange(column.filterData!.filterName!, $event)"
+          (nzSortOrderChange)="sortChange($event, column)"
+          [atsResizeColumn]="column.isResizable !== false"
+          [minWidth]="column.minWidth ?? 50"
+          [nzCustomFilter]="column.filterData?.filterType !== filterTypes.DefaultMultiple && column.filterData?.filterType !== filterTypes.Default"
+          [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+          [nzFilters]="column.filterData?.filters || []"
+          [nzShowSort]="!!column.sortFn || !!column.sortChangeFn"
+          [nzSortOrder]="sortedColumnId === column.id ? sortedColumnOrder : null"
+          [nzWidth]="column.width ? column.width + 'px' : null"
+          cdkDrag
+          cdkDragLockAxis="x"
+        >
+          @if (column.tooltip) {
+            <span
+              [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+              [nzTooltipTitle]="column.tooltip"
+              nz-tooltip
+            >
+                {{ column.displayName }}
+              </span>
+          } @else {
+            {{ column.displayName }}
+          }
+          @if (!!column.filterData) {
+            <nz-filter-trigger
+              (nzVisibleChange)="openedFilterChange(column.filterData.filterName, $event)"
+              [nzDropdownMenu]="searchMenu"
+            >
+              <i
+                [class.active-filter]="(getFilterControl(column.filterData.filterName)?.value?.length ?? 0) > 0
+            || !!getFilterControl(column.filterData.intervalStartName!)?.value
+            || !!getFilterControl(column.filterData.intervalEndName!)?.value"
+                [nzTooltipTitle]="column.filterData.filterWarning == null ? null : filterWarning"
+                nz-icon
+                nz-tooltip
+                nzType="search"
+              >
+              </i>
+              <ng-template #filterWarning>
+                  <span
+                    nz-typography
+                    nzType="warning">
+                    {{ column.filterData.filterWarning }}
+                  </span>
+              </ng-template>
+            </nz-filter-trigger>
+          }
+        </th>
+      }
+    </tr>
+    </thead>
+    <tbody>
+    <ng-template let-data nz-virtual-scroll>
+      <tr
+        (click)="rowClick.emit(data)"
+        (contextmenu)="rowContextMenu.emit({ event: $event, row: data})"
+        [class]="config?.rowConfig?.rowClass && config?.rowConfig?.rowClass(data)"
+      >
+        @for (column of config?.columns ?? []; track column.id) {
+          <td [class]="column.classFn && column.classFn(data)">
+            <div
+              [nzTooltipMouseEnterDelay]="1"
+              [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+              [nzTooltipTitle]="column.transformFn ? column.transformFn(data) : data[column.id]"
+              class="table-cell"
+              nz-tooltip
+            >
+              <span>{{ column.transformFn ? column.transformFn(data) : data[column.id] }}</span>
+              @if (data['badges']?.length && column.showBadges) {
+                <span>&nbsp;</span>
+                <ats-merged-badge [colors]="data['badges']"/>
+              }
+            </div>
+          </td>
+        }
+      </tr>
+    </ng-template>
+    </tbody>
+  </nz-table>
+  <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+    <div *transloco="let t; scope: 'shared/infinite-scroll-table'"
+         class="ant-table-filter-dropdown custom-filter ats-infinite-scroll-table-filters">
+      @for (column of config?.columns ?? []; track column.id) {
+        @if (!!column.filterData && activeFilterName() === column.filterData.filterName) {
+          <div
+            class="d-flex flex-column justify-content-start"
+          >
+            @if (column.filterData.filterType === filterTypes.MultipleAutocomplete) {
+              <nz-select
+                [formControl]="getFilterControl(column.filterData.filterName)!"
+                [nzCustomTemplate]="customOption"
+                [nzDropdownMatchSelectWidth]="false"
+                [nzPlaceHolder]="t('sharedInfiniteScrollTable.selectValuesPlaceHolder')"
+                class="multiple-autocomplete-filter mb-10"
+                nzMode="multiple"
+              >
+                @for (item of column.filterData.filters; track item.value) {
+                  <nz-option [nzLabel]="item.text"
+                             [nzValue]="item.value"
+                  />
+                }
+              </nz-select>
+            }
+            <ng-template #customOption let-option>
+              {{ option[column.filterData.multipleAutocompleteSelectedOptionLabelKey ?? 'nzLabel'] }}
+            </ng-template>
+            @if (column.filterData.filterType === filterTypes.Search) {
+              @if ((column.filterData.inputFieldType ?? inputFieldType.String) === inputFieldType.String) {
+                <input
+                  [formControl]="getFilterControl(column.filterData.filterName)!"
+                  [placeholder]="column.displayName"
+                  class="mb-10"
+                  nz-input
+                  type="text"
+                />
+              }
+              @if (column.filterData.inputFieldType === inputFieldType.Number) {
+                <ats-input-number [formControl]="getFilterControl(column.filterData.filterName)!"
+                                  [placeholder]="column.displayName"
+                                  class="mb-10"
+                />
+              }
+            }
+            @if (column.filterData.filterType === filterTypes.Interval) {
+              @if ((column.filterData.inputFieldType ?? inputFieldType.String) === inputFieldType.String) {
+                <input
+                  [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
+                  [placeholder]="column.displayName + ', ' + t('from')"
+                  class="mb-10"
+                  nz-input
+                  type="text"
+                />
+                <input
+                  [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
+                  [placeholder]="column.displayName + ', ' + t('to')"
+                  class="mb-10"
+                  nz-input
+                  type="text"
+                />
+              }
+              @if (column.filterData.inputFieldType === inputFieldType.Number) {
+                <ats-input-number [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
+                                  [placeholder]="column.displayName + ', ' + t('from')"
+                                  class="mb-10"
+                />
+                <ats-input-number [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
+                                  [placeholder]="column.displayName + ', ' + t('to')"
+                                  class="mb-10"
+                />
+              }
+            }
+            <button
+              (click)="resetFilter(column.filterData)"
+              class="reset-button"
+              nz-button
+              nzSize="small"
+              nzType="text"
+            >
+              {{ t('resetBtnText') }}
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </nz-dropdown-menu>
+}
+

@@ -1,0 +1,19 @@
+﻿import {
+  Watchlist,
+  WatchlistType
+} from '../types/watchlist.types';
+import {WatchlistCollectionService} from '../services/watchlist-collection.service';
+
+export class WatchListTitleHelper {
+  static getTitleTranslationKey(list: Watchlist): string {
+    if (((list.isDefault ?? false) || list.type === WatchlistType.DefaultList) && list.title === WatchlistCollectionService.DefaultListName) {
+      return 'defaultWatchlistTypeTitle';
+    }
+
+    if (list.type === WatchlistType.HistoryList) {
+      return 'historyWatchlistTypeTitle';
+    }
+
+    return '';
+  }
+}

@@ -1,0 +1,40 @@
+<div *transloco="let t; scope: 'terminal-settings/useful-links'">
+  <div [nzGutter]="[16, 24]" nz-row>
+    <div class="group" nz-col nzMd="12" nzXs="24">
+      <div><h3>{{ t('terminalSettingsUsefulLinks.generalLinksHeader') }}</h3></div>
+      @if (!isNullOrEmpty(externalLinksConfig.officialSite)) {
+        <ats-external-link [href]="externalLinksConfig.officialSite!"
+                           class="group-item">{{ t('terminalSettingsUsefulLinks.officialSiteLink') }}
+        </ats-external-link>
+      }
+
+      @if (!isNullOrEmpty(externalLinksConfig.riskRate)) {
+        <ats-external-link [href]="externalLinksConfig.riskRate!"
+                           class="group-item">{{ t('terminalSettingsUsefulLinks.riskRatesLink') }}
+        </ats-external-link>
+      }
+    </div>
+
+    <div class="group" nz-col nzMd="12" nzXs="24">
+      <div><h3>{{ t('terminalSettingsUsefulLinks.personalAccountOperationsHeader') }}</h3></div>
+
+      @if (!isNullOrEmpty(externalLinksConfig.personalAccount)) {
+        <ats-external-link [href]="externalLinksConfig.personalAccount!"
+                           class="group-item">{{ t('terminalSettingsUsefulLinks.personalAccountLink') }}
+        </ats-external-link>
+      }
+
+      @if (!isNullOrEmpty(externalLinksConfig.bankroll)) {
+        <ats-external-link [href]="externalLinksConfig.bankroll!"
+                           class="group-item">{{ t('terminalSettingsUsefulLinks.bankrollLink') }}
+        </ats-external-link>
+      }
+
+      @if (!isNullOrEmpty(externalLinksConfig.services)) {
+        <ats-external-link [href]="externalLinksConfig.services!"
+                           class="group-item">{{ t('terminalSettingsUsefulLinks.servicesLink') }}
+        </ats-external-link>
+      }
+    </div>
+  </div>
+</div>

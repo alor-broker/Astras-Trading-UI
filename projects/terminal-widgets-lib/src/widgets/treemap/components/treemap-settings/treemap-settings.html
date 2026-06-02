@@ -1,0 +1,24 @@
+<ats-widget-settings
+  (copyClick)="createWidgetCopy()"
+  (saveClick)="updateSettings()"
+  [canCopy]="canCopy"
+  [canSave]="canSave"
+  [showCopy]="showCopy"
+>
+  <ng-container *transloco="let t; scope: 'treemap/settings'">
+    <form [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label nzFor="refreshIntervalSec" nzRequired>{{ t('treemapSettings.refreshIntervalSecLabel') }}
+          </nz-form-label>
+          <nz-slider [nzMarks]="marks"
+                     [nzMax]="validation.refreshIntervalSec.max"
+                     [nzMin]="validation.refreshIntervalSec.min"
+                     [nzStep]="1"
+                     formControlName="refreshIntervalSec"
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</ats-widget-settings>

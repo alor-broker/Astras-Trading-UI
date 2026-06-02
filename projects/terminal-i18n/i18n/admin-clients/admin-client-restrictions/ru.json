@@ -1,0 +1,18 @@
+﻿{
+  "title": "Проверка наличия ограничений",
+  "loadingText": "Проверяем наличие ограничений для клиента {{clientName}}",
+  "errorText": "Не удалось выполнить проверку",
+  "successText": "У клиента нет ограничений",
+  "foundText": "Найдены следующие ограничения",
+  "restrictionOriginTitle": "Вид блокировки",
+  "expiresAtTitle": "Дата окончания",
+  "restrictionOrigins": {
+    "Manual": "Ручная блокировка",
+    "SocialRating": "Автоматическая блокировка по социальному рейтингу",
+    "Error": "Автоматическая блокировка по количеству ошибок"
+  },
+  "detailsTitle": "Детали",
+  "reasonTitle": "Причина",
+  "commentTitle": "Комментарий",
+  "additionalContextTitle": "Прочее"
+}

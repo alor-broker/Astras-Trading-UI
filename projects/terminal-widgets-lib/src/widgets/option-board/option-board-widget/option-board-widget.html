@@ -1,0 +1,37 @@
+<ng-container *transloco="let t;">
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget()"
+      [settings]="settingsRef"
+      [showContentScroll]="false"
+      [showSettings]="showSettings()"
+    >
+      <ng-template #headerRef>
+        @if (deviceInfo$ | async; as deviceInfo) {
+          <ats-widget-header (switchSettings)="toggleSettings()"
+                             [guid]="guid"
+                             [hasSettings]="!deviceInfo.isMobile"
+                             [linkToActive]="settings.linkToActive!"
+                             [selectedBadgeColor]="settings.badgeColor!"
+                             [showBadgesMenu]="(showBadge$ | async) ?? false"
+                             [titleTemplate]="titleTemplate"
+                             [widgetMeta]="widgetInstance().widgetMeta"
+          />
+        }
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid"/>
+        </ng-template>
+      </ng-template>
+      <ng-template #contentRef>
+        <ats-option-board [guid]="guid"/>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-option-board-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
+
+</ng-container>
+

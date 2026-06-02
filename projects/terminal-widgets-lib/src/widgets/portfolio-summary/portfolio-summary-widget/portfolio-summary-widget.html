@@ -1,0 +1,16 @@
+@if (isBlockWidget()) {
+  <div class="blocked-widget-overlay"></div>
+}
+<div class="widget-body">
+  @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
+  @if (!isDashboardLocked) {
+    <div (mousedown)="$event.stopPropagation()" class="manage-block">
+      <button (click)="removeWidget($event)" nz-button nzSize="small">
+        <i [nzTheme]="'outline'" nz-icon nzType="close-circle"></i>
+      </button>
+    </div>
+  }
+  <div class="content">
+    <ats-portfolio-summary [guid]="guid"/>
+  </div>
+</div>

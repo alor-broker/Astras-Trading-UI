@@ -1,0 +1,223 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  forwardRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  output,
+  viewChild,
+  ViewEncapsulation
+} from '@angular/core';
+import {
+  ControlValueAccessor,
+  FormControl,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule
+} from '@angular/forms';
+import {InstrumentsService} from '../../services/instruments.service';
+import {
+  Instrument,
+  InstrumentKey
+} from "../../../../common/types/instrument.types";
+import {
+  BehaviorSubject,
+  debounceTime,
+  map,
+  Observable,
+  of,
+  switchMap
+} from 'rxjs';
+import {Exchange} from '../../graphql/schema/graphql.types';
+import {
+  NzAutocompleteComponent,
+  NzAutocompleteOptionComponent,
+  NzAutocompleteTriggerDirective,
+  NzOptionSelectionChange
+} from 'ng-zorro-antd/auto-complete';
+import {InstrumentKeyHelper} from '../../../../common/utils/instrument-key.helper';
+import {DeviceService} from '../../../../common/services/device.service';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {AsyncPipe} from '@angular/common';
+import {NzTagComponent} from 'ng-zorro-antd/tag';
+import {SearchFilter} from '../../services/instruments-service.types';
+
+@Component({
+  selector: 'ats-inline-instrument-search',
+  imports: [
+    TranslocoDirective,
+    NzAutocompleteTriggerDirective,
+    ReactiveFormsModule,
+    NzTooltipDirective,
+    NzIconDirective,
+    NzTypographyComponent,
+    NzAutocompleteComponent,
+    AsyncPipe,
+    NzAutocompleteOptionComponent,
+    NzTagComponent,
+    NzInputModule
+  ],
+  templateUrl: './inline-instrument-search.html',
+  styleUrl: './inline-instrument-search.less',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: forwardRef(() => InlineInstrumentSearch)
+    }
+  ]
+})
+export class InlineInstrumentSearch implements OnInit, OnDestroy, ControlValueAccessor {
+  readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
+  readonly optionsBoxWidth = input<number>();
+
+  readonly exchange = input<string | null>(null);
+
+  readonly showHelpTooltip = input(true);
+
+  filteredInstruments$: Observable<Instrument[]> = of([]);
+
+  selectedValue?: InstrumentKey | null;
+
+  readonly instrumentSelected = output<InstrumentKey | null>();
+
+  isMobile$!: Observable<boolean>;
+
+  searchControl = new FormControl<string | null>(null);
+
+  private readonly instrumentsService = inject(InstrumentsService);
+
+  private readonly deviceService = inject(DeviceService);
+
+  private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
+
+  private touched = false;
+
+  get isExchangeSpecified(): boolean {
+    const exchange = this.exchange();
+    return exchange != null
+      && exchange.length > 0
+      && (exchange as Exchange) !== Exchange.United;
+  }
+
+  ngOnInit(): void {
+    this.isMobile$ = this.deviceService.deviceInfo$
+      .pipe(
+        map(d => d.isMobile as boolean)
+      );
+
+    this.filteredInstruments$ = this.filter$.pipe(
+      debounceTime(200),
+      switchMap(filter => {
+          if (!filter) {
+            return of([]);
+          }
+          return this.instrumentsService.searchInstruments(filter);
+        }
+      )
+    );
+  }
+
+  filterChanged(value: string): void {
+    this.markAsTouched();
+
+    const filter: SearchFilter = {
+      limit: 20,
+      query: ''
+    };
+
+    filter.exchange = this.isExchangeSpecified
+      ? this.exchange() ?? undefined
+      : '';
+
+    if (value.includes(':')) {
+      const parts = value.split(':');
+
+      let nextPartIndex = 0;
+      if (filter.exchange == null || filter.exchange.length === 0) {
+        filter.exchange = parts[nextPartIndex].toUpperCase();
+        nextPartIndex++;
+      }
+
+      filter.query = parts[nextPartIndex];
+      nextPartIndex++;
+      filter.instrumentGroup = parts[nextPartIndex]?.toUpperCase() ?? '';
+    } else {
+      filter.query = value;
+    }
+
+    this.filter$.next(filter);
+  }
+
+  onSelect(event: NzOptionSelectionChange, val: InstrumentKey): void {
+    if (event.isUserInput) {
+      this.emitValue(val);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.filter$.complete();
+  }
+
+  registerOnChange(fn: (value: InstrumentKey | null) => void): void {
+    this.onValueChanged = fn;
+  }
+
+  registerOnTouched(fn: (...args: any[]) => any): void {
+    this.onTouched = fn;
+  }
+
+  writeValue(value: InstrumentKey | null): void {
+    this.searchControl.setValue(value?.symbol ?? null);
+    this.selectedValue = value;
+
+    if (!value) {
+      this.filter$.next(null);
+      this.touched = false;
+    }
+  }
+
+  checkInstrumentSelection(): void {
+    if (this.touched && !this.selectedValue) {
+      this.emitValue(null);
+    }
+  }
+
+  setFocus(): void {
+    setTimeout(() => this.searchInput()?.nativeElement.focus());
+  }
+
+  private emitValue(value: InstrumentKey | null): void {
+    const instrumentKey = value != null
+      ? InstrumentKeyHelper.toInstrumentKey(value)
+      : null;
+
+    this.selectedValue = instrumentKey;
+    this.onValueChanged(instrumentKey);
+    this.instrumentSelected.emit(instrumentKey);
+  }
+
+  private onValueChanged: (value: InstrumentKey | null) => void = () => {
+  };
+
+  private onTouched = (): void => {
+  };
+
+  private markAsTouched(): void {
+    if (!this.touched) {
+      this.onTouched();
+      this.touched = true;
+    }
+
+    this.selectedValue = null;
+  }
+}

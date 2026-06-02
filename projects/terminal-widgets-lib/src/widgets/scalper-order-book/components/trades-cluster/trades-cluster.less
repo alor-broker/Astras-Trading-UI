@@ -1,0 +1,51 @@
+@import "../../styles/shared-styles";
+
+ats-trades-cluster {
+  .container {
+    display: block;
+    height: 100%;
+    min-width: 25px;
+
+    .volume-cell {
+      text-align: right;
+      box-sizing: border-box;
+
+      &.border-bottom {
+        border-bottom: var(--ats-border-color-base) 1px solid;
+      }
+
+      &.hovered {
+        background-color: color-mix(in srgb, var(--ats-primary-color) 15%, transparent);
+        opacity: 0.75;
+      }
+
+      &.max-volume {
+        border: var(--ats-text-max-contrast-color) 1px solid;
+        font-weight: var(--ats-font-weight-bold);
+        background-color: color-mix(in srgb, var(--ats-warning-color) 15%, transparent);
+      }
+
+      .highlighter {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+      }
+    }
+
+    .grid-line {
+      display: inline-block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 50%;
+      border-bottom-style: solid;
+      border-color: var(--ats-table-border-color);
+      @border-width: 1px;
+      .scalper-order-book-grid-line-levels(@border-width);
+    }
+  }
+}
+
+

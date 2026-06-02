@@ -1,6 +1,6 @@
 // @ts-check
 const eslint = require("@eslint/js");
-const { defineConfig, globalIgnores } = require("eslint/config");
+const {defineConfig, globalIgnores} = require("eslint/config");
 const tseslint = require("typescript-eslint");
 const angular = require("angular-eslint");
 const stylistic = require("@stylistic/eslint-plugin");
@@ -31,22 +31,6 @@ module.exports = defineConfig([
     ],
     processor: angular.processInlineTemplates,
     rules: {
-      "@angular-eslint/directive-selector": [
-        "error",
-        {
-          type: "attribute",
-          prefix: "ats",
-          style: "camelCase",
-        },
-      ],
-      "@angular-eslint/component-selector": [
-        "error",
-        {
-          type: "element",
-          prefix: "ats",
-          style: "kebab-case",
-        },
-      ],
       "@angular-eslint/prefer-signals": [
         "error",
         {

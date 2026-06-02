@@ -1,0 +1,47 @@
+<div *transloco="let t; scope: 'news'" class="container position-relative">
+  @if ((selectedSection$ | async) === newsSectionEnum.All) {
+    <div class="position-absolute top-0 end-0 z-1">
+      @let isFilterApplied = isFiltersApplied$ | async;
+
+      <button
+        (click)="isAllFiltersVisible = true"
+        class="primary-color"
+        nz-button
+        nzGhost
+      >
+        <nz-icon [class.primary-color]="isFilterApplied" [nzTheme]="isFilterApplied ? 'fill' : 'outline'"
+                 nzType="filter"/>
+      </button>
+    </div>
+  }
+
+  <div>
+    <nz-tabs #tabSet nzSize="small">
+      <nz-tab (nzSelect)="newsSectionChange(newsSectionEnum.All)"
+              [nzTitle]="t('news.newsSections.' + newsSectionEnum.All)"/>
+      <nz-tab (nzSelect)="newsSectionChange(newsSectionEnum.Portfolio)"
+              [nzTitle]="t('news.newsSections.' + newsSectionEnum.Portfolio)"/>
+      <nz-tab (nzSelect)="newsSectionChange(newsSectionEnum.Symbol)"
+              [nzTitle]="t('news.newsSections.' + newsSectionEnum.Symbol)"/>
+    </nz-tabs>
+  </div>
+  <div (nzResizeObserve)="containerSizeChanged($event)"
+       *ngrxLet="{newsListItems: tableData$, contentSize: contentSize$} as vm"
+       class="table-container"
+       nzResizeObserver>
+    <ats-infinite-scroll-table (rowClick)="rowClick($event)"
+                               (scrolled)="onScrolled()"
+                               [data]="vm.newsListItems"
+                               [isLoading]="isLoading()"
+                               [tableConfig]="tableConfig$ | async"
+                               [tableContainerHeight]="vm.contentSize?.height ?? 0"
+                               [tableContainerWidth]="vm.contentSize?.width ?? 0"
+    />
+  </div>
+</div>
+
+<ats-news-item-dialog [newsItem]="selectedNewsListItem"/>
+<ats-news-filters (closed)="applyAllFilters($event)"
+                  [currentFilters]="(settings$ | async)?.allNewsFilters"
+                  [isVisible]="isAllFiltersVisible"
+/>

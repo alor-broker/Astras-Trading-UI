@@ -1,0 +1,30 @@
+ats-trade-screen-submit-order-form {
+  .buy-sell-switch {
+    display: flex;
+
+    .ant-radio-button-wrapper {
+      flex: 1;
+      text-align: center;
+
+      background-color: var(--ats-input-bg);
+
+      &-checked {
+        border-color: transparent !important;
+
+        &::before {
+          background-color: transparent !important;
+        }
+      }
+    }
+
+    .buy.ant-radio-button-wrapper-checked {
+      background-color: var(--ats-buy-color);
+      color: var(--ats-buy-sell-btn-text-color);
+    }
+
+    .sell.ant-radio-button-wrapper-checked {
+      background-color: var(--ats-sell-color);
+      color: var(--ats-buy-sell-btn-text-color);
+    }
+  }
+}

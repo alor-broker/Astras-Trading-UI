@@ -1,0 +1,116 @@
+﻿[
+  {
+    "id": "mobile_dashboard",
+    "type": "mobile",
+    "widgets": [
+      {
+        "widgetTypeId": "order-submit"
+      },
+      {
+        "widgetTypeId": "blotter"
+      },
+      {
+        "widgetTypeId": "mobile-home-screen",
+        "initialSettings": {
+          "showPortfolioDynamics": true,
+          "showNews": true,
+          "showIdeas": true,
+          "displayTrendsForMarket": [
+            "FOND"
+          ],
+          "ignoreTrendsForBoards": [
+            "FQBR"
+          ],
+          "marketTrendsSectors": [
+            "Energy",
+            "Materials",
+            "Industrials",
+            "Consumer Discretionary",
+            "Consumer Staples",
+            "Health Care",
+            "Financials",
+            "Information Technology",
+            "Communication Services",
+            "Utilities",
+            "Real Estate",
+            "Other"
+          ],
+          "marketTrendsExtendedFilter": []
+        }
+      },
+      {
+        "widgetTypeId": "trade-screen"
+      },
+      {
+        "widgetTypeId": "order-book",
+        "initialSettings": {
+          "useOrderWidget": true
+        }
+      },
+      {
+        "widgetTypeId": "light-chart"
+      },
+      {
+        "widgetTypeId": "tech-chart"
+      },
+      {
+        "widgetTypeId": "instrument-info"
+      },
+      {
+        "widgetTypeId": "news"
+      },
+      {
+        "widgetTypeId": "all-instruments",
+        "initialSettings": {
+          "allInstrumentsColumns": [
+            "name",
+            "shortName",
+            "dailyGrowthPercent",
+            "tradeAmount",
+            "currency",
+            "price",
+            "priceMax",
+            "priceMin"
+          ]
+        }
+      },
+      {
+        "widgetTypeId": "all-trades"
+      },
+      {
+        "widgetTypeId": "exchange-rate"
+      },
+      {
+        "widgetTypeId": "orders-basket"
+      },
+      {
+        "widgetTypeId": "treemap"
+      },
+      {
+        "widgetTypeId": "events-calendar"
+      },
+      {
+        "widgetTypeId": "option-board"
+      }
+    ],
+    "quickAccessPanelItems": [
+      {
+        "widgetType": "trade-screen",
+        "isPreferredOrderWidget": true
+      },
+      {
+        "widgetType": "blotter"
+      },
+      {
+        "widgetType": "mobile-home-screen",
+        "selectedByDefault": true
+      },
+      {
+        "widgetType": "tech-chart"
+      },
+      {
+        "widgetType": "treemap"
+      }
+    ]
+  }
+]

@@ -1,22 +1,18 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# compiled output
+# Compiled output
 /dist
 /tmp
 /out-tsc
-# Only exists if Bazel was run
 /bazel-out
 
-/.cache
-
-# dependencies
+# Node
 /node_modules
-
-# profiling files
-chrome-profiler-events*.json
+npm-debug.log
+yarn-error.log
 
 # IDEs and editors
-/.idea
+.idea/
 .project
 .classpath
 .c9/
@@ -24,56 +20,25 @@ chrome-profiler-events*.json
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
-.vscode
+# Visual Studio Code
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 .history/*
-.angular
-# misc
-/.sass-cache
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
 /connect.lock
 /coverage
 /libpeerconnection.log
-npm-debug.log
-yarn-error.log
 testem.log
 /typings
+__screenshots__/
 
-# System Files
+# System files
 .DS_Store
 Thumbs.db
-
-
-/.vs/Astras-Trading-UI/v17/.suo
-/.vs/VSWorkspaceState.json
-/.nx/cache/file-map.json
-/.nx/cache/lockfile.hash
-/.nx/cache/nx_files.nxt
-/.nx/cache/parsed-lock-file.json
-/.nx/cache/project-graph.json
-.aider*
-/scripts/generate-translations.js
-
-# Capacitor
-capacitor.plugins.json
-
-# Android
-android/app/build/
-android/.gradle/
-android/local.properties
-android/*.iml
-android/.idea/
-android/app/*.iml
-android/captures/
-
-# iOS
-ios/App/App.xcworkspace/xcuserdata/
-ios/App/Podfile.lock
-ios/DerivedData/
-
-resources/ios/**/*
-resources/android/**/*
+/.claude/scheduled_tasks.lock

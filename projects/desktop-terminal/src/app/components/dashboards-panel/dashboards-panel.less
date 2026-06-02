@@ -1,0 +1,46 @@
+atsd-dashboards-panel {
+  min-width: 0;
+
+  .ant-segmented {
+    border-radius: 4px;
+
+    &-group {
+      border-radius: 4px;
+      background-color: var(--ats-dashboards-panel-background);
+
+      &:hover {
+        background-color: var(--ats-dashboards-panel-background);
+      }
+
+      .ant-segmented-item {
+        color: var(--ats-dashboards-panel-color);
+      }
+
+      .ant-segmented-thumb, .ant-segmented-item-selected {
+        color: var(--ats-dashboards-panel-color);
+        background-color: var(--ats-active-dashboard-background);
+      }
+    }
+
+    &-item {
+      z-index: 2;
+      min-width: 0;
+
+      &-label {
+        cursor: default;
+        overflow: inherit;
+        padding-left: 7px;
+        padding-right: 7px;
+      }
+
+      &-selected {
+        border-radius: 4px;
+        z-index: 1;
+      }
+    }
+  }
+
+  .dropdown-btn .arrow-icon {
+    font-size: 10px;
+  }
+}

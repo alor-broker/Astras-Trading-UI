@@ -1,0 +1,73 @@
+ats-portfolio-risk-gauge {
+  section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .visual {
+    flex: 1;
+
+    svg {
+      display: block;
+      width: 100%;
+      min-width: 150px;
+    }
+  }
+
+  .summary {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .status-label {
+    overflow-wrap: anywhere;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .value {
+    min-height: 18px;
+    font-size: 13px;
+  }
+
+  @risk-colors: {
+    green: var(--ats-buy-color);
+    yellow: var(--ats-warning-color);
+    restricted: color-mix(in srgb, var(--ats-warning-color) 58%, var(--ats-error-color));
+    red: var(--ats-error-color);
+    forced-close-risk: color-mix(in srgb, var(--ats-error-color), black 12%);
+    critical: color-mix(in srgb, var(--ats-error-color), black 28%);
+  };
+
+  .gauge-track {
+    fill: color-mix(in srgb, var(--ats-text-color) 12%, transparent);
+  }
+
+  each(@risk-colors, {
+    .gauge-segment.@{key} {
+      fill: @value;
+    }
+
+    .status-@{key} .status-label {
+      color: @value;
+    }
+  });
+
+  .needle path,
+  .needle-center {
+    fill: var(--ats-heading-color)
+  }
+}

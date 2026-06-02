@@ -1,0 +1,38 @@
+.ats-blotter-orders-group-modal {
+  .status-indicator {
+    display: inline-block;
+    width: 7px;
+    pointer-events: initial;
+    cursor: default;
+  }
+
+  .ant-tree-node-content-wrapper {
+    pointer-events: none;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  .sell {
+    color: var(--ats-sell-color);
+  }
+
+  .buy {
+    color: var(--ats-buy-color);
+  }
+
+  .status {
+    &-canceled {
+      background-color: var(--ats-sell-color-background);
+    }
+
+    &-active {
+      background-color: var(--ats-disabled-color);
+    }
+
+    &-filled {
+      background-color: var(--ats-buy-color-background);
+    }
+  }
+}

@@ -1,0 +1,10 @@
+<div #headerContainer (click)="onHeaderClick()"
+     (mousedown)="onHeaderPointerDown($event)"
+     (touchstart)="onHeaderPointerDown($event)"
+     class="panel-header">
+  <ng-container *ngTemplateOutlet="header()"/>
+</div>
+
+<div class="panel-body">
+  <ng-container *ngTemplateOutlet="body()"/>
+</div>

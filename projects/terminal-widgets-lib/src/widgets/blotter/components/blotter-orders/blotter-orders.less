@@ -1,0 +1,45 @@
+@import "../../styles/shared-styles";
+
+ats-blotter-orders {
+  height: 100%;
+
+  .container {
+    height: 100%;
+
+    .table-container {
+      .blotter-exportable-table-container();
+
+      tr:hover {
+        cursor: pointer;
+      }
+
+      .symbol-name {
+        margin-right: 10px;
+      }
+    }
+
+    .sell {
+      color: var(--ats-sell-color);
+    }
+
+    .buy {
+      color: var(--ats-buy-color);
+    }
+
+    .cancelled {
+      color: var(--ats-disabled-color);
+    }
+
+    .side-buy {
+      background-color: var(--ats-buy-color);
+    }
+
+    .side-sell {
+      background-color: var(--ats-sell-color);
+    }
+
+    .cancelled-status {
+      background-color: var(--ats-disabled-color);
+    }
+  }
+}

@@ -1,0 +1,16 @@
+﻿.buySellButton(@background-color, @text-color, @text-color-disabled, @background-disabled) {
+  color: @text-color;
+  background: @background-color;
+  border-color: transparent;
+
+  &[disabled] {
+    color: @text-color-disabled;
+    background: @background-disabled;
+  }
+
+  &:hover:not([disabled]) {
+    border-color: color-mix(in srgb, @background-color 20%, transparent);
+    background: color-mix(in srgb, @background-color 90%, transparent);
+    color: @text-color;
+  }
+}

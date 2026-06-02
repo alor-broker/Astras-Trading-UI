@@ -1,0 +1,8 @@
+<router-outlet/>
+@if (isLoading()) {
+  <div
+    class="loading-indicator-container"
+  >
+    <nz-spin [nzSize]="'large'" nzSpinning="true"/>
+  </div>
+}

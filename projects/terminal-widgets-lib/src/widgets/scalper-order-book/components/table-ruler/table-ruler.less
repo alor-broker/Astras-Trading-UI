@@ -1,0 +1,32 @@
+ats-table-ruler {
+  .marker-container {
+    position: absolute;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 10000;
+
+    &.left {
+      @reserved-width: 150px;
+
+      left: 0;
+      margin-left: (-1 * @reserved-width);
+      width: @reserved-width;
+      text-align: end;
+    }
+
+    &.right {
+      left: 0;
+    }
+
+    .marker {
+      color: white;
+      background-color: var(--ats-primary-color);
+      border: var(--ats-border-color-active) 1px solid;
+      border-radius: var(--ats-border-radius-base);
+      min-width: 15px;
+      text-align: center;
+      padding: 0 2px;
+    }
+  }
+}
+

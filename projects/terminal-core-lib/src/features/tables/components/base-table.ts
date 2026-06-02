@@ -1,0 +1,206 @@
+﻿import {
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  take,
+  withLatestFrom
+} from 'rxjs';
+import {ContentSize} from '../../dashboard/types/dashboard-item.types';
+import {
+  BaseColumnSettings,
+  TableConfig,
+  TableDisplaySettings
+} from '../types/table-display-settings.types';
+import {WidgetSettingsService} from '../../widget-settings/services/widget-settings.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {WidgetSettings} from '../../widget-settings/widget-settings.types';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {TableSettingHelper} from '../utils/table-settings.helper';
+
+export interface Sort {
+  descending: boolean;
+  orderBy: string;
+}
+
+@Component({
+  template: '',
+})
+export abstract class BaseTableComponent<
+  T extends Record<string, any>,
+  F extends Record<string, any> = object,
+  S = Sort
+>
+  implements OnInit, OnDestroy {
+  tableConfig$!: Observable<TableConfig<T>>;
+
+  tableData$!: Observable<T[]>;
+
+  readonly activeFilterColumnId = signal<string | null>(null);
+
+  protected readonly defaultColumnWidth = 100;
+
+  protected contentSize$!: Observable<ContentSize | null>;
+
+  protected containerSize$ = new BehaviorSubject<ContentSize | null>(null);
+
+  protected headerSize$ = new BehaviorSubject<ContentSize | null>(null);
+
+  protected readonly filters$ = new BehaviorSubject<F>({} as F);
+
+  protected readonly sort$ = new BehaviorSubject<S | null>(null);
+
+  protected readonly abstract allColumns: BaseColumnSettings<T>[];
+
+  protected settingsTableName?: string;
+
+  protected settingsColumnsName?: string;
+
+  protected readonly settingsService = inject(WidgetSettingsService);
+
+  protected readonly destroyRef = inject(DestroyRef);
+
+  protected readonly cdr = inject(ChangeDetectorRef);
+
+  ngOnInit(): void {
+    this.tableConfig$ = this.initTableConfigStream();
+    this.tableData$ = this.initTableDataStream();
+    this.initContentSize();
+  }
+
+  ngOnDestroy(): void {
+    this.containerSize$.complete();
+    this.headerSize$.complete();
+    this.filters$.complete();
+    this.sort$.complete();
+  }
+
+  rowClick?(row: T, event?: Event): void;
+
+  onFilterVisibilityChange(column: BaseColumnSettings<T>, isVisible: boolean): void {
+    if (column.filterData) {
+      column.filterData.isOpenedFilter = isVisible;
+    }
+    this.activeFilterColumnId.set(isVisible ? column.id : null);
+  }
+
+  applyFilter(filters: F): void {
+    const cleanedFilters = Object.keys(filters)
+      .filter(key =>
+        filters[key] != null &&
+        (
+          (typeof filters[key] === 'number') ||
+          (typeof filters[key] === 'boolean') ||
+          (filters[key] as string | string[]).length > 0
+        )
+      )
+      .reduce((acc, curr: keyof F) => {
+        if (Array.isArray(filters[curr])) {
+          acc[curr] = filters[curr].join(';') as F[keyof F];
+        } else {
+          acc[curr] = filters[curr]!;
+        }
+        return acc;
+      }, {} as F);
+
+    this.filters$.next(cleanedFilters);
+  }
+
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
+    entries.forEach(x => {
+      this.containerSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
+  }
+
+  headerSizeChanged(entries: ResizeObserverEntry[]): void {
+    entries.forEach(x => {
+      this.headerSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
+  }
+
+  changeColumnOrder<T extends WidgetSettings>(event: CdkDragDrop<unknown>, settings$?: Observable<T>): void {
+    settings$?.pipe(
+      withLatestFrom(this.tableConfig$),
+      take(1)
+    ).subscribe(([settings, tableConfig]) => {
+      this.settingsService.updateSettings<T>(
+        settings.guid,
+        {
+          [this.settingsTableName! as keyof T]: TableSettingHelper.changeColumnOrder(
+            event,
+            TableSettingHelper.toTableDisplaySettings(
+              settings[this.settingsTableName! as keyof T] as TableDisplaySettings | undefined,
+              this.settingsColumnsName != null
+                ? (settings[this.settingsColumnsName as keyof T] as string[] | undefined) ?? []
+                : undefined
+            )!,
+            tableConfig.columns
+          )
+        } as Partial<T>
+      );
+    });
+  }
+
+  saveColumnWidth<T extends WidgetSettings>(event: {
+    columnId: string;
+    width: number;
+  }, settings$?: Observable<T>): void {
+    settings$?.pipe(
+      take(1)
+    ).subscribe(settings => {
+      const tableSettings = TableSettingHelper.toTableDisplaySettings(
+        settings[this.settingsTableName! as keyof T] as TableDisplaySettings | undefined,
+        settings[this.settingsColumnsName! as keyof T] as string[] | undefined ?? []
+      );
+
+      if (tableSettings) {
+        this.settingsService.updateSettings<T>(
+          settings.guid,
+          {
+            [this.settingsTableName!]: TableSettingHelper.updateColumn(
+              event.columnId,
+              tableSettings,
+              {
+                columnWidth: event.width
+              }
+            )
+          } as Partial<T>
+        );
+      }
+    });
+  }
+
+  protected abstract initTableDataStream(): Observable<T[]>;
+
+  protected abstract initTableConfigStream(): Observable<TableConfig<T>>;
+
+  protected initContentSize(): void {
+    this.contentSize$ = combineLatest([
+      this.containerSize$,
+      this.headerSize$
+    ])
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map(([containerSize, headerSize]) => ({
+            width: containerSize?.width ?? headerSize?.width ?? 5,
+            height: Math.max((containerSize?.height ?? 0) - (headerSize?.height ?? 0), 5)
+          })
+        )
+      );
+  }
+}

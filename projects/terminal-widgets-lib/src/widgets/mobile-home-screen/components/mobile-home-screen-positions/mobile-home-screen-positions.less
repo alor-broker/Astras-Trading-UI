@@ -1,0 +1,49 @@
+ats-mobile-home-screen-positions {
+  display: block;
+
+  .positions-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .position-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--ats-border-color-split);
+    }
+  }
+
+  .instrument-col {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+
+    .instrument-info {
+      min-width: 0;
+      overflow: hidden;
+
+      > span {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .value-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+

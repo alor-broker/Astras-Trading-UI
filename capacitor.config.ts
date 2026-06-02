@@ -1,9 +1,9 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import type {CapacitorConfig} from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'ru.alor.astras',
   appName: 'Astras',
-  webDir: 'dist/astras',
+  webDir: 'dist/mobile-terminal/browser',
   server: {
     androidScheme: 'https',
     hostname: 'astras.alor.ru',

@@ -1,0 +1,51 @@
+ats-market-trends {
+  table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+
+    thead {
+      &.fixed {
+        position: sticky;
+        top: 0;
+      }
+    }
+
+    tr {
+      th {
+        padding: 0 5px;
+      }
+
+      &.item {
+        cursor: pointer;
+
+        td {
+          padding: 5px;
+        }
+      }
+
+      &.item:not(:last-child) {
+        td {
+          border-bottom: 1px solid var(--ats-border-color-split);
+        }
+      }
+
+      &.item:hover {
+        background-color: var(--ats-table-row-hover-bg);
+        border-radius: var(--ats-border-radius-base);
+      }
+    }
+  }
+
+  .loading {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span[nz-icon] {
+      font-size: 24px;
+    }
+  }
+}
+

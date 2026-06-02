@@ -1,0 +1,26 @@
+<div *transloco="let t; scope: 'terminal-settings'">
+  <nz-modal
+    (nzOnCancel)="handleClose()"
+    [nzTitle]="t('terminalSettings.settingsDialogTitle')"
+    [nzVisible]='atsVisible()'>
+    <ng-container *nzModalContent>
+      <ats-terminal-settings-editor
+        (formChange)="formChange($event)"
+        (tabChange)="selectedTab.set($event)"
+        [hiddenSections]="hiddenSections()"/>
+    </ng-container>
+    <div *nzModalFooter>
+      @if (isSaveAvailable) {
+        <button
+          (click)="saveSettingsChanges()"
+          [disabled]="!isSettingsHasChanges"
+          [nzLoading]="isLoading()"
+          nz-button
+          nzType="primary">
+          {{ t('saveBtnText') }}
+        </button>
+        <button (click)="closeModal()" nz-button nzType="default">{{ t('cancelBtnText') }}</button>
+      }
+    </div>
+  </nz-modal>
+</div>

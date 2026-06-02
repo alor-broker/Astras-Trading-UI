@@ -1,0 +1,48 @@
+@import 'scrollable';
+
+.widget-gallery {
+  .gallery-item {
+    min-height: 28px;
+
+    &:hover, &.active-item {
+      background-color: var(--ats-select-item-selected-bg);
+    }
+  }
+
+  .divider {
+    display: flex;
+    margin: 14px 0;
+    font-weight: 500;
+    white-space: nowrap;
+    text-align: center;
+    border-top: 0;
+
+    color: var(--ats-heading-color);
+    font-size: var(--ats-font-size-lg);
+
+    .divider-text {
+      padding-right: 10px;
+    }
+
+    &::after {
+      position: relative;
+      top: 50%;
+      width: 100%;
+      border-top-color: inherit;
+      border-bottom: 0;
+      border-top: var(--ats-border-width-base) solid var(--ats-divider-color);
+      transform: translateY(50%);
+      content: '';
+    }
+  }
+
+  .ant-drawer-title {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+
+  .ant-drawer-body {
+    .scrollable(var(--ats-scrollbar-color));
+  }
+}

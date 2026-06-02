@@ -1,0 +1,35 @@
+ats-widget-header-instrument-switch {
+  width: 100%;
+  overflow-x: hidden;
+  color: var(--ats-heading-color);
+
+  .title-text {
+    text-overflow: ellipsis;
+    line-height: 23px;
+    font-weight: var(--ats-font-weight-bold);
+  }
+
+  .ant-dropdown-menu {
+    .ant-dropdown-menu-item {
+      line-height: 20px;
+
+      &.ant-dropdown-menu-item:hover {
+        background-color: initial;
+      }
+    }
+  }
+
+  .search-input {
+    ats-inline-instrument-search {
+      min-width: 300px;
+    }
+
+    .ant-menu-title-content {
+      width: 100%;
+    }
+  }
+
+  .search-btn {
+    margin-left: 1px !important;
+  }
+}

@@ -1,0 +1,74 @@
+<div class="d-flex flex-column w-100 h-100">
+  <ng-container
+    *ngrxLet="{
+      quickAccessPanelWidgets: quickAccessPanelWidgets$,
+      widgetsGallery: widgetsGallery$
+    } as vm"
+  >
+
+    @let currentWidget = selectedWidget();
+
+
+    <div class="d-flex flex-column w-100 h-100 overflow-hidden">
+      <div class="flex-fill overflow-auto">
+        @for (widget of vm.quickAccessPanelWidgets; track widget) {
+          <div
+            [class.d-none]="currentWidget?.instance?.widgetType !== widget.instance.widgetType"
+            class="h-100"
+          >
+            <atsm-widget-wrapper [widgetInstance]="widget"/>
+          </div>
+        }
+
+        @if (!(currentWidget?.isDefaultPanelWidget ?? false)) {
+          <div class="h-100">
+            <atsm-widget-wrapper [widgetInstance]="currentWidget!"/>
+          </div>
+        }
+      </div>
+
+      @if (currentWidget?.widgetMeta?.mobileMeta?.showOrderButtons ?? false) {
+        <div class="mb-15 d-flex justify-content-center">
+          <button
+            (click)="openPreferredOrderWidget(false)"
+            *transloco="let t; scope: 'mobile-dashboard-content'" class='buy-button w-50'
+            nz-button
+            nzSize="large"
+          >
+            {{ t('mobileDashboardContent.orderBtnTitle', {fallback: 'buy'}) }}
+          </button>
+        </div>
+      }
+    </div>
+
+    <div class="widgets-menu">
+      @if (vm.widgetsGallery.allCategory.widgets.length > 0 || vm.widgetsGallery.groups.length > 0) {
+        <div
+          (click)="galleryVisible.set(true)"
+          [class.active-widget]="!(currentWidget?.isDefaultPanelWidget ?? false)"
+          class="menu-item "
+        >
+          <i class="widget-icon" nz-icon nzTheme="outline" nzType="ellipsis"></i>
+        </div>
+      }
+
+      @for (widget of vm.quickAccessPanelWidgets; track widget) {
+        <div
+          (click)="selectWidget(widget.instance.widgetType)"
+          [class.active-widget]="widget.instance.widgetType === currentWidget?.instance?.widgetType"
+          class="menu-item"
+        >
+          <i [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nz-icon nzTheme="outline"></i>
+        </div>
+      }
+    </div>
+
+    <ats-widgets-gallery-side-menu (selected)="selectWidget($event)"
+                                   [(atsVisible)]="galleryVisible"
+                                   [activeWidget]="currentWidget?.instance?.widgetType ?? null"
+                                   [closable]="true"
+                                   [gallery]="vm.widgetsGallery"
+                                   [showResetBtn]="false"
+    />
+  </ng-container>
+</div>

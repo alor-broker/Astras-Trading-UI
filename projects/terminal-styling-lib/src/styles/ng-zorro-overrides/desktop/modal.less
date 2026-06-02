@@ -1,0 +1,40 @@
+﻿@import 'scrollable';
+
+.ant-modal-content {
+  .ant-modal-close {
+    color: var(--ats-text-color);
+
+    &:hover, &:focus {
+      color: var(--ats-text-color);
+      text-decoration: none;
+    }
+  }
+
+  .ant-modal-header {
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .ant-modal-body {
+    max-height: 70vh;
+
+    &:not(:has(nz-tabs)) {
+      .scrollable(var(--ats-scrollbar-color));
+    }
+
+    &:has(nz-tabs) {
+      overflow: hidden;
+
+      .ant-tabs-content-holder {
+        .scrollable(var(--ats-scrollbar-color));
+        overflow-x: hidden;
+      }
+    }
+  }
+
+  .ant-modal-footer {
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+  }
+}
+

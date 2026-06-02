@@ -1,0 +1,27 @@
+<nz-layout>
+  <nz-header>
+    <atsd-navbar/>
+  </nz-header>
+
+  <nz-content>
+    <ats-customizable-dashboard/>
+    @defer {
+      <ats-instruments-search-dialog [(searchParameters)]=" this.searchDialogParams"/>
+    }
+    @defer {
+      <ats-order-submit-dialog-widget/>
+    }
+    @defer {
+      <ats-order-edit-dialog-widget/>
+    }
+    @defer {
+      <ats-feedback-dialog/>
+    }
+    @defer {
+      <ats-application-updated-dialog/>
+    }
+    @defer {
+      <ats-urgent-notification-dialog/>
+    }
+  </nz-content>
+</nz-layout>

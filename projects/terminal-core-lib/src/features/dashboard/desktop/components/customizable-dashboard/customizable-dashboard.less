@@ -1,0 +1,59 @@
+ats-customizable-dashboard {
+  .inner-content {
+    height: 95vh;
+
+    gridster {
+      @supports not selector(::-webkit-scrollbar) {
+        scrollbar-width: thin;
+        scrollbar-color: var(--ats-scrollbar-color) transparent;
+      }
+
+      &::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border: 2px solid transparent;
+        background-clip: padding-box;
+        border-radius: 10px;
+        background-color: var(--ats-scrollbar-color);
+      }
+
+      background-color: var(--ats-layout-body-background);
+      color: var(--ats-text-color-secondary);
+
+      gridster-item {
+        background-color: var(--ats-component-background);
+        color: var(--ats-text-color);
+        border-radius: 6px;
+
+        .gridster-item-resizable-handler {
+          &.handle-e, &.handle-w {
+            width: var(--ats-gridster-item-resizable-handler-width);
+          }
+
+          &.handle-s, &.handle-n {
+            height: var(--ats-gridster-item-resizable-handler-width);
+          }
+        }
+
+        .widget-container {
+          position: relative;
+          height: inherit;
+          width: inherit;
+          padding: 0 var(--ats-widget-padding) var(--ats-widget-padding);
+
+          &.zero-paddings {
+            padding: 0 var(--ats-gridster-item-resizable-handler-width) var(--ats-gridster-item-resizable-handler-width);
+          }
+        }
+      }
+    }
+  }
+}

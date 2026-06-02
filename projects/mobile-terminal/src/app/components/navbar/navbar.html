@@ -1,0 +1,222 @@
+<ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
+  <div class="container">
+    <div class="first-row">
+      <div #logoContainer class="logo">
+        <a [routerLink]="['.']" [style.font-size]="logoContainer.clientWidth + 'px'">
+          <i [nzType]="showNewYearIcon() ? 'ats-new-year-logo' : 'ats-logo'" nz-icon></i>
+        </a>
+      </div>
+
+      @let portfolios = portfolios$ | async;
+      <div class="portfolio-selector">
+        @if (selectedPortfolio$ | async; as selectedPortfolio) {
+          <button
+            [nzDropdownMenu]="portfoliosDropdown"
+            class="dropdown-btn"
+            nz-button
+            nz-dropdown
+            nzType="text"
+          >
+            <span>
+              {{ selectedPortfolio.market }} {{ selectedPortfolio.portfolio }}
+            </span>
+            <nz-icon class="arrow-icon" nzTheme="outline" nzType="down"/>
+          </button>
+        } @else {
+          <button
+            [nzPopoverContent]="emptyPortfolioPopover"
+            class="empty-portfolio"
+            nz-button
+            nz-popover
+            nzDanger
+            nzPopoverPlacement="bottom"
+            nzSize="small"
+            nzType="text"
+          >
+            {{ t('dashboardNavbarCommon.emptyPortfolioBtn') }}
+          </button>
+          <ng-template #emptyPortfolioPopover>
+            <p>{{ t('dashboardNavbarCommon.emptyPortfolioPopover') }}</p>
+            @if (externalLinksConfig.personalAccount != null && externalLinksConfig.personalAccount.length > 0) {
+              <p>{{ t('dashboardNavbarCommon.emptyPortfolioPopoverHint') }}
+                <ats-external-link [href]="externalLinksConfig.personalAccount!">
+                  {{ t('dashboardNavbarCommon.emptyPortfolioPopoverLink') }}
+                </ats-external-link>
+              </p>
+            }
+          </ng-template>
+        }
+        <nz-dropdown-menu #portfoliosDropdown="nzDropdownMenu">
+          <ul class="atsm-navbar_portfolio-menu" nz-menu>
+            <li>
+              <input
+                [formControl]="portfolioSearchControl"
+                [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
+                class="portfolio-search"
+                nz-input
+                type="text"
+              />
+            </li>
+
+            @if (portfolios != null) {
+              @for (kvp of (portfolios | keyvalue); track portfolioGroupsTrackByFn($index, kvp)) {
+                <li nz-menu-item nzDisabled> {{ kvp.key }}</li>
+                @for (model of kvp.value; track portfoliosTrackByFn($index, model)) {
+                  @if (isFindedPortfolio(model)) {
+                    <li
+                      (click)="changePortfolio(model)"
+                      class="porfolio-menu-item"
+                      nz-menu-item
+                    >
+                      {{ model.market }} {{ model.portfolio }}
+                    </li>
+                  }
+                }
+              }
+            }
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+
+      <div class="right">
+        <div class="d-flex align-items-center">
+          <ats-network-indicator/>
+        </div>
+        <div class="d-flex align-items-center mr-3">
+          <ats-notifications-nav-btn/>
+        </div>
+        <div class="d-flex align-items-center">
+          <ats-nav-lang-switch/>
+        </div>
+        <div>
+          <button (click)="openSideMenu()" class="menu-btn" nz-button nzType="text">
+            <i nz-icon nzTheme="outline" nzType="menu"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="pt-8 pb-8">
+      <ats-inline-instrument-search (instrumentSelected)="changeInstrument($event)"
+                                    [formControl]="instrumentSearchControl"/>
+    </div>
+  </div>
+
+  <nz-drawer
+    (nzOnClose)="closeSideMenu()"
+    [nzClosable]="false"
+    [nzVisible]="isSideMenuVisible()"
+    nzPlacement="right"
+    nzWidth="330px"
+    nzWrapClassName="atsm-navbar_side-menu"
+  >
+    <ng-container *nzDrawerContent>
+      <div class="menu-header">
+        <button (click)="closeSideMenu()" class="close-btn" nz-button nzType="text">
+          <i nz-icon nzTheme="outline" nzType="close"></i>
+        </button>
+      </div>
+      <div class="menu-content">
+        <ul [nzInlineIndent]="0" [nzMode]="'inline'" nz-menu>
+          <li (click)="openTerminalSettings()" class='menu-item' nz-menu-item>
+              <span class="content">
+                <i nz-icon nzTheme="outline"
+                   nzType="user"></i> <span>&nbsp;{{ t('dashboardNavbarCommon.profile') }}</span>
+              </span>
+          </li>
+
+          @if (!isNullOrEmpty(externalLinksConfig.reports)) {
+            <li nz-menu-divider></li>
+            <li (click)="openThirdPartyLink(externalLinksConfig.reports!)" class='menu-item external-link'
+                nz-menu-item>
+                <span class="content">
+                  <i nz-icon nzTheme="outline" nzType="audit"></i>
+                  <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.reports')}"
+                                [ngTemplateOutlet]="externalLink"/>
+                </span>
+            </li>
+          }
+
+          @if (!isNullOrEmpty(externalLinksConfig.releases)) {
+            <li nz-menu-divider></li>
+            <li (click)="openThirdPartyLink(externalLinksConfig.releases!)" class='menu-item external-link'
+                nz-menu-item>
+                <span class="content">
+                  <i nz-icon nzTheme="outline" nzType="history"></i>
+                  <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.releases')}"
+                                [ngTemplateOutlet]="externalLink"/>
+                </span>
+            </li>
+          }
+
+          @if (!isNullOrEmpty(externalLinksConfig.support)) {
+            <li nz-menu-divider></li>
+            <li (click)="openThirdPartyLink(externalLinksConfig.support!)" class='menu-item external-link' nz-menu-item>
+                <span class="content">
+                  <i nz-icon nzTheme="outline" nzType="customer-service"></i>
+                  <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}"
+                                [ngTemplateOutlet]="externalLink"/>
+                </span>
+            </li>
+          }
+
+          @if (!isNullOrEmpty(externalLinksConfig.issuesList)) {
+            <li nz-menu-divider></li>
+            <li (click)="openThirdPartyLink(externalLinksConfig.issuesList!)" class='menu-item external-link'
+                nz-menu-item>
+                <span class="content">
+                  <i nz-icon nzTheme="outline" nzType="bulb"></i>
+                  <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.issuesList')}"
+                                [ngTemplateOutlet]="externalLink"/>
+                </span>
+            </li>
+          }
+
+          @if (!isNullOrEmpty(externalLinksConfig.videoTutorial)) {
+            <li nz-menu-divider></li>
+            <li (click)="openThirdPartyLink(externalLinksConfig.videoTutorial!)" class='menu-item external-link'
+                nz-menu-item>
+                <span class="content">
+                  <i nz-icon nzTheme="outline" nzType="play-circle"></i>
+                  <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.videoTutorial')}"
+                                [ngTemplateOutlet]="externalLink"/>
+                </span>
+            </li>
+          }
+
+          <li nz-menu-divider></li>
+          @if (helpLink$ | async; as helpLink) {
+            <li
+              (click)="openThirdPartyLink(helpLink)"
+              class='menu-item external-link'
+              nz-menu-item
+            >
+                <span class="content">
+                  <i nz-icon nzTheme="outline" nzType="question-circle"></i>
+                  <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.help')}"
+                                [ngTemplateOutlet]="externalLink"/>
+                </span>
+            </li>
+          }
+          <li nz-menu-divider></li>
+          <li (click)="logout()" class='menu-item' nz-menu-item>
+              <span class="content">
+                <i nz-icon nzTheme="outline"
+                   nzType="logout"></i> <span>&nbsp;{{ t('dashboardNavbarCommon.exit') }}</span></span>
+          </li>
+        </ul>
+
+        <ng-template #externalLink let-name='name'>
+            <span class="link-label">
+              <label>&nbsp;{{ name }} </label>
+              <span nz-icon nzTheme="outline" nzType="ats-external-link"></span>
+            </span>
+        </ng-template>
+      </div>
+    </ng-container>
+  </nz-drawer>
+</ng-container>
+
+<ats-terminal-settings-dialog
+  [(atsVisible)]="showTerminalSettings"
+  [hiddenSections]="['hotKeysSettings', 'badgesBind', 'gridType', 'showCurrentTime']"
+/>

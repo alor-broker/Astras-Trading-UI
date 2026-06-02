@@ -1,0 +1,39 @@
+ats-admin-clients {
+  .ant-table-pagination {
+    margin-bottom: 0;
+  }
+
+  td {
+    &.favorites {
+      opacity: 0.4;
+
+      &.active {
+        opacity: 1;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  td, th {
+    &.favorites {
+      text-align: center !important;
+
+      &.active {
+        .anticon {
+          color: orange;
+        }
+      }
+    }
+  }
+}
+
+.admin-clients-menu {
+  li.ant-dropdown-menu-item, li.ant-dropdown-menu-submenu {
+    i {
+      margin-right: 7px;
+    }
+  }
+}

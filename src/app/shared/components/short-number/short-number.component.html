@@ -1,7 +1,0 @@
-@if (displayData) {
-  <ng-container *transloco="let t; scope: 'shared/short-number'">
-    {{displayData.value | number: '1.0-10'}}@if (displayData.suffixName) {
-    {{t('sharedShortNumber.' + displayData.suffixName + '.' + suffixForm())}}
-  }
-</ng-container>
-}

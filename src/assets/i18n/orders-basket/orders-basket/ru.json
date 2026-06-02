@@ -1,8 +1,0 @@
-{
-  "budgetLabel": "Сумма на все заявки",
-  "budgetPlaceholder": "Введите сумму",
-  "moreThan100Percents": "Сумма указанных процентов больше 100",
-  "submitLabel": "Выставить",
-  "submitSuccessMessage": "Все заявки были успешно выставлены",
-  "submitFailedMessage": "Выставление одной или нескольких заявок завершилось с ошибкой"
-}

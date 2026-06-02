@@ -1,0 +1,61 @@
+@let idea = displayIdea();
+<nz-modal (nzOnCancel)="close()"
+          [nzAutofocus]="null"
+          [nzContent]="content"
+          [nzFooter]="null"
+          [nzMaskClosable]="true"
+          [nzTitle]="idea?.title"
+          [nzVisible]="displayIdea() !== null"
+          nzClassName="ats-invest-ideas-details-dialog"
+/>
+
+<ng-template #content>
+  <div class="body show-scroll">
+    @if (idea != null) {
+      <p class="content">{{ idea.body }}</p>
+
+      <div class="d-flex flex-column flex-gap-10">
+
+        @let items = ideaSymbols();
+
+        @for (item of items; track item) {
+          <div
+            (click)="symbolSelected.emit({symbol: item.ticker, exchange: item.exchange})"
+            class="d-flex flex-row flex-nowrap flex-gap-10 align-items-center justify-content-between p-5 symbol"
+          >
+            <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
+              <ats-instrument-icon [symbol]="item.ticker" size="large"/>
+              <div class="d-flex flex-column">
+              <span class="heading-color" nz-typography nzEllipsis>
+                {{ item.shortName ?? item.ticker }}
+              </span>
+                <span nz-typography nzEllipsis>{{ item.ticker }}</span>
+              </div>
+            </div>
+
+            <div *ngrxLet="item.priceInfo$ as priceInfo" class="d-flex flex-column align-items-end">
+              @if (priceInfo != null) {
+                <span class="heading-color">{{ priceInfo.lastPrice }}</span>
+                <span
+                  [class]="{
+                  'positive-color': priceInfo.dayChangePercent >= 0,
+                  'negative-color': priceInfo.dayChangePercent < 0
+                  }"
+                >
+                  @if (priceInfo.dayChangePercent > 0) {
+                    <span>+</span>
+                  }
+
+                  <span>{{ priceInfo.dayChangePercent }}%</span>
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</ng-template>
+
+

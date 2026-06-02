@@ -1,0 +1,68 @@
+ats-mobile-home-screen-content {
+  overflow-x: hidden;
+
+  ats-ribbon {
+    height: 45px;
+  }
+
+  .bordered {
+    border: 1px solid var(--ats-border-color-base);
+    border-radius: 10px;
+    padding: 10px;
+
+    .ant-collapse-header {
+      padding: 0 !important;
+    }
+
+    .ant-collapse-content-box {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  .home-action-button.ant-btn {
+    height: auto;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border-color: var(--ats-border-color-base);
+    background: transparent;
+    color: var(--ats-heading-color);
+
+    &:hover,
+    &:focus {
+      color: var(--ats-heading-color);
+      border-color: color-mix(in srgb, var(--ats-primary-color) 45%, transparent);
+      background: color-mix(in srgb, var(--ats-primary-color) 6%, transparent);
+    }
+
+    &:active {
+      background: color-mix(in srgb, var(--ats-primary-color) 10%, transparent);
+    }
+  }
+
+  .home-action-icon {
+    color: var(--ats-primary-color);
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .home-action-label {
+    text-align: left;
+    white-space: normal;
+    line-height: 1.2;
+    color: var(--ats-heading-color);
+  }
+
+  .section-header {
+    color: var(--ats-heading-color);
+    font-size: 1.25rem;
+  }
+}
+
+
