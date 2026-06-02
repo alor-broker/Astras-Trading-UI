@@ -19,6 +19,7 @@ import {
   filter,
   firstValueFrom,
   fromEvent,
+  merge,
   Observable,
   pairwise,
   shareReplay,
@@ -124,6 +125,16 @@ interface ChartState {
   widget: IChartingLibraryWidget;
 }
 
+type FullscreenDocument = Document & {
+  webkitFullscreenElement?: Element | null;
+  mozFullScreenElement?: Element | null;
+  msFullscreenElement?: Element | null;
+};
+
+type FeatureToggleWidget = IChartingLibraryWidget & {
+  setFeatureEnabled?: (feature: ChartingLibraryFeatureset, enabled: boolean) => void;
+};
+
 @Component({
   selector: 'ats-tech-chart',
   templateUrl: './tech-chart.html',
@@ -212,6 +223,8 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
 
   private symbolChangeSub?: Subscription;
 
+  private fullscreenChangeSub?: Subscription;
+
   private isChartFocused = false;
 
   ngOnInit(): void {
@@ -224,6 +237,7 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
         this.clearChartEventsSubscription(this.chartState.widget);
         this.intervalChangeSub?.unsubscribe();
         this.symbolChangeSub?.unsubscribe();
+        this.fullscreenChangeSub?.unsubscribe();
         this.ordersDisplayExtension.destroyState();
         this.positionDisplayExtension.destroyState();
         this.tradesDisplayExtension.destroyState();
@@ -342,6 +356,7 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
       if (forceRecreate) {
         this.intervalChangeSub?.unsubscribe();
         this.symbolChangeSub?.unsubscribe();
+        this.fullscreenChangeSub?.unsubscribe();
         this.chartState.widget.remove();
       } else {
         this.chartState.widget.activeChart().setSymbol(
@@ -378,12 +393,12 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
 
     this.localStorageService.removeItem('tradingview.current_theme.name');
 
-    const features = this.getFeatures(settings);
+    const features = this.getFeatures(settings, deviceInfo);
 
     this.techChartDatafeedService.setExchangeSettings(exchanges);
     const config: ChartingLibraryWidgetOptions = {
       // debug
-      debug: false,
+      debug: true,
       // base options
       container: chartContainer.nativeElement,
       symbol: selectedInstrumentSymbol,
@@ -515,6 +530,8 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
       this.chartState!.widget.activeChart().onSymbolChanged()
         .subscribe(null, this.symbolChangeCallback);
       this.symbolChangeSub.add(() => this.chartState?.widget!.activeChart().onSymbolChanged().unsubscribe(null, this.symbolChangeCallback));
+
+      this.initFullscreenCrosshairMenuToggle();
     });
   }
 
@@ -556,6 +573,70 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(([key]) => {
         this.instrumentSearchService.openModal({value: key.key, needTextSelection: false});
       });
+  }
+
+  private initFullscreenCrosshairMenuToggle(): void {
+    this.fullscreenChangeSub?.unsubscribe();
+
+    const chartFrameDocument = this.chartContainer()?.nativeElement.querySelector('iframe')?.contentDocument ?? null;
+    const fullscreenDocuments = [
+      this.document,
+      chartFrameDocument
+    ].filter((fullscreenDocument): fullscreenDocument is Document => fullscreenDocument != null);
+
+    const fullscreenEvents = [
+      'fullscreenchange',
+      'webkitfullscreenchange',
+      'mozfullscreenchange',
+      'MSFullscreenChange'
+    ];
+
+    this.fullscreenChangeSub = merge(
+      ...fullscreenDocuments.flatMap(fullscreenDocument =>
+        fullscreenEvents.map(eventName => fromEvent(fullscreenDocument, eventName))
+      )
+    ).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => this.syncCrosshairMenuVisibility());
+
+    this.syncCrosshairMenuVisibility();
+  }
+
+  private syncCrosshairMenuVisibility(): void {
+    const chartWidget = this.chartState?.widget as FeatureToggleWidget | undefined;
+    chartWidget?.setFeatureEnabled?.('chart_crosshair_menu' as ChartingLibraryFeatureset, !this.isChartFullscreen());
+  }
+
+  private isChartFullscreen(): boolean {
+    const chartContainer = this.chartContainer()?.nativeElement;
+
+    if (!chartContainer) {
+      return false;
+    }
+
+    const chartFrame = chartContainer.querySelector('iframe');
+    const chartFrameDocument = chartFrame?.contentDocument ?? null;
+
+    return this.getFullscreenElements(this.document).some(element =>
+        element === chartContainer
+        || element === chartFrame
+        || chartContainer.contains(element)
+      )
+      || this.getFullscreenElements(chartFrameDocument).length > 0;
+  }
+
+  private getFullscreenElements(fullscreenDocument: Document | null): Element[] {
+    if (!fullscreenDocument) {
+      return [];
+    }
+
+    const documentWithFullscreen = fullscreenDocument as FullscreenDocument;
+    return [
+      documentWithFullscreen.fullscreenElement,
+      documentWithFullscreen.webkitFullscreenElement,
+      documentWithFullscreen.mozFullScreenElement,
+      documentWithFullscreen.msFullscreenElement
+    ].filter((element): element is Element => element != null);
   }
 
   private readonly intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: {
@@ -807,7 +888,7 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private getFeatures(settings: TechChartWidgetSettings): {
+  private getFeatures(settings: TechChartWidgetSettings, deviceInfo: DeviceInfo): {
     enabled: ChartingLibraryFeatureset[];
     disabled: ChartingLibraryFeatureset[];
   } {
@@ -838,7 +919,12 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
     this.switchChartFeature('header_screenshot', settings.panels?.headerScreenshot ?? true, enabled, disabled);
     this.switchChartFeature('header_settings', settings.panels?.headerSettings ?? true, enabled, disabled);
     this.switchChartFeature('header_undo_redo', settings.panels?.headerUndoRedo ?? true, enabled, disabled);
-    this.switchChartFeature('header_fullscreen_button', settings.panels?.headerFullscreenButton ?? true, enabled, disabled);
+    this.switchChartFeature(
+      'header_fullscreen_button',
+      !deviceInfo.isMobile && (settings.panels?.headerFullscreenButton ?? true),
+      enabled,
+      disabled
+    );
     this.switchChartFeature('left_toolbar', settings.panels?.drawingsToolbar ?? true, enabled, disabled);
     this.switchChartFeature('timeframes_toolbar', settings.panels?.timeframesBottomToolbar ?? true, enabled, disabled);
     this.switchChartFeature('custom_resolutions', settings.allowCustomTimeframes ?? false, enabled, disabled);

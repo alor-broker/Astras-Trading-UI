@@ -158,20 +158,20 @@
                       </nz-form-item>
                     }
                     <nz-form-item class="one-row">
-                      <nz-form-label nzFor="buyTradeColor">
-                        {{ t('techChartSettings.buyTradeMarkerColorLabel') }}:
-                      </nz-form-label>
                       <nz-form-control>
                         <nz-color-picker formControlName='buyTradeColor'/>
                       </nz-form-control>
+                      <nz-form-label nzFor="buyTradeColor">
+                        {{ t('techChartSettings.buyTradeMarkerColorLabel') }}:
+                      </nz-form-label>
                     </nz-form-item>
                     <nz-form-item class="one-row">
-                      <nz-form-label nzFor="sellTradeColor">
-                        {{ t('techChartSettings.sellTradeMarkerColorLabel') }}:
-                      </nz-form-label>
                       <nz-form-control>
                         <nz-color-picker formControlName='sellTradeColor'/>
                       </nz-form-control>
+                      <nz-form-label nzFor="sellTradeColor">
+                        {{ t('techChartSettings.sellTradeMarkerColorLabel') }}:
+                      </nz-form-label>
                     </nz-form-item>
                   </ng-container>
                 }
@@ -259,7 +259,7 @@
                   </nz-form-label>
                 </nz-form-item>
               }
-              @if (form.value.panels?.header) {
+              @if (form.value.panels?.header && !deviceInfo.isMobile) {
                 <nz-form-item class="one-row">
                   <nz-form-control>
                     <nz-switch formControlName='headerFullscreenButton'/>
