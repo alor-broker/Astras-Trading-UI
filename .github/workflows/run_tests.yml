@@ -1,16 +1,21 @@
 name: Tests
 
 on:
+  # Direct pushes only on the main branch; every other branch is covered by its pull request.
+  # This avoids running twice (push + pull_request) for branches that have an open PR.
   push:
     branches:
-      - '**'
+      - master
   pull_request:
-    branches:
-      - '**'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+# A newer commit on the same ref cancels the previous, still-running tests.
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:

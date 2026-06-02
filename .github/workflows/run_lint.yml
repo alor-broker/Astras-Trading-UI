@@ -1,12 +1,21 @@
 name: Lint
 
 on:
+  # Direct pushes only on the main branch; every other branch is covered by its pull request.
+  # This avoids running twice (push + pull_request) for branches that have an open PR.
   push:
-    branch:
-      - '**'
+    branches:
+      - master
+  pull_request:
   workflow_dispatch:
-    branch:
-      - '**'
+
+permissions:
+  contents: read
+
+# A newer commit on the same ref cancels the previous, still-running lint.
+concurrency:
+  group: lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -25,5 +34,6 @@ jobs:
       uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node-version }}
+        cache: pnpm
     - run: pnpm install --frozen-lockfile
     - run: pnpm lint
