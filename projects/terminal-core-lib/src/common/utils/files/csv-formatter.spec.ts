@@ -62,5 +62,15 @@ describe('CsvFormatter', () => {
 
       expect(result).toContain('"a""b";1');
     });
+
+    it('should escape every double quote in a value containing multiple double quotes', () => {
+      const result = CsvFormatter.toCsv(
+        meta,
+        [{name: 'a"b"c', price: '1'}],
+        {...csvFormatterConfigDefaults, addBOM: false}
+      );
+
+      expect(result).toContain('"a""b""c";1');
+    });
   });
 });

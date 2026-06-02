@@ -60,7 +60,7 @@ export class CsvFormatter {
     let quoted = false;
 
     if (sanitizedValue.includes('"')) {
-      sanitizedValue = `"${sanitizedValue.replace('"', '""')}"`;
+      sanitizedValue = `"${sanitizedValue.replaceAll('"', '""')}"`;
       quoted = true;
     }
 
