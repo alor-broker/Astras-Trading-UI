@@ -58,4 +58,35 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Test ${{ matrix.project }}
-        run: pnpm exec ng test ${{ matrix.project }} --no-watch
+        run: >-
+          pnpm exec ng test ${{ matrix.project }} --no-watch
+          --coverage
+          --coverage-reporters=text-summary
+          --coverage-reporters=json-summary
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          FILE="coverage/${{ matrix.project }}/coverage-summary.json"
+          if [ ! -f "$FILE" ]; then
+            echo "_No coverage report produced for ${{ matrix.project }}._" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          COVERAGE_FILE="$FILE" COVERAGE_PROJECT="${{ matrix.project }}" node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require('fs');
+          const total = JSON.parse(fs.readFileSync(process.env.COVERAGE_FILE, 'utf8')).total;
+          const row = (key) => {
+            const m = total[key];
+            const name = key[0].toUpperCase() + key.slice(1);
+            return `| ${name} | ${m.pct}% | ${m.covered}/${m.total} |`;
+          };
+          const lines = [
+            `### 📊 Coverage — ${process.env.COVERAGE_PROJECT}`,
+            '',
+            '| Metric | % | Covered / Total |',
+            '|---|--:|--:|',
+            ...['statements', 'branches', 'functions', 'lines'].map(row),
+            '',
+          ];
+          process.stdout.write(lines.join('\n') + '\n');
+          NODE

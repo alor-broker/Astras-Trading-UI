@@ -36,4 +36,14 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: pnpm
     - run: pnpm install --frozen-lockfile
-    - run: pnpm lint
+
+    # Turn ESLint's `unix` output into inline PR-diff annotations.
+    - name: Register ESLint problem matcher
+      run: echo "::add-matcher::.github/eslint-unix.json"
+
+    - name: Lint
+      run: pnpm exec ng lint --max-warnings 0 --format unix
+
+    - name: Remove ESLint problem matcher
+      if: always()
+      run: echo "::remove-matcher owner=eslint-unix::"
