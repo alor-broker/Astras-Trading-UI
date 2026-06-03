@@ -398,7 +398,7 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
     this.techChartDatafeedService.setExchangeSettings(exchanges);
     const config: ChartingLibraryWidgetOptions = {
       // debug
-      debug: true,
+      debug: false,
       // base options
       container: chartContainer.nativeElement,
       symbol: selectedInstrumentSymbol,
