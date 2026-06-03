@@ -31,7 +31,7 @@
           <span
             [style]="getClusterItemHighlightStyle(item, vm.settings.widgetSettings.tradesClusterPanelSettings ?? null, vm.themeColors)"
             class="highlighter  z-2">&nbsp;</span>
-          <span class="position-relative z-3 px-2">
+          <span class="position-relative z-3 px-2 text-nowrap">
             @if (vm.settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix) {
               <ats-short-number [allowRounding]="true"
                                 [value]="item?.volume"/>
