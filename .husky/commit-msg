@@ -10,8 +10,13 @@ issue_prefix="(${issue_ref}|${closing_ref})"
 issue_prefixes="^${issue_prefix}([[:space:]]*,[[:space:]]*${issue_prefix})*([[:space:]]*[:;-][[:space:]]*|[[:space:]]+).+"
 no_issue='^NO_ISSUE([[:space:]]*[:;-][[:space:]]*|[[:space:]]+).+'
 merge_commit='^Merge[[:space:]].+'
+revert_commit='^Revert[[:space:]]".+"$'
 
 if printf '%s' "$subject" | grep -Eiq "$merge_commit"; then
+  exit 0
+fi
+
+if printf '%s' "$subject" | grep -Eiq "$revert_commit"; then
   exit 0
 fi
 
@@ -34,6 +39,7 @@ Valid examples:
   Fixes #123: handle empty response
   NO_ISSUE: update generated assets
   Merge branch 'feature/order-form'
+  Revert "NO_ISSUE: update generated assets"
 
 Use closing keywords (Fixes/Closes/Resolves) only when the commit should close the issue
 after it reaches the default branch.
