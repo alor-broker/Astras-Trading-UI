@@ -18,6 +18,8 @@ import {DeviceNetworkService} from '../../../common/services/device-network.serv
 interface OutgoingMessage {
   guid: string;
   opcode: string;
+  originator?: string;
+  token?: string;
 }
 
 /**
@@ -30,6 +32,11 @@ class FakeWebSocketSubject {
   readonly outgoing: OutgoingMessage[] = [];
 
   private readonly observers: { next?: (value: CommandResponse) => void }[] = [];
+
+  constructor(
+    private readonly closeObserver?: { next: (event: CloseEvent) => void }
+  ) {
+  }
 
   subscribe(observer?: { next?: (value: CommandResponse) => void }): Subscription {
     const target = observer ?? {};
@@ -54,23 +61,41 @@ class FakeWebSocketSubject {
 
     [...this.observers].forEach(observer => observer.next?.(response));
   }
+
+  triggerClose(event: Partial<CloseEvent> = {}): void {
+    this.closed = true;
+    this.closeObserver?.next({
+      code: event.code ?? 1006,
+      reason: event.reason ?? 'test close'
+    } as CloseEvent);
+  }
 }
 
 describe('WsOrdersConnector', () => {
   let service: WsOrdersConnector;
-  let fakeSocket: FakeWebSocketSubject;
+  let sockets: FakeWebSocketSubject[];
   let factory: ReturnType<typeof vi.fn>;
+  let getToken: ReturnType<typeof vi.fn>;
+
+  function currentSocket(): FakeWebSocketSubject {
+    return sockets.at(-1)!;
+  }
 
   beforeEach(() => {
     vi.useFakeTimers();
-    fakeSocket = new FakeWebSocketSubject();
-    factory = vi.fn().mockReturnValue(fakeSocket);
+    sockets = [];
+    factory = vi.fn().mockImplementation((config: { closeObserver?: { next: (event: CloseEvent) => void } }) => {
+      const socket = new FakeWebSocketSubject(config.closeObserver);
+      sockets.push(socket);
+      return socket;
+    });
+    getToken = vi.fn().mockReturnValue(of('token'));
 
     TestBed.configureTestingModule({
       providers: [
         WsOrdersConnector,
         {provide: WEB_SOCKET_ORDERS_URL_PROVIDER, useValue: {cwsUrl: 'wss://test'}},
-        {provide: ApiTokenProviderService, useValue: {getToken: vi.fn().mockReturnValue(of('token'))}},
+        {provide: ApiTokenProviderService, useValue: {getToken}},
         {provide: LoggerService, useValue: {info: vi.fn(), debug: vi.fn(), warn: vi.fn(), error: vi.fn()}},
         {provide: RXJS_WEBSOCKET_CTOR, useValue: factory},
         {provide: ApplicationStatusService, useValue: {isActive: true, isActive$: of(true)}},
@@ -99,9 +124,22 @@ describe('WsOrdersConnector', () => {
       expect(response.orderNumber).toBe('777');
       expect(factory).toHaveBeenCalledTimes(1);
 
-      const sentCommand = fakeSocket.outgoing.find(m => m.opcode === 'create:limit');
+      const sentCommand = currentSocket().outgoing.find(m => m.opcode === 'create:limit');
       expect(sentCommand?.guid).toBeDefined();
-      expect(fakeSocket.outgoing.some(m => m.opcode === 'authorize')).toBe(true);
+      expect(currentSocket().outgoing.some(m => m.opcode === 'authorize')).toBe(true);
+    });
+
+    it('should authorize the socket command channel with the current token', async () => {
+      getToken.mockReturnValue(of('token-1'));
+
+      await firstValueFrom(service.submitCommand({opcode: 'create:limit'}));
+
+      const authorize = currentSocket().outgoing.find(m => m.opcode === 'authorize');
+      expect(authorize).toMatchObject({
+        opcode: 'authorize',
+        token: 'token-1',
+        originator: 'astras'
+      });
     });
 
     it('should record the round-trip delay of a command', async () => {
@@ -115,11 +153,33 @@ describe('WsOrdersConnector', () => {
     });
 
     it('should return a terminated response when the socket is not usable', async () => {
-      fakeSocket.closed = true;
+      service.warmUp();
+      currentSocket().closed = true;
 
       const response = await firstValueFrom(service.submitCommand({opcode: 'create:limit'}));
 
       expect(response).toEqual({httpCode: -1, message: 'Connection is terminated', requestGuid: ''});
+    });
+
+    it('should reopen and authorize the command channel after socket close', async () => {
+      getToken
+        .mockReturnValueOnce(of('token-before-reconnect'))
+        .mockReturnValueOnce(of('token-after-reconnect'));
+
+      await firstValueFrom(service.submitCommand({opcode: 'create:limit'}));
+      const firstSocket = currentSocket();
+      expect(firstSocket.outgoing.find(m => m.opcode === 'authorize')?.token).toBe('token-before-reconnect');
+
+      firstSocket.triggerClose();
+      await vi.advanceTimersByTimeAsync(2000);
+
+      expect(factory).toHaveBeenCalledTimes(2);
+
+      await firstValueFrom(service.submitCommand({opcode: 'update:limit'}));
+      const secondSocket = currentSocket();
+      expect(secondSocket).not.toBe(firstSocket);
+      expect(secondSocket.outgoing.find(m => m.opcode === 'authorize')?.token).toBe('token-after-reconnect');
+      expect(secondSocket.outgoing.some(m => m.opcode === 'update:limit')).toBe(true);
     });
   });
 });
