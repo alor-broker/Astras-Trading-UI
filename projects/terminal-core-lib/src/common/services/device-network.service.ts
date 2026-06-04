@@ -19,6 +19,7 @@ import {HttpClient} from '@angular/common/http';
 import {NetworkStatusProvider} from '@terminal-core-lib/features/network-indicator/services/network-status-service.types';
 import {Capacitor} from '@capacitor/core';
 import {Network} from '@capacitor/network';
+import {LoggerService} from '../../features/logging/services/logger-service';
 
 @Injectable({providedIn: 'root'})
 export class DeviceNetworkService implements NetworkStatusProvider {
@@ -27,6 +28,8 @@ export class DeviceNetworkService implements NetworkStatusProvider {
   private readonly coreApiUrlProvider = inject(CORE_API_URL_PROVIDER);
 
   private readonly httpClient = inject(HttpClient);
+
+  private readonly loggerService = inject(LoggerService);
 
   constructor() {
     this.isOnline$ = this.createIsOnlineStream();
@@ -76,7 +79,7 @@ export class DeviceNetworkService implements NetworkStatusProvider {
         return of(false);
       }),
       distinctUntilChanged(),
-      tap(x => console.log('isOnline:', x)),
+      tap(isOnline => this.loggerService.debug(`isOnline: ${isOnline}`)),
       shareReplay({bufferSize: 1, refCount: true})
     );
   }

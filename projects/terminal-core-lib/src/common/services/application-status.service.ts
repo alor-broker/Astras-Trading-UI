@@ -11,6 +11,7 @@ import {
 } from 'rxjs';
 import {DeviceService} from './device.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {LoggerService} from '../../features/logging/services/logger-service';
 
 @Injectable({providedIn: 'root'})
 export class ApplicationStatusService implements OnDestroy {
@@ -19,6 +20,8 @@ export class ApplicationStatusService implements OnDestroy {
   private readonly deviceService = inject(DeviceService);
 
   private readonly destroyRef = inject(DestroyRef);
+
+  private readonly loggerService = inject(LoggerService);
 
   private tearDown: Subscription | null = null;
 
@@ -49,7 +52,7 @@ export class ApplicationStatusService implements OnDestroy {
   private initListener(): void {
     const handler = (): void => {
       const isActive = !document.hidden;
-      console.log('isActive', isActive);
+      this.loggerService.debug(`isActive: ${isActive}`);
       this.isActiveSubject.next(isActive);
     };
 
