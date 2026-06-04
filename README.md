@@ -24,6 +24,7 @@
 - [Admin terminal](projects/admin-terminal/README.md)
 - [Core library](projects/terminal-core-lib/README.md)
 - [Core services](projects/terminal-core-lib/CORE_SERVICES.md)
+- [GraphQL contracts](projects/terminal-core-lib/GRAPHQL_CONTRACTS.md)
 - [Widgets library](projects/terminal-widgets-lib/README.md)
 - [Styling library](projects/terminal-styling-lib/README.md)
 - [I18n library](projects/terminal-i18n/README.md)

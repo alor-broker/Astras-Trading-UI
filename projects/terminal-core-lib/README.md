@@ -82,4 +82,5 @@ Feature должна объединять файлы одной функцион
 
 - `AGENTS.md` — общие правила для AI агентов.
 - `projects/terminal-core-lib/CORE_SERVICES.md` — каталог ключевых сервисов.
+- `projects/terminal-core-lib/GRAPHQL_CONTRACTS.md` — процесс обновления GraphQL-контрактов.
 - `projects/terminal-widgets-lib/README.md` — правила для общих виджетов.
