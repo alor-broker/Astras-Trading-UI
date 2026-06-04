@@ -63,7 +63,11 @@
               {
                 "glob": "**/*",
                 "input": "projects/terminal-widgets-lib/src/assets",
-                "output": "/assets/"
+                "output": "/assets/",
+                "ignore": [
+                  "charting_library/**/*.d.ts",
+                  "charting_library/package.json"
+                ]
               }
             ],
             "styles": [
@@ -233,7 +237,11 @@
               {
                 "glob": "**/*",
                 "input": "projects/terminal-widgets-lib/src/assets",
-                "output": "/assets/"
+                "output": "/assets/",
+                "ignore": [
+                  "charting_library/**/*.d.ts",
+                  "charting_library/package.json"
+                ]
               }
             ],
             "styles": [
@@ -398,7 +406,11 @@
               {
                 "glob": "**/*",
                 "input": "projects/terminal-widgets-lib/src/assets",
-                "output": "/assets/"
+                "output": "/assets/",
+                "ignore": [
+                  "charting_library/**/*.d.ts",
+                  "charting_library/package.json"
+                ]
               }
             ],
             "styles": [
