@@ -3,9 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
-  Input,
   input,
   OnChanges,
   OnInit,
@@ -110,6 +110,8 @@ export interface TableDataRow {
   encapsulation: ViewEncapsulation.None
 })
 export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
+  readonly data = input<TableDataRow[]>([]);
+
   readonly tableContainerHeight = input(100);
 
   readonly tableContainerWidth = input(100);
@@ -165,26 +167,23 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
 
   private readonly headerRowElChanges$ = toObservable(this.headerRowEl);
 
-  private tableData: TableDataRow[] = [];
+  private previousDataLength = 0;
 
-  private visibleItemsCount = 1;
+  private readonly resetScrollOnDataShrink = effect(() => {
+    const dataLength = this.data().length;
 
-  private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
-
-  public get data(): TableDataRow[] {
-    return this.tableData;
-  }
-
-  // eslint-disable-next-line @angular-eslint/prefer-signals
-  @Input() public set data(value: TableDataRow[]) {
-    if (this.tableData.length > value.length) {
+    if (this.previousDataLength > dataLength) {
       this.tableRef$?.pipe(
         take(1)
       ).subscribe(x => x.cdkVirtualScrollViewport?.scrollToIndex(0));
     }
 
-    this.tableData = value;
-  }
+    this.previousDataLength = dataLength;
+  });
+
+  private visibleItemsCount = 1;
+
+  private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
 
   private static getElementHeight(el?: any): number {
     let elHeight = 0;
@@ -261,7 +260,7 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
       switchMap(x => x.cdkVirtualScrollViewport!.scrolledIndexChange),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe((upperItemIndex: number) => {
-      if (upperItemIndex >= this.data.length - this.visibleItemsCount - 1) {
+      if (upperItemIndex >= this.data().length - this.visibleItemsCount - 1) {
         this.scrolled.emit();
       }
     });
