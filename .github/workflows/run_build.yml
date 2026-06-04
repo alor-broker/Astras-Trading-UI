@@ -1,0 +1,58 @@
+name: Build
+
+on:
+  # Direct pushes only on the main branch; every other branch is covered by its pull request.
+  # This avoids running twice (push + pull_request) for branches that have an open PR.
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer commit on the same ref cancels the previous, still-running builds.
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # The job is named after the UI project, so each build result is clearly attributed.
+    name: ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      # Run every UI build even if one fails, so a single red project does not hide the rest.
+      fail-fast: false
+      matrix:
+        node-version: [24.x]
+        project:
+          - desktop-terminal
+          - mobile-terminal
+          - admin-terminal
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v5
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Report header
+        run: |
+          {
+            echo "## Build: ${{ matrix.project }}"
+            echo ""
+            echo "Node ${{ matrix.node-version }} · commit \`${GITHUB_SHA::7}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build ${{ matrix.project }}
+        run: pnpm exec ng build --project ${{ matrix.project }}
