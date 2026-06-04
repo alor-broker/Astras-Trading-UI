@@ -1,7 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   input,
   TemplateRef,
+  ViewEncapsulation,
   viewChild
 } from '@angular/core';
 
@@ -12,7 +14,9 @@ import {
     <ng-template>
       <ng-content/>
     </ng-template>`,
-  preserveWhitespaces: false
+  preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class ViewSelectorItem {
   readonly content = viewChild.required(TemplateRef);

@@ -1,4 +1,8 @@
-import {Component} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation
+} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NewYearHelper} from '../../utils/new-year.helper';
@@ -11,6 +15,8 @@ import {NewYearHelper} from '../../utils/new-year.helper';
   ],
   templateUrl: './app-logo.html',
   styleUrl: './app-logo.less',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class AppLogo {
   showNewYearIcon = NewYearHelper.showNewYearIcon;

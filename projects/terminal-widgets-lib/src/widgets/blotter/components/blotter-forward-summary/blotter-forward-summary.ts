@@ -1,8 +1,10 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   inject,
   input,
-  OnInit
+  OnInit,
+  ViewEncapsulation
 } from '@angular/core';
 import {
   distinctUntilChanged,
@@ -32,7 +34,9 @@ import {WidgetSettingsHelper} from '@terminal-core-lib/features/widget-settings/
     NzDescriptionsComponent,
     NzDescriptionsItemComponent,
     AsyncPipe
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class BlotterForwardSummary implements OnInit {
   readonly shouldShowSettings = input<boolean>(false);
