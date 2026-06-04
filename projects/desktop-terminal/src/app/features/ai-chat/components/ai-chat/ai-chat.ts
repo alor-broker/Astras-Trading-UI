@@ -64,7 +64,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
   ]
 })
 export class AiChat implements OnInit, OnDestroy {
-  displayMessages: Message<any>[] = [];
+  displayMessages: Message<TextMessageContent>[] = [];
 
   readonly chatStatus$ = new BehaviorSubject<DisplayStatus | null>(null);
 
@@ -112,7 +112,7 @@ export class AiChat implements OnInit, OnDestroy {
     this.startNewConversation();
   }
 
-  trackByMessage(index: number, item: Message<any>): string {
+  trackByMessage(index: number, item: Message<TextMessageContent>): string {
     return item.date.getTime().toString();
   }
 

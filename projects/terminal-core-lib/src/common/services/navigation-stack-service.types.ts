@@ -1,7 +1,7 @@
 ﻿export interface WidgetTarget {
   typeId: string;
   instanceId?: string;
-  parameters?: any;
+  parameters?: Record<string, unknown>;
 }
 
 export interface NavigationState {

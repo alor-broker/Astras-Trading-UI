@@ -54,7 +54,7 @@ export interface WithdrawalSubmitParams {
 
 export interface PrepareOperationResponse {
   title: string;
-  data: any;
+  data: unknown;
   validations?: ValidationResult[];
 }
 

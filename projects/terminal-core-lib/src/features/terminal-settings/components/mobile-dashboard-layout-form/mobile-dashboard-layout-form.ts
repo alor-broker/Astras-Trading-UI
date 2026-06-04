@@ -122,7 +122,7 @@ export class MobileDashboardLayoutForm extends ControlValueAccessorBase<MobileDa
     return true;
   }
 
-  protected changeOrder(event: CdkDragDrop<any>): void {
+  protected changeOrder(event: CdkDragDrop<unknown>): void {
     const curr = this.currentQuickAccessPanelWidgets();
     const newSlots = [...curr];
     const item = newSlots.splice(event.previousIndex, 1)[0];

@@ -60,7 +60,7 @@ interface Safe extends GridsterConfig {
 interface WidgetItem {
   instance: WidgetInstance;
   gridsterItem: GridsterItemConfig;
-  componentType: Type<any> | null;
+  componentType: Type<unknown> | null;
 }
 
 @Component({
@@ -151,11 +151,11 @@ export class CustomizableDashboard implements OnInit {
           ignoreMarginInRow: false,
           draggable: {
             enabled: true,
-            start: (gridsterItem: any, gridsterItemComp: any): void => {
+            start: (gridsterItem: GridsterItemConfig, gridsterItemComp: GridsterItem): void => {
               gridsterItemComp.el.style.zIndex = '3';
               this.isBlockWidget.set(true);
             },
-            stop: (gridsterItem: any, gridsterItemComp: any): void => {
+            stop: (gridsterItem: GridsterItemConfig, gridsterItemComp: GridsterItem): void => {
               gridsterItemComp.el.style.zIndex = '2';
               this.isBlockWidget.set(false);
             }
@@ -183,9 +183,9 @@ export class CustomizableDashboard implements OnInit {
           disableWindowResize: false,
           disableWarnings: true,
           scrollToNewItems: false,
-          itemChangeCallback: (gridItem: any): void => {
+          itemChangeCallback: (gridItem: GridsterItemConfig): void => {
             this.updateWidgetPosition(
-              gridItem.guid,
+              gridItem.guid as string,
               {
                 x: gridItem.x as number,
                 y: gridItem.y as number,

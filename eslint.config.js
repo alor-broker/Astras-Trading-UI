@@ -142,7 +142,7 @@ module.exports = defineConfig([
         }
       ],
       "@typescript-eslint/switch-exhaustiveness-check": "off",
-      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-explicit-any": "error",
 
       "@stylistic/semi": ["error", "always"],
       "@stylistic/comma-dangle": "off",
@@ -169,6 +169,12 @@ module.exports = defineConfig([
           }
         }
       ],
+    },
+  },
+  {
+    files: ["**/graphql/schema/graphql.schemas.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off"
     },
   },
   {

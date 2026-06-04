@@ -11,7 +11,7 @@ import {CacheOptions} from './cache-service.types';
 
 interface CachedData {
   expirationTime?: Date;
-  data$: Observable<any>;
+  data$: Observable<unknown>;
 }
 
 @Injectable({providedIn: 'root'})

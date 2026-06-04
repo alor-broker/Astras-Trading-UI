@@ -376,7 +376,7 @@ export class WatchlistTable extends BaseTableComponent<DisplayWatchlist> impleme
     this.watchlistCollectionService.moveItem(this.selectedItem.instrument.recordId, this.selectedItem.listId, toList.id);
   }
 
-  override changeColumnOrder(event: CdkDragDrop<any>): void {
+  override changeColumnOrder(event: CdkDragDrop<unknown>): void {
     super.changeColumnOrder<WatchlistsWidgetSettings>(event, this.settings$);
   }
 
@@ -442,7 +442,7 @@ export class WatchlistTable extends BaseTableComponent<DisplayWatchlist> impleme
       });
   }
 
-  onDragDropped(e: CdkDragDrop<any>): void {
+  onDragDropped(e: CdkDragDrop<{ listId: string, recordId: string }>): void {
     if (e.item.data.listId !== this.watchlistToDrop) {
       this.watchlistCollectionService.moveItem(e.item.data.recordId, e.item.data.listId, this.watchlistToDrop!);
     }
@@ -628,7 +628,7 @@ export class WatchlistTable extends BaseTableComponent<DisplayWatchlist> impleme
   }
 
   private getSortFn(propName: string): SortFn {
-    return (a: any, b: any) => {
+    return (a: WatchedInstrument, b: WatchedInstrument) => {
       const aValue = ObjectHelper.getPropertyFromPath(a, propName) as string | number;
       const bValue = ObjectHelper.getPropertyFromPath(b, propName) as string | number;
       return aValue > bValue ? 1 : -1;

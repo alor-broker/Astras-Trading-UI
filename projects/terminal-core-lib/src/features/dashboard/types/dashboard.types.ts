@@ -29,7 +29,7 @@ export interface Widget {
   widgetType: string;
   position?: DashboardItemPosition;
 
-  initialSettings?: any;
+  initialSettings?: Record<string, unknown>;
   initialSize?: {
     cols: number;
     rows: number;

@@ -262,7 +262,7 @@ export class WsOrdersConnector implements NetworkStatusProvider, OrderDelayProvi
       try {
         webSocketSubject?.next(({
           ...request
-        } as any));
+        } as unknown as WsResponseMessage));
       } catch (err) {
         observer.error(err);
       }

@@ -9,7 +9,7 @@ export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
   'rxjs/webSocket',
   {
     providedIn: 'root',
-    factory: (): (urlConfigOrSource: string | WebSocketSubjectConfig<any>) => WebSocketSubject<any> => webSocket,
+    factory: (): <T>(urlConfigOrSource: string | WebSocketSubjectConfig<T>) => WebSocketSubject<T> => webSocket,
   }
 );
 

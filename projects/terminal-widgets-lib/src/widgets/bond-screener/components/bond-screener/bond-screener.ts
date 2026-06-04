@@ -57,10 +57,7 @@ import {BondScreenerWidgetSettings} from '@terminal-widgets-lib/widgets/bond-scr
 import {ACTIONS_CONTEXT} from '@terminal-core-lib/features/dashboard/types/dashboard-actions-context.types';
 import {TerminalSettingsService} from '@terminal-core-lib/features/terminal-settings/services/terminal-settings.service';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
-import {
-  InfiniteScrollTable,
-  TableDataRow
-} from '@terminal-core-lib/features/tables/components/infinite-scroll-table/infinite-scroll-table';
+import {InfiniteScrollTable} from '@terminal-core-lib/features/tables/components/infinite-scroll-table/infinite-scroll-table';
 import {DefaultBadge} from '@terminal-core-lib/features/instruments/constants/badges.constants';
 import {AddToWatchlistMenu} from '@terminal-core-lib/features/watchlist/components/add-to-watchlist-menu/add-to-watchlist-menu';
 import {mapWith} from '@terminal-core-lib/common/utils/observable/map-with';
@@ -599,8 +596,7 @@ export class BondScreener extends LazyLoadingBaseTable<
     this.filters$.next(cleanedFilters);
   }
 
-  override rowClick(row: TableDataRow): void {
-    const targetRow = row as BondDisplay;
+  override rowClick(targetRow: BondDisplay): void {
     const instrument = {
       symbol: targetRow.basicInformation!.symbol,
       exchange: targetRow.basicInformation!.exchange,
@@ -617,7 +613,7 @@ export class BondScreener extends LazyLoadingBaseTable<
     this.scrolled.set(new Date().getTime());
   }
 
-  override changeColumnOrder(event: CdkDragDrop<any>): void {
+  override changeColumnOrder(event: CdkDragDrop<unknown>): void {
     super.changeColumnOrder<BondScreenerWidgetSettings>(event, this.settings$);
   }
 
@@ -625,15 +621,14 @@ export class BondScreener extends LazyLoadingBaseTable<
     super.saveColumnWidth<BondScreenerWidgetSettings>(event, this.settings$);
   }
 
-  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenu, selectedRow: TableDataRow): void {
+  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenu, selectedRow: BondDisplay): void {
     this.nzContextMenuService.close(true);
 
-    const row = selectedRow as BondDisplay;
     const menuRef = menu.menuRef();
     if (menuRef != null) {
       menu.itemToAdd.set({
-        symbol: row.basicInformation!.symbol,
-        exchange: row.basicInformation!.exchange
+        symbol: selectedRow.basicInformation!.symbol,
+        exchange: selectedRow.basicInformation!.exchange
       });
 
       this.nzContextMenuService.create($event, menuRef);

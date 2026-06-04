@@ -45,7 +45,7 @@ export interface SubscriptionRequest {
   repeatCount?: number;
 }
 
-type WsResponseMessage = BaseResponse<any> & ConfirmResponse;
+type WsResponseMessage = Partial<BaseResponse<unknown>> & Partial<ConfirmResponse> & Record<string, unknown>;
 
 interface WsRequestMessage extends SubscriptionRequest {
   guid: string;
@@ -53,7 +53,7 @@ interface WsRequestMessage extends SubscriptionRequest {
 
 interface SubscriptionState {
   messageSource: Subject<WsResponseMessage>;
-  sharedStream$: Observable<any>;
+  sharedStream$: Observable<unknown>;
   request: WsRequestMessage;
   subscription: Subscription;
 }
@@ -145,7 +145,7 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
     this.isConnected$.complete();
   }
 
-  private subscribeToMessages(source: Observable<WsResponseMessage>, target: Subject<any>, subscriptionId: string): Subscription {
+  private subscribeToMessages(source: Observable<WsResponseMessage>, target: Subject<WsResponseMessage>, subscriptionId: string): Subscription {
     return source.subscribe({
       next: (value) => target.next(value),
       complete: () => this.logger.debug(this.toLoggerMessage(`${subscriptionId} COMPLETED`)),
@@ -175,7 +175,7 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
           state.webSocketSubject?.next(({
             ...request,
             token
-          } as any));
+          }));
         } catch (err) {
           observer.error(err);
         }
@@ -205,7 +205,7 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
               opcode: 'unsubscribe',
               guid: request.guid,
               token: token
-            } as any));
+            }));
           } catch (err) {
             observer.error(err);
           }

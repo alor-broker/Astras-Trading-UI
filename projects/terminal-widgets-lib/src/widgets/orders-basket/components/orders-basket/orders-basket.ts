@@ -241,7 +241,9 @@ export class OrdersBasket implements OnInit, OnDestroy {
       switchMap(x => {
         const orders: NewLimitOrder[] = [];
 
-        (this.form.value.items ?? []).forEach((item: any) => {
+        (this.form.value.items ?? [])
+          .filter((item): item is Partial<OrdersBasketItemType> => item != null)
+          .forEach((item) => {
           orders.push({
             side: this.form.value.side ?? Side.Buy,
             instrument: item.instrumentKey as InstrumentKey,

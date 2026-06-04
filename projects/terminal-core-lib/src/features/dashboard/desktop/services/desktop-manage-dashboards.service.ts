@@ -47,7 +47,7 @@ export class DesktopManageDashboardsService {
     return DashboardsStreams.getAllDashboards(this.store);
   }
 
-  addWidget(widgetType: string, initialSettings?: Record<string, any>, initialSize?: {
+  addWidget(widgetType: string, initialSettings?: Record<string, unknown>, initialSize?: {
     cols: number;
     rows: number;
   }): void {

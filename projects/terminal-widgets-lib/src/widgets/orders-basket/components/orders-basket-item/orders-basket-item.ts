@@ -219,7 +219,7 @@ export class OrdersBasketItem implements OnInit, OnDestroy, ControlValueAccessor
     }
   }
 
-  registerOnChange(onChange: any): void {
+  registerOnChange(onChange: (value: OrdersBasketItemType) => void): void {
     const sub = this.form.valueChanges.pipe(
       map(x => ({
         ...x,
@@ -232,7 +232,7 @@ export class OrdersBasketItem implements OnInit, OnDestroy, ControlValueAccessor
     this.onChangeSubs.push(sub);
   }
 
-  registerOnTouched(onTouched: (...args: any[]) => any): void {
+  registerOnTouched(onTouched: () => void): void {
     this.onTouched = onTouched;
   }
 

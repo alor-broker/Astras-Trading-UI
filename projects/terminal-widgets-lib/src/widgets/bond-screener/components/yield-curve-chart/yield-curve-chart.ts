@@ -332,7 +332,7 @@ export class YieldCurveChart implements OnInit, OnDestroy {
   }
 
   private drawYAxis(
-    root: Selection<SVGGElement, any, HTMLElement, any>,
+    root: Selection<SVGGElement, unknown, HTMLElement, unknown>,
     axisPosition: ItemPosition,
     chartAreaPosition: ItemPosition,
     scale: ScaleLinear<number, number>,
@@ -383,7 +383,7 @@ export class YieldCurveChart implements OnInit, OnDestroy {
   }
 
   private drawXAxis(
-    root: Selection<SVGGElement, any, HTMLElement, any>,
+    root: Selection<SVGGElement, unknown, HTMLElement, unknown>,
     axisPosition: ItemPosition,
     scale: ScaleLinear<number, number>,
     translator: TranslatorFn): {
@@ -452,12 +452,12 @@ export class YieldCurveChart implements OnInit, OnDestroy {
   }
 
   private drawDataPoints(
-    root: Selection<SVGGElement, any, HTMLElement, any>,
-    defs: Selection<SVGDefsElement, any, HTMLElement, any>,
+    root: Selection<SVGGElement, unknown, HTMLElement, unknown>,
+    defs: Selection<SVGDefsElement, unknown, HTMLElement, unknown>,
     xScale: ScaleLinear<number, number>,
     yScale: ScaleLinear<number, number>,
     dataArtifacts: DataArtifacts,
-    tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>,
+    tooltipContainer: Selection<HTMLDivElement, unknown, HTMLElement, unknown>,
     chartAreaPosition: ItemPosition,
     translator: TranslatorFn,
     onZoom: () => void
@@ -581,9 +581,9 @@ export class YieldCurveChart implements OnInit, OnDestroy {
 
   private applyTooltip<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
     selection: Selection<GElement, Datum, PElement, PDatum>,
-    tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>,
+    tooltipContainer: Selection<HTMLDivElement, unknown, HTMLElement, unknown>,
     tooltipBounds: ItemPosition,
-    onShow: (data: Datum, tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>) => void
+    onShow: (data: Datum, tooltipContainer: Selection<HTMLDivElement, unknown, HTMLElement, unknown>) => void
   ): void {
     const pointerPaddingTop = 2;
     const pointerPaddingBottom = 18;

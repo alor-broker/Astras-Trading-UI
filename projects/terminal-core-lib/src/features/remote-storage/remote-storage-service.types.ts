@@ -13,10 +13,10 @@ export interface RecordMeta {
   timestamp: number;
 }
 
-export interface StorageRecord {
+export interface StorageRecord<T = unknown> {
   key: string;
   meta: RecordMeta;
-  value: any;
+  value: T;
 }
 
 export enum GetRecordStatus {

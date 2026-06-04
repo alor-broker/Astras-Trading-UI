@@ -215,7 +215,9 @@ export class ImportWatchlistDialog implements OnInit {
       this.cdr.markForCheck();
     });
 
-    reader.readAsText(file as any as File);
+    if (file.originFileObj != null) {
+      reader.readAsText(file.originFileObj);
+    }
     return false;
   };
 }

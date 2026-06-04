@@ -18,11 +18,11 @@ import {NgTemplateOutlet} from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetSkeleton {
-  readonly header = input.required<TemplateRef<any>>();
+  readonly header = input.required<TemplateRef<unknown>>();
 
-  readonly content = input.required<TemplateRef<any>>();
+  readonly content = input.required<TemplateRef<unknown>>();
 
-  readonly settings = input<TemplateRef<any> | null>();
+  readonly settings = input<TemplateRef<unknown> | null>();
 
   readonly showSettings = input(false);
 

@@ -80,7 +80,7 @@ export class WidgetHeader implements OnInit {
 
   readonly hasSettings = input(false);
 
-  readonly titleTemplate = input<TemplateRef<any> | null>(null);
+  readonly titleTemplate = input<TemplateRef<unknown> | null>(null);
 
   readonly switchSettings = output();
 

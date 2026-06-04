@@ -12,8 +12,8 @@ import {toObservable} from '@angular/core/rxjs-interop';
   template: ''
 })
 export abstract class LazyLoadingBaseTable<
-  T extends Record<string, any>,
-  F extends Record<string, any> = object,
+  T extends object,
+  F extends object = object,
   P = { limit: number, offset: number },
   S = Sort,
 > extends BaseTableComponent<T, F, S> {

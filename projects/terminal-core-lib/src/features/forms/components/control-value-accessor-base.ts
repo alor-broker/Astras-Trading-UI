@@ -5,7 +5,7 @@ export abstract class ControlValueAccessorBase<T> implements ControlValueAccesso
     this.onValueChanged = fn;
   }
 
-  registerOnTouched(fn: ((...args: any[]) => any)): void {
+  registerOnTouched(fn: (() => void)): void {
     this.onTouched = fn;
   }
 

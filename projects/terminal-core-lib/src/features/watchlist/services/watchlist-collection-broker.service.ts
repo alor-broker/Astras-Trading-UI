@@ -91,7 +91,7 @@ export class WatchlistCollectionBrokerService {
         if (config.enableStore) {
           combineLatest([
             this.applicationMetaService.getMeta(),
-            this.remoteStorageService.getGroup(this.groupKey)
+            this.remoteStorageService.getGroup<Watchlist>(this.groupKey)
           ]).pipe(
             take(1)
           ).subscribe(([meta, records]) => {

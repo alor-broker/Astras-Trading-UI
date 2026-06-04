@@ -58,7 +58,7 @@ export class PortfolioSubscriptionsService {
 
   private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  private readonly subscriptions = new Map<string, Observable<any>>();
+  private readonly subscriptions = new Map<string, Observable<unknown>>();
 
   private readonly baseUrl = this.coreApiUrlProvider.apiUrl + '/md/v2/Clients';
 

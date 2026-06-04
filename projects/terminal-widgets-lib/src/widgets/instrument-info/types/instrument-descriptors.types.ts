@@ -4,7 +4,7 @@
   formattedValue: string;
   valueTranslationKey?: string;
   titleTooltipTranslationKey?: string;
-  customStyles?: Record<string, any>;
+  customStyles?: Record<string, string | number | null>;
 }
 
 export interface DescriptorsGroup {

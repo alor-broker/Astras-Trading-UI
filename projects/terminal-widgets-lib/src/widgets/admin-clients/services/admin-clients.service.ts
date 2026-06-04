@@ -72,7 +72,7 @@ export class AdminClientsService {
           exchange
         }
       ).pipe(
-        catchHttpError<any>(false, this.errorHandlerService),
+        catchHttpError<unknown>(false, this.errorHandlerService),
         map(r => {
           return r != false;
         })
@@ -85,7 +85,7 @@ export class AdminClientsService {
       return this.httpClient.delete(
         `${this.baseUrl}/admincomposer/portfolios/favorites/${exchange}/${portfolio}`,
       ).pipe(
-        catchHttpError<any>(false, this.errorHandlerService),
+        catchHttpError<unknown>(false, this.errorHandlerService),
         map(r => {
           return r != false;
         })

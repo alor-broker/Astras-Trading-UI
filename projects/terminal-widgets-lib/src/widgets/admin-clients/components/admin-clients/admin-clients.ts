@@ -103,7 +103,7 @@ interface ColumnBase {
   id: string;
   displayName: string;
   tooltip?: string;
-  sortChangeFn?: (direction: string | null) => any;
+  sortChangeFn?: (direction: string | null) => void;
 }
 
 @Component({
@@ -603,7 +603,7 @@ export class AdminClients extends BaseTableComponent<ClientDisplay, ClientsSearc
     return '';
   }
 
-  override changeColumnOrder(event: CdkDragDrop<any>): void {
+  override changeColumnOrder(event: CdkDragDrop<unknown>): void {
     super.changeColumnOrder<AdminClientsWidgetSettings>(event, this.settings$);
   }
 
@@ -844,7 +844,7 @@ export class AdminClients extends BaseTableComponent<ClientDisplay, ClientsSearc
       id: columnId.id,
       displayName: context.adminTranslator(['columns', columnId.id, 'displayName'], {fallback: columnId.displayName}),
       tooltip: context.adminTranslator(['columns', columnId.id, 'tooltip']),
-      sortChangeFn: (direction): any => {
+      sortChangeFn: (direction): void => {
         if (direction == null) {
           this.sort$.next(null);
           this.saveSortState(null);

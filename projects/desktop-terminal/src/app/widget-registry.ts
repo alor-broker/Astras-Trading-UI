@@ -35,7 +35,7 @@ import {PortfolioRiskGaugeWidget} from '@terminal-widgets-lib/widgets/portfolio-
  *
  * Add new desktop widgets here to make them available in the dashboard.
  */
-const DESKTOP_WIDGET_REGISTRY: Map<string, Type<any>> = new Map<string, Type<any>>([
+const DESKTOP_WIDGET_REGISTRY: Map<string, Type<unknown>> = new Map<string, Type<unknown>>([
   ['instrument-info', InstrumentInfoWidget],
   ['treemap', TreemapWidget],
   ['instrument-select', WatchlistsWidget],

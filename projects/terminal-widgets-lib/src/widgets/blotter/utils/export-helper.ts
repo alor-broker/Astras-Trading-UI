@@ -16,7 +16,7 @@ export class ExportHelper {
     blotterSettings: BlotterWidgetSettings,
     data: T[],
     columns: BaseColumnSettings<T>[],
-    valueTranslators?: Map<string, (value: any) => string>,
+    valueTranslators?: Map<string, (value: unknown) => string>,
   ): void {
     const meta = columns.map(c => ({
         title: c.displayName,

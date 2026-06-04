@@ -91,7 +91,7 @@ export abstract class BlotterBaseTable<T extends { id: string }, F extends objec
       .subscribe(c => this.columns = c?.columns ?? []);
   }
 
-  override changeColumnOrder(event: CdkDragDrop<any>): void {
+  override changeColumnOrder(event: CdkDragDrop<unknown>): void {
     super.changeColumnOrder<BlotterWidgetSettings>(event, this.settings$);
   }
 
@@ -247,11 +247,11 @@ export abstract class BlotterBaseTable<T extends { id: string }, F extends objec
         take(1),
       )
       .subscribe(({tBlotter, tBlotterCommon, settings, tableConfig}) => {
-        const valueTranslators = new Map<string, (value: any) => string>([
-          ['status', (value): string => tBlotterCommon(['orderStatus', value])],
-          ['transTime', (value): string => this.formatDate(value)],
-          ['endTime', (value): string => this.formatDate(value)],
-          ['date', (value): string => this.formatDate(value)]
+        const valueTranslators = new Map<string, (value: unknown) => string>([
+          ['status', (value): string => tBlotterCommon(['orderStatus', `${value}`])],
+          ['transTime', (value): string => this.formatDate(value as Date)],
+          ['endTime', (value): string => this.formatDate(value as Date)],
+          ['date', (value): string => this.formatDate(value as Date)]
         ]);
 
         ExportHelper.exportToCsv(

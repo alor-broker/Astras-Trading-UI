@@ -46,6 +46,8 @@ interface DisplayItem {
   mappedPrice: number;
 }
 
+type CssStyleMap = Record<string, string | number | null | undefined>;
+
 @Component({
   selector: 'ats-trades-cluster',
   templateUrl: './trades-cluster.html',
@@ -158,7 +160,7 @@ export class TradesCluster implements OnInit {
   getClusterItemHighlightStyle(
     item: DisplayItem,
     settings: TradesClusterPanelSettings | null,
-    themeColors: ThemeColors): any | null {
+    themeColors: ThemeColors): CssStyleMap | null {
     if (settings == null) {
       return null;
     }
@@ -178,7 +180,7 @@ export class TradesCluster implements OnInit {
   private getClusterBuySellDominanceStyle(
     item: DisplayItem,
     themeColors: ThemeColors
-  ): any | null {
+  ): CssStyleMap | null {
     if (
       item.volume == null
       || item.volume === 0
@@ -223,7 +225,7 @@ export class TradesCluster implements OnInit {
     item: DisplayItem,
     targetVolume: number | null,
     themeColors: ThemeColors
-  ): any | null {
+  ): CssStyleMap | null {
     if (
       item.volume == null
       || item.volume === 0
@@ -263,7 +265,7 @@ export class TradesCluster implements OnInit {
   private getClusterBuyVsSellStyle(
     item: DisplayItem,
     themeColors: ThemeColors
-  ): any | null {
+  ): CssStyleMap | null {
     if (
       item.volume == null
       || item.volume === 0

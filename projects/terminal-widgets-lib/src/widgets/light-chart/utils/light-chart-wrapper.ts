@@ -211,7 +211,7 @@ export class LightChartWrapper {
         }
 
         const displayCandle = this.toDisplayCandle(candle);
-        this.chartSeries?.candlestickSeries.update(displayCandle as any);
+        this.chartSeries?.candlestickSeries.update(displayCandle);
         this.chartSeries?.volumeSeries.update(this.toVolumePoint(displayCandle));
       }
     );
@@ -262,11 +262,11 @@ export class LightChartWrapper {
 
     const displayData = this.loadedHistoryPoints.map(x => this.toDisplayCandle(x));
 
-    this.chartSeries?.candlestickSeries.setData(displayData as any);
+    this.chartSeries?.candlestickSeries.setData(displayData);
 
     const volumes = displayData.map(candle => this.toVolumePoint(candle));
 
-    this.chartSeries?.volumeSeries.setData(volumes as any);
+    this.chartSeries?.volumeSeries.setData(volumes);
   }
 
   private toVolumePoint(candle: Candle): HistogramData {

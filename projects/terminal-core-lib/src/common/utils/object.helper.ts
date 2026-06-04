@@ -23,7 +23,7 @@
    *
    * @returns object property value
    */
-  static getPropertyFromPath<T extends Record<string, unknown> | null | undefined>(obj: T, path: string): unknown {
+  static getPropertyFromPath<T extends object | null | undefined>(obj: T, path: string): unknown {
     if (obj == null) {
       return undefined;
     }

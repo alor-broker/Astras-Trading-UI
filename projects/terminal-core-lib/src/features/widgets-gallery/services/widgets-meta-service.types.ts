@@ -72,5 +72,5 @@ export interface WidgetMeta {
    */
   hideOnDashboardType?: DashboardType[];
 
-  baseSettings?: Record<string, any>;
+  baseSettings?: Record<string, unknown>;
 }

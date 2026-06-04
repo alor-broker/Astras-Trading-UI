@@ -57,7 +57,7 @@ export class AiChatSuggestionsService {
           return null;
         }
 
-        const context = {
+        const context: Record<string, string> = {
           today: startOfToday().toLocaleDateString()
         };
 
@@ -67,7 +67,7 @@ export class AiChatSuggestionsService {
             return Object.keys(context)
               .reduce(
                 (acc, key) => {
-                  return acc.replace(`{{${key}}}`, (context as any)[key]);
+                  return acc.replace(`{{${key}}}`, context[key]);
                 },
                 s.text
               );

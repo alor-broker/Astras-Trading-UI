@@ -56,10 +56,7 @@ import {TableConfig} from '@terminal-core-lib/features/tables/types/table-displa
 import {CursorPagedResult} from '@terminal-core-lib/common/types/paging.types';
 import {mapWith} from '@terminal-core-lib/common/utils/observable/map-with';
 import {NewsFilters as NewsFiltersComponent} from '@terminal-widgets-lib/widgets/news/components/news-filters/news-filters';
-import {
-  InfiniteScrollTable,
-  TableDataRow
-} from '@terminal-core-lib/features/tables/components/infinite-scroll-table/infinite-scroll-table';
+import {InfiniteScrollTable} from '@terminal-core-lib/features/tables/components/infinite-scroll-table/infinite-scroll-table';
 import {NewsItemDialog} from '@terminal-widgets-lib/widgets/news/components/news-item-dialog/news-item-dialog';
 
 interface NewsListState {
@@ -170,8 +167,8 @@ export class News extends LazyLoadingBaseTable<NewsListItem, NewsFilters> implem
     });
   }
 
-  override rowClick(row: TableDataRow): void {
-    this.selectedNewsListItem = row as NewsListItem;
+  override rowClick(row: NewsListItem): void {
+    this.selectedNewsListItem = row;
   }
 
   onScrolled(): void {

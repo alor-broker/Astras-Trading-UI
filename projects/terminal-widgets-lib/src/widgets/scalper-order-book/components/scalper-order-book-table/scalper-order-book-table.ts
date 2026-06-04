@@ -65,11 +65,15 @@ interface VolumeHighlightArguments {
   maxVolume: number;
 }
 
-type VolumeHighlightStrategy = (args: VolumeHighlightArguments) => any | null;
+type CssClassMap = Record<string, boolean>;
+
+type CssStyleMap = Record<string, string | number | null | undefined>;
+
+type VolumeHighlightStrategy = (args: VolumeHighlightArguments) => CssStyleMap | null;
 
 interface DisplayRow extends BodyRow {
   currentOrders: CurrentOrderDisplay[];
-  getVolumeStyle: () => any;
+  getVolumeStyle: () => CssStyleMap | null;
 }
 
 @Component({
@@ -129,7 +133,7 @@ export class ScalperOrderBookTable implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
 
-  getPriceCellClasses(row: BodyRow): any {
+  getPriceCellClasses(row: BodyRow): CssClassMap {
     return {
       ...this.getVolumeCellClasses(row),
       'current-position-range-item': !!(row.currentPositionRangeSign ?? 0),
@@ -138,21 +142,21 @@ export class ScalperOrderBookTable implements OnInit {
     };
   }
 
-  getVolumeCellClasses(row: BodyRow): any {
+  getVolumeCellClasses(row: BodyRow): CssClassMap {
     return {
       ...this.getOrdersCellClasses(row),
       'spread-item': row.rowType === ScalperOrderBookRowType.Spread
     };
   }
 
-  getOrdersCellClasses(row: BodyRow): any {
+  getOrdersCellClasses(row: BodyRow): CssClassMap {
     return {
       'trade-item': (row.volume ?? 0) > 0,
       'ask-side-item': row.rowType === ScalperOrderBookRowType.Ask,
       'bid-side-item': row.rowType === ScalperOrderBookRowType.Bid,
       'spread-item': row.rowType === ScalperOrderBookRowType.Spread,
       'mixed-item': row.rowType === ScalperOrderBookRowType.Mixed,
-      'best-row': row.isBest
+      'best-row': row.isBest === true
     };
   }
 
@@ -271,7 +275,7 @@ export class ScalperOrderBookTable implements OnInit {
               askVolume: row.askVolume ?? 0,
               bidVolume: row.bidVolume ?? 0,
               maxVolume: maxOrderBookVolume
-            }) as VolumeHighlightStrategy
+            })
 
           } as DisplayRow;
 

@@ -90,7 +90,7 @@ export class ClientOrderCommandService implements OrderCommandService {
       .pipe(
         take(1),
         switchMap(instrument => {
-          const additionalParams = {} as Record<string, any>;
+          const additionalParams: Partial<Pick<NewMarketOrder, 'timeInForce'>> = {};
 
           if (
             instrument?.tradingStatus === TradingStatus.ClosingAuction ||

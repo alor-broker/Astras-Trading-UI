@@ -246,7 +246,7 @@ export class WorkingVolumesPanel implements OnInit, OnDestroy {
 
   private initVolumeSwitchByHotKey(): void {
     this.hotKeyCommandService.commands$.pipe(
-      filter(x => x.type === 'workingVolumes' && x.index != null && this.isActive()),
+      filter((x): x is { type: 'workingVolumes', key: string, index: number } => x.type === 'workingVolumes' && x.index != null && this.isActive()),
       withLatestFrom(this.workingVolumes$),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([command, workingVolumes]) => {

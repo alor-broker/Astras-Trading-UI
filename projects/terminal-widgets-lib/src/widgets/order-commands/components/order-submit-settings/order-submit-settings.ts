@@ -45,6 +45,7 @@ import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.b
 import {InputNumberValidation} from '@terminal-core-lib/common/constants/validation.constants';
 import {OrderSubmitWidgetSettings} from '@terminal-widgets-lib/widgets/order-commands/widget-settings.types';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
+import {DeviceInfo} from '@terminal-core-lib/common/services/device-service-types';
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
 import {InstrumentEqualityComparer} from '@terminal-core-lib/common/utils/instrument-key.helper';
 
@@ -79,7 +80,7 @@ import {InstrumentEqualityComparer} from '@terminal-core-lib/common/utils/instru
   encapsulation: ViewEncapsulation.None
 })
 export class OrderSubmitSettings extends WidgetSettingsBase<OrderSubmitWidgetSettings> implements OnInit {
-  deviceInfo$!: Observable<any>;
+  deviceInfo$!: Observable<DeviceInfo>;
 
   readonly validationOptions = {
     limitOrderPriceMoveStep: {

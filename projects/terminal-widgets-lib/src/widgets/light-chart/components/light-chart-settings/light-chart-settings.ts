@@ -42,6 +42,7 @@ import {
   TimeFrameDisplayMode
 } from '@terminal-widgets-lib/widgets/light-chart/widget-settings.types';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
+import {DeviceInfo} from '@terminal-core-lib/common/services/device-service-types';
 import {InstrumentBoardSelect} from '@terminal-core-lib/features/instruments/components/instrument-board-select/instrument-board-select';
 import {RemoveSelectTitles} from '@terminal-core-lib/common/directives/remove-select-titles';
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
@@ -83,7 +84,7 @@ export class LightChartSettingsComponent extends WidgetSettingsBase<LightChartWi
 
   timeFrameDisplayModes = TimeFrameDisplayMode;
 
-  deviceInfo$!: Observable<any>;
+  deviceInfo$!: Observable<DeviceInfo>;
 
   protected settings$!: Observable<LightChartWidgetSettings>;
 

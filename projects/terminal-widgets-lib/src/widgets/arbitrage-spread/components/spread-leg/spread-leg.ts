@@ -135,7 +135,12 @@ export class SpreadLeg extends ControlValueAccessorBase<SpreadLegType> implement
     this.form.controls.portfolio.reset();
   }
 
-  writeValue(obj: any): void {
+  writeValue(obj: SpreadLegType | null): void {
+    if (obj == null) {
+      this.form.reset();
+      return;
+    }
+
     this.form.patchValue(obj);
   }
 

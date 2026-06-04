@@ -31,7 +31,7 @@ export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
   showBadges?: boolean;
   sortOrder?: NzTableSortOrder | null;
   sortFn?: NzTableSortFn<T> | null;
-  sortChangeFn?: (direction: string | null) => any;
+  sortChangeFn?: (direction: string | null) => void;
   tooltip?: string;
   minWidth?: number | null;
   order?: number | null;
