@@ -37,9 +37,6 @@ export const environment = {
     },
     en: {
       title: "English"
-    },
-    hy: {
-      title: "Հայերեն"
     }
   },
   debug: {
