@@ -11,7 +11,8 @@ import {
   USER_CONTEXT
 } from '@terminal-core-lib/features/user-context/user-context.types';
 import {AdminAuthService} from './services/admin-auth.service';
-import {provideTerminalApplication} from '@terminal-core-lib/config/terminal-application.providers';
+import {TerminalApplicationProvidersBuilder} from '@terminal-core-lib/terminal-providers/terminal-application.providers';
+import {provideWatchlist} from '@terminal-core-lib/features/watchlist/watchlist.providers';
 
 const adminAuthProviders = [
   AdminAuthService,
@@ -27,19 +28,22 @@ const adminAuthProviders = [
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideTerminalApplication({
+    new TerminalApplicationProvidersBuilder({
       routes,
       production: environment.production,
       languagesConfig: environment.internationalization,
       ngrxDevtoolsEnabled: environment.debug.ngrx,
-      environmentProviders: [provideEnvironmentConfig()],
-      userContextProviders: adminAuthProviders,
       remoteStorageUrlProvider: {
         provide: REMOTE_STORAGE_URL_PROVIDER,
         useExisting: EnvironmentService
-      },
-      dashboardStorageProviders: [provideDesktopDashboardsStorage()],
-      watchlistEnabled: true,
+      }
     })
+      .withProvider(
+        provideEnvironmentConfig(),
+        adminAuthProviders,
+        provideDesktopDashboardsStorage(),
+        provideWatchlist()
+      )
+      .build()
   ]
 };

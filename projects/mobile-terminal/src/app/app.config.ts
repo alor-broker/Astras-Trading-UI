@@ -7,25 +7,29 @@ import {provideMobileDashboardStorage} from './features/dashboard/mobile-dashboa
 import {provideClientUserContext} from '@terminal-core-lib/features/user-context/client/client-user-context.providers';
 import {REMOTE_STORAGE_URL_PROVIDER} from '@terminal-core-lib/features/remote-storage/remote-storage-url-provider';
 import {EnvironmentService} from './services/environment.service';
-import {provideTerminalApplication} from '@terminal-core-lib/config/terminal-application.providers';
+import {TerminalApplicationProvidersBuilder} from '@terminal-core-lib/terminal-providers/terminal-application.providers';
+import {provideTerminalServiceWorker} from '@terminal-core-lib/terminal-providers/terminal-application-service-worker.providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideTerminalApplication({
+    new TerminalApplicationProvidersBuilder({
       routes,
       production: environment.production,
       languagesConfig: environment.internationalization,
       ngrxDevtoolsEnabled: environment.debug.ngrx,
-      environmentProviders: [provideEnvironmentConfig()],
-      userContextProviders: [provideClientUserContext()],
       remoteStorageUrlProvider: {
         provide: REMOTE_STORAGE_URL_PROVIDER,
         useExisting: EnvironmentService
-      },
-      dashboardStorageProviders: [provideMobileDashboardStorage()],
-      serviceWorker: {
-        enabled: !isDevMode(),
-      },
+      }
     })
+      .withProvider(
+        provideEnvironmentConfig(),
+        provideClientUserContext(),
+        provideMobileDashboardStorage(),
+        provideTerminalServiceWorker({
+          enabled: !isDevMode(),
+        })
+      )
+      .build()
   ]
 };
