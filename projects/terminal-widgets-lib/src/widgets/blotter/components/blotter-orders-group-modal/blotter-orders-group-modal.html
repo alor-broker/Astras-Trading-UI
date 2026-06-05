@@ -61,7 +61,7 @@
               <div class="text-nowrap">
                 @if (data.origin.order.price) {
                   {{ t('blotterOrdersGroup.priceLabel') }}: <b
-                    [class]="data.origin.order.side + ' text-nowrap'">{{ data.origin.order.price }}</b>
+                    [class]="(data.origin.order.side === 'sell' ? 'sell-color' : 'buy-color') + ' text-nowrap'">{{ data.origin.order.price }}</b>
                 }
               </div>
               <div class="text-nowrap">
@@ -87,7 +87,6 @@
     <button (click)="groupId.set(null)" nz-button nzType="primary">{{ t('okBtnText') }}</button>
   </ng-container>
 </nz-modal>
-
 
 
 

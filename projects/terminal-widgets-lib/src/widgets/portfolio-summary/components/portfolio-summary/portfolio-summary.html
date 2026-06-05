@@ -13,11 +13,11 @@
           </div>
           <div atsScrollableItem class="item">
             <span class="label">{{ t('blotterCommonSummary.profitTitle') }}:</span>
-            <span [class]="commonSummary.profitRate > 0 ? 'buy' : 'sell'">{{ commonSummary.profit }}</span>
+            <span [class]="commonSummary.profitRate > 0 ? 'positive-color' : 'negative-color'">{{ commonSummary.profit }}</span>
           </div>
           <div atsScrollableItem class="item">
             <span class="label">{{ t('blotterCommonSummary.profitRateTitle') }}:</span>
-            <span [class]="commonSummary.profitRate > 0 ? 'buy' : 'sell'">{{ commonSummary.profitRate }}%</span>
+            <span [class]="commonSummary.profitRate > 0 ? 'positive-color' : 'negative-color'">{{ commonSummary.profitRate }}%</span>
           </div>
           <div atsScrollableItem class="item">
             <span class="label">{{ t('blotterCommonSummary.buyingPowerAtMorningTitle') }}:</span>

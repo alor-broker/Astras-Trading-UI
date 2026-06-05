@@ -91,7 +91,7 @@
                 <td class='fw-bold'>{{ trd.symbol }}</td>
               }
               @if (column.id === "side") {
-                <td [class]='trd.side.toString() === "sell" ? "sell" : "buy"'>{{ trd.side }}</td>
+                <td [class]='trd.side.toString() === "sell" ? "sell-color" : "buy-color"'>{{ trd.side }}</td>
               }
               @if (column.id === "qty") {
                 <td>{{ trd.qty | number }}</td>

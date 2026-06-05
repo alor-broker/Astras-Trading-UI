@@ -185,9 +185,9 @@ export class AllInstruments extends LazyLoadingBaseTable<
       id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowth != null ? formatNumber(data.tradingDetails!.dailyGrowth, this.locale, '0.0-10') : '',
-      classFn: (data): 'sell' | 'buy' | null => data.tradingDetails!.dailyGrowth == null
+      classFn: (data): 'negative-color' | 'positive-color' | null => data.tradingDetails!.dailyGrowth == null
         ? null
-        : data.tradingDetails!.dailyGrowth < 0 ? 'sell' : 'buy',
+        : data.tradingDetails!.dailyGrowth < 0 ? 'negative-color' : 'positive-color',
       width: 100,
       minWidth: 100,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'dailyGrowth'], dir),
@@ -203,9 +203,9 @@ export class AllInstruments extends LazyLoadingBaseTable<
       id: 'dailyGrowthPercent',
       displayName: 'Рост за сегодня, %',
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowthPercent != null ? formatNumber(data.tradingDetails!.dailyGrowthPercent, this.locale, '0.0-3') : '',
-      classFn: (data): 'sell' | 'buy' | null => data.tradingDetails!.dailyGrowthPercent == null
+      classFn: (data): 'negative-color' | 'positive-color' | null => data.tradingDetails!.dailyGrowthPercent == null
         ? null
-        : data.tradingDetails!.dailyGrowthPercent < 0 ? 'sell' : 'buy',
+        : data.tradingDetails!.dailyGrowthPercent < 0 ? 'negative-color' : 'positive-color',
       width: 100,
       minWidth: 100,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'dailyGrowthPercent'], dir),

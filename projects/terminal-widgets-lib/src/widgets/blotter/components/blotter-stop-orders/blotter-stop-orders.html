@@ -143,7 +143,7 @@
               }
               @if (column.id === "side") {
                 <td
-                  [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}
+                  [class]='ord.side.toString() === "sell" ? "sell-color" : "buy-color"'>{{ ord.side }}
                 </td>
               }
               @if (column.id === "residue") {
@@ -167,7 +167,7 @@
               }
               @if (column.id === "status") {
                 <td [class]='ord.status.toString() === "filled"
-              ? (ord.status.toString() === "sell" ? "sell" : "buy") :
+              ? (ord.status.toString() === "sell" ? "sell-color" : "buy-color") :
               (ord.status.toString() === "canceled" ? "cancelled" : "fw-bold" )'>
                   @if (ord.status === 'rejected') {
                     <span

@@ -19,7 +19,7 @@
         </nz-descriptions-item>
         <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.profitTitle')">
           <span
-            [class]="summary.profitRate > 0 ? 'buy' : 'sell'"
+            [class]="summary.profitRate > 0 ? 'positive-color' : 'negative-color'"
             class="fs-5 fw-bold text-nowrap"
           >
             {{ summary.profit }}
@@ -27,7 +27,7 @@
         </nz-descriptions-item>
         <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.profitRateTitle')">
           <span
-            [class]="summary.profitRate > 0 ? 'buy' : 'sell'"
+            [class]="summary.profitRate > 0 ? 'positive-color' : 'negative-color'"
             class="fs-5 fw-bold text-nowrap"
           >
             {{ summary.profitRate }}%
@@ -56,4 +56,3 @@
     }
   </ng-container>
 </div>
-
