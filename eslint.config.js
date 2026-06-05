@@ -4,6 +4,7 @@ const {defineConfig, globalIgnores} = require("eslint/config");
 const tseslint = require("typescript-eslint");
 const angular = require("angular-eslint");
 const stylistic = require("@stylistic/eslint-plugin");
+const projectBoundaries = require("./eslint.project-boundaries");
 
 module.exports = defineConfig([
   globalIgnores([
@@ -171,6 +172,7 @@ module.exports = defineConfig([
       ],
     },
   },
+  ...projectBoundaries,
   {
     files: ["**/graphql/schema/graphql.schemas.ts"],
     rules: {
