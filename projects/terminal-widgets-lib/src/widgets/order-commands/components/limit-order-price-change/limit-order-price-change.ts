@@ -149,6 +149,8 @@ export class LimitOrderPriceChange implements OnInit {
             allowMargin: marginOrderConfirmed ?? undefined
           },
           selection.portfolioKey.portfolio,
+        ).pipe(
+          take(1)
         ).subscribe();
       });
     });

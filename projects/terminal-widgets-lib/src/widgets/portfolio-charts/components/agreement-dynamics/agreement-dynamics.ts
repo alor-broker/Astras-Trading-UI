@@ -127,6 +127,7 @@ export class AgreementDynamics implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.selectedTimeRange$.complete();
+    this.containerSize$.complete();
   }
 
   ngOnInit(): void {

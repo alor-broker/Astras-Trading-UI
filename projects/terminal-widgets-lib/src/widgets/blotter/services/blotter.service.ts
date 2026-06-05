@@ -1,4 +1,5 @@
 import {
+  DestroyRef,
   inject,
   Injectable
 } from '@angular/core';
@@ -54,12 +55,24 @@ export class BlotterService {
 
   private readonly actionsContext = inject(ACTIONS_CONTEXT);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly shouldShowOrderGroupModal = new BehaviorSubject<boolean>(false);
 
   private readonly orderGroupParams = new BehaviorSubject<string | null>(null);
 
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.shouldShowOrderGroupModal.complete();
+      this.orderGroupParams.complete();
+    });
+  }
+
   selectNewInstrument(symbol: string, exchange: string, board: string | null, badgeColor: string): void {
     this.getInstrumentToSelect(symbol, exchange, board)
+      .pipe(
+        take(1)
+      )
       .subscribe(instrument => {
         if (instrument == null) {
           return;

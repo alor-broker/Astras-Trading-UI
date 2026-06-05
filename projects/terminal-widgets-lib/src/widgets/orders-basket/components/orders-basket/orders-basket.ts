@@ -191,6 +191,7 @@ export class OrdersBasket implements OnInit, OnDestroy {
     this.canSubmit$.complete();
     this.processing$.complete();
     this.submitResult$.complete();
+    this.itemsContainerWidth$.complete();
   }
 
   ngOnInit(): void {

@@ -1,4 +1,5 @@
 import {
+  DestroyRef,
   inject,
   Injectable,
 } from '@angular/core';
@@ -40,6 +41,8 @@ export class ScalperSharedSettingsService {
 
   private readonly applicationMetaService = inject(ApplicationMetaService);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly currentSettings$ = new BehaviorSubject<Map<string, Partial<InstrumentLinkedSettings>> | null>(null);
 
   private initialSettings$: Observable<StorageRecord[] | null> | null = null;
@@ -48,6 +51,10 @@ export class ScalperSharedSettingsService {
     // scalper orderbook instrument linked settings
     // unable to set descriptive group name because of length restrictions in API
     return 'scob-ils';
+  }
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.currentSettings$.complete());
   }
 
   getSettingsForInstrument(instrumentId: InstrumentId): Observable<Partial<InstrumentLinkedSettings> | null> {
@@ -145,6 +152,8 @@ export class ScalperSharedSettingsService {
         } as InstrumentLinkedSettingsRecord,
       },
       this.groupKey
+    ).pipe(
+      take(1)
     ).subscribe();
   }
 }

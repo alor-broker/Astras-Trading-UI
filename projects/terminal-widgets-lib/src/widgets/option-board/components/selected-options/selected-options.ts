@@ -236,6 +236,11 @@ export class SelectedOptions extends BaseTableComponent<DetailsDisplay> {
 
   private readonly applicationStatusService = inject(ApplicationStatusService);
 
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.isLoading$.complete();
+  }
+
   formatExpirationDate(date: Date): string {
     return date.toLocaleDateString();
   }

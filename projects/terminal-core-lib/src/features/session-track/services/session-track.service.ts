@@ -70,6 +70,7 @@ export class SessionTrackService {
       nextSessionCheckMoment$.next(this.getNextCheckPeriod(track.checkPeriod, track.lastActivityUnixTime));
     });
 
+    subscription.add(() => nextSessionCheckMoment$.complete());
     nextSessionCheckMoment$.next(null);
 
     return subscription;
@@ -105,6 +106,7 @@ export class SessionTrackService {
       nextWarningCheckMoment$.next(this.getNextCheckPeriod(track.checkPeriod, track.lastActivityUnixTime));
     });
 
+    subscription.add(() => nextWarningCheckMoment$.complete());
     nextWarningCheckMoment$.next(null);
 
     return subscription;

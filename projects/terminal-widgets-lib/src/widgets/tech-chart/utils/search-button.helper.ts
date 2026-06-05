@@ -59,7 +59,9 @@ export class SearchButtonHelper {
         }
       );
 
-    activeInstrument$.subscribe(instrument => {
+    activeInstrument$.pipe(
+      takeUntilDestroyed(destroyRef)
+    ).subscribe(instrument => {
       const instrumentStr = SyntheticInstrumentsHelper.isSyntheticInstrument(instrument.symbol)
         ? instrument.symbol
         : instrument.shortName;

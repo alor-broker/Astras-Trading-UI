@@ -200,6 +200,7 @@ export class LightChartWrapper {
         this.fillVisibleTimeScale();
       }
     }));
+    this.subscriptions.add(() => sub.complete());
   }
 
   private initRealtimeDataSubscription(): void {

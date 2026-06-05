@@ -13,7 +13,8 @@ import {
   combineLatest,
   map,
   Observable,
-  shareReplay
+  shareReplay,
+  take
 } from "rxjs";
 import {PortfoliosStoreFacade} from '../../portfolios/store/portfolios-store-facade';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -92,7 +93,9 @@ export class PushNotificationsProvider implements NotificationsProvider {
 
       const filteredPortfolios = portfolios.filter(p => !disableNotificationPortfolios.find(ep => PortfolioKeyEqualityComparer.equals(p, ep)));
 
-      this.pushNotificationsService.subscribeToOrdersExecute(filteredPortfolios).subscribe();
+      this.pushNotificationsService.subscribeToOrdersExecute(filteredPortfolios).pipe(
+        take(1)
+      ).subscribe();
     });
   }
 

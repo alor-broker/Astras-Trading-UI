@@ -6,6 +6,7 @@ import {
   Observable,
   Subscription,
   switchMap,
+  take,
   TeardownLogic
 } from "rxjs";
 import {
@@ -275,7 +276,9 @@ export class OrdersDisplayExtension extends BaseExtension {
           portfolio: order.ownedPortfolio.portfolio,
           exchange: order.targetInstrument.exchange,
           orderType: order.type
-        }]).subscribe()
+        }]).pipe(
+          take(1)
+        ).subscribe()
       )
       .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
       .onMove(() => {
@@ -339,7 +342,9 @@ export class OrdersDisplayExtension extends BaseExtension {
           portfolio: order.ownedPortfolio.portfolio,
           exchange: order.targetInstrument.exchange,
           orderType: order.type
-        }]).subscribe()
+        }]).pipe(
+          take(1)
+        ).subscribe()
       )
       .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
       .onMove(() => {
@@ -389,6 +394,8 @@ export class OrdersDisplayExtension extends BaseExtension {
         allowMargin: true
       },
       order.ownedPortfolio.portfolio
+    ).pipe(
+      take(1)
     ).subscribe();
   }
 
@@ -407,6 +414,8 @@ export class OrdersDisplayExtension extends BaseExtension {
       this.orderCommandService.submitStopMarketOrderEdit(
         editOrder,
         order.ownedPortfolio.portfolio
+      ).pipe(
+        take(1)
       ).subscribe();
 
       return;
@@ -425,6 +434,8 @@ export class OrdersDisplayExtension extends BaseExtension {
           )
         },
         order.ownedPortfolio.portfolio
+      ).pipe(
+        take(1)
       ).subscribe();
     }
   }

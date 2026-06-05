@@ -189,6 +189,7 @@ export class AllOptions implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.isLoading$.complete();
     this.contentSize$.complete();
     this.layoutSizes$.complete();
   }

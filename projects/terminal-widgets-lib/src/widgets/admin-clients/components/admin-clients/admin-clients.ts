@@ -811,12 +811,16 @@ export class AdminClients extends BaseTableComponent<ClientDisplay, ClientsSearc
       this.adminClientsService.removeClientRecordFromFavorites(
         client.portfolio,
         client.exchange
+      ).pipe(
+        take(1)
       ).subscribe();
     } else {
       client.isFavorite = true;
       this.adminClientsService.addClientRecordToFavorites(
         client.portfolio,
         client.exchange
+      ).pipe(
+        take(1)
       ).subscribe();
     }
   }

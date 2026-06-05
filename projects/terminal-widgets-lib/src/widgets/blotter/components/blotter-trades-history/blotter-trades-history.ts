@@ -288,6 +288,7 @@ export class BlotterTradesHistory extends BlotterBaseTable<DisplayTrade, TradeFi
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.isLoading$.complete();
     this.loadedHistory$.complete();
   }
 

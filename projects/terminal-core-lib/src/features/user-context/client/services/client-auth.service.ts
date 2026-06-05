@@ -10,10 +10,12 @@ import {
   tap,
 } from 'rxjs';
 import {
+  DestroyRef,
   inject,
   Injectable,
   OnDestroy
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {LocalStorageService} from '@terminal-core-lib/features/local-storage/local-storage.service';
 import {
   SessionContext,
@@ -53,6 +55,8 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
   private readonly httpClient = inject(HttpClient);
 
   private readonly localStorage = inject(LocalStorageService);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly apiTokenProviderService = inject(ApiTokenProviderService);
 
@@ -208,7 +212,8 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
         e.key === this.ssoTokenStorageKey
         && e.newValue == null
         && e.oldValue != null
-      )
+      ),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.state.patchState({
         status: AuthStateStatus.Exited,

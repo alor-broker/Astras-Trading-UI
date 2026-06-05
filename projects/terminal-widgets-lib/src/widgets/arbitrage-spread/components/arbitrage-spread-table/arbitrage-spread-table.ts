@@ -5,7 +5,10 @@ import {
   OnInit,
   ViewEncapsulation
 } from '@angular/core';
-import {Observable} from "rxjs";
+import {
+  Observable,
+  take
+} from "rxjs";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {
   NzCellAlignDirective,
@@ -111,6 +114,9 @@ export class ArbitrageSpreadTable implements OnInit {
     const volume = this.volumes[spread.id!];
 
     this.service.buySpread(spread, volume)
+      .pipe(
+        take(1)
+      )
       .subscribe();
   }
 
@@ -118,6 +124,9 @@ export class ArbitrageSpreadTable implements OnInit {
     const volume = this.volumes[spread.id!];
 
     this.service.buySpread(spread, volume, Side.Sell)
+      .pipe(
+        take(1)
+      )
       .subscribe();
   }
 

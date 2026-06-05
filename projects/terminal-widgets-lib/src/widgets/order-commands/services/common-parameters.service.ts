@@ -1,4 +1,8 @@
-import {Injectable} from '@angular/core';
+import {
+  DestroyRef,
+  inject,
+  Injectable
+} from '@angular/core';
 import {
   BehaviorSubject,
   shareReplay
@@ -11,6 +15,8 @@ export interface CommonParameters {
 
 @Injectable()
 export class CommonParametersService {
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly parametersChange$ = new BehaviorSubject<Partial<CommonParameters>>({});
 
   readonly parameters$ = this.parametersChange$
@@ -19,6 +25,10 @@ export class CommonParametersService {
       shareReplay(1)
     )
   ;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.parametersChange$.complete());
+  }
 
   setParameters(params: Partial<CommonParameters>): void {
     this.parametersChange$.next(params);

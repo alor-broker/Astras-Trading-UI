@@ -141,7 +141,8 @@ export class WorkingVolumesPanel implements OnInit, OnDestroy {
 
     this.settings$.pipe(
       distinctUntilChanged((prev, curr) => InstrumentEqualityComparer.equals(prev, curr)),
-      withLatestFrom(this.lastSelectedVolumeState$)
+      withLatestFrom(this.lastSelectedVolumeState$),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(([settings, lastSelectedVolumeState]) => {
       const workingVolumes = settings.workingVolumes;
       const lastSelectedVolume = lastSelectedVolumeState?.lastSelectedVolume?.[this.getSettingsInstrumentKey(settings)];

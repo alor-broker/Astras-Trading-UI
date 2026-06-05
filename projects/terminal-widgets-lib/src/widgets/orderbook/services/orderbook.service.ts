@@ -5,7 +5,8 @@ import {
 import {SubscriptionsDataFeedService} from "@terminal-core-lib/features/data-subscriptions/services/subscriptions-data-feed.service";
 import {
   combineLatest,
-  Observable
+  Observable,
+  take
 } from 'rxjs';
 import {
   map,
@@ -105,7 +106,9 @@ export class OrderbookService {
       orderType: order.type,
       exchange: order.targetInstrument.exchange,
       portfolio: order.ownedPortfolio.portfolio
-    }]).subscribe();
+    }]).pipe(
+      take(1)
+    ).subscribe();
   }
 
   private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {

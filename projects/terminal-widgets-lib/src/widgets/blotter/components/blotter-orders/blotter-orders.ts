@@ -306,7 +306,9 @@ export class BlotterOrders extends BlotterBaseTable<DisplayOrder, OrderFilter> i
         exchange: order.targetInstrument.exchange,
         portfolio: order.ownedPortfolio.portfolio
       }
-    ]).subscribe();
+    ]).pipe(
+      take(1)
+    ).subscribe();
   }
 
   editOrder(order: Order, event: MouseEvent): void {
@@ -344,7 +346,9 @@ export class BlotterOrders extends BlotterBaseTable<DisplayOrder, OrderFilter> i
         orderType: o.type,
         exchange: o.targetInstrument.exchange,
         portfolio: o.ownedPortfolio.portfolio
-      }))).subscribe();
+      }))).pipe(
+        take(1)
+      ).subscribe();
     }
   }
 

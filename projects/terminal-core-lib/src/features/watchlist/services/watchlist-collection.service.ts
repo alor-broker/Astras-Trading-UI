@@ -66,11 +66,15 @@ export class WatchlistCollectionService {
       }) as WatchlistItem)
     } as Watchlist;
 
-    this.watchlistCollectionBrokerService.addOrUpdateLists([newList]).subscribe();
+    this.watchlistCollectionBrokerService.addOrUpdateLists([newList]).pipe(
+      take(1)
+    ).subscribe();
   }
 
   removeList(listId: string): void {
-    this.watchlistCollectionBrokerService.removeList(listId).subscribe();
+    this.watchlistCollectionBrokerService.removeList(listId).pipe(
+      take(1)
+    ).subscribe();
   }
 
   updateListMeta(listId: string, meta: Partial<{ title: string }>): void {
@@ -87,7 +91,9 @@ export class WatchlistCollectionService {
         ...meta
       } as Watchlist;
 
-      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).pipe(
+        take(1)
+      ).subscribe();
     });
   }
 
@@ -102,7 +108,9 @@ export class WatchlistCollectionService {
 
       const updatedList = this.addItemsToListInternal(items, list, rewriteDuplicates);
 
-      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).pipe(
+        take(1)
+      ).subscribe();
     });
   }
 
@@ -159,7 +167,9 @@ export class WatchlistCollectionService {
           items: Array.from(Object.values(uniqueItems)).slice(-25)
         } as Watchlist;
 
-        this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+        this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).pipe(
+          take(1)
+        ).subscribe();
       });
     });
   }
@@ -175,7 +185,9 @@ export class WatchlistCollectionService {
 
       const updatedList = this.removeItemsFromListInternal(itemsToRemove, list);
 
-      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).pipe(
+        take(1)
+      ).subscribe();
     });
   }
 
@@ -204,7 +216,9 @@ export class WatchlistCollectionService {
         items: updated
       } as Watchlist;
 
-      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).pipe(
+        take(1)
+      ).subscribe();
     });
   }
 
@@ -231,7 +245,9 @@ export class WatchlistCollectionService {
       const fromListUpdated = this.removeItemsFromListInternal([targetItem.recordId!], fromList);
       const toListUpdated = this.addItemsToListInternal([targetItem], toList, false);
 
-      this.watchlistCollectionBrokerService.addOrUpdateLists([toListUpdated, fromListUpdated]).subscribe();
+      this.watchlistCollectionBrokerService.addOrUpdateLists([toListUpdated, fromListUpdated]).pipe(
+        take(1)
+      ).subscribe();
     });
   }
 
@@ -266,7 +282,9 @@ export class WatchlistCollectionService {
         }
 
         if (newLists.length > 0) {
-          this.watchlistCollectionBrokerService.addOrUpdateLists(newLists).subscribe();
+          this.watchlistCollectionBrokerService.addOrUpdateLists(newLists).pipe(
+            take(1)
+          ).subscribe();
         }
       }),
       map(x => ({

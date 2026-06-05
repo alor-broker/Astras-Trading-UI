@@ -9,6 +9,7 @@ import {OrdersDialogService} from '@terminal-core-lib/features/orders/services/o
 import {OrderType} from '@terminal-core-lib/features/orders/types/orders.types';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {OrderFormType} from '@terminal-core-lib/features/orders/services/orders-dialog-service.types';
+import {take} from 'rxjs';
 
 export interface UpdateOrdersCommandArgs {
   ordersToUpdate: CurrentOrderDisplay[];
@@ -45,6 +46,8 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
                 price: args.updates.price,
               },
               order.ownedPortfolio.portfolio
+            ).pipe(
+              take(1)
             ).subscribe();
             break;
           case OrderType.StopLimit:
@@ -63,6 +66,8 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
                 side: order.side
               },
               order.ownedPortfolio.portfolio
+            ).pipe(
+              take(1)
             ).subscribe();
             break;
           case OrderType.StopMarket:
@@ -73,6 +78,8 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
                 side: order.side
               },
               order.ownedPortfolio.portfolio
+            ).pipe(
+              take(1)
             ).subscribe();
             break;
           default:

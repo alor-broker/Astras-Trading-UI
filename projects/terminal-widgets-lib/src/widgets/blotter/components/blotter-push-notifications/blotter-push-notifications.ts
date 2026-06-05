@@ -165,6 +165,11 @@ export class BlotterPushNotifications extends BlotterBaseTable<DisplayNotificati
     return false;
   }
 
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.isLoading$.complete();
+  }
+
   override rowClick(row: DisplayNotification): void {
     if (row.subscriptionType !== PushSubscriptionType.PriceSpark) {
       return;

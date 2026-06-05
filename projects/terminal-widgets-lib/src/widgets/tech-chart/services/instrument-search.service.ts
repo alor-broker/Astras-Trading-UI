@@ -1,4 +1,8 @@
-import {Injectable} from '@angular/core';
+import {
+  DestroyRef,
+  inject,
+  Injectable
+} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 
 interface SearchInstrumentModalParams {
@@ -8,6 +12,8 @@ interface SearchInstrumentModalParams {
 
 @Injectable()
 export class InstrumentSearchService {
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly isModalOpened = new BehaviorSubject(false);
 
   isModalOpened$ = this.isModalOpened.asObservable();
@@ -19,6 +25,14 @@ export class InstrumentSearchService {
   private readonly modalData = new BehaviorSubject<string | null>(null);
 
   modalData$ = this.modalData.asObservable();
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.isModalOpened.complete();
+      this.modalParams.complete();
+      this.modalData.complete();
+    });
+  }
 
   openModal(params: SearchInstrumentModalParams | null): void {
     this.modalParams.next(params);

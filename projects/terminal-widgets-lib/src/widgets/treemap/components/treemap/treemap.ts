@@ -315,6 +315,8 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.selectedSector$.complete();
     this.isCursorOnSector$.complete();
+    this.isTooltipVisible$.complete();
+    this.tilesCount$.complete();
     this.newTooltip$.complete();
   }
 

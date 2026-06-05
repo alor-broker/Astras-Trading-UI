@@ -91,6 +91,11 @@ export abstract class BlotterBaseTable<T extends { id: string }, F extends objec
       .subscribe(c => this.columns = c?.columns ?? []);
   }
 
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.footerSize$.complete();
+  }
+
   override changeColumnOrder(event: CdkDragDrop<unknown>): void {
     super.changeColumnOrder<BlotterWidgetSettings>(event, this.settings$);
   }
@@ -103,6 +108,9 @@ export abstract class BlotterBaseTable<T extends { id: string }, F extends objec
     this.nzContextMenuService.close(true);
 
     this.rowToInstrumentKey(selectedRow)
+      .pipe(
+        take(1)
+      )
       .subscribe(instrument => {
         const menuRef = menu.menuRef();
         if (instrument == null || menuRef == null) {

@@ -121,7 +121,10 @@ export class WidgetSettingsBrokerService {
           },
           this.groupKey)),
         take(1),
-        finalize(() => this.saveRequests.delete(settings.guid)),
+        finalize(() => {
+          this.saveRequests.delete(settings.guid);
+          newRequestSource.complete();
+        }),
         shareReplay(1)
       )
     };

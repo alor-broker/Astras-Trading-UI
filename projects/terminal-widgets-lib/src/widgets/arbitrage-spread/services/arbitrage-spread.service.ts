@@ -1,4 +1,5 @@
 import {
+  DestroyRef,
   inject,
   Injectable
 } from '@angular/core';
@@ -39,6 +40,8 @@ export class ArbitrageSpreadService {
 
   private readonly marginOrderConfirmationService = inject(MarginOrderConfirmationService);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly spreadsKey = 'arbitration-spreads';
 
   private readonly spreads$ = new BehaviorSubject<ArbitrageSpread[]>([]);
@@ -50,6 +53,14 @@ export class ArbitrageSpreadService {
   private readonly spreadParams = new BehaviorSubject<ArbitrageSpread | null>(null);
 
   spreadParams$ = this.spreadParams.asObservable();
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.spreads$.complete();
+      this.shouldShowSpreadModal.complete();
+      this.spreadParams.complete();
+    });
+  }
 
   getSpreadsSubscription(): Observable<ArbitrageSpread[]> {
     const localStorageSpreads = this.localStorage.getItem(this.spreadsKey) as ArbitrageSpread[] | undefined;

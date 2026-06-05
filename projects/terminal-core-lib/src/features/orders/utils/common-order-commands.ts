@@ -1,6 +1,7 @@
 ﻿import {OrderCommandService} from '../types/order-command-service.types';
 import {Side} from '../../../common/types/side.types';
 import {Position} from '@terminal-core-lib/features/portfolios/types/position.types';
+import {take} from 'rxjs';
 
 export class CommonOrderCommands {
   static closePositionByMarket(
@@ -22,6 +23,8 @@ export class CommonOrderCommands {
         allowMargin
       },
       position.ownedPortfolio.portfolio
+    ).pipe(
+      take(1)
     ).subscribe();
   }
 
@@ -45,6 +48,8 @@ export class CommonOrderCommands {
         allowMargin
       },
       position.ownedPortfolio.portfolio
+    ).pipe(
+      take(1)
     ).subscribe();
   }
 }

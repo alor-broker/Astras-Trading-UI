@@ -143,6 +143,10 @@ export class MarketTrends implements OnInit {
     );
   }
 
+  constructor() {
+    this.destroyRef.onDestroy(() => this.itemsDisplayParams$.complete());
+  }
+
   trackBy(item: InstrumentInfoType): string {
     return `${item.basicInformation.symbol}_${item.basicInformation.exchange}`;
   }
