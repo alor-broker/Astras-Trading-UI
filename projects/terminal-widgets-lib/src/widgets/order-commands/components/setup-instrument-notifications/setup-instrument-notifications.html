@@ -34,6 +34,7 @@
                   <nz-form-control [nzErrorTip]="priceError">
                     <ats-input-number [placeholder]="t('pushNotificationsSetupInstrumentNotifications.priceLabel')"
                                       [step]="(instrument$ | async)?.minstep ?? 1"
+                                      [allowNegative]="true"
                                       formControlName="price"
                     />
                   </nz-form-control>
