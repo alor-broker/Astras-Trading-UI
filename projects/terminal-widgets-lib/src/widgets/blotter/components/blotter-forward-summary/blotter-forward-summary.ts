@@ -2,7 +2,8 @@ import {
   Component,
   inject,
   input,
-  OnInit
+  OnInit,
+  signal
 } from '@angular/core';
 import {
   distinctUntilChanged,
@@ -15,7 +16,7 @@ import {
   NzDescriptionsComponent,
   NzDescriptionsItemComponent
 } from 'ng-zorro-antd/descriptions';
-import {AsyncPipe} from '@angular/common';
+import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
 import {WidgetSettingsService} from '@terminal-core-lib/features/widget-settings/services/widget-settings.service';
 import {PortfolioSummaryService} from '@terminal-core-lib/features/portfolios/services/portfolio-summary.service';
 import {ForwardRisksView} from '@terminal-core-lib/features/portfolios/services/portfolio-summary-service.types';
@@ -31,7 +32,8 @@ import {WidgetSettingsHelper} from '@terminal-core-lib/features/widget-settings/
     TranslocoDirective,
     NzDescriptionsComponent,
     NzDescriptionsItemComponent,
-    AsyncPipe
+    AsyncPipe,
+    NgTemplateOutlet
   ]
 })
 export class BlotterForwardSummary implements OnInit {
@@ -41,7 +43,7 @@ export class BlotterForwardSummary implements OnInit {
 
   summary$!: Observable<ForwardRisksView>;
 
-  columns = 1;
+  readonly columns = signal(1);
 
   private readonly settingsService = inject(WidgetSettingsService);
 
@@ -58,13 +60,13 @@ export class BlotterForwardSummary implements OnInit {
     entries.forEach(x => {
       const width = Math.floor(x.contentRect.width);
       if (width <= 600) {
-        this.columns = 1;
+        this.columns.set(1);
       } else if (width < 900) {
-        this.columns = 2;
+        this.columns.set(2);
       } else if (width < 1500) {
-        this.columns = 3;
+        this.columns.set(3);
       } else {
-        this.columns = 4;
+        this.columns.set(4);
       }
     });
   }

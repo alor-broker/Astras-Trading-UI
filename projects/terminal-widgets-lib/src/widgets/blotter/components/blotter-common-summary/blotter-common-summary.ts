@@ -5,6 +5,7 @@ import {
   input,
   OnInit,
   output,
+  signal,
   ViewEncapsulation
 } from '@angular/core';
 import {
@@ -19,7 +20,7 @@ import {
   NzDescriptionsComponent,
   NzDescriptionsItemComponent
 } from 'ng-zorro-antd/descriptions';
-import {AsyncPipe} from '@angular/common';
+import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
 import {WidgetSettingsService} from '@terminal-core-lib/features/widget-settings/services/widget-settings.service';
 import {BlotterWidgetSettings} from '@terminal-widgets-lib/widgets/blotter/widget-settings.types';
 import {WidgetSettingsHelper} from '@terminal-core-lib/features/widget-settings/utils/widget-settings.helper';
@@ -28,14 +29,15 @@ import {CommonSummaryView} from '@terminal-core-lib/features/portfolios/services
 
 @Component({
   selector: 'ats-blotter-common-summary',
-  templateUrl: './blotter-forward-summary.html',
-  styleUrls: ['./blotter-forward-summary.less'],
+  templateUrl: './blotter-common-summary.html',
+  styleUrls: ['./blotter-common-summary.less'],
   imports: [
     NzResizeObserverDirective,
     TranslocoDirective,
     NzDescriptionsComponent,
     NzDescriptionsItemComponent,
-    AsyncPipe
+    AsyncPipe,
+    NgTemplateOutlet
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
@@ -49,7 +51,7 @@ export class BlotterCommonSummary implements OnInit {
 
   summary$: Observable<CommonSummaryView> = of();
 
-  columns = 1;
+  readonly columns = signal(1);
 
   private readonly settingsService = inject(WidgetSettingsService);
 
@@ -66,13 +68,13 @@ export class BlotterCommonSummary implements OnInit {
     entries.forEach(x => {
       const width = Math.floor(x.contentRect.width);
       if (width <= 600) {
-        this.columns = 1;
+        this.columns.set(1);
       } else if (width < 900) {
-        this.columns = 2;
+        this.columns.set(2);
       } else if (width < 1500) {
-        this.columns = 3;
+        this.columns.set(3);
       } else {
-        this.columns = 4;
+        this.columns.set(4);
       }
     });
   }

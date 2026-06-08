@@ -1,0 +1,89 @@
+<div (nzResizeObserve)="containerSizeChanged($event)"
+     class="summary-container"
+     nzResizeObserver
+>
+  <ng-container *transloco="let t; scope: 'blotter/common-summary'">
+    @if (summary$ | async; as summary) {
+      @switch (columns()) {
+        @case (1) {
+          <ng-container
+            [ngTemplateOutlet]="descriptionsTemplate"
+            [ngTemplateOutletContext]="{columns: 1, size: 'small', summary: summary}"
+          />
+        }
+        @case (2) {
+          <ng-container
+            [ngTemplateOutlet]="descriptionsTemplate"
+            [ngTemplateOutletContext]="{columns: 2, size: 'default', summary: summary}"
+          />
+        }
+        @case (3) {
+          <ng-container
+            [ngTemplateOutlet]="descriptionsTemplate"
+            [ngTemplateOutletContext]="{columns: 3, size: 'default', summary: summary}"
+          />
+        }
+        @default {
+          <ng-container
+            [ngTemplateOutlet]="descriptionsTemplate"
+            [ngTemplateOutletContext]="{columns: 4, size: 'default', summary: summary}"
+          />
+        }
+      }
+
+      <ng-template #descriptionsTemplate let-columns="columns" let-size="size" let-summary="summary">
+        <nz-descriptions
+          [nzColumn]="columns"
+          [nzSize]="size"
+          nzBordered
+        >
+          <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.portfolioLiquidationTitle')">
+            <span class="fs-5 fw-bold text-nowrap heading-color">
+              {{ summary.portfolioLiquidationValue }}
+            </span>
+          </nz-descriptions-item>
+          <nz-descriptions-item
+            [nzTitle]="t('blotterCommonSummary.portfolioEvaluationTitle')">{{ summary.portfolioEvaluation }}
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.profitTitle')">
+            <span
+              [class.buy-color]="summary.profitRate > 0"
+              [class.sell-color]="summary.profitRate <= 0"
+              class="fs-5 fw-bold text-nowrap"
+            >
+              {{ summary.profit }}
+            </span>
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.profitRateTitle')">
+            <span
+              [class.buy-color]="summary.profitRate > 0"
+              [class.sell-color]="summary.profitRate <= 0"
+              class="fs-5 fw-bold text-nowrap"
+            >
+              {{ summary.profitRate }}%
+            </span>
+          </nz-descriptions-item>
+          <nz-descriptions-item
+            [nzTitle]="t('blotterCommonSummary.buyingPowerAtMorningTitle')">{{ summary.buyingPowerAtMorning }}
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.initialMarginTitle')">{{ summary.initialMargin }}
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.correctedMarginTitle')">{{ summary.correctedMargin }}
+          </nz-descriptions-item>
+          <nz-descriptions-item
+            [nzTitle]="t('blotterCommonSummary.riskBeforeForcePositionClosingTitle')">{{ summary.riskBeforeForcePositionClosing }}
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.commissionTitle')">{{ summary.commission }}
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.buyingPowerTitle')">{{ summary.buyingPower }}
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.derivativesDebtTitle')">
+            <span [class.negative-color]="summary.hasDerivativesDebt">
+              {{ summary.hasDerivativesDebt ? summary.derivativesDebt : '-' }}
+            </span>
+          </nz-descriptions-item>
+        </nz-descriptions>
+      </ng-template>
+    }
+  </ng-container>
+</div>

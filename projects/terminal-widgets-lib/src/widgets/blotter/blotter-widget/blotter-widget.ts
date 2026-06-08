@@ -56,7 +56,6 @@ import {
   NzTabDirective,
   NzTabsComponent
 } from 'ng-zorro-antd/tabs';
-import {BlotterCommonSummary} from '@terminal-widgets-lib/widgets/blotter/components/blotter-common-summary/blotter-forward-summary';
 import {BlotterForwardSummary} from '@terminal-widgets-lib/widgets/blotter/components/blotter-forward-summary/blotter-forward-summary';
 import {BlotterOrders} from '@terminal-widgets-lib/widgets/blotter/components/blotter-orders/blotter-orders';
 import {BlotterStopOrders} from '@terminal-widgets-lib/widgets/blotter/components/blotter-stop-orders/blotter-stop-orders';
@@ -69,6 +68,9 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {BlotterSettings} from '@terminal-widgets-lib/widgets/blotter/components/blotter-settings/blotter-settings';
 import {BlotterService} from '@terminal-widgets-lib/widgets/blotter/services/blotter.service';
 import {Widget} from '@terminal-widgets-lib/common/widget.base';
+import {
+  BlotterCommonSummary
+} from '@terminal-widgets-lib/widgets/blotter/components/blotter-common-summary/blotter-common-summary';
 
 @Component({
   selector: 'ats-blotter-widget',
@@ -81,7 +83,6 @@ import {Widget} from '@terminal-widgets-lib/common/widget.base';
     NzTabsComponent,
     NzTabComponent,
     NzTabDirective,
-    BlotterCommonSummary,
     BlotterForwardSummary,
     BlotterOrders,
     BlotterStopOrders,
@@ -91,7 +92,8 @@ import {Widget} from '@terminal-widgets-lib/common/widget.base';
     BlotterTradesHistory,
     BlotterPushNotifications,
     NzIconDirective,
-    BlotterSettings
+    BlotterSettings,
+    BlotterCommonSummary
   ],
   templateUrl: './blotter-widget.html',
   styleUrl: './blotter-widget.less',
