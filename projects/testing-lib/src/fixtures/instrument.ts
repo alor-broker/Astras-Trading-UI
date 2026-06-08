@@ -1,4 +1,8 @@
-import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
+import {
+  Instrument,
+  InstrumentKey,
+  Market
+} from '@terminal-core-lib/common/types/instrument.types';
 
 export class InstrumentFixtures {
   /**
@@ -9,6 +13,22 @@ export class InstrumentFixtures {
     return {
       symbol: 'SBER',
       exchange: 'MOEX',
+      ...overrides
+    };
+  }
+
+  /**
+   * Builds an {@link Instrument} with sensible defaults.
+   */
+  static createInstrument(overrides: Partial<Instrument> = {}): Instrument {
+    return {
+      ...InstrumentFixtures.createInstrumentKey(),
+      instrumentGroup: 'TQBR',
+      shortName: 'SBER',
+      description: 'Sber',
+      currency: 'RUB',
+      minstep: 0.01,
+      market: Market.Fond,
       ...overrides
     };
   }
