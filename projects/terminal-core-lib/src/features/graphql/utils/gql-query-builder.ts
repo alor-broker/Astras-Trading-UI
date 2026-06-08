@@ -10,7 +10,7 @@ export class GqlQueryBuilder {
   static getQuery<TResp>(
     responseSchema: ZodObject<ZodPropertiesOf<TResp>>,
     variables?: Variables
-  ): { query: string, variables: any } {
+  ): { query: string, variables: Record<string, unknown> } {
     const operation = GqlFieldsExtractor.getOperation(responseSchema);
     const fields = GqlFieldsExtractor.getFields(responseSchema, operation);
 
@@ -20,6 +20,6 @@ export class GqlQueryBuilder {
         fields,
         variables
       }
-    );
+    ) as { query: string, variables: Record<string, unknown> };
   }
 }

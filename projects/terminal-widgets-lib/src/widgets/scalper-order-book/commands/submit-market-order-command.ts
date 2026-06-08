@@ -20,6 +20,7 @@ import {InstrumentKeyHelper} from '@terminal-core-lib/common/utils/instrument-ke
 import {OrderFormType} from '@terminal-core-lib/features/orders/services/orders-dialog-service.types';
 import {OrderType} from '@terminal-core-lib/features/orders/types/orders.types';
 import {ExecutionPolicy} from '@terminal-core-lib/features/orders/types/order-group.types';
+import {take} from 'rxjs';
 
 export interface SubmitMarketOrderCommandArgs {
   instrumentKey: InstrumentKey;
@@ -93,7 +94,9 @@ export class SubmitMarketOrderCommand extends BracketCommand<SubmitMarketOrderCo
   ): void {
     marketOrder.allowMargin = args.allowMargin;
 
-    this.orderCommandService.submitMarketOrder(marketOrder, args.targetPortfolio).subscribe(r => {
+    this.orderCommandService.submitMarketOrder(marketOrder, args.targetPortfolio).pipe(
+      take(1)
+    ).subscribe(r => {
       if (r.isSuccess) {
         const bracketOrders = [
           getProfitOrder,
@@ -111,6 +114,8 @@ export class SubmitMarketOrderCommand extends BracketCommand<SubmitMarketOrderCo
             bracketOrders,
             args.targetPortfolio,
             ExecutionPolicy.IgnoreCancel
+          ).pipe(
+            take(1)
           ).subscribe();
         }
       }

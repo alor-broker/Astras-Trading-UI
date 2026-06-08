@@ -5,7 +5,7 @@ import {ArrayHelper} from '@terminal-core-lib/common/utils/array.helper';
 export class TimeframesHelper {
   // LightCharts library throws errors, when bars is duplicating or too close to each other
   static aggregateBars(existing: Candle[], history: Candle[], selectedTimeframe: TimeframeValue): Candle[] {
-    const getDate = (p: any): string => {
+    const getDate = (p: number): string => {
       const d = new Date(p * 1000);
       return d.getDate().toString() + '.' + d.getMonth().toString() + '.' + d.getFullYear().toString();
     };

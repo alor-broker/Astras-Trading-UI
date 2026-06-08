@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   OnInit,
   ViewEncapsulation
@@ -103,6 +104,8 @@ export class WatchlistCollectionEdit implements OnInit {
 
   private readonly watchlistCollectionService = inject(WatchlistCollectionService);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly formBuilder = inject(FormBuilder);
 
   readonly newListForm = this.formBuilder.group({
@@ -114,6 +117,13 @@ export class WatchlistCollectionEdit implements OnInit {
       ]
     )
   });
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.exportDialogParams$.complete();
+      this.importDialogParams$.complete();
+    });
+  }
 
   ngOnInit(): void {
     this.collection$ = this.watchlistCollectionService.getWatchlistCollection().pipe(

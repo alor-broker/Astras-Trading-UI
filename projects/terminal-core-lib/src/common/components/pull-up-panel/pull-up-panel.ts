@@ -36,9 +36,9 @@ import {NgTemplateOutlet} from "@angular/common";
   encapsulation: ViewEncapsulation.None
 })
 export class PullUpPanel implements AfterViewInit, OnDestroy {
-  readonly header = input.required<TemplateRef<any>>();
+  readonly header = input.required<TemplateRef<unknown>>();
 
-  readonly body = input.required<TemplateRef<any>>();
+  readonly body = input.required<TemplateRef<unknown>>();
 
   readonly triggerMode = input<'click' | 'drag'>('click');
 

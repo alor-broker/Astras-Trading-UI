@@ -186,7 +186,7 @@ export class DashboardsPanel implements OnInit, OnDestroy {
     }
   }
 
-  changeDashboardsOrder(e: CdkDragDrop<any>): void {
+  changeDashboardsOrder(e: CdkDragDrop<unknown>): void {
     this.options$
       .pipe(
         take(1)

@@ -85,10 +85,10 @@ export class TableSettingHelper {
    * @param displayColumns displayed columns list
    * @returns updated settings with new columns order
    */
-  static changeColumnOrder(
-    event: CdkDragDrop<any>,
+  static changeColumnOrder<T>(
+    event: CdkDragDrop<unknown>,
     targetSettings: TableDisplaySettings,
-    displayColumns: BaseColumnSettings<any>[]): TableDisplaySettings {
+    displayColumns: BaseColumnSettings<T>[]): TableDisplaySettings {
     let updatedSettings = targetSettings;
 
     const currentColumn = displayColumns[event.previousIndex];

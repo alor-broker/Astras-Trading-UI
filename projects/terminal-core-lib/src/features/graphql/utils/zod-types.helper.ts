@@ -4,7 +4,7 @@
 } from 'zod/v3';
 
 export type ZodPropertiesOf<T> = Required<{
-  [K in keyof T]: z.ZodType<T[K], any>;
+  [K in keyof T]: z.ZodType<T[K], z.ZodTypeDef, unknown>;
 }>;
 
 export type ZodSelectDefinition<T, K extends keyof T> = ZodPropertiesOf<Pick<T, K>>;

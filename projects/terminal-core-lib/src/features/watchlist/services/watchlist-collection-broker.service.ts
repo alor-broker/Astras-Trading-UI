@@ -91,7 +91,7 @@ export class WatchlistCollectionBrokerService {
         if (config.enableStore) {
           combineLatest([
             this.applicationMetaService.getMeta(),
-            this.remoteStorageService.getGroup(this.groupKey)
+            this.remoteStorageService.getGroup<Watchlist>(this.groupKey)
           ]).pipe(
             take(1)
           ).subscribe(([meta, records]) => {
@@ -99,7 +99,8 @@ export class WatchlistCollectionBrokerService {
               if (!!records && records.some(s => meta.lastResetTimestamp! > s.meta.timestamp)) {
                 // clean settings after reset
                 this.remoteStorageService.removeGroup(this.groupKey).pipe(
-                  map(() => null)
+                  map(() => null),
+                  take(1)
                 ).subscribe(() => {
                   this.store.patchState({
                     status: EntityStatus.Success,
@@ -126,7 +127,9 @@ export class WatchlistCollectionBrokerService {
                   collection: new Map<string, Watchlist>(items.map(r => [r.id, r]))
                 });
 
-                this.addOrUpdateLists(items).subscribe(r => {
+                this.addOrUpdateLists(items).pipe(
+                  take(1)
+                ).subscribe(r => {
                   if (r) {
                     this.localStorageService.removeItem(this.watchlistCollectionStorageKey);
                   }

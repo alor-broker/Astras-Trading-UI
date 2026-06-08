@@ -80,13 +80,12 @@ export class OptionBoardSettings extends WidgetSettingsBase<OptionBoardWidgetSet
   protected getUpdatedSettings(initialSettings: OptionBoardWidgetSettings): Partial<OptionBoardWidgetSettings> {
     const formValue = this.form.value as Partial<InstrumentKey & { instrument: InstrumentKey }>;
 
-    const newSettings: any = {
-      ...formValue,
-      symbol: formValue.instrument?.symbol,
-      exchange: formValue.instrument?.exchange,
+    const newSettings: Partial<OptionBoardWidgetSettings> & InstrumentKey = {
+      symbol: formValue.instrument?.symbol ?? '',
+      exchange: formValue.instrument?.exchange ?? '',
+      instrumentGroup: formValue.instrumentGroup ?? formValue.instrument?.instrumentGroup,
     };
 
-    delete newSettings.instrument;
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && InstrumentEqualityComparer.equals(initialSettings, newSettings);
 
     return newSettings as Partial<OptionBoardWidgetSettings>;

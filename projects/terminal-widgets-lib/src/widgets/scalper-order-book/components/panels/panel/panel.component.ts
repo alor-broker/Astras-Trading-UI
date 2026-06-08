@@ -68,6 +68,7 @@ export class Panel implements PanelResizeContext, OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.resizeEndOutsideAngular$.complete();
     this.resizedOutsideAngular$.complete();
   }
 

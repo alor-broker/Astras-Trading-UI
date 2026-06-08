@@ -18,7 +18,8 @@ import {
   finalize,
   Observable,
   of,
-  shareReplay
+  shareReplay,
+  take
 } from 'rxjs';
 import {NewFeedback} from '../../types/feedback.types';
 import {filter} from 'rxjs/operators';
@@ -137,7 +138,8 @@ export class FeedbackDialog implements OnInit {
     }).pipe(
       finalize(() => {
         this.feedbackService.closeVoteDialog();
-      })
+      }),
+      take(1)
     ).subscribe(() => {
       this.notificationService.success('Оценка приложения', 'Спасибо! Ваш голос важен для нас.');
       this.feedbackService.removeUnansweredFeedback();

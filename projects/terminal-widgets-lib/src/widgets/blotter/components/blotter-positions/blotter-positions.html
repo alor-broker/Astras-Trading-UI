@@ -168,22 +168,22 @@
             }
             @if (column.id === "qtyT0") {
               <td
-                [class]='pos.qtyT0 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT0) | number }}
+                [class]='pos.qtyT0 < 0 ? "sell-color" : "buy-color"'>{{ round(pos.qtyT0) | number }}
               </td>
             }
             @if (column.id === "qtyT1") {
               <td
-                [class]='pos.qtyT1 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT1) | number }}
+                [class]='pos.qtyT1 < 0 ? "sell-color" : "buy-color"'>{{ round(pos.qtyT1) | number }}
               </td>
             }
             @if (column.id === "qtyT2") {
               <td
-                [class]='pos.qtyT2 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT2) | number }}
+                [class]='pos.qtyT2 < 0 ? "sell-color" : "buy-color"'>{{ round(pos.qtyT2) | number }}
               </td>
             }
             @if (column.id === "qtyTFuture") {
               <td
-                [class]='pos.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(pos.qtyTFuture) | number }}
+                [class]='pos.qtyTFuture < 0 ? "sell-color" : "buy-color"'>{{ round(pos.qtyTFuture) | number }}
               </td>
             }
             @if (column.id === "volume") {
@@ -194,24 +194,24 @@
             }
             @if (column.id === "unrealisedPl") {
               <td
-                [class]='pos.unrealisedPl < 0 ? "sell" : "buy"'>{{ round(pos.unrealisedPl) | number }}
+                [class]='pos.unrealisedPl < 0 ? "negative-color" : "positive-color"'>{{ round(pos.unrealisedPl) | number }}
               </td>
             }
             @if (column.id === "dailyUnrealisedPl") {
               <td
-                [class]='pos.dailyUnrealisedPl < 0 ? "sell" : "buy"'>{{ round(pos.dailyUnrealisedPl) | number }}
+                [class]='pos.dailyUnrealisedPl < 0 ? "negative-color" : "positive-color"'>{{ round(pos.dailyUnrealisedPl) | number }}
               </td>
             }
             @if (column.id === "unrealisedPlRatio") {
               <td
-                [class]='pos.unrealisedPlRatio < 0 ? "sell" : "buy"'
+                [class]='pos.unrealisedPlRatio < 0 ? "negative-color" : "positive-color"'
               >
                 {{ round(pos.unrealisedPlRatio) | number }}
               </td>
             }
             @if (column.id === "dailyUnrealisedPlRatio") {
               <td
-                [class]='pos.dailyUnrealisedPlRatio < 0 ? "sell" : "buy"'
+                [class]='pos.dailyUnrealisedPlRatio < 0 ? "negative-color" : "positive-color"'
               >
                 {{ round(pos.dailyUnrealisedPlRatio) | number }}
               </td>

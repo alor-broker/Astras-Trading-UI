@@ -1,7 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  input
+  input,
+  ViewEncapsulation
 } from '@angular/core';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 
@@ -12,7 +13,8 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   ],
   templateUrl: './external-link.html',
   styleUrl: './external-link.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class ExternalLink {
   readonly klass = input<string>();

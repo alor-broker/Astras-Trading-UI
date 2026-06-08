@@ -11,7 +11,7 @@ import {Observable} from 'rxjs';
 
 @Directive({selector: 'nz-select[atsRemoveSelectTitles]'})
 export class RemoveSelectTitles implements AfterViewInit {
-  readonly valueChanges = input<Observable<any>>();
+  readonly valueChanges = input<Observable<unknown>>();
 
   private readonly destroyRef = inject(DestroyRef);
 

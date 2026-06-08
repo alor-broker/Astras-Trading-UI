@@ -60,7 +60,9 @@ export class SettingsBrokerService {
     this.manageDashboardsService.onUpdated().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(e => {
-      this.dashboardsSettingsBrokerService.saveSettings(e.dashboards).subscribe();
+      this.dashboardsSettingsBrokerService.saveSettings(e.dashboards).pipe(
+        take(1)
+      ).subscribe();
     });
 
     const loadingId = GuidGenerator.newGuid();
@@ -113,7 +115,9 @@ export class SettingsBrokerService {
     this.widgetSettingsService.onRemoved().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(e => {
-      this.widgetSettingsBrokerService.removeSettings(e.settingGuids).subscribe();
+      this.widgetSettingsBrokerService.removeSettings(e.settingGuids).pipe(
+        take(1)
+      ).subscribe();
     });
 
     this.widgetSettingsService.onAdd().pipe(
@@ -224,7 +228,9 @@ export class SettingsBrokerService {
         return;
       }
 
-      this.widgetSettingsBrokerService.removeSettings(dirtySettings).subscribe();
+      this.widgetSettingsBrokerService.removeSettings(dirtySettings).pipe(
+        take(1)
+      ).subscribe();
       this.widgetLocalStateService.clearForWidgets(dirtySettings);
     });
   }
@@ -236,7 +242,9 @@ export class SettingsBrokerService {
       const guids = new Set(widgetGuids);
       const updatedSettings = allSettings.filter(s => guids.has(s.guid));
 
-      this.widgetSettingsBrokerService.saveSettings(updatedSettings).subscribe();
+      this.widgetSettingsBrokerService.saveSettings(updatedSettings).pipe(
+        take(1)
+      ).subscribe();
     });
   }
 }

@@ -1,9 +1,11 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   inject,
   OnDestroy,
   output,
+  ViewEncapsulation,
   viewChildren
 } from '@angular/core';
 import {
@@ -98,7 +100,9 @@ import {AddToWatchlistMenu} from '@terminal-core-lib/features/watchlist/componen
     ResizeColumn,
     TableSearchFilter,
     AddToWatchlistMenu
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class BlotterTradesHistory extends BlotterBaseTable<DisplayTrade, TradeFilter> implements AfterViewInit, OnDestroy {
   readonly rowHeight = 20;
@@ -284,6 +288,7 @@ export class BlotterTradesHistory extends BlotterBaseTable<DisplayTrade, TradeFi
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.isLoading$.complete();
     this.loadedHistory$.complete();
   }
 

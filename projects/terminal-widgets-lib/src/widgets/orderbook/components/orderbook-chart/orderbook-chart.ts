@@ -13,7 +13,8 @@ import {
   ChartDataset,
   ChartOptions,
   ComplexFillTarget,
-  ScatterControllerDatasetOptions
+  ScatterControllerDatasetOptions,
+  TooltipItem
 } from 'chart.js';
 import {BaseChartDirective} from 'ng2-charts';
 import {
@@ -48,7 +49,7 @@ export class OrderbookChart implements OnInit {
     plugins: {
       tooltip: {
         callbacks: {
-          label: (context: any) => {
+          label: (context: TooltipItem<'scatter'>) => {
             return `Объем: ${context.parsed.y}; Цена: ${context.parsed.x}`;
           }
         }
@@ -142,7 +143,7 @@ export class OrderbookChart implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(t => {
-        this.chartOptions.plugins!.tooltip!.callbacks!.label = (context: any): string => {
+        this.chartOptions.plugins!.tooltip!.callbacks!.label = (context: TooltipItem<'scatter'>): string => {
           return `${t(['volume'])}: ${context.parsed.y}; ${t(['price'])}: ${context.parsed.x}`;
         };
       });

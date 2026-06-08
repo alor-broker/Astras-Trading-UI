@@ -5,7 +5,7 @@ export interface ScalperCommand {
 
   key: string;
 
-  [key: string]: any;
+  index?: number;
 }
 
 export interface ModifierKeys {

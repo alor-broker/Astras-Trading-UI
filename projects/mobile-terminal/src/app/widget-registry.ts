@@ -24,7 +24,7 @@ import {MobileTradeScreenWidget} from '@terminal-widgets-lib/widgets/mobile-trad
  * Registry of all widget components available in the mobile terminal.
  * Maps widget type IDs to their component classes.
  */
-const MOBILE_WIDGET_REGISTRY: Map<string, Type<any>> = new Map<string, Type<any>>([
+const MOBILE_WIDGET_REGISTRY: Map<string, Type<unknown>> = new Map<string, Type<unknown>>([
   ['instrument-info', InstrumentInfoWidget],
   ['treemap', TreemapWidget],
   ['order-book', OrderbookWidget],

@@ -1,8 +1,11 @@
-import {Injectable} from '@angular/core';
+import {
+  Injectable,
+  OnDestroy
+} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 
 @Injectable()
-export class ActivityTrackerService implements EventListenerObject {
+export class ActivityTrackerService implements EventListenerObject, OnDestroy {
   private readonly eventsToTrack = ['mousemove', 'scroll', 'keydown', 'touchmove'];
 
   private readonly lastActivityTimeSub = new BehaviorSubject<number | null>(new Date().getTime());
@@ -20,6 +23,11 @@ export class ActivityTrackerService implements EventListenerObject {
 
   stopTracking(): void {
     this.clearEventListeners();
+  }
+
+  ngOnDestroy(): void {
+    this.clearEventListeners();
+    this.lastActivityTimeSub.complete();
   }
 
   private setupEventListeners(): void {

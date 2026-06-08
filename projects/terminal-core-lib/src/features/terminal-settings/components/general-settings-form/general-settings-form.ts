@@ -120,7 +120,7 @@ export class GeneralSettingsForm extends ControlValueAccessorBase<GeneralSetting
   private readonly languagesConfig = inject(LANGUAGES_CONFIG);
 
   readonly availableLanguages = Object.keys(this.languagesConfig).map(k => {
-    const language = (this.languagesConfig as unknown as any)[k] as { title: string };
+    const language = (this.languagesConfig as Record<string, { title: string }>)[k];
     return {
       key: k,
       title: language.title,
@@ -173,7 +173,7 @@ export class GeneralSettingsForm extends ControlValueAccessorBase<GeneralSetting
   private setControlValueInGroup<T>(
     group: FormGroup | null | undefined,
     value: T | null,
-    handler: (key: string, value: any, control: AbstractControl) => void
+    handler: (key: string, value: T[keyof T], control: AbstractControl) => void
   ): void {
     if (!group || !(value ?? null)) {
       return;

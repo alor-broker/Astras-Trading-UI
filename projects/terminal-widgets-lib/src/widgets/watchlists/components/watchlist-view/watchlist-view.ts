@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   input,
@@ -110,7 +111,13 @@ export class WatchlistView implements OnInit {
 
   private readonly actionsContext = inject(ACTIONS_CONTEXT);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.filter$.complete());
+  }
 
   onChange(value: string): void {
     const existing = this.filter$.getValue();

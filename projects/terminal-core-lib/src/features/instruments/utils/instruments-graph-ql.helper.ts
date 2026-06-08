@@ -1,5 +1,4 @@
 ﻿import {
-  util,
   ZodArray,
   ZodLazy,
   ZodNullable,
@@ -35,7 +34,6 @@ import {
   TradingDetails
 } from '../graphql/schema/graphql.types';
 import {DefaultTableFilters} from '../../tables/types/table-display-settings.types';
-import Exactly = util.Exactly;
 
 enum FilterType {
   String = 'string',
@@ -89,20 +87,20 @@ export class InstrumentsGraphQlHelper {
     requiredKeys: string[] = [],
     keyWord = ''
   ): ZodObject<ZodPropertiesOf<T>> {
-    return schema.pick(
-      Object.keys(schema.shape)
-        .filter((key) =>
-          requiredKeys.includes(key) ||
-          keysToInclude
-            .filter(c => c.startsWith(keyWord))
-            .map(c => c.replace(keyWord, '').toLowerCase())
-            .includes(key.toLowerCase())
-        )
-        .reduce((prev, curr) => {
-          prev[curr] = true;
-          return prev as { [key in keyof T]: true };
-        }, {} as Exactly<any, { [key in keyof T]: true }>)
-    );
+    const pickMask = Object.keys(schema.shape)
+      .filter((key) =>
+        requiredKeys.includes(key) ||
+        keysToInclude
+          .filter(c => c.startsWith(keyWord))
+          .map(c => c.replace(keyWord, '').toLowerCase())
+          .includes(key.toLowerCase())
+      )
+      .reduce<Record<string, true>>((prev, curr) => {
+        prev[curr] = true;
+        return prev;
+      }, {});
+
+    return schema.pick(pickMask as never);
   }
 
   static getBasicInformationPartialSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<BasicInformation>> {
@@ -154,7 +152,7 @@ export class InstrumentsGraphQlHelper {
   }
 
   // get zod object keys recursively
-  static getZodObject(schema: ZodTypeAny): ZodObject<any> | null {
+  static getZodObject(schema: ZodTypeAny): ZodObject<ZodRawShape> | null {
     if (schema === null || schema === undefined) return null;
     if (schema instanceof ZodLazy) return this.getZodObject(schema.schema);
     if (schema instanceof ZodNullable || schema instanceof ZodOptional) return this.getZodObject(schema.unwrap());

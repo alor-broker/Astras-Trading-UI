@@ -7,7 +7,7 @@ import {
  * Maps widgetType string to a component class that extends WidgetBase.
  * Each project provides its own registry for tree-shaking.
  */
-export type WidgetComponentRegistry = Map<string, Type<any>>;
+export type WidgetComponentRegistry = Map<string, Type<unknown>>;
 
 /**
  * DI token for providing project-specific widget component registries.

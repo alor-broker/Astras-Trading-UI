@@ -216,7 +216,7 @@ export class AdminOrderCommandService implements OrderCommandService {
 
   private submitOrder(portfolio: string, prepareOrderRequest: () => {
     url: string;
-    body: any;
+    body: Record<string, unknown>;
   }): Observable<OrderCommandResult> {
     return this.submitRequest(
       portfolio,
@@ -248,7 +248,7 @@ export class AdminOrderCommandService implements OrderCommandService {
 
   private submitOrderEdit(portfolio: string, prepareOrderRequest: () => {
     url: string;
-    body: any;
+    body: Record<string, unknown>;
   }): Observable<OrderCommandResult> {
     return this.submitRequest(
       portfolio,
@@ -281,7 +281,7 @@ export class AdminOrderCommandService implements OrderCommandService {
   private submitRequest(
     portfolio: string,
     method: 'post' | 'put',
-    prepareOrderRequest: () => { url: string, body: Record<string, any> },
+    prepareOrderRequest: () => { url: string, body: Record<string, unknown> },
     onError: (error: Error | HttpErrorResponse) => string
   ): Observable<OrderCommandResult> {
     const orderRequest = prepareOrderRequest();

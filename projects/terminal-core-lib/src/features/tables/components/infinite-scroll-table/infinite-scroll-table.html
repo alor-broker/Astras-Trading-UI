@@ -2,7 +2,7 @@
 @if (config) {
   <nz-table
     #dataTable
-    [nzData]="data"
+    [nzData]="data()"
     [nzFrontPagination]="false"
     [nzLoading]="isLoading()"
     [nzScroll]="{y: scrollHeight + 'px'}"
@@ -79,23 +79,23 @@
     <tbody>
     <ng-template let-data nz-virtual-scroll>
       <tr
-        (click)="rowClick.emit(data)"
-        (contextmenu)="rowContextMenu.emit({ event: $event, row: data})"
-        [class]="config?.rowConfig?.rowClass && config?.rowConfig?.rowClass(data)"
+        (click)="emitRowClick(data)"
+        (contextmenu)="emitRowContextMenu($event, data)"
+        [class]="getRowClass(config, data)"
       >
         @for (column of config?.columns ?? []; track column.id) {
-          <td [class]="column.classFn && column.classFn(data)">
+          <td [class]="getColumnClass(column, data)">
             <div
               [nzTooltipMouseEnterDelay]="1"
               [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
-              [nzTooltipTitle]="column.transformFn ? column.transformFn(data) : data[column.id]"
+              [nzTooltipTitle]="getDisplayValue(column, data)"
               class="table-cell"
               nz-tooltip
             >
-              <span>{{ column.transformFn ? column.transformFn(data) : data[column.id] }}</span>
-              @if (data['badges']?.length && column.showBadges) {
+              <span>{{ getDisplayValue(column, data) }}</span>
+              @if (getBadges(data).length && column.showBadges) {
                 <span>&nbsp;</span>
-                <ats-merged-badge [colors]="data['badges']"/>
+                <ats-merged-badge [colors]="getBadges(data)"/>
               }
             </div>
           </td>
@@ -191,4 +191,3 @@
     </div>
   </nz-dropdown-menu>
 }
-

@@ -21,7 +21,8 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {
   combineLatest,
-  of
+  of,
+  take
 } from 'rxjs';
 import {
   catchError,
@@ -347,7 +348,8 @@ export class OperationsHistory implements OnInit {
       this.agreementId,
       this.createRequestParams(this.offset)
     ).pipe(
-      catchError(() => of([]))
+      catchError(() => of([])),
+      take(1)
     ).subscribe(items => {
       this.isLoading.set(false);
       const loadedItems = items ?? [];

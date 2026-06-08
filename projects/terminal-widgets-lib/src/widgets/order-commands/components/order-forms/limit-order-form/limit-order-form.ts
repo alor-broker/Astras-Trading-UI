@@ -1,9 +1,11 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   inject,
   input,
   OnDestroy,
-  OnInit
+  OnInit,
+  ViewEncapsulation
 } from '@angular/core';
 import {
   FormBuilder,
@@ -135,7 +137,9 @@ import {NearestTradingSessionComponent} from '@terminal-widgets-lib/widgets/orde
     OrderEvaluation,
     BuySellButtons,
     NearestTradingSessionComponent,
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class LimitOrderForm extends BaseOrderForm implements OnInit, OnDestroy {
   expandAdvancedOptions = false;

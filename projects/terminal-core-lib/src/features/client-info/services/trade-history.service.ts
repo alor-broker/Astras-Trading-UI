@@ -36,7 +36,7 @@ export class TradesHistoryService {
       filters: TradeFilter | null;
     }>): Observable<Trade[] | null> {
     const ownedPortfolio: PortfolioKey = {portfolio, exchange};
-    const params: Record<string, any> = {
+    const params: Record<string, string | number | boolean> = {
       descending: true,
       orderByTradeDate: true,
       format: 'heavy'
@@ -82,7 +82,7 @@ export class TradesHistoryService {
     limit: number | null;
   }>): Observable<Trade[] | null> {
     const ownedPortfolio: PortfolioKey = {portfolio, exchange};
-    const params: Record<string, any> = {
+    const params: Record<string, string | number | boolean> = {
       descending: true
     };
 

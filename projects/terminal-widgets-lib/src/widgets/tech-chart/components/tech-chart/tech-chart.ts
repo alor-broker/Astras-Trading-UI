@@ -125,6 +125,20 @@ interface ChartState {
   widget: IChartingLibraryWidget;
 }
 
+interface ChartLayoutState {
+  charts?: {
+    panes?: {
+      sources?: {
+        state?: {
+          symbol?: string;
+          shortName?: string;
+          interval?: ResolutionString;
+        };
+      }[];
+    }[];
+  }[];
+}
+
 type FullscreenDocument = Document & {
   webkitFullscreenElement?: Element | null;
   mozFullScreenElement?: Element | null;
@@ -380,7 +394,7 @@ export class TechChart implements OnInit, OnDestroy, AfterViewInit {
 
     const currentTimezone = timezoneConverter.getTimezone();
 
-    let chartLayout: any;
+    let chartLayout: ChartLayoutState | null = null;
     const selectedInstrumentSymbol = SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol) ? settings.symbol : this.toTvSymbol(settings as InstrumentKey);
 
     if (settings.chartLayout) {

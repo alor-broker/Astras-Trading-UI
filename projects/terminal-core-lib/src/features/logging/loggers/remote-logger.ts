@@ -1,8 +1,10 @@
 ﻿import {LoggerBase} from './logger.types';
 import {
+  DestroyRef,
   inject,
   Injectable
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {LocalStorageService} from '../../local-storage/local-storage.service';
 import {
   HttpClient,
@@ -19,7 +21,8 @@ import {
   catchError,
   debounceTime,
   of,
-  Subject
+  Subject,
+  take
 } from 'rxjs';
 import {LocalStorageLoggingConstants} from '../../local-storage/local-storage.constants';
 import {HttpContextTokens} from '../../http-requests/constants/http.constants';
@@ -45,6 +48,8 @@ export class RemoteLogger extends LoggerBase {
 
   private readonly httpClient = inject(HttpClient);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly loggingConfig = inject<LoggingConfig>(LOGGING_CONFIG);
 
   private readonly duplicatedMessagesLatencyMs = 1000;
@@ -62,9 +67,12 @@ export class RemoteLogger extends LoggerBase {
   constructor() {
     super();
 
+    this.destroyRef.onDestroy(() => this.flush.complete());
+
     this.flush
       .pipe(
-        debounceTime(1)
+        debounceTime(1),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {
           setTimeout(() => this.flushBuffer());
@@ -151,7 +159,8 @@ export class RemoteLogger extends LoggerBase {
             context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
           }
         ).pipe(
-          catchError(() => of(null))
+          catchError(() => of(null)),
+          take(1)
         )
           .subscribe();
       }

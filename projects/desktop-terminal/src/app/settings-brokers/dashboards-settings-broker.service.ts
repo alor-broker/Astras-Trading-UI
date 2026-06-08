@@ -1,4 +1,5 @@
 ﻿import {
+  DestroyRef,
   inject,
   Injectable
 } from '@angular/core';
@@ -34,6 +35,8 @@ export class DashboardsSettingsBrokerService {
 
   private readonly dashboardSettingsMigrationManager = inject<MigrationManagerBase>(DASHBOARD_SETTINGS_DESKTOP_MIGRATION_MANAGER);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly saveRequestDelay = 1000;
 
   private readonly saveQuery$ = new Subject<Dashboard[]>();
@@ -42,6 +45,10 @@ export class DashboardsSettingsBrokerService {
 
   private get settingsKey(): string {
     return 'dashboards-collection';
+  }
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.saveQuery$.complete());
   }
 
   readSettings(): Observable<ReadDashboardSettingsResult | null> {

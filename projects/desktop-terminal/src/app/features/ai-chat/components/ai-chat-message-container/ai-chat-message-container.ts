@@ -6,7 +6,8 @@ import {
 } from '@angular/core';
 import {
   Message,
-  MessageType
+  MessageType,
+  TextMessageContent
 } from '../../ai-chat.types';
 import {
   animate,
@@ -39,7 +40,7 @@ import {AiChatTextMessage} from '../ai-chat-text-message/ai-chat-text-message';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiChatMessageContainer {
-  readonly message = input.required<Message<any>>();
+  readonly message = input.required<Message<TextMessageContent>>();
 
   readonly messageTypes = MessageType;
 }

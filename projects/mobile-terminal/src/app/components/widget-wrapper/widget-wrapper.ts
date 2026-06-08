@@ -14,7 +14,7 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 
 interface WidgetItem {
   instance: WidgetInstance;
-  componentType: Type<any> | null;
+  componentType: Type<unknown> | null;
 }
 
 @Component({

@@ -11,8 +11,11 @@ import {
 import {ORDER_COMMAND_SERVICE_TOKEN} from '../types/order-command-service.types';
 import {
   NewLimitOrder,
+  NewLinkedOrder,
   OrderCommandResult
 } from '../types/new-order.types';
+import {ExecutionPolicy} from '../types/order-group.types';
+import {OrderType} from '../types/orders.types';
 
 describe('ConfirmableOrderCommandsService', () => {
   const targetPortfolio: TargetPortfolio = {portfolio: 'D1234', exchange: 'MOEX'};
@@ -21,6 +24,7 @@ describe('ConfirmableOrderCommandsService', () => {
   let service: ConfirmableOrderCommandsService;
   let orderCommandSpy: {
     submitLimitOrder: ReturnType<typeof vi.fn>;
+    submitOrdersGroup: ReturnType<typeof vi.fn>;
     cancelOrders: ReturnType<typeof vi.fn>;
     getOrdersConfig: ReturnType<typeof vi.fn>;
   };
@@ -29,6 +33,7 @@ describe('ConfirmableOrderCommandsService', () => {
   function setup(confirmationResult: boolean | null): void {
     orderCommandSpy = {
       submitLimitOrder: vi.fn().mockReturnValue(of(commandResult)),
+      submitOrdersGroup: vi.fn().mockReturnValue(of({message: 'success', groupId: 'group-1'})),
       cancelOrders: vi.fn().mockReturnValue(of([commandResult])),
       getOrdersConfig: vi.fn().mockReturnValue({orderTypes: []})
     };
@@ -85,6 +90,50 @@ describe('ConfirmableOrderCommandsService', () => {
       await firstValueFrom(service.submitLimitOrder(createLimitOrder(), targetPortfolio));
 
       expect(checkWithConfirmation).toHaveBeenCalledWith(targetPortfolio);
+    });
+  });
+
+  describe('submitOrdersGroup', () => {
+    function createLinkedOrder(): NewLinkedOrder {
+      return {type: OrderType.Limit} as unknown as NewLinkedOrder;
+    }
+
+    it('should apply the margin confirmation result to every grouped order', async () => {
+      setup(true);
+      const orders = [
+        createLinkedOrder(),
+        createLinkedOrder()
+      ];
+
+      const result = await firstValueFrom(service.submitOrdersGroup(
+        orders,
+        targetPortfolio,
+        ExecutionPolicy.OnExecuteOrCancel
+      ));
+
+      expect(result).toEqual({message: 'success', groupId: 'group-1'});
+      expect(orders.every(order => order.allowMargin === true)).toBe(true);
+      expect(orderCommandSpy.submitOrdersGroup).toHaveBeenCalledWith(
+        orders,
+        targetPortfolio.portfolio,
+        ExecutionPolicy.OnExecuteOrCancel
+      );
+    });
+
+    it('should leave grouped orders without allowMargin when confirmation has no decision', async () => {
+      setup(null);
+      const orders = [
+        createLinkedOrder(),
+        createLinkedOrder()
+      ];
+
+      await firstValueFrom(service.submitOrdersGroup(
+        orders,
+        targetPortfolio,
+        ExecutionPolicy.IgnoreCancel
+      ));
+
+      expect(orders.every(order => order.allowMargin === undefined)).toBe(true);
     });
   });
 

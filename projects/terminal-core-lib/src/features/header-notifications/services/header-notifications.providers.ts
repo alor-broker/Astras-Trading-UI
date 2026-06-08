@@ -5,7 +5,7 @@
 import {LoggerService} from '../../logging/services/logger-service';
 import {NOTIFICATIONS_PROVIDER} from './header-notifications-service.types';
 
-export function provideHeaderNotifications(notificationProviders: Type<any>[]): Provider[] {
+export function provideHeaderNotifications(notificationProviders: Type<unknown>[]): Provider[] {
   return [
     ...notificationProviders.map(t => ({
       provide: NOTIFICATIONS_PROVIDER,

@@ -17,13 +17,14 @@
 
 ## Документация
 
-- [Инструкции для AI агентов](AGENTS.md)
 - [Desktop terminal](projects/desktop-terminal/README.md)
 - [Mobile terminal](projects/mobile-terminal/README.md)
-- [Mobile native build](projects/mobile-terminal/BUILD_NATIVE.md)
 - [Admin terminal](projects/admin-terminal/README.md)
 - [Core library](projects/terminal-core-lib/README.md)
 - [Core services](projects/terminal-core-lib/CORE_SERVICES.md)
+- [API documentation](API_DOCUMENTATION.md)
+- [GraphQL contracts](projects/terminal-core-lib/GRAPHQL_CONTRACTS.md)
 - [Widgets library](projects/terminal-widgets-lib/README.md)
 - [Styling library](projects/terminal-styling-lib/README.md)
 - [I18n library](projects/terminal-i18n/README.md)
+- [Testing library](projects/testing-lib/README.md)

@@ -67,9 +67,6 @@ interface NewsListState {
   endPageCursor: string | null;
 }
 
-class TableDataRow {
-}
-
 @Component({
   selector: 'ats-news',
   templateUrl: './news.html',
@@ -170,8 +167,8 @@ export class News extends LazyLoadingBaseTable<NewsListItem, NewsFilters> implem
     });
   }
 
-  override rowClick(row: TableDataRow): void {
-    this.selectedNewsListItem = row as NewsListItem;
+  override rowClick(row: NewsListItem): void {
+    this.selectedNewsListItem = row;
   }
 
   onScrolled(): void {
@@ -211,7 +208,6 @@ export class News extends LazyLoadingBaseTable<NewsListItem, NewsFilters> implem
   }
 
   protected initTableDataStream(): Observable<NewsListItem[]> {
-    this.scrolledChanges$.pipe().subscribe(x => console.log(x));
     const createLoadMoreStream = (state: NewsListState): Observable<NewsListState> => {
       return this.scrolledChanges$.pipe(
         filter(() => state.loadedItems.length > 0 && !state.isEndOfList),

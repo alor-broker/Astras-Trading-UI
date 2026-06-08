@@ -24,7 +24,7 @@ import {
 import {HttpErrorResponse} from '@angular/common/http';
 import {GraphQLError} from 'graphql/error';
 
-export type GraphQlVariables = Record<string, any>;
+export type GraphQlVariables = Record<string, unknown>;
 
 export enum NamedClients {
   Default = 'default',

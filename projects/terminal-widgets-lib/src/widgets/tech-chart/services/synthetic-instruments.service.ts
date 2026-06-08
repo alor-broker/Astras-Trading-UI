@@ -178,7 +178,7 @@ export class SyntheticInstrumentsService {
 
           const history: HistoryResponse = {
             history: new Array(defaultHistory.length).fill(null)
-              .map((item: any, i: number) => SyntheticInstrumentsHelper.assembleCandle(
+              .map((item: null, i: number) => SyntheticInstrumentsHelper.assembleCandle(
                 histories.map(h => h.isSpreadOperator ? h : {isSpreadOperator: false, value: h.value!.history[i]}))
               ),
             prev: defaultHistory[0]?.time - 60,

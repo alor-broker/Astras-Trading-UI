@@ -58,7 +58,7 @@ export class InputNumber extends ControlValueAccessorBase<number> {
 
   readonly allowNegative = input(false);
 
-  readonly suffix = input<TemplateRef<any> | null>(null);
+  readonly suffix = input<TemplateRef<unknown> | null>(null);
 
   readonly focused = input(false);
 

@@ -55,10 +55,7 @@ import {
 } from '@terminal-core-lib/features/tables/types/table-display-settings.types';
 import {DASHBOARD_CONTEXT_SERVICE} from '@terminal-core-lib/features/dashboard/services/dashboard-context-service.types';
 import {ACTIONS_CONTEXT} from '@terminal-core-lib/features/dashboard/types/dashboard-actions-context.types';
-import {
-  InfiniteScrollTable,
-  TableDataRow
-} from '@terminal-core-lib/features/tables/components/infinite-scroll-table/infinite-scroll-table';
+import {InfiniteScrollTable} from '@terminal-core-lib/features/tables/components/infinite-scroll-table/infinite-scroll-table';
 import {TerminalSettingsService} from '@terminal-core-lib/features/terminal-settings/services/terminal-settings.service';
 import {TranslatorService} from '@terminal-core-lib/features/translations/services/translator.service';
 import {NavigationStackService} from '@terminal-core-lib/common/services/navigation-stack.service';
@@ -84,6 +81,13 @@ import {createRefresh} from '@terminal-core-lib/common/utils/observable/create-r
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
+}
+
+interface AllInstrumentsNavigationParameters {
+  sort?: {
+    parameter?: string;
+    order?: SortEnumType;
+  };
 }
 
 @Component({
@@ -181,9 +185,9 @@ export class AllInstruments extends LazyLoadingBaseTable<
       id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowth != null ? formatNumber(data.tradingDetails!.dailyGrowth, this.locale, '0.0-10') : '',
-      classFn: (data): 'sell' | 'buy' | null => data.tradingDetails!.dailyGrowth == null
+      classFn: (data): 'negative-color' | 'positive-color' | null => data.tradingDetails!.dailyGrowth == null
         ? null
-        : data.tradingDetails!.dailyGrowth < 0 ? 'sell' : 'buy',
+        : data.tradingDetails!.dailyGrowth < 0 ? 'negative-color' : 'positive-color',
       width: 100,
       minWidth: 100,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'dailyGrowth'], dir),
@@ -199,9 +203,9 @@ export class AllInstruments extends LazyLoadingBaseTable<
       id: 'dailyGrowthPercent',
       displayName: 'Рост за сегодня, %',
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowthPercent != null ? formatNumber(data.tradingDetails!.dailyGrowthPercent, this.locale, '0.0-3') : '',
-      classFn: (data): 'sell' | 'buy' | null => data.tradingDetails!.dailyGrowthPercent == null
+      classFn: (data): 'negative-color' | 'positive-color' | null => data.tradingDetails!.dailyGrowthPercent == null
         ? null
-        : data.tradingDetails!.dailyGrowthPercent < 0 ? 'sell' : 'buy',
+        : data.tradingDetails!.dailyGrowthPercent < 0 ? 'negative-color' : 'positive-color',
       width: 100,
       minWidth: 100,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'dailyGrowthPercent'], dir),
@@ -413,26 +417,26 @@ export class AllInstruments extends LazyLoadingBaseTable<
       filter(state => state.widgetTarget.typeId === 'all-instruments'),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(state => {
-      if (state.widgetTarget.parameters?.sort?.parameter != null) {
-        const targetColumn = this.allColumns.find(c => c.id === state.widgetTarget.parameters?.sort?.parameter);
+      const parameters = this.toNavigationParameters(state.widgetTarget.parameters);
+      if (parameters?.sort?.parameter != null) {
+        const targetColumn = this.allColumns.find(c => c.id === parameters.sort?.parameter);
         if (targetColumn != null) {
-          const order = state.widgetTarget.parameters?.sort.order === SortEnumType.Desc ? 'descend' : 'ascend';
+          const order = parameters.sort.order === SortEnumType.Desc ? 'descend' : 'ascend';
           this.table()?.sortChange(order, targetColumn);
         }
       }
     });
   }
 
-  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenu, selectedRow: TableDataRow): void {
+  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenu, selectedRow: AllInstrumentsNodeDisplay): void {
     this.nzContextMenuService.close(true);
 
-    const row = selectedRow as AllInstrumentsNodeDisplay;
     const menuRef = menu.menuRef();
     if (menuRef != null) {
       menu.itemToAdd.set(
         {
-          symbol: row.basicInformation!.symbol,
-          exchange: row.basicInformation!.exchange
+          symbol: selectedRow.basicInformation!.symbol,
+          exchange: selectedRow.basicInformation!.exchange
         }
       );
 
@@ -480,8 +484,7 @@ export class AllInstruments extends LazyLoadingBaseTable<
     this.filters$.next(cleanedFilters);
   }
 
-  override rowClick(row: TableDataRow): void {
-    const node = row as AllInstrumentsNodeDisplay;
+  override rowClick(node: AllInstrumentsNodeDisplay): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
@@ -500,7 +503,7 @@ export class AllInstruments extends LazyLoadingBaseTable<
     this.exportBtnSize$.complete();
   }
 
-  override changeColumnOrder(event: CdkDragDrop<any>): void {
+  override changeColumnOrder(event: CdkDragDrop<unknown>): void {
     super.changeColumnOrder<AllInstrumentsWidgetSettings>(event, this.settings$);
   }
 
@@ -772,6 +775,21 @@ export class AllInstruments extends LazyLoadingBaseTable<
     }, {} as InstrumentModelSortInput);
 
     this.sort$.next(sortObj);
+  }
+
+  private toNavigationParameters(parameters: Record<string, unknown> | undefined): AllInstrumentsNavigationParameters | null {
+    const sort = parameters?.sort;
+    if (typeof sort !== 'object' || sort == null) {
+      return null;
+    }
+
+    const sortRecord = sort as Record<string, unknown>;
+    return {
+      sort: {
+        parameter: typeof sortRecord.parameter === 'string' ? sortRecord.parameter : undefined,
+        order: sortRecord.order === SortEnumType.Desc ? SortEnumType.Desc : SortEnumType.Asc
+      }
+    };
   }
 
   private resetLoadedData(): void {

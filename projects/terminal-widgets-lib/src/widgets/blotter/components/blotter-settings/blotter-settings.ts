@@ -55,6 +55,7 @@ import {
   BlotterWidgetSettings
 } from '@terminal-widgets-lib/widgets/blotter/widget-settings.types';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
+import {DeviceInfo} from '@terminal-core-lib/common/services/device-service-types';
 import {USER_CONTEXT} from '@terminal-core-lib/features/user-context/user-context.types';
 import {PUSH_NOTIFICATIONS_CONFIG} from '@terminal-core-lib/features/push-notifications/types/push-notifications-config.types';
 import {
@@ -118,7 +119,7 @@ export class BlotterSettings extends WidgetSettingsBase<BlotterWidgetSettings> i
 
   availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
 
-  deviceInfo$!: Observable<any>;
+  deviceInfo$!: Observable<DeviceInfo>;
 
   protected readonly userContext = inject(USER_CONTEXT);
 

@@ -45,7 +45,7 @@ import {
 export class TableSearchFilter implements OnChanges, OnDestroy {
   filtersForm?: UntypedFormGroup;
 
-  readonly columns = input.required<BaseColumnSettings<any>[]>();
+  readonly columns = input.required<BaseColumnSettings<never>[]>();
 
   readonly activeColumnId = input<string | null>(null);
 

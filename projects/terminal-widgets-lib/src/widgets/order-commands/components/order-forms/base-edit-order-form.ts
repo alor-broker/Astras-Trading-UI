@@ -1,10 +1,9 @@
 ﻿import {
   Component,
   DestroyRef,
-  EventEmitter,
   inject,
   input,
-  Output
+  output
 } from "@angular/core";
 import {
   combineLatest,
@@ -37,8 +36,7 @@ import {priceStepMultiplicity} from "@terminal-core-lib/features/forms/validator
 export abstract class BaseEditOrderForm {
   formInstrument$!: Observable<Instrument>;
 
-  @Output()
-  formStateChanged = new EventEmitter<OrderFormState>();
+  readonly formStateChanged = output<OrderFormState>();
 
   readonly portfolioKey = input.required<PortfolioKey>();
 

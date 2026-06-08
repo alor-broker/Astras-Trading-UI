@@ -43,6 +43,7 @@ export class FeedbackService implements OnDestroy {
   private readonly baseUrl = this.coreApiUrlProvider.apiUrl + '/astras';
 
   ngOnDestroy(): void {
+    this.unansweredFeedbackRemoved$.complete();
     this.voteParamsSub.complete();
   }
 

@@ -122,7 +122,8 @@ export class LoginPage implements AfterViewInit {
       tap(() => {
         this.loginForm.enable();
         this.isLoading.set(false);
-      })
+      }),
+      take(1)
     ).subscribe(r => {
       if (r?.result != null) {
         this.adminAuthContextService.setJwt(r.result.refreshToken, r.result.jwt);

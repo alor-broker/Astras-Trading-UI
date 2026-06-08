@@ -36,8 +36,8 @@ export interface Sort {
   template: '',
 })
 export abstract class BaseTableComponent<
-  T extends Record<string, any>,
-  F extends Record<string, any> = object,
+  T extends object,
+  F extends object = object,
   S = Sort
 >
   implements OnInit, OnDestroy {
@@ -94,25 +94,27 @@ export abstract class BaseTableComponent<
   }
 
   applyFilter(filters: F): void {
-    const cleanedFilters = Object.keys(filters)
+    const filtersRecord = filters as Record<string, string | string[] | number | boolean | null | undefined>;
+    const cleanedFiltersRecord = Object.keys(filters)
       .filter(key =>
-        filters[key] != null &&
+        filtersRecord[key] != null &&
         (
-          (typeof filters[key] === 'number') ||
-          (typeof filters[key] === 'boolean') ||
-          (filters[key] as string | string[]).length > 0
+          (typeof filtersRecord[key] === 'number') ||
+          (typeof filtersRecord[key] === 'boolean') ||
+          ((filtersRecord[key] as string | string[]).length > 0)
         )
       )
-      .reduce((acc, curr: keyof F) => {
-        if (Array.isArray(filters[curr])) {
-          acc[curr] = filters[curr].join(';') as F[keyof F];
+      .reduce<Record<string, unknown>>((acc, curr) => {
+        const value = filters[curr as keyof F];
+        if (Array.isArray(value)) {
+          acc[curr] = value.join(';');
         } else {
-          acc[curr] = filters[curr]!;
+          acc[curr] = value!;
         }
         return acc;
-      }, {} as F);
+      }, {});
 
-    this.filters$.next(cleanedFilters);
+    this.filters$.next(cleanedFiltersRecord as F);
   }
 
   containerSizeChanged(entries: ResizeObserverEntry[]): void {

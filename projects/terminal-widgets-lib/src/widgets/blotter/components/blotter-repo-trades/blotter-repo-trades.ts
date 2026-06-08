@@ -385,8 +385,8 @@ export class BlotterRepoTrades extends BlotterBaseTable<RepoTrade, TradeFilter> 
         take(1),
       )
       .subscribe(({tBlotter, settings, tableConfig}) => {
-        const valueTranslators = new Map<string, (value: any) => string>([
-          ['date', (value): string => this.formatDate(value)]
+        const valueTranslators = new Map<string, (value: unknown) => string>([
+          ['date', (value): string => this.formatDate(value as Date)]
         ]);
 
         const exportedData = (data ?? []).map(trade => ({...trade, ...trade.repoSpecificFields}));

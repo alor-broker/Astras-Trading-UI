@@ -78,7 +78,7 @@ export class InstrumentBoardSelect implements OnInit, ControlValueAccessor {
     this.onValueChanged = fn;
   }
 
-  registerOnTouched(fn: (...args: any[]) => any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 

@@ -338,7 +338,9 @@ export class BlotterStopOrders extends BlotterBaseTable<DisplayOrder, OrderFilte
         exchange: order.targetInstrument.exchange,
         portfolio: order.ownedPortfolio.portfolio
       }
-    ]).subscribe();
+    ]).pipe(
+      take(1)
+    ).subscribe();
   }
 
   editOrder(order: StopOrder, event: MouseEvent): void {
@@ -369,7 +371,9 @@ export class BlotterStopOrders extends BlotterBaseTable<DisplayOrder, OrderFilte
         orderType: o.type,
         exchange: o.targetInstrument.exchange,
         portfolio: o.ownedPortfolio.portfolio
-      }))).subscribe();
+      }))).pipe(
+        take(1)
+      ).subscribe();
     }
   }
 

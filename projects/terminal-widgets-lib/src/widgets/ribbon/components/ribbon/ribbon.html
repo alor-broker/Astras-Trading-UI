@@ -7,9 +7,8 @@
           <span nz-typography><strong>{{ index.name }}</strong></span>
           <span>{{ index.value | number: '1.0-2' }}</span>
           <span [class]="{
-          'change': true,
-          'positive': index.changePercent > 0,
-          'negative': index.changePercent < 0
+          'positive-color': index.changePercent > 0,
+          'negative-color': index.changePercent < 0
           }">
             <span>{{ index.changePercent < 0 ? '&#9660;' : '&#9650;' }}</span>
             <span>{{ index.changePercent > 0 ? '+' : '' }}{{ index.changePercent | number: '1.0-2' }}%</span>
@@ -22,9 +21,8 @@
           <div class="row">
             <span>{{ index.value | number: '1.0-2' }}</span>
             <span [class]="{
-          'change': true,
-          'positive': index.changePercent > 0,
-          'negative': index.changePercent < 0
+          'positive-color': index.changePercent > 0,
+          'negative-color': index.changePercent < 0
           }">
               <span>{{ index.changePercent < 0 ? '&#9660;' : '&#9650;' }}</span>
               <span>{{ index.changePercent > 0 ? '+' : '' }}{{ index.changePercent | number: '1.0-2' }}%</span>

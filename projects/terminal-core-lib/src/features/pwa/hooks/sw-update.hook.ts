@@ -49,7 +49,9 @@ export class SwUpdateHook implements Hook {
               nzKey: 'sw-update'
             }
           );
-          ref.onClick.subscribe(() => {
+          ref.onClick.pipe(
+            take(1)
+          ).subscribe(() => {
             document.location.reload();
           });
         });

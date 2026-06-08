@@ -20,7 +20,7 @@ import {ApiTokenProviderService} from "../services/api-token-provider.service";
 export class AuthInterceptor implements HttpInterceptor {
   private readonly apiTokenProviderService = inject(ApiTokenProviderService);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (req.context.get(HttpContextTokens.SkipAuthorization)) {
       return next.handle(req);
     }

@@ -45,7 +45,7 @@ export interface SubscriptionRequest {
   repeatCount?: number;
 }
 
-type WsResponseMessage = BaseResponse<any> & ConfirmResponse;
+type WsResponseMessage = Partial<BaseResponse<unknown>> & Partial<ConfirmResponse> & Record<string, unknown>;
 
 interface WsRequestMessage extends SubscriptionRequest {
   guid: string;
@@ -53,7 +53,7 @@ interface WsRequestMessage extends SubscriptionRequest {
 
 interface SubscriptionState {
   messageSource: Subject<WsResponseMessage>;
-  sharedStream$: Observable<any>;
+  sharedStream$: Observable<unknown>;
   request: WsRequestMessage;
   subscription: Subscription;
 }
@@ -124,6 +124,7 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
       sharedStream$: subject.pipe(
         finalize(() => {
           this.dropSubscription(socketState, subscriptionId);
+          subject.complete();
         }),
         map(x => x.data as R),
         shareReplay({bufferSize: Math.max(1, request.repeatCount ?? 1), refCount: true}),
@@ -145,7 +146,7 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
     this.isConnected$.complete();
   }
 
-  private subscribeToMessages(source: Observable<WsResponseMessage>, target: Subject<any>, subscriptionId: string): Subscription {
+  private subscribeToMessages(source: Observable<WsResponseMessage>, target: Subject<WsResponseMessage>, subscriptionId: string): Subscription {
     return source.subscribe({
       next: (value) => target.next(value),
       complete: () => this.logger.debug(this.toLoggerMessage(`${subscriptionId} COMPLETED`)),
@@ -159,6 +160,7 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
     if (state) {
       socketState.subscriptionsMap.delete(subscriptionId);
       state.subscription.unsubscribe();
+      state.messageSource.complete();
 
       if (socketState.subscriptionsMap.size === 0) {
         socketState.isClosing = true;
@@ -175,7 +177,7 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
           state.webSocketSubject?.next(({
             ...request,
             token
-          } as any));
+          }));
         } catch (err) {
           observer.error(err);
         }
@@ -205,7 +207,7 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
               opcode: 'unsubscribe',
               guid: request.guid,
               token: token
-            } as any));
+            }));
           } catch (err) {
             observer.error(err);
           }
@@ -333,6 +335,11 @@ export class SubscriptionsDataFeedService implements NetworkStatusProvider, OnDe
     state.reconnectSub?.unsubscribe();
     state.offlineSub?.unsubscribe();
     state.pingPongSub?.unsubscribe();
+    state.subscriptionsMap.forEach(subscriptionState => {
+      subscriptionState.subscription.unsubscribe();
+      subscriptionState.messageSource.complete();
+    });
+    state.subscriptionsMap.clear();
   }
 
   private getCurrentAccessToken(): Observable<string> {

@@ -3,9 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
-  Input,
   input,
   OnChanges,
   OnInit,
@@ -78,8 +78,6 @@ import {InputNumber} from '../../../../common/components/input-number/input-numb
 
 export interface TableDataRow {
   id: string | number;
-
-  [propName: string]: any;
 }
 
 @Component({
@@ -110,27 +108,29 @@ export interface TableDataRow {
   encapsulation: ViewEncapsulation.None
 })
 export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
+  readonly data = input<TableDataRow[]>([]);
+
   readonly tableContainerHeight = input(100);
 
   readonly tableContainerWidth = input(100);
 
   readonly isLoading = input(false);
 
-  readonly tableConfig = input<TableConfig<any> | null>(null);
+  readonly tableConfig = input<TableConfig<never> | null>(null);
 
-  readonly rowClick = output<TableDataRow>();
+  readonly rowClick = output<never>();
 
   readonly scrolled = output();
 
   readonly filterApplied = output<DefaultTableFilters>();
 
-  readonly orderColumnChange = output<CdkDragDrop<any>>();
+  readonly orderColumnChange = output<CdkDragDrop<unknown>>();
 
   readonly columnWidthChange = output<{ columnId: string, width: number }>();
 
   readonly rowContextMenu = output<{
     event: MouseEvent;
-    row: TableDataRow;
+    row: never;
   }>();
 
   readonly dataTableQuery = viewChildren<NzTableComponent<TableDataRow>>('dataTable');
@@ -165,28 +165,25 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
 
   private readonly headerRowElChanges$ = toObservable(this.headerRowEl);
 
-  private tableData: TableDataRow[] = [];
+  private previousDataLength = 0;
 
-  private visibleItemsCount = 1;
+  private readonly resetScrollOnDataShrink = effect(() => {
+    const dataLength = this.data().length;
 
-  private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
-
-  public get data(): TableDataRow[] {
-    return this.tableData;
-  }
-
-  // eslint-disable-next-line @angular-eslint/prefer-signals
-  @Input() public set data(value: TableDataRow[]) {
-    if (this.tableData.length > value.length) {
+    if (this.previousDataLength > dataLength) {
       this.tableRef$?.pipe(
         take(1)
       ).subscribe(x => x.cdkVirtualScrollViewport?.scrollToIndex(0));
     }
 
-    this.tableData = value;
-  }
+    this.previousDataLength = dataLength;
+  });
 
-  private static getElementHeight(el?: any): number {
+  private visibleItemsCount = 1;
+
+  private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
+
+  private static getElementHeight(el?: HTMLElement): number {
     let elHeight = 0;
     if (el) {
       elHeight = el.offsetHeight as number;
@@ -211,7 +208,9 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
           }
 
           if (prev == null) {
-            const filtersLength = Object.values(curr as any).filter((f: any) => (f?.length ?? 0) > 0).length;
+            const filtersLength = Object.values(curr ?? {})
+              .filter((f): f is string | unknown[] => Array.isArray(f) || typeof f === 'string')
+              .filter(f => f.length > 0).length;
 
             return filtersLength > 0;
           }
@@ -252,7 +251,7 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
   public ngAfterViewInit(): void {
     this.tableRef$ = this.dataTableQueryChanges$.pipe(
       map(x => x.length > 0 ? x[0] : undefined),
-      filter((x): x is NzTableComponent<any> => !!x),
+      filter((x): x is NzTableComponent<TableDataRow> => !!x),
       shareReplay(1)
     );
 
@@ -261,7 +260,7 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
       switchMap(x => x.cdkVirtualScrollViewport!.scrolledIndexChange),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe((upperItemIndex: number) => {
-      if (upperItemIndex >= this.data.length - this.visibleItemsCount - 1) {
+      if (upperItemIndex >= this.data().length - this.visibleItemsCount - 1) {
         this.scrolled.emit();
       }
     });
@@ -300,15 +299,48 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
     this.getFilterControl(name)?.setValue(value);
   }
 
-  public sortChange(e: string | null, column: BaseColumnSettings<any>): void {
+  public sortChange(e: string | null, column: BaseColumnSettings<never>): void {
     this.sortedColumnId = column.id;
     this.sortedColumnOrder = e;
     column.sortChangeFn!(e);
   }
 
+  public getRowClass(config: TableConfig<never> | null | undefined, row: TableDataRow): string | null {
+    return config?.rowConfig?.rowClass?.(row as never) ?? null;
+  }
+
+  public getColumnClass(column: BaseColumnSettings<never>, row: TableDataRow): string | null {
+    return column.classFn?.(row as never) ?? null;
+  }
+
+  public getDisplayValue(column: BaseColumnSettings<never>, row: TableDataRow): string {
+    const value = column.transformFn?.(row as never) ?? this.getCellValue(row, column.id);
+    return value == null ? '' : `${value}`;
+  }
+
+  public getBadges(row: TableDataRow): string[] {
+    const badges = this.getCellValue(row, 'badges');
+    return Array.isArray(badges) ? badges.filter((badge): badge is string => typeof badge === 'string') : [];
+  }
+
+  public emitRowClick(row: TableDataRow): void {
+    this.rowClick.emit(row as never);
+  }
+
+  public emitRowContextMenu(event: MouseEvent, row: TableDataRow): void {
+    this.rowContextMenu.emit({
+      event,
+      row: row as never
+    });
+  }
+
   public openContextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedRow: TableDataRow): void {
     this.selectedRow = selectedRow;
     this.nzContextMenuService.create($event, menu);
+  }
+
+  private getCellValue(row: TableDataRow, columnId: string): unknown {
+    return (row as unknown as Record<string, unknown>)[columnId];
   }
 
   private calculateScrollHeight(): void {

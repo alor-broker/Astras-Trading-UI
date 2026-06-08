@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DOCUMENT,
+  DestroyRef,
   inject,
   InjectionToken,
   model,
@@ -16,6 +17,7 @@ import {
   fromEvent,
   take
 } from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {
   NzContentComponent,
   NzHeaderComponent,
@@ -152,6 +154,8 @@ export class DashboardPage implements OnInit, OnDestroy, ActionsContext {
 
   private readonly document = inject<Document>(DOCUMENT);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   selectInstrument(instrumentKey: InstrumentKey, groupKey: string): void {
     this.dashboardContextService.selectDashboardInstrument(instrumentKey, groupKey);
   }
@@ -222,6 +226,7 @@ export class DashboardPage implements OnInit, OnDestroy, ActionsContext {
     fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
       filter(() => !DomHelper.isModalOpen()),
       filter(e => e.ctrlKey && e.code === 'KeyF'),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe((e) => {
       e.preventDefault();
       e.stopPropagation();

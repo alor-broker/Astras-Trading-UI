@@ -1,4 +1,5 @@
 ﻿import {
+  DestroyRef,
   inject,
   Injectable
 } from '@angular/core';
@@ -30,6 +31,8 @@ export class TerminalSettingsBrokerService {
 
   private readonly terminalSettingsDesktopMigrationManager = inject<MigrationManagerBase>(TERMINAL_SETTINGS_DESKTOP_MIGRATION_MANAGER);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly saveRequestDelay = 10;
 
   private readonly saveQuery$ = new Subject<TerminalSettings>();
@@ -38,6 +41,10 @@ export class TerminalSettingsBrokerService {
 
   private get settingsKey(): string {
     return 'terminal-settings';
+  }
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.saveQuery$.complete());
   }
 
   readSettings(): Observable<ReadTerminalSettingsResult | null> {

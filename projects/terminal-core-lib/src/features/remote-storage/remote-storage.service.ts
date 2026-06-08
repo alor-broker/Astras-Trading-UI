@@ -72,8 +72,8 @@ export class RemoteStorageService {
               value: JSON.parse(r.UserSettings.Content) as unknown
             }
           };
-        } catch (e: any) {
-          this.errorHandlerService.handleError(e);
+        } catch (e: unknown) {
+          this.errorHandlerService.handleError(e instanceof Error ? e : new Error(String(e)));
 
           return {
             status: GetRecordStatus.Error,
@@ -85,7 +85,7 @@ export class RemoteStorageService {
     );
   }
 
-  getGroup(groupKey: string, retryCount = 3): Observable<StorageRecord[] | null> {
+  getGroup<T = unknown>(groupKey: string, retryCount = 3): Observable<StorageRecord<T>[] | null> {
     return this.httpClient.get<UserSettings[]>(
       `${this.baseUrl}/group/${groupKey}`,
       {
@@ -105,10 +105,10 @@ export class RemoteStorageService {
           return r.map(i => ({
             key: i.Key,
             meta: JSON.parse(i.Description) as RecordMeta,
-            value: JSON.parse(i.Content) as unknown
+            value: JSON.parse(i.Content) as T
           }));
-        } catch (e: any) {
-          this.errorHandlerService.handleError(e);
+        } catch (e: unknown) {
+          this.errorHandlerService.handleError(e instanceof Error ? e : new Error(String(e)));
 
           return null;
         }

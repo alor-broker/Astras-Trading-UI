@@ -52,7 +52,7 @@ export class NavLangSwitch implements OnInit {
   private readonly languagesConfig = inject(LANGUAGES_CONFIG);
 
   readonly availableLanguages = Object.keys(this.languagesConfig).map(k => {
-    const language = (this.languagesConfig as unknown as any)[k] as { title: string };
+    const language = (this.languagesConfig as Record<string, { title: string }>)[k];
     return {
       key: k as TerminalLanguage,
       title: language.title,

@@ -59,6 +59,10 @@ Feature должна объединять файлы одной функцион
 - Пример provider-файла: `projects/terminal-core-lib/src/features/terminal-settings/terminal-settings-storage.providers.ts`.
 - Перед созданием нового общего сервиса проверь каталог `CORE_SERVICES.md`.
 
+## Выбор механизма состояния
+
+Правила выбора между NgRx, RxJS-сервисами, signals, storage brokers и events bus вынесены в [STATE_MANAGEMENT.md](../../STATE_MANAGEMENT.md).
+
 ## Когда добавлять код в `common`
 
 Добавляй код в `common`, если он:
@@ -74,6 +78,7 @@ Feature должна объединять файлы одной функцион
 - Определена область: `common`, `config`, `assets` или конкретная `feature`.
 - Проверен `CORE_SERVICES.md`, если задача связана с сервисами.
 - Новый сервис не дублирует существующий.
+- Для нового state выбран механизм по [STATE_MANAGEMENT.md](../../STATE_MANAGEMENT.md).
 - Не добавлены импорты из других проектов репозитория.
 - Providers вынесены в `.providers` файл, если `providedIn: 'root'` невозможен.
 - Новые файлы размещены в правильных подпапках feature.
@@ -81,5 +86,7 @@ Feature должна объединять файлы одной функцион
 ## Связанные документы
 
 - `AGENTS.md` — общие правила для AI агентов.
+- [STATE_MANAGEMENT.md](../../STATE_MANAGEMENT.md) — правила выбора механизма состояния.
 - `projects/terminal-core-lib/CORE_SERVICES.md` — каталог ключевых сервисов.
+- `projects/terminal-core-lib/GRAPHQL_CONTRACTS.md` — процесс обновления GraphQL-контрактов.
 - `projects/terminal-widgets-lib/README.md` — правила для общих виджетов.

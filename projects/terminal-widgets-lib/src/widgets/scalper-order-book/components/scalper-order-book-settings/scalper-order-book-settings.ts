@@ -1,10 +1,12 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   inject,
   input,
   OnInit,
-  output
+  output,
+  ViewEncapsulation
 } from '@angular/core';
 import {
   distinctUntilChanged,
@@ -112,7 +114,9 @@ import {InputNumber} from '@terminal-core-lib/common/components/input-number/inp
     InstrumentBoardSelect,
     InlineInstrumentSearch,
     InputNumber
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class ScalperOrderBookSettings implements WidgetSettingsForm, OnInit {
   readonly guid = input.required<string>();

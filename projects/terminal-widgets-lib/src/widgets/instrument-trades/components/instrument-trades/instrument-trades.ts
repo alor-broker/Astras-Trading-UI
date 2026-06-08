@@ -101,7 +101,7 @@ export class InstrumentTrades extends LazyLoadingBaseTable<
       id: 'side_indicator',
       displayName: '',
       width: 5,
-      classFn: (data): string => `side-indicator bg-${data.side} ${data.side}`,
+      classFn: (data): string => `side-indicator bg-${data.side} ${data.side}-color`,
       transformFn: (): string => '.',
       isResizable: false,
       order: -1
@@ -115,7 +115,7 @@ export class InstrumentTrades extends LazyLoadingBaseTable<
       id: 'qty',
       displayName: 'Кол-во',
       minWidth: 70,
-      classFn: (data): string => data.side,
+      classFn: (data): string => `${data.side}-color`,
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : {
@@ -167,7 +167,7 @@ export class InstrumentTrades extends LazyLoadingBaseTable<
       id: 'side',
       displayName: 'Сторона',
       minWidth: 90,
-      classFn: (data): string => data.side,
+      classFn: (data): string => `${data.side}-color`,
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : {

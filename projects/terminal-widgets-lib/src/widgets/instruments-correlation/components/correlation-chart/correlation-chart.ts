@@ -88,6 +88,12 @@ interface MatrixCell {
   cointegration: boolean | null;
 }
 
+interface MatrixCellDatum {
+  rowInstrument: string;
+  colInstrument: string;
+  cellValue: MatrixCell;
+}
+
 interface CorrelationMatrix {
   indexes: string[];
   matrix: MatrixCell[][];
@@ -249,7 +255,7 @@ export class CorrelationChart implements OnInit, OnDestroy {
         x.translator
       );
 
-      const zoomBehavior = zoom<SVGSVGElement, any>();
+      const zoomBehavior = zoom<SVGSVGElement, unknown>();
       zoomBehavior.scaleExtent([1, 10]);
       zoomBehavior.translateExtent([[positions.matrixArea.xLeft, positions.matrixArea.yTop], [positions.matrixArea.xRight, positions.matrixArea.yBottom]]);
       zoomBehavior.extent([[positions.matrixArea.xLeft, positions.matrixArea.yTop], [positions.matrixArea.xRight, positions.matrixArea.yBottom]]);
@@ -276,8 +282,8 @@ export class CorrelationChart implements OnInit, OnDestroy {
 
   private drawMatrixArea(
     position: ItemPosition,
-    root: Selection<SVGSVGElement, any, HTMLElement, any>,
-    tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>,
+    root: Selection<SVGSVGElement, unknown, HTMLElement, unknown>,
+    tooltipContainer: Selection<HTMLDivElement, unknown, HTMLElement, unknown>,
     xScale: ScaleBand<string>,
     yScale: ScaleBand<string>,
     colorScale: ScaleDiverging<string, never>,
@@ -385,21 +391,21 @@ export class CorrelationChart implements OnInit, OnDestroy {
     return {
       onZoom: (): void => {
         matrixRows.selectAll(".cell-rect")
-          .attr("x", (d: any) => xScale(d.colInstrument)!)
-          .attr("y", (d: any) => yScale(d.rowInstrument)!)
+          .attr("x", (d: unknown) => xScale((d as MatrixCellDatum).colInstrument)!)
+          .attr("y", (d: unknown) => yScale((d as MatrixCellDatum).rowInstrument)!)
           .attr("width", xScale.bandwidth() - 1)
           .attr("height", yScale.bandwidth() - 1);
 
         matrixRows.selectAll(".cell-text")
-          .attr("x", (d: any) => xScale(d.colInstrument)! + xScale.bandwidth() / 2)
-          .attr("y", (d: any) => yScale(d.rowInstrument)! + yScale.bandwidth() / 2);
+          .attr("x", (d: unknown) => xScale((d as MatrixCellDatum).colInstrument)! + xScale.bandwidth() / 2)
+          .attr("y", (d: unknown) => yScale((d as MatrixCellDatum).rowInstrument)! + yScale.bandwidth() / 2);
       }
     };
   }
 
   private drawXAxis(
     position: ItemPosition,
-    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    root: Selection<SVGSVGElement, unknown, HTMLElement, unknown>,
     xScale: ScaleBand<string>,
   ): { onZoom: () => void } {
     const axisClipId = 'x-axis-clip';
@@ -428,8 +434,9 @@ export class CorrelationChart implements OnInit, OnDestroy {
           g.select(".domain").remove();
 
           g.selectAll('text')
-            .text((d: any) => {
-              const symbol = this.getSymbol(d);
+            .text((d: unknown) => {
+              const symbolValue = `${d}`;
+              const symbol = this.getSymbol(symbolValue);
 
               let maxLength = 3;
               const bandWidth = xScale.bandwidth();
@@ -465,7 +472,7 @@ export class CorrelationChart implements OnInit, OnDestroy {
 
   private drawYAxis(
     position: ItemPosition,
-    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    root: Selection<SVGSVGElement, unknown, HTMLElement, unknown>,
     yScale: ScaleBand<string>,
   ): { onZoom: () => void } {
     const axisClipId = 'y-axis-clip';
@@ -493,8 +500,8 @@ export class CorrelationChart implements OnInit, OnDestroy {
           g.select(".domain").remove();
 
           g.selectAll('text')
-            .text((d: any) => {
-              const symbol = this.getSymbol(d);
+            .text((d: unknown) => {
+              const symbol = this.getSymbol(`${d}`);
               if (symbol.length > 4) {
                 return `${symbol.slice(0, 4)}...`;
               }
@@ -519,7 +526,7 @@ export class CorrelationChart implements OnInit, OnDestroy {
 
   private drawColorLegend(
     position: ItemPosition,
-    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    root: Selection<SVGSVGElement, unknown, HTMLElement, unknown>,
     colorScale: ScaleDiverging<string>,
   ): void {
     const container = root.append("g")
@@ -565,7 +572,7 @@ export class CorrelationChart implements OnInit, OnDestroy {
 
   private drawSymbolsLegend(
     position: ItemPosition,
-    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    root: Selection<SVGSVGElement, unknown, HTMLElement, unknown>,
     translator: TranslatorFn
   ): void {
     const container = root.append("g")
@@ -605,9 +612,9 @@ export class CorrelationChart implements OnInit, OnDestroy {
 
   private applyTooltip<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
     selection: Selection<GElement, Datum, PElement, PDatum>,
-    tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>,
+    tooltipContainer: Selection<HTMLDivElement, unknown, HTMLElement, unknown>,
     containerSize: ContentSize,
-    onShow: (data: Datum, tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>) => void
+    onShow: (data: Datum, tooltipContainer: Selection<HTMLDivElement, unknown, HTMLElement, unknown>) => void
   ): void {
     const pointerPaddingTop = 2;
     const pointerPaddingBottom = 18;

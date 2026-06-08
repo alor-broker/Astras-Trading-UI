@@ -23,7 +23,10 @@ import {
   map,
   switchMap
 } from 'rxjs/operators';
-import {combineLatest} from 'rxjs';
+import {
+  combineLatest,
+  take
+} from 'rxjs';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {
   takeUntilDestroyed,
@@ -166,7 +169,8 @@ export class MoneyWithdrawal {
       amount: val.amount,
       currency: 'RUB'
     }).pipe(
-      finalize(() => this.isLoading.set(false))
+      finalize(() => this.isLoading.set(false)),
+      take(1)
     ).subscribe(result => {
       if (result.success) {
         this.form.reset();

@@ -19,6 +19,7 @@ import {HttpClient} from '@angular/common/http';
 import {NetworkStatusProvider} from '@terminal-core-lib/features/network-indicator/services/network-status-service.types';
 import {Capacitor} from '@capacitor/core';
 import {Network} from '@capacitor/network';
+import {LoggerService} from '../../features/logging/services/logger-service';
 
 @Injectable({providedIn: 'root'})
 export class DeviceNetworkService implements NetworkStatusProvider {
@@ -27,6 +28,8 @@ export class DeviceNetworkService implements NetworkStatusProvider {
   private readonly coreApiUrlProvider = inject(CORE_API_URL_PROVIDER);
 
   private readonly httpClient = inject(HttpClient);
+
+  private readonly loggerService = inject(LoggerService);
 
   constructor() {
     this.isOnline$ = this.createIsOnlineStream();
@@ -76,7 +79,7 @@ export class DeviceNetworkService implements NetworkStatusProvider {
         return of(false);
       }),
       distinctUntilChanged(),
-      tap(x => console.log('isOnline:', x)),
+      tap(isOnline => this.loggerService.debug(`isOnline: ${isOnline}`)),
       shareReplay({bufferSize: 1, refCount: true})
     );
   }
@@ -87,11 +90,15 @@ export class DeviceNetworkService implements NetworkStatusProvider {
         this.httpClient.get<number>(`${this.coreApiUrlProvider.apiUrl}/md/v2/time`)
       );
       return true;
-    } catch (e: any) {
+    } catch (e: unknown) {
       // If status is greater than 0, it means we received a response (even if it's an error like 404 or 500).
       // This confirms that the server is reachable.
       // Status 0 usually indicates a network error or CORS issue.
-      return e.status != null && e.status > 0;
+      return typeof e === 'object'
+        && e !== null
+        && 'status' in e
+        && typeof e.status === 'number'
+        && e.status > 0;
     }
   }
 }

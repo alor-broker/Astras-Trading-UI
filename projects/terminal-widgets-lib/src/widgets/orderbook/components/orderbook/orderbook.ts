@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   input,
   OnInit,
@@ -102,9 +103,15 @@ export class OrderBookComponent implements OnInit {
 
   private readonly instrumentsService = inject(InstrumentsService);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly minSpreadDiffPercentForColorChange = 0.3;
 
   private readonly maxSpreadDiffPercentForColorChange = 1;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.sizes.complete());
+  }
 
   ngOnInit(): void {
     this.ob$ = this.settingsChanges$.pipe(

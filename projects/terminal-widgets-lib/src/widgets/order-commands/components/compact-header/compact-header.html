@@ -21,12 +21,12 @@
           <div>
             <label>Bid: </label>
             <span (click)="priceSelected.emit(priceData.bid)"
-                  class="selectable buy">{{ priceData.bid | atsPrice:  getPriceDecimalSymbolsCount(instrument) }}</span>
+                  class="selectable buy-color">{{ priceData.bid | atsPrice:  getPriceDecimalSymbolsCount(instrument) }}</span>
           </div>
           <div>
             <label>Ask: </label>
             <span (click)="priceSelected.emit(priceData.ask)"
-                  class="selectable sell">{{ priceData.ask | atsPrice: getPriceDecimalSymbolsCount(instrument) }}</span>
+                  class="selectable sell-color">{{ priceData.ask | atsPrice: getPriceDecimalSymbolsCount(instrument) }}</span>
           </div>
         }
       </div>

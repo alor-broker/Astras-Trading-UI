@@ -128,6 +128,7 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.events$.complete();
+    this.selectedDate$.complete();
     this.selectedDateEvents$.complete();
   }
 

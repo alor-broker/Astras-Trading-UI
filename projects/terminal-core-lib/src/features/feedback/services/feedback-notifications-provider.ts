@@ -9,9 +9,11 @@
   timer
 } from 'rxjs';
 import {
+  DestroyRef,
   inject,
   Injectable
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FeedbackService} from './feedback.service';
 import {
   map,
@@ -32,6 +34,8 @@ import {addMinutes} from 'date-fns';
 export class FeedbackNotificationsProvider implements NotificationsProvider {
   private readonly feedbackService = inject(FeedbackService);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly translatorService = inject(TranslatorService);
 
   private readonly timezoneConverterService = inject(TimezoneConverterService);
@@ -39,7 +43,12 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
   private readonly readFeedbackMeta$ = new BehaviorSubject<boolean>(false);
 
   constructor() {
+    this.destroyRef.onDestroy(() => this.readFeedbackMeta$.complete());
+
     this.feedbackService.unansweredFeedbackRemoved$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(() => this.readFeedbackMeta$.next(true));
   }
 

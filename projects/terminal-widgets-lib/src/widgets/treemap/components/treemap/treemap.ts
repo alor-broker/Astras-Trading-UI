@@ -33,13 +33,17 @@ import {ApplicationStatusService} from "@terminal-core-lib/common/services/appli
 import {
   ActiveElement,
   Chart,
-  ChartEvent
+  ChartConfiguration,
+  ChartEvent,
+  TooltipModel
 } from "chart.js/auto";
 import {MarketService} from "@terminal-core-lib/features/market-config/market.service";
 import {ACTIONS_CONTEXT} from '@terminal-core-lib/features/dashboard/types/dashboard-actions-context.types';
 import {TreemapWidgetSettings} from '@terminal-widgets-lib/widgets/treemap/widget-settings.types';
 import {
   TreemapController,
+  TreemapControllerDatasetOptions,
+  TreemapDataPoint,
   TreemapElement
 } from "chartjs-chart-treemap";
 import {TreemapNode} from "../../services/treemap-service.types";
@@ -64,8 +68,23 @@ interface TooltipModelRaw {
     children: {
       symbol: string;
       dayChange: number;
+      dayChangeAbs: number;
       marketCap: number;
     }[];
+  };
+}
+
+interface TreemapRawDataPoint extends TreemapDataPoint {
+  _data: TooltipModelRaw['_data'];
+}
+
+interface TreemapScriptableContext {
+  raw: TreemapRawDataPoint;
+}
+
+interface TreemapElementWithContext {
+  $context: {
+    raw: TreemapRawDataPoint;
   };
 }
 
@@ -124,7 +143,7 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
   // this widget works  with MOEX exchange only
   private readonly defaultExchange = 'MOEX';
 
-  private chart?: Chart;
+  private chart?: Chart<'treemap'>;
 
   private readonly selectedSector$ = new BehaviorSubject('');
 
@@ -198,6 +217,7 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
           data: {
             datasets: [
               {
+                data: [],
                 tree: treemap,
                 key: 'marketCap',
                 groups: ['sector', 'symbol'],
@@ -210,12 +230,12 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
                 },
                 labels: {
                   display: true,
-                  formatter: (t: any) => [t.raw._data.symbol, `${formatNumber(t.raw._data.children[0]?.dayChange, this.locale, '1.1-2')}%`] as string[],
+                  formatter: (t: TreemapScriptableContext) => [t.raw._data.children[0]?.symbol ?? '', `${formatNumber(t.raw._data.children[0]?.dayChange, this.locale, '1.1-2')}%`] as string[],
                   overflow: 'fit',
                   color: themeColors.textColor,
                   font: [{weight: '500'}, {weight: '400'}]
                 },
-                backgroundColor: (t: any) => {
+                backgroundColor: (t: TreemapScriptableContext) => {
                   if (t.raw?._data.label === t.raw?._data.sector) {
                     return themeColors.chartShadow;
                   } else {
@@ -231,7 +251,7 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
                   }
                 },
                 borderRadius: 4
-              } as any
+              } as unknown as TreemapControllerDatasetOptions<TreemapNode>
             ],
           },
           options: {
@@ -249,7 +269,7 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
               },
               tooltip: {
                 position: 'nearest',
-                external: ({tooltip}: { tooltip: any }): void => {
+                external: ({tooltip}: { tooltip: TooltipModel<'treemap'> }): void => {
                   // Hide if no tooltip
                   if (tooltip.opacity === 0) {
                     this.isTooltipVisible$.next(false);
@@ -258,7 +278,7 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
                     this.isTooltipVisible$.next(true);
                   }
 
-                  this.newTooltip$.next(tooltip.dataPoints.map((dp: any) => dp.raw as TooltipModelRaw));
+                  this.newTooltip$.next(tooltip.dataPoints.map(dp => dp.raw as unknown as TooltipModelRaw));
                 },
                 enabled: false
               },
@@ -274,24 +294,29 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
                       if (sector) {
                         this.selectedSector$.next('');
                       } else {
-                        this.selectedSector$.next((<any>elements[0].element).$context.raw.g);
+                        this.selectedSector$.next(this.getElementGroup(elements[0]) ?? '');
                       }
                     }, 0);
                   });
               }
 
               if (elements.length > 1) {
-                this.selectInstrument((<any>elements[1].element).$context.raw.g);
+                const symbol = this.getElementGroup(elements[1]);
+                if (symbol != null) {
+                  this.selectInstrument(symbol);
+                }
               }
             }
           }
-        } as any);
+        } as unknown as ChartConfiguration<'treemap'>);
       });
   }
 
   ngOnDestroy(): void {
     this.selectedSector$.complete();
     this.isCursorOnSector$.complete();
+    this.isTooltipVisible$.complete();
+    this.tilesCount$.complete();
     this.newTooltip$.complete();
   }
 
@@ -366,5 +391,9 @@ export class Treemap implements AfterViewInit, OnInit, OnDestroy {
           },
           s.badgeColor!);
       });
+  }
+
+  private getElementGroup(element: ActiveElement): string | null {
+    return (element.element as unknown as TreemapElementWithContext).$context.raw.g ?? null;
   }
 }

@@ -5,7 +5,7 @@
 
 export interface DefaultDashboardItem {
   widgetTypeId: string;
-  initialSettings?: Record<string, any>;
+  initialSettings?: Record<string, unknown>;
 }
 
 export interface DefaultDesktopDashboardItem extends DefaultDashboardItem {

@@ -37,6 +37,10 @@ export class HoverItemsGroup<T = never> implements HoverItemsGroupHandler<T>, On
 
   private readonly hoveredItem$ = new BehaviorSubject<{ item: HoverItem<T> } | null>(null);
 
+  constructor() {
+    this.destroyRef.onDestroy(() => this.hoveredItem$.complete());
+  }
+
   removeItemHover(item: HoverItem<T>): void {
     this.hoveredItem$.pipe(
       take(1)

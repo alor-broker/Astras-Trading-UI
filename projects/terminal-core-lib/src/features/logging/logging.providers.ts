@@ -6,7 +6,7 @@
 import {LoggerService} from './services/logger-service';
 import {LOGGER} from './loggers/logger.types';
 
-export function provideLogging(loggers: Type<any>[]): EnvironmentProviders {
+export function provideLogging(loggers: Type<unknown>[]): EnvironmentProviders {
   return makeEnvironmentProviders([
     ...loggers.map(t => ({
       provide: LOGGER,

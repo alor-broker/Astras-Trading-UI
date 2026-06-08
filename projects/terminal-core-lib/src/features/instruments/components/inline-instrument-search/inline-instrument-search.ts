@@ -172,7 +172,7 @@ export class InlineInstrumentSearch implements OnInit, OnDestroy, ControlValueAc
     this.onValueChanged = fn;
   }
 
-  registerOnTouched(fn: (...args: any[]) => any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
