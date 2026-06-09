@@ -55,9 +55,18 @@ Feature должна объединять файлы одной функцион
 ## Services и providers
 
 - Предпочитай `@Injectable({ providedIn: 'root' })`.
-- Если сервис не может быть `providedIn: 'root'`, например инжектит token, который не доступен в root, объявляй providers в отдельном файле с суффиксом `.providers`.
+- Если сервис является singleton и не хранит feature/page/component scoped state, используй `@Injectable({ providedIn: 'root' })`.
+- Если сервис хранит состояние конкретной страницы, диалога, wizard-flow, временный timer или другой state, который должен сбрасываться при уничтожении feature, не делай его singleton. Подключай такой сервис через provider текущей feature/component.
+- Если сервис не может быть `providedIn: 'root'`, например инжектит token, который не доступен в root или намеренно scoped к feature/component, объявляй providers в отдельном файле с суффиксом `.providers`.
 - Пример provider-файла: `projects/terminal-core-lib/src/features/terminal-settings/terminal-settings-storage.providers.ts`.
 - Перед созданием нового общего сервиса проверь каталог `CORE_SERVICES.md`.
+
+## HTTP clients и контракты
+
+- HTTP client service должен инкапсулировать endpoint URL, `HttpClient` вызов и обработку контрактных HTTP ошибок через `catchHttpError(...)`.
+- Component/state services должны работать с типизированным результатом API service (`T`, `T | null`, discriminated union), а не разбирать `HttpErrorResponse`.
+- DTO и enum values добавляй только для реально используемого endpoint. Если OpenAPI schema содержит значение, которое описание относит к другому API, не включай его в клиентский тип этого feature.
+- Для Angular-created services, hooks, components и directives предпочитай `DestroyRef` + `takeUntilDestroyed(...)`; ручной `destroy$` оставляй только для не-Angular lifecycle или существующего механизма, который нельзя заменить локально.
 
 ## Выбор механизма состояния
 

@@ -1,0 +1,28 @@
+<nz-modal
+  (nzOnCancel)="close()"
+  *transloco="let t; scope: 'contour-switch/activation-dialog'"
+  [nzFooter]="null"
+  [nzTitle]="t('contourSwitchActivationDialog.title')"
+  [nzVisible]="isVisible()">
+  <ng-container *nzModalContent>
+    <nz-result
+      [nzStatus]="resultStatus()"
+      [nzSubTitle]="cooldownSeconds() == null
+        ? ''
+        : t('contourSwitchActivationDialog.cooldown', {seconds: cooldownSeconds()})"
+      [nzTitle]="t('contourSwitchActivationDialog.messages.' + message())">
+      @if (isActionVisible()) {
+        <div nz-result-extra>
+          <button
+            (click)="activateCurrentContour()"
+            [disabled]="isActionDisabled()"
+            [nzLoading]="isActivationLoading()"
+            nz-button
+            nzType="primary">
+            {{ t('contourSwitchActivationDialog.activateButton') }}
+          </button>
+        </div>
+      }
+    </nz-result>
+  </ng-container>
+</nz-modal>
