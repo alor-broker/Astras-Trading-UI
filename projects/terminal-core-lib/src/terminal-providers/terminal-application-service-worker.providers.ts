@@ -15,7 +15,7 @@ export function provideTerminalServiceWorker(
 ): EnvironmentProviders[] {
   return [
     provideServiceWorker(options.script ?? 'ngsw-worker.js', {
-      enabled: false,
+      enabled: options.enabled,
       registrationStrategy: options.registrationStrategy ?? 'registerWithDelay:60000',
     })
   ];
