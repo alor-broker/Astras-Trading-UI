@@ -2,6 +2,7 @@
   inject,
   Injectable
 } from "@angular/core";
+import {DOCUMENT} from '@angular/common';
 import {
   distinct,
   filter,
@@ -34,6 +35,8 @@ export class TranslationHook implements Hook {
 
   private readonly nzI18nService = inject(NzI18nService);
 
+  private readonly document = inject(DOCUMENT);
+
   private langChangeSubscription?: Subscription;
 
   onDestroy(): void {
@@ -59,6 +62,7 @@ export class TranslationHook implements Hook {
       )
       .subscribe(lang => {
         this.translatorService.setActiveLang(lang);
+        this.document.documentElement.lang = lang;
       });
 
     this.langChangeSubscription.add(
