@@ -11,6 +11,11 @@
     "Home": "Home",
     "Trading": "Trading",
     "Lite Dashboard": "Lite Dashboard",
-    "All Clients": "All Clients"
+    "All Clients": "All Clients",
+    "Portfolio Analysis": "Portfolio Analysis",
+    "Bonds": "Bonds",
+    "Scalping": "Scalping",
+    "Options": "Options",
+    "My Dashboard": "My Dashboard"
   }
 }

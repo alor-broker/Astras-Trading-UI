@@ -111,6 +111,10 @@ export const DashboardsInternalActions = createActionGroup({
     "Drop": props<{
       dashboardGuid: string;
     }>(),
+    "Set Instruments Selection": props<{
+      dashboardGuid: string;
+      instrumentsSelection: InstrumentGroups;
+    }>(),
     "CleanInitialSettings": props<{ items: { dashboardGuid: string, itemGuids: string[] }[] }>(),
   }
 });

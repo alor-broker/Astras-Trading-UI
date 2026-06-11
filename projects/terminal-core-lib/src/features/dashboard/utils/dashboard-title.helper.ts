@@ -8,7 +8,12 @@ export class DashboardTitleHelper {
       'Home',
       'Trading',
       'Lite Dashboard',
-      'All Clients'
+      'All Clients',
+      'Portfolio Analysis',
+      'Bonds',
+      'Scalping',
+      'Options',
+      'My Dashboard'
     ];
 
     for (const defaultTitle of defaultTitles) {
