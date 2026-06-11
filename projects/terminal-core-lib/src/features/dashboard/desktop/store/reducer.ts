@@ -292,6 +292,26 @@ const reducer = createReducer(
     return adapter.removeOne(props.dashboardGuid, updatedState);
   }),
 
+  on(DashboardsInternalActions.setInstrumentsSelection, (state, props) => {
+    const targetDashboard = state.entities[props.dashboardGuid];
+    if (!targetDashboard) {
+      return state;
+    }
+
+    return adapter.updateOne({
+        id: props.dashboardGuid,
+        changes: {
+          instrumentsSelection: Object.fromEntries(
+            Object.entries(props.instrumentsSelection).map(([groupKey, instrumentKey]) => [
+              groupKey,
+              InstrumentKeyHelper.toInstrumentKey(instrumentKey)
+            ])
+          )
+        }
+      },
+      state);
+  }),
+
   on(DashboardsManageActions.removeAll, (state) => adapter.removeAll(state)),
 
   on(DashboardsCurrentSelectionActions.selectPortfolio, (state, props) => {

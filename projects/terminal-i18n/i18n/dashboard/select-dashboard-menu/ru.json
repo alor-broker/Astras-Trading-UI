@@ -11,6 +11,11 @@
     "Home": "Домашний",
     "Trading": "Торговля",
     "Lite Dashboard": "Легкий дашборд",
-    "All Clients": "Все клиенты"
+    "All Clients": "Все клиенты",
+    "Portfolio Analysis": "Анализ портфеля",
+    "Bonds": "Облигации",
+    "Scalping": "Скальпинг",
+    "Options": "Опционы",
+    "My Dashboard": "Мой дашборд"
   }
 }
