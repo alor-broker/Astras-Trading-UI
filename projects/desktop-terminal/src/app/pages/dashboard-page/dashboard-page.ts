@@ -62,6 +62,8 @@ import {TerminalSettingsBrokerService} from '../../settings-brokers/terminal-set
 import {ApplyFontHook} from '@terminal-core-lib/features/themes/hooks/apply-font.hook';
 import {InitQueryParamsHook} from '@terminal-core-lib/common/hooks/init-query-params-hook';
 import {UserPortfoliosHelper} from '@terminal-core-lib/features/portfolios/utils/user-portfolios.helper';
+import {ContourActivationDialog} from '@terminal-core-lib/features/contour-switch/components/contour-activation-dialog/contour-activation-dialog';
+import {ContourActivationHook} from '@terminal-core-lib/features/contour-switch/hooks/contour-activation-hook';
 
 const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
 
@@ -79,6 +81,7 @@ const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
     FeedbackDialog,
     ApplicationUpdatedWidgetComponent,
     UrgentNotificationDialogComponent,
+    ContourActivationDialog,
   ],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.less',
@@ -115,6 +118,11 @@ const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
     {
       provide: PAGE_HOOK,
       useClass: CleanDirtySettingsHook,
+      multi: true
+    },
+    {
+      provide: PAGE_HOOK,
+      useClass: ContourActivationHook,
       multi: true
     },
     {

@@ -38,6 +38,8 @@ import {Navbar} from '../../components/navbar/navbar';
 import {InstrumentsHistory} from '../../components/instruments-history/instruments-history';
 import {DashboardContent} from '../../components/dashboard-content/dashboard-content';
 import {TranslationHook} from '@terminal-core-lib/features/translations/hooks/translation-hook';
+import {ContourActivationDialog} from '@terminal-core-lib/features/contour-switch/components/contour-activation-dialog/contour-activation-dialog';
+import {ContourActivationHook} from '@terminal-core-lib/features/contour-switch/hooks/contour-activation-hook';
 
 const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
 
@@ -51,7 +53,8 @@ const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
     FeedbackDialog,
     Navbar,
     InstrumentsHistory,
-    DashboardContent
+    DashboardContent,
+    ContourActivationDialog
   ],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.less',
@@ -63,6 +66,11 @@ const PAGE_HOOK = new InjectionToken<Hook[]>('PAGE_HOOK');
     {
       provide: PAGE_HOOK,
       useClass: TranslationHook,
+      multi: true
+    },
+    {
+      provide: PAGE_HOOK,
+      useClass: ContourActivationHook,
       multi: true
     },
     {
