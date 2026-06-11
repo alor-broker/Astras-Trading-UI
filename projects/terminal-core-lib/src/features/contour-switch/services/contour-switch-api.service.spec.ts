@@ -37,7 +37,7 @@ describe('ContourSwitchApiService', () => {
   it('should get the current contour status', async () => {
     const resultPromise = firstValueFrom(service.getStatus());
 
-    const req = httpTestingController.expectOne('https://api.test/client/contour');
+    const req = httpTestingController.expectOne('https://api.test/contourswitch');
     expect(req.request.method).toBe('GET');
     req.flush({state: ContourState.Inactive});
 
@@ -47,7 +47,7 @@ describe('ContourSwitchApiService', () => {
   it('should return null when status check fails', async () => {
     const resultPromise = firstValueFrom(service.getStatus());
 
-    const req = httpTestingController.expectOne('https://api.test/client/contour');
+    const req = httpTestingController.expectOne('https://api.test/contourswitch');
     req.flush({code: ContourErrorCode.ContourStateUnavailable, message: 'error'}, {
       status: 503,
       statusText: 'Service Unavailable'
@@ -59,7 +59,7 @@ describe('ContourSwitchApiService', () => {
   it('should activate the current contour', async () => {
     const resultPromise = firstValueFrom(service.activateCurrentContour());
 
-    const req = httpTestingController.expectOne('https://api.test/client/contour/actions/activate');
+    const req = httpTestingController.expectOne('https://api.test/contourswitch/actions/activate');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toBeNull();
     req.flush({state: ContourState.Active});
@@ -73,7 +73,7 @@ describe('ContourSwitchApiService', () => {
   it('should return a contour error result when activation fails', async () => {
     const resultPromise = firstValueFrom(service.activateCurrentContour());
 
-    const req = httpTestingController.expectOne('https://api.test/client/contour/actions/activate');
+    const req = httpTestingController.expectOne('https://api.test/contourswitch/actions/activate');
     req.flush({
       code: ContourErrorCode.SwitchCooldown,
       message: 'error',

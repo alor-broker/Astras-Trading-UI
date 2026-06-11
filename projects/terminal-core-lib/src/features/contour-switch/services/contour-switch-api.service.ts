@@ -29,7 +29,7 @@ export class ContourSwitchApiService {
 
   private readonly httpClient = inject(HttpClient);
 
-  private readonly contourUrl = `${this.coreApiUrlProvider.apiUrl}/client/contour`;
+  private readonly contourUrl = `${this.coreApiUrlProvider.apiUrl}/contourswitch`;
 
   getStatus(): Observable<ContourStatusResponse | null> {
     return this.httpClient.get<ContourStatusResponse>(this.contourUrl).pipe(
