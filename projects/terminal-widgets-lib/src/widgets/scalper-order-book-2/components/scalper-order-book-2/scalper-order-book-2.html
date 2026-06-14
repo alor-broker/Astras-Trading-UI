@@ -1,0 +1,13 @@
+<ng-container *ngrxLet="{ gridSettings: gridSettings$ } as vm">
+  <div [class.active]="isActive()" class="container">
+    <div
+      [style.font-size]="vm.gridSettings.fontSize + 'px'"
+      class="order-book-body"
+    >
+      <ats-scalper-order-book-2-body [guid]="guid()" [isActive]="isActive()"/>
+    </div>
+    <div>
+      <ats-current-position-panel [guid]="guid()" [hideTooltips]="(hideTooltips$ | async) ?? false"/>
+    </div>
+  </div>
+</ng-container>

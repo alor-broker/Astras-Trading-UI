@@ -97,7 +97,8 @@
               "flat",
               "json-patch",
               "gql-query-builder",
-              "moment"
+              "moment",
+              "@xmldom/xmldom"
             ],
             "serviceWorker": "projects/desktop-terminal/ngsw-config.json"
           },
@@ -271,7 +272,8 @@
               "flat",
               "json-patch",
               "gql-query-builder",
-              "moment"
+              "moment",
+              "@xmldom/xmldom"
             ],
             "serviceWorker": "projects/mobile-terminal/ngsw-config.json"
           },
@@ -440,7 +442,8 @@
               "flat",
               "json-patch",
               "gql-query-builder",
-              "moment"
+              "moment",
+              "@xmldom/xmldom"
             ]
           },
           "configurations": {

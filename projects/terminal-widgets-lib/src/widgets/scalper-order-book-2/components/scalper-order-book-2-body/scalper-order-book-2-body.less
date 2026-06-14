@@ -1,0 +1,62 @@
+ats-scalper-order-book-2-body {
+  color: var(--ats-text-max-contrast-color);
+
+  .ant-spin-nested-loading {
+    height: 100%;
+
+    .ant-spin-container {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  .container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+  }
+
+  .surface-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--ats-component-background);
+
+    .panel-resize-handle {
+      position: absolute;
+      top: 0;
+      width: 10px;
+      height: 100%;
+      cursor: col-resize;
+      z-index: 10;
+    }
+
+    .ruler-marker {
+      position: absolute;
+      z-index: 10000;
+      pointer-events: none;
+
+      .marker {
+        display: inline-block;
+        min-width: 15px;
+        padding: 0 2px;
+        color: white;
+        text-align: center;
+        background-color: var(--ats-primary-color);
+        border: 1px solid var(--ats-border-color-active);
+        border-radius: var(--ats-border-radius-base);
+      }
+
+      &.left {
+        .marker {
+          transform: translateX(-100%);
+        }
+      }
+    }
+  }
+
+  #possible-actions-panel-container {
+    pointer-events: none;
+  }
+}

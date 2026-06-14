@@ -8,6 +8,7 @@ import {WIDGET_COMPONENT_REGISTRY} from '@terminal-core-lib/features/dashboard/t
 import {WatchlistsWidget} from '@terminal-widgets-lib/widgets/watchlists/watchlists-widget/watchlists-widget';
 import {OrderbookWidget} from '@terminal-widgets-lib/widgets/orderbook/orderbook-widget/orderbook-widget';
 import {ScalperOrderBookWidget} from '@terminal-widgets-lib/widgets/scalper-order-book/scalper-order-book-widget/scalper-order-book-widget';
+import {ScalperOrderBook2Widget} from '@terminal-widgets-lib/widgets/scalper-order-book-2/scalper-order-book-2-widget/scalper-order-book-2-widget';
 import {LightChartWidget} from '@terminal-widgets-lib/widgets/light-chart/light-chart-widget/light-chart-widget';
 import {TechChartWidget} from '@terminal-widgets-lib/widgets/tech-chart/tech-chart-widget/tech-chart-widget';
 import {BlotterWidget} from '@terminal-widgets-lib/widgets/blotter/blotter-widget/blotter-widget';
@@ -35,6 +36,7 @@ const ADMIN_WIDGET_REGISTRY: Map<string, Type<unknown>> = new Map<string, Type<u
   ['instrument-select', WatchlistsWidget],
   ['order-book', OrderbookWidget],
   ['scalper-order-book', ScalperOrderBookWidget],
+  ['scalper-orderbook-2', ScalperOrderBook2Widget],
   ['light-chart', LightChartWidget],
   ['tech-chart', TechChartWidget],
   ['blotter', BlotterWidget],

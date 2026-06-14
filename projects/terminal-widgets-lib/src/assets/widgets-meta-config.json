@@ -90,6 +90,34 @@
     ]
   },
   {
+    "typeId": "scalper-orderbook-2",
+    "widgetName": {
+      "default": "Scalper Orderbook 2",
+      "translations": {
+        "ru": "Скальперский стакан 2",
+        "en": "Scalper Orderbook 2",
+        "hy": "Թրեյդերների գնանշումների ցուցակ 2"
+      }
+    },
+    "category": "chartsAndOrderbooks",
+    "desktopMeta": {
+      "headerIcon": "ats-scalper-orderbook",
+      "galleryIcon": "ats-scalper-orderbook",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 6
+      },
+      "hasZeroPaddings": true,
+      "galleryOrder": 3,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
     "typeId": "light-chart",
     "widgetName": {
       "default": "Chart",
