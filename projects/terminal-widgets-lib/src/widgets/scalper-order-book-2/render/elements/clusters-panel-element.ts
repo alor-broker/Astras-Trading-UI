@@ -5,17 +5,36 @@ import {
 } from 'pixi.js';
 import {TradesClusterHighlightMode} from '@terminal-widgets-lib/widgets/scalper-order-book/widget-settings.types';
 import {TradesCluster} from '@terminal-widgets-lib/widgets/scalper-order-book/types/trades-clusters.types';
+import {BodyRow} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
 import {
+  ClustersDisplaySettings,
   DirtyFlags,
   FillSpec,
+  FontProvider,
   FrameContext,
+  ValueFormatters,
   VisibleRange
 } from '../render-contracts';
 import {ColorHelper} from '../color-helper';
 import {RenderElement} from './render-element';
 
 /** Правый отступ текста объема в px. */
-const TEXT_RIGHT_PADDING_PX = 8;
+const TEXT_RIGHT_PADDING_PX = 2;
+
+/**
+ * Зазор обрезки текста у левого края колонки: длинное число обрезается чуть раньше
+ * разделителя и не упирается в него.
+ */
+const COLUMN_TEXT_GAP = 2;
+
+/** Минимальное скрытое смещение в px, при котором показывается индикатор прокрутки. */
+const SCROLL_INDICATOR_THRESHOLD = 3;
+
+/** Ширина цветовой тени-индикатора прокрутки у края панели в px. */
+const SCROLL_INDICATOR_WIDTH = 6;
+
+/** Пиковая прозрачность тени-индикатора прокрутки у самого края. */
+const SCROLL_INDICATOR_PEAK_ALPHA = 0.25;
 
 /** Целевой объем по умолчанию для режима подсветки TargetVolume. */
 const DEFAULT_TARGET_VOLUME = 10000;
@@ -32,6 +51,18 @@ interface CellAggregate {
   volume: number | null;
   buyQty: number;
   sellQty: number;
+}
+
+/**
+ * Слот одной колонки: собственный контейнер с маской и пул текстов.
+ * Маска ограничена прямоугольником колонки, поэтому текст не может попасть
+ * в соседнюю колонку даже при сильном переполнении.
+ */
+interface ColumnSlot {
+  container: Container;
+  mask: Graphics;
+  texts: BitmapText[];
+  usedTexts: number;
 }
 
 /**
@@ -62,9 +93,15 @@ export class ClustersPanelElement implements RenderElement {
   // Вертикальные разделители колонок и рамки строк максимального объема.
   private readonly borderGraphics = new Graphics();
 
-  private readonly textContainer = new Container();
+  // Слой колонок: содержит слоты, лежит под индикатором прокрутки.
+  private readonly slotsLayer = new Container();
 
-  private readonly textPool: BitmapText[] = [];
+  // Цветовая тень-индикатор горизонтальной прокрутки у краев панели (поверх контента).
+  private readonly scrollIndicatorGraphics = new Graphics();
+
+  // Слоты колонок: каждый со своей маской, чтобы текст одной колонки
+  // не мог быть виден в соседней.
+  private readonly columnSlots: ColumnSlot[] = [];
 
   // Кэш агрегации по колонкам: пересчитывается только при изменении строк,
   // данных кластеров или видимого диапазона. Кадры hover/прокрутки используют кэш.
@@ -82,24 +119,26 @@ export class ClustersPanelElement implements RenderElement {
     this.container.addChild(this.backgroundGraphics);
     this.container.addChild(this.gridGraphics);
     this.container.addChild(this.borderGraphics);
-    this.container.addChild(this.textContainer);
+    this.container.addChild(this.slotsLayer);
+    this.container.addChild(this.scrollIndicatorGraphics);
   }
 
   update(ctx: FrameContext): void {
     this.backgroundGraphics.clear();
     this.gridGraphics.clear();
     this.borderGraphics.clear();
+    this.scrollIndicatorGraphics.clear();
 
     const panel = ctx.layout.clusters;
     const range = ctx.visibleRange;
     if (panel == null || range == null) {
-      this.hideTextsFrom(0);
+      this.hideSlotsFrom(0);
       return;
     }
 
     const columnWidth = ctx.clustersScroll.columnWidth;
     const clusters = ctx.model.clusters;
-    let usedTexts = 0;
+    let visibleColumnIndex = 0;
 
     for (let col = 0; col < clusters.length; col++) {
       const left = (col * columnWidth) - ctx.clustersScroll.offset;
@@ -107,35 +146,80 @@ export class ClustersPanelElement implements RenderElement {
         continue;
       }
 
-      usedTexts = this.drawColumn(ctx, range, clusters[col], col, left, usedTexts);
+      const slot = this.acquireColumnSlot(visibleColumnIndex);
+
+      // Маска слота ограничена прямоугольником колонки (с зазором слева у разделителя).
+      const maskLeft = left + COLUMN_TEXT_GAP;
+      const maskWidth = columnWidth - COLUMN_TEXT_GAP;
+      if (maskWidth > 0) {
+        slot.mask.rect(maskLeft, 0, maskWidth, ctx.viewport.height).fill(0xffffff);
+      }
+
+      this.drawColumn(ctx, range, clusters[col], col, left, slot);
+      visibleColumnIndex++;
     }
 
-    this.hideTextsFrom(usedTexts);
+    this.hideSlotsFrom(visibleColumnIndex);
+    this.drawScrollIndicators(ctx, panel.width);
   }
 
   destroy(): void {
-    for (const text of this.textPool) {
-      text.destroy();
+    for (const slot of this.columnSlots) {
+      slot.container.destroy({children: true});
     }
 
-    this.textPool.length = 0;
+    this.columnSlots.length = 0;
 
     this.backgroundGraphics.destroy();
     this.gridGraphics.destroy();
     this.borderGraphics.destroy();
-    this.textContainer.destroy();
+    this.slotsLayer.destroy();
+    this.scrollIndicatorGraphics.destroy();
     this.container.destroy();
   }
 
-  /** Рисует одну колонку кластера. Возвращает количество занятых текстов пула. */
+  /**
+   * Цветовая тень-индикатор у краев панели, когда есть прокрученный контент:
+   * слева - если часть колонок скрыта слева, справа - если скрыта справа.
+   * Повторяет inset box-shadow исходной DOM-версии.
+   */
+  private drawScrollIndicators(ctx: FrameContext, panelWidth: number): void {
+    const scroll = ctx.clustersScroll;
+    const leftHidden = scroll.offset;
+    const rightHidden = scroll.totalWidth - panelWidth - scroll.offset;
+    const height = ctx.viewport.height;
+    const primary = ctx.theme.primary;
+
+    if (leftHidden > SCROLL_INDICATOR_THRESHOLD) {
+      this.drawEdgeShadow(0, height, primary, false);
+    }
+
+    if (rightHidden > SCROLL_INDICATOR_THRESHOLD) {
+      this.drawEdgeShadow(panelWidth, height, primary, true);
+    }
+  }
+
+  /** Рисует затухающую от края внутрь полосу-тень (ступенчатая прозрачность). */
+  private drawEdgeShadow(edgeX: number, height: number, color: FillSpec, fromRight: boolean): void {
+    for (let i = 0; i < SCROLL_INDICATOR_WIDTH; i++) {
+      const fade = (SCROLL_INDICATOR_WIDTH - i) / SCROLL_INDICATOR_WIDTH;
+      // Мягкая тень: невысокая пиковая прозрачность и квадратичное затухание,
+      // чтобы индикатор не отвлекал внимание.
+      const alpha = color.alpha * SCROLL_INDICATOR_PEAK_ALPHA * fade * fade;
+      const x = fromRight ? edgeX - (i + 1) : edgeX + i;
+      this.scrollIndicatorGraphics.rect(x, 0, 1, height).fill({color: color.color, alpha});
+    }
+  }
+
+  /** Рисует одну колонку кластера в её изолированный слот. */
   private drawColumn(
     ctx: FrameContext,
     range: VisibleRange,
     cluster: TradesCluster,
     columnIndex: number,
     left: number,
-    textStartIndex: number
-  ): number {
+    slot: ColumnSlot
+  ): void {
     const rowHeight = ctx.viewport.rowHeight;
     const columnWidth = ctx.clustersScroll.columnWidth;
     const right = left + columnWidth;
@@ -150,9 +234,8 @@ export class ClustersPanelElement implements RenderElement {
       alpha: borderColor.alpha
     });
 
-    const {cells, maxVolume} = this.getColumnCells(ctx, cluster, range, columnIndex);
+    const {cells, maxVolume} = this.getColumnCells(ctx.model.rows, ctx.model.clusters, cluster, range, columnIndex);
 
-    let textIndex = textStartIndex;
     for (let i = range.start; i <= range.end && i < ctx.model.rows.length; i++) {
       const row = ctx.model.rows[i];
       const cell = cells[i - range.start];
@@ -196,35 +279,70 @@ export class ClustersPanelElement implements RenderElement {
       }
 
       if (cell.volume != null) {
-        this.drawVolumeText(ctx, cell.volume, right, y, textIndex);
-        textIndex++;
+        this.drawVolumeText(ctx, cell.volume, right, y, slot);
       }
     }
 
-    return textIndex;
+    this.hideSlotTextsFrom(slot, slot.usedTexts);
+  }
+
+  /**
+   * Ширина колонки кластера по содержимому: самый широкий видимый объем плюс отступы.
+   * Колонка не уже содержимого, поэтому числа не обрезаются; лишняя ширина
+   * обрабатывается горизонтальной прокруткой панели.
+   */
+  measureColumnContentWidth(
+    rows: BodyRow[],
+    range: VisibleRange,
+    clusters: TradesCluster[],
+    settings: ClustersDisplaySettings,
+    fonts: FontProvider,
+    formatters: ValueFormatters,
+    fontSize: number
+  ): number {
+    let maxText = 0;
+
+    for (let col = 0; col < clusters.length; col++) {
+      const {cells} = this.getColumnCells(rows, clusters, clusters[col], range, col);
+      for (const cell of cells) {
+        if (cell.volume != null) {
+          const text = formatters.formatVolume(cell.volume, settings.volumeDisplayFormat);
+          maxText = Math.max(maxText, fonts.measureTextWidth(text, fontSize));
+        }
+      }
+    }
+
+    if (maxText <= 0) {
+      return 0;
+    }
+
+    // Текст выровнен по правому краю с отступом TEXT_RIGHT_PADDING_PX,
+    // слева маска оставляет COLUMN_TEXT_GAP - учитываем оба отступа.
+    return Math.ceil(maxText) + TEXT_RIGHT_PADDING_PX + COLUMN_TEXT_GAP;
   }
 
   /** Возвращает агрегацию колонки из кэша, пересчитывая при изменении исходных данных. */
   private getColumnCells(
-    ctx: FrameContext,
+    rows: BodyRow[],
+    clusters: TradesCluster[],
     cluster: TradesCluster,
     range: VisibleRange,
     columnIndex: number
   ): { cells: CellAggregate[], maxVolume: number } {
-    if (this.cacheRowsRef !== ctx.model.rows
-      || this.cacheClustersRef !== ctx.model.clusters
+    if (this.cacheRowsRef !== rows
+      || this.cacheClustersRef !== clusters
       || this.cacheRangeStart !== range.start
       || this.cacheRangeEnd !== range.end) {
       this.cachedColumns.length = 0;
-      this.cacheRowsRef = ctx.model.rows;
-      this.cacheClustersRef = ctx.model.clusters;
+      this.cacheRowsRef = rows;
+      this.cacheClustersRef = clusters;
       this.cacheRangeStart = range.start;
       this.cacheRangeEnd = range.end;
     }
 
     let cached = this.cachedColumns[columnIndex];
     if (cached == null) {
-      cached = this.computeColumnCells(ctx, cluster, range);
+      cached = this.computeColumnCells(rows, cluster, range);
       this.cachedColumns[columnIndex] = cached;
     }
 
@@ -233,15 +351,15 @@ export class ClustersPanelElement implements RenderElement {
 
   /** Агрегирует элементы кластера по видимым строкам стакана и находит максимальный объем. */
   private computeColumnCells(
-    ctx: FrameContext,
+    rows: BodyRow[],
     cluster: TradesCluster,
     range: VisibleRange
   ): { cells: CellAggregate[], maxVolume: number } {
     const cells: CellAggregate[] = [];
     let maxVolume = 0;
 
-    for (let i = range.start; i <= range.end && i < ctx.model.rows.length; i++) {
-      const baseRange = ctx.model.rows[i].baseRange;
+    for (let i = range.start; i <= range.end && i < rows.length; i++) {
+      const baseRange = rows[i].baseRange;
 
       let buySum = 0;
       let sellSum = 0;
@@ -393,15 +511,15 @@ export class ClustersPanelElement implements RenderElement {
     }
   }
 
-  /** Рисует текст объема, выровненный по правому краю ячейки. */
+  /** Рисует текст объема, выровненный по правому краю ячейки, в слот колонки. */
   private drawVolumeText(
     ctx: FrameContext,
     volume: number,
     cellRight: number,
     rowTop: number,
-    textIndex: number
+    slot: ColumnSlot
   ): void {
-    const text = this.acquireText(textIndex, ctx);
+    const text = this.acquireSlotText(slot, ctx);
     const formatted = ctx.formatters.formatVolume(volume, ctx.model.clustersSettings.volumeDisplayFormat);
 
     if (text.text !== formatted) {
@@ -417,43 +535,72 @@ export class ClustersPanelElement implements RenderElement {
     text.visible = true;
   }
 
-  /** Возвращает текст из пула, создавая новый при необходимости. */
-  private acquireText(index: number, ctx: FrameContext): BitmapText {
+  /** Возвращает слот колонки по индексу видимой колонки, создавая при необходимости. */
+  private acquireColumnSlot(index: number): ColumnSlot {
+    let slot = this.columnSlots[index];
+    if (slot == null) {
+      const container = new Container();
+      const mask = new Graphics();
+      container.addChild(mask);
+      container.mask = mask;
+      this.slotsLayer.addChild(container);
+
+      slot = {container, mask, texts: [], usedTexts: 0};
+      this.columnSlots[index] = slot;
+    }
+
+    slot.container.visible = true;
+    slot.mask.clear();
+    slot.usedTexts = 0;
+
+    return slot;
+  }
+
+  /** Возвращает текст из пула слота, создавая новый при необходимости. */
+  private acquireSlotText(slot: ColumnSlot, ctx: FrameContext): BitmapText {
     const fontSize = ctx.viewport.fontSize;
     const fontFamily = ctx.fonts.getFontFamily(fontSize);
 
-    if (index < this.textPool.length) {
-      const existing = this.textPool[index];
+    let text = slot.texts[slot.usedTexts];
+    if (text == null) {
+      text = new BitmapText({
+        text: '',
+        style: {
+          fontFamily,
+          fontSize
+        }
+      });
 
-      if (existing.style.fontFamily !== fontFamily) {
-        existing.style.fontFamily = fontFamily;
+      text.roundPixels = true;
+
+      slot.texts.push(text);
+      slot.container.addChild(text);
+    } else {
+      if (text.style.fontFamily !== fontFamily) {
+        text.style.fontFamily = fontFamily;
       }
 
-      if (existing.style.fontSize !== fontSize) {
-        existing.style.fontSize = fontSize;
+      if (text.style.fontSize !== fontSize) {
+        text.style.fontSize = fontSize;
       }
-
-      return existing;
     }
 
-    const created = new BitmapText({
-      text: '',
-      style: {
-        fontFamily,
-        fontSize
-      }
-    });
+    slot.usedTexts++;
 
-    this.textPool.push(created);
-    this.textContainer.addChild(created);
-
-    return created;
+    return text;
   }
 
-  /** Скрывает неиспользованные в текущем кадре тексты пула. */
-  private hideTextsFrom(startIndex: number): void {
-    for (let i = startIndex; i < this.textPool.length; i++) {
-      this.textPool[i].visible = false;
+  /** Скрывает неиспользованные тексты слота. */
+  private hideSlotTextsFrom(slot: ColumnSlot, startIndex: number): void {
+    for (let i = startIndex; i < slot.texts.length; i++) {
+      slot.texts[i].visible = false;
+    }
+  }
+
+  /** Скрывает слоты колонок, не использованные в текущем кадре. */
+  private hideSlotsFrom(startIndex: number): void {
+    for (let i = startIndex; i < this.columnSlots.length; i++) {
+      this.columnSlots[i].container.visible = false;
     }
   }
 }

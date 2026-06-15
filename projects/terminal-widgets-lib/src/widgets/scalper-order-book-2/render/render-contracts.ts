@@ -255,6 +255,8 @@ export interface ScalperOrderBook2RendererEvents {
   hoverChanged(hover: HoveredRowInfo | null): void;
   /** Изменение диапазона видимых строк. */
   visibleRangeChanged(range: VisibleRange | null): void;
+  /** Изменение ширины содержимого таблицы (для синхронизации компоновки в Angular-части). */
+  tableContentWidthChanged(width: number): void;
   /** Изменение размера области отрисовки. */
   viewportSizeChanged(size: { width: number, height: number }): void;
   /** Прокрутка приблизилась к краю списка строк. */

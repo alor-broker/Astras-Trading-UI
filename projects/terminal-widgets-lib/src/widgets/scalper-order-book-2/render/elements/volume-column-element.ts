@@ -13,7 +13,11 @@ import {
 import {
   DirtyFlags,
   FillSpec,
-  FrameContext
+  FontProvider,
+  FrameContext,
+  TableDisplaySettings,
+  ValueFormatters,
+  VisibleRange
 } from '../render-contracts';
 import {ColorHelper} from '../color-helper';
 import {RenderElement} from './render-element';
@@ -24,7 +28,10 @@ interface VolumeHighlight {
   widthPercent: number;
 }
 
-const TEXT_PADDING = 8;
+const TEXT_PADDING = 2;
+
+/** Зазор между текущим и накопленным объемом. */
+const GROWING_VOLUME_GAP = 5;
 
 /**
  * Колонка объемов таблицы стакана: полосы подсветки объема
@@ -133,7 +140,7 @@ export class VolumeColumnElement implements RenderElement {
           ctx.formatters.formatVolume(row.growingVolume!, settings.volumeDisplayFormat),
           growingFontSize,
           ColorHelper.withAlpha(textFill, 0.8),
-          volumeTextItem.x + Math.ceil(ctx.fonts.measureTextWidth(volumeText, fontSize)) + 5,
+          volumeTextItem.x + Math.ceil(ctx.fonts.measureTextWidth(volumeText, fontSize)) + GROWING_VOLUME_GAP,
           textY,
           0,
           0.5
@@ -148,6 +155,50 @@ export class VolumeColumnElement implements RenderElement {
     this.textPool.destroy();
     this.highlightGraphics.destroy();
     this.container.destroy();
+  }
+
+  /**
+   * Ширина колонки по содержимому: самый широкий видимый текст объема плюс отступы.
+   * Используется компоновкой, чтобы колонка вмещала содержимое без обрезки.
+   */
+  measureDesiredWidth(
+    rows: BodyRow[],
+    range: VisibleRange,
+    settings: TableDisplaySettings,
+    showGrowingVolume: boolean,
+    fonts: FontProvider,
+    formatters: ValueFormatters,
+    fontSize: number
+  ): number {
+    let maxContent = 0;
+    const growingFontSize = Math.max(8, fontSize - 2);
+
+    for (let i = range.start; i <= range.end && i < rows.length; i++) {
+      const row = rows[i];
+      const volume = row.volume ?? 0;
+      if (volume <= 0) {
+        continue;
+      }
+
+      let content: number;
+      if (row.rowType === ScalperOrderBookRowType.Mixed) {
+        const askText = formatters.formatVolume(row.askVolume ?? 0, settings.volumeDisplayFormat);
+        const bidText = formatters.formatVolume(row.bidVolume ?? 0, settings.volumeDisplayFormat);
+        content = fonts.measureTextWidth(`${askText} | ${bidText}`, fontSize);
+      } else {
+        const volumeText = formatters.formatVolume(volume, settings.volumeDisplayFormat);
+        content = fonts.measureTextWidth(volumeText, fontSize);
+
+        if (showGrowingVolume && (row.growingVolume ?? 0) > 0) {
+          const growingText = formatters.formatVolume(row.growingVolume!, settings.volumeDisplayFormat);
+          content += GROWING_VOLUME_GAP + fonts.measureTextWidth(growingText, growingFontSize);
+        }
+      }
+
+      maxContent = Math.max(maxContent, content);
+    }
+
+    return maxContent > 0 ? Math.ceil(maxContent) + (TEXT_PADDING * 2) : 0;
   }
 
   private getVolumeHighlight(ctx: FrameContext, row: BodyRow, maxVolume: number): VolumeHighlight | null {

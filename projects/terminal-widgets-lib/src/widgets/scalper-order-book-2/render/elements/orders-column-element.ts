@@ -2,14 +2,19 @@ import {
   Container,
   Graphics
 } from 'pixi.js';
-import {CurrentOrderDisplay} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
+import {
+  BodyRow,
+  CurrentOrderDisplay
+} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
 import {OrderType} from '@terminal-core-lib/features/orders/types/orders.types';
 import {Side} from '@terminal-core-lib/common/types/side.types';
 import {
   DirtyFlags,
   FillSpec,
+  FontProvider,
   FrameContext,
-  OrderIndicatorHitArea
+  OrderIndicatorHitArea,
+  VisibleRange
 } from '../render-contracts';
 import {RenderElement} from './render-element';
 import {BitmapTextPool} from './bitmap-text-pool';
@@ -126,34 +131,7 @@ export class OrdersColumnElement implements RenderElement {
     const fontSize = ctx.viewport.fontSize;
     const y = (rowIndex * rowHeight) - ctx.viewport.scrollOffset;
 
-    const groups: { group: OrdersGroup, text: string, hasBackground: boolean }[] = [];
-
-    const limitGroup = this.getOrdersGroup(rowOrders, OrderType.Limit);
-    if (limitGroup != null) {
-      groups.push({
-        group: limitGroup,
-        text: this.appendMultipleMarker(`${limitGroup.volume}`, limitGroup),
-        hasBackground: true
-      });
-    }
-
-    const stopLimitGroup = this.getOrdersGroup(rowOrders, OrderType.StopLimit);
-    if (stopLimitGroup != null) {
-      groups.push({
-        group: stopLimitGroup,
-        text: this.appendMultipleMarker(`SL(${stopLimitGroup.volume})`, stopLimitGroup),
-        hasBackground: false
-      });
-    }
-
-    const stopMarketGroup = this.getOrdersGroup(rowOrders, OrderType.StopMarket);
-    if (stopMarketGroup != null) {
-      groups.push({
-        group: stopMarketGroup,
-        text: this.appendMultipleMarker(`SM(${stopMarketGroup.volume})`, stopMarketGroup),
-        hasBackground: false
-      });
-    }
+    const groups = this.collectRowGroups(rowOrders);
 
     let x = column.x + INDICATOR_GAP;
     const alpha = isGhost ? 0.6 : 1;
@@ -199,6 +177,105 @@ export class OrdersColumnElement implements RenderElement {
 
       x += indicatorWidth + INDICATOR_GAP;
     }
+  }
+
+  /**
+   * Ширина колонки по содержимому: самый широкий видимый ряд индикаторов плюс отступы,
+   * но не меньше ширины бейджа заявки с минимальным объемом. Благодаря этому колонка
+   * всегда видна и не появляется/не раздвигает контент при выставлении мелких заявок.
+   * Используется компоновкой, чтобы заявки отображались целиком без обрезки.
+   */
+  measureDesiredWidth(
+    rows: BodyRow[],
+    range: VisibleRange,
+    orders: CurrentOrderDisplay[],
+    fonts: FontProvider,
+    fontSize: number
+  ): number {
+    const minWidth = this.getMinimumWidth(fonts, fontSize);
+
+    if (orders.length === 0) {
+      return minWidth;
+    }
+
+    let minOrderPrice = Number.MAX_VALUE;
+    let maxOrderPrice = -Number.MAX_VALUE;
+    for (const order of orders) {
+      const price = order.triggerPrice ?? order.price ?? null;
+      if (price == null) {
+        continue;
+      }
+
+      minOrderPrice = Math.min(minOrderPrice, price);
+      maxOrderPrice = Math.max(maxOrderPrice, price);
+    }
+
+    let maxWidth = 0;
+    for (let i = range.start; i <= range.end && i < rows.length; i++) {
+      const row = rows[i];
+      if (row.baseRange.max < minOrderPrice || row.baseRange.min > maxOrderPrice) {
+        continue;
+      }
+
+      const rowOrders = orders.filter(order => {
+        const price = order.triggerPrice ?? order.price ?? null;
+        return price != null && price >= row.baseRange.min && price <= row.baseRange.max;
+      });
+
+      if (rowOrders.length === 0) {
+        continue;
+      }
+
+      const groups = this.collectRowGroups(rowOrders);
+      let rowWidth = INDICATOR_GAP;
+      for (const item of groups) {
+        const textWidth = Math.ceil(fonts.measureTextWidth(item.text, fontSize));
+        rowWidth += textWidth + (INDICATOR_PADDING_X * 2) + INDICATOR_GAP;
+      }
+
+      maxWidth = Math.max(maxWidth, rowWidth);
+    }
+
+    return Math.max(maxWidth, minWidth);
+  }
+
+  /** Минимальная ширина колонки: бейдж лимитной заявки с минимальным (однозначным) объемом. */
+  private getMinimumWidth(fonts: FontProvider, fontSize: number): number {
+    const textWidth = Math.ceil(fonts.measureTextWidth('0', fontSize));
+    return (INDICATOR_GAP * 2) + textWidth + (INDICATOR_PADDING_X * 2);
+  }
+
+  private collectRowGroups(rowOrders: CurrentOrderDisplay[]): { group: OrdersGroup, text: string, hasBackground: boolean }[] {
+    const groups: { group: OrdersGroup, text: string, hasBackground: boolean }[] = [];
+
+    const limitGroup = this.getOrdersGroup(rowOrders, OrderType.Limit);
+    if (limitGroup != null) {
+      groups.push({
+        group: limitGroup,
+        text: this.appendMultipleMarker(`${limitGroup.volume}`, limitGroup),
+        hasBackground: true
+      });
+    }
+
+    const stopLimitGroup = this.getOrdersGroup(rowOrders, OrderType.StopLimit);
+    if (stopLimitGroup != null) {
+      groups.push({
+        group: stopLimitGroup,
+        text: this.appendMultipleMarker(`SL(${stopLimitGroup.volume})`, stopLimitGroup),
+        hasBackground: false
+      });
+    }
+
+    const stopMarketGroup = this.getOrdersGroup(rowOrders, OrderType.StopMarket);
+    if (stopMarketGroup != null) {
+      groups.push({
+        group: stopMarketGroup,
+        text: this.appendMultipleMarker(`SM(${stopMarketGroup.volume})`, stopMarketGroup),
+        hasBackground: false
+      });
+    }
+
+    return groups;
   }
 
   private getOrdersGroup(orders: CurrentOrderDisplay[], type: OrderType): OrdersGroup | null {

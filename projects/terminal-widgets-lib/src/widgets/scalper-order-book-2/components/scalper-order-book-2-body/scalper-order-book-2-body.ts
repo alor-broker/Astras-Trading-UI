@@ -96,7 +96,12 @@ import {
   HoveredRowInfo,
   RenderPanelId
 } from '@terminal-widgets-lib/widgets/scalper-order-book-2/render/render-contracts';
-import {LayoutHelper} from '@terminal-widgets-lib/widgets/scalper-order-book-2/render/layout-helper';
+import {
+  LayoutHelper,
+  MIN_VISIBLE_PANEL_WIDTH,
+  PanelLayoutConstraints,
+  TABLE_HARD_MIN_WIDTH
+} from '@terminal-widgets-lib/widgets/scalper-order-book-2/render/layout-helper';
 
 interface ScaleState {
   scaleFactor: number;
@@ -115,8 +120,11 @@ interface RulerMarkerView {
   isLeftSide: boolean;
 }
 
-/** Ширина, резервируемая под маркер линейки слева от таблицы. */
-const RULER_MARKER_RESERVED_WIDTH = 150;
+/** Горизонтальные отступы метки линейки (padding + рамка) при оценке ее ширины. */
+const RULER_MARKER_TEXT_PADDING = 8;
+
+/** Минимальный зазор между меткой линейки и колонкой объемов. */
+const RULER_MARKER_SIDE_GAP = 5;
 
 /**
  * Тело виджета: владеет data context и состоянием компоновки,
@@ -187,7 +195,8 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
     displayRange$: new BehaviorSubject<ListRange | null>(null),
     hoveredRow$: new BehaviorSubject<HoveredRowInfo | null>(null),
     isTableHovered$: new BehaviorSubject<boolean>(false),
-    isLoading$: new BehaviorSubject<boolean>(false)
+    isLoading$: new BehaviorSubject<boolean>(false),
+    tableContentWidth$: new BehaviorSubject<number>(0)
   };
 
   dataContext!: ScalperOrderBookDataContext;
@@ -264,6 +273,7 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
     this.sinks.hoveredRow$.complete();
     this.sinks.isTableHovered$.complete();
     this.sinks.isLoading$.complete();
+    this.sinks.tableContentWidth$.complete();
     this.widthsOverride$.complete();
 
     this.dataContext.destroy();
@@ -394,7 +404,8 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
         showTradesPanel: settings.showTradesPanel ?? true,
         showClustersPanel: settings.showTradesClustersPanel ?? true
       },
-      containerWidth
+      containerWidth,
+      this.layoutConstraints()
     );
 
     const visiblePanels = LayoutHelper.getVisiblePanels({
@@ -440,14 +451,15 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
   }
 
   private getMinPanelWidth(panelId: RenderPanelId): number {
-    switch (panelId) {
-      case RenderPanelId.OrderBookTable:
-        return 75;
-      case RenderPanelId.Trades:
-        return 40;
-      default:
-        return 20;
+    if (panelId === RenderPanelId.OrderBookTable) {
+      return Math.max(TABLE_HARD_MIN_WIDTH, this.sinks.tableContentWidth$.value);
     }
+
+    return MIN_VISIBLE_PANEL_WIDTH;
+  }
+
+  private layoutConstraints(): PanelLayoutConstraints {
+    return {tableContentWidth: this.sinks.tableContentWidth$.value};
   }
 
   private roundWidth(value: number): number {
@@ -487,18 +499,19 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
     }
 
     const savedWidths = settings.layout?.widths ?? {};
+    if (containerWidth <= 0) {
+      return savedWidths;
+    }
+
     const rects = LayoutHelper.computePanelRects(
       {
         widths: savedWidths,
         showTradesPanel: settings.showTradesPanel ?? true,
         showClustersPanel: settings.showTradesClustersPanel ?? true
       },
-      containerWidth
+      containerWidth,
+      this.layoutConstraints()
     );
-
-    if (containerWidth <= 0) {
-      return savedWidths;
-    }
 
     const result: Record<string, number> = {};
     if (rects.clusters != null) {
@@ -699,7 +712,8 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
     this.resizeHandles$ = combineLatest({
       settings: this.widgetSettings$,
       contentSize: this.sinks.contentSize$,
-      override: this.widthsOverride$
+      override: this.widthsOverride$,
+      tableContentWidth: this.sinks.tableContentWidth$
     }).pipe(
       map(x => {
         const containerWidth = x.contentSize?.width ?? 0;
@@ -716,7 +730,8 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
             showTradesPanel,
             showClustersPanel
           },
-          containerWidth
+          containerWidth,
+          {tableContentWidth: x.tableContentWidth}
         );
 
         const handles: ResizeHandleView[] = [];
@@ -748,7 +763,8 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
       orderBook: this.dataContext.orderBook$,
       contentSize: this.sinks.contentSize$,
       override: this.widthsOverride$,
-      gridSettings: this.scalperOrderBookSharedContext.gridSettings$
+      gridSettings: this.scalperOrderBookSharedContext.gridSettings$,
+      tableContentWidth: this.sinks.tableContentWidth$
     }).pipe(
       map(x => {
         const settings = x.extendedSettings.widgetSettings;
@@ -789,15 +805,20 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
             showTradesPanel: settings.showTradesPanel ?? true,
             showClustersPanel: settings.showTradesClustersPanel ?? true
           },
-          containerWidth
+          containerWidth,
+          {tableContentWidth: x.tableContentWidth}
         );
+
+        // Метку размещаем слева от колонки объемов, если для нее есть место
+        // (как в исходном виджете). Ширина метки оценивается по длине текста и шрифту.
+        const estimatedMarkerWidth = Math.ceil(text.length * x.gridSettings.fontSize * 0.62) + RULER_MARKER_TEXT_PADDING;
 
         return {
           y: x.hover.y,
           rowHeight: x.gridSettings.rowHeight,
           text,
           left: rects.table.x,
-          isLeftSide: rects.table.x > (RULER_MARKER_RESERVED_WIDTH + 5)
+          isLeftSide: rects.table.x >= (estimatedMarkerWidth + RULER_MARKER_SIDE_GAP)
         };
       }),
       shareReplay({bufferSize: 1, refCount: true})

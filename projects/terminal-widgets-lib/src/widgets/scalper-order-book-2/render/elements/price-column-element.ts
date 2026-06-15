@@ -11,7 +11,7 @@ import {ColorHelper} from '../color-helper';
 import {RenderElement} from './render-element';
 import {BitmapTextPool} from './bitmap-text-pool';
 
-const TEXT_PADDING = 8;
+const TEXT_PADDING = 2;
 
 /** Цвет рамки строки с заявками (в DOM версии используется literal red). */
 const ORDERS_ROW_BORDER_COLOR = 0xff0000;

@@ -73,6 +73,8 @@ export interface SurfaceEventSinks {
   readonly hoveredRow$: BehaviorSubject<HoveredRowInfo | null>;
   readonly isTableHovered$: BehaviorSubject<boolean>;
   readonly isLoading$: BehaviorSubject<boolean>;
+  /** Ширина содержимого таблицы стакана из рендера (для синхронной компоновки оверлеев). */
+  readonly tableContentWidth$: BehaviorSubject<number>;
 }
 
 /**
@@ -179,6 +181,9 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
           // вне экрана), поэтому требуется вход в zone. Событие срабатывает
           // только при пересечении границы строки, а не на каждый пиксель.
           visibleRangeChanged: range => this.ngZone.run(() => this.sinks().displayRange$.next(this.toListRange(range))),
+          // Ширина содержимого таблицы меняется редко; вход в zone обновляет
+          // позиции resize-ручек и линейки в Angular-части.
+          tableContentWidthChanged: width => this.ngZone.run(() => this.sinks().tableContentWidth$.next(width)),
           viewportSizeChanged: size => this.ngZone.run(() => this.sinks().contentSize$.next(size)),
           scrollEdgeReached: edge => this.ngZone.run(() => this.extendRows(edge)),
           tablePointerInsideChanged: isInside => this.sinks().isTableHovered$.next(isInside),

@@ -652,6 +652,7 @@ export class TradesPanelElement implements RenderElement {
     });
 
     created.anchor.set(0.5, 0.5);
+    created.roundPixels = true;
     pool.push(created);
     parent.addChild(created);
 

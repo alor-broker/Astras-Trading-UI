@@ -79,6 +79,8 @@ export class SharedFontProvider implements FontProvider {
   }
 
   private getResolution(): number {
+    // Должно совпадать с разрешением рендерера (SharedRenderEngine.getTargetResolution):
+    // целое >= dpr, иначе атлас глифов масштабируется при отрисовке и текст размывается.
     const dpr = globalThis.devicePixelRatio;
     return Math.min(Math.ceil(dpr > 0 ? dpr : 1), 2);
   }

@@ -64,6 +64,9 @@ const MIN_CLUSTER_COLUMN_WIDTH = 25;
 /** Смещение мыши, после которого нажатие на индикатор заявок считается перетаскиванием. */
 const DRAG_START_THRESHOLD_PX = 4;
 
+/** Отступы колонки цены (по 2px слева и справа). */
+const PRICE_COLUMN_PADDING = 4;
+
 const DEFAULT_THEME: RenderThemeColors = {
   buyColor: 'rgba(0,155,99,1)',
   sellColor: 'rgba(209,38,27,1)',
@@ -185,7 +188,19 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
 
   private readonly clustersElements: RenderElement[];
 
+  private readonly volumeColumnElement: VolumeColumnElement;
+
   private readonly ordersColumnElement: OrdersColumnElement;
+
+  private readonly clustersPanelElement: ClustersPanelElement;
+
+  // Ширина таблицы по содержимому (объем + цена + заявки), чтобы показать ее целиком.
+  private tableContentWidth = 0;
+
+  private lastReportedTableContentWidth = -1;
+
+  // Ширина колонки кластера по содержимому, чтобы числа объема не обрезались.
+  private clustersContentColumnWidth = 0;
 
   private readonly listeners: { type: string, handler: (e: Event) => void }[] = [];
 
@@ -206,6 +221,8 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
     }
 
     this.canvasCtx = ctx2d;
+    // Копирование кадра 1:1 по device-пикселям - сглаживание не нужно и только размывало бы.
+    this.canvasCtx.imageSmoothingEnabled = false;
 
     this.formatters = new FormatHelper('ru');
 
@@ -253,19 +270,19 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
 
     const rowBackgrounds = new RowBackgroundsElement();
     const tableGrid = new TableGridElement();
-    const volumeColumn = new VolumeColumnElement();
+    this.volumeColumnElement = new VolumeColumnElement();
     const priceColumn = new PriceColumnElement();
     this.ordersColumnElement = new OrdersColumnElement();
 
-    this.tableElements = [rowBackgrounds, tableGrid, volumeColumn, priceColumn, this.ordersColumnElement];
+    this.tableElements = [rowBackgrounds, tableGrid, this.volumeColumnElement, priceColumn, this.ordersColumnElement];
     this.tableElements.forEach(e => this.tablePanelContainer.addChild(e.container));
 
     const tradesPanel = new TradesPanelElement();
     this.tradesElements = [tradesPanel];
     this.tradesElements.forEach(e => this.tradesPanelContainer.addChild(e.container));
 
-    const clustersPanel = new ClustersPanelElement();
-    this.clustersElements = [clustersPanel];
+    this.clustersPanelElement = new ClustersPanelElement();
+    this.clustersElements = [this.clustersPanelElement];
     this.clustersElements.forEach(e => this.clustersPanelContainer.addChild(e.container));
 
     this.initDomListeners();
@@ -430,7 +447,8 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
 
     // Геометрия зависит не только от настроек компоновки: ширина колонки цены
     // подстраивается под видимые значения цен (Rows/Viewport) и шрифт (Settings).
-    const isLayoutDirty = (this.dirty & (DirtyFlags.Layout | DirtyFlags.Rows | DirtyFlags.Settings | DirtyFlags.Viewport)) !== 0;
+    // Заявки влияют на ширину колонки заявок, поэтому тоже инвалидируют компоновку.
+    const isLayoutDirty = (this.dirty & (DirtyFlags.Layout | DirtyFlags.Rows | DirtyFlags.Settings | DirtyFlags.Viewport | DirtyFlags.Orders)) !== 0;
     if (isLayoutDirty) {
       this.computedLayout = null;
     }
@@ -442,6 +460,7 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
     }
 
     if (isLayoutDirty || (this.dirty & (DirtyFlags.Clusters | DirtyFlags.ClustersScroll)) !== 0) {
+      this.recomputeClustersContentColumnWidth();
       this.updateClustersScrollState(layout);
     }
 
@@ -507,12 +526,20 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
     const deviceWidth = Math.round(width * resolution);
     const deviceHeight = Math.round(height * resolution);
 
+    let sizeChanged = false;
     if (this.canvas.width !== deviceWidth) {
       this.canvas.width = deviceWidth;
+      sizeChanged = true;
     }
 
     if (this.canvas.height !== deviceHeight) {
       this.canvas.height = deviceHeight;
+      sizeChanged = true;
+    }
+
+    // Изменение размера канвы сбрасывает состояние контекста, в т.ч. сглаживание.
+    if (sizeChanged) {
+      this.canvasCtx.imageSmoothingEnabled = false;
     }
 
     if (this.lastCanvasStyleWidth !== width) {
@@ -874,53 +901,102 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
     }
 
     const width = Math.max(0, this.viewport.metrics.width);
-    const rects = LayoutHelper.computePanelRects(this.layoutSettings, width);
+    const content = this.measureColumnContentWidths();
+    this.tableContentWidth = content.volume + content.price + content.orders;
+
+    const rects = LayoutHelper.computePanelRects(
+      this.layoutSettings,
+      width,
+      {tableContentWidth: this.tableContentWidth}
+    );
 
     this.computedLayout = {
       clusters: rects.clusters,
       trades: rects.trades,
       table: rects.table,
-      tableColumns: this.computeTableColumns(rects.table.width)
+      tableColumns: this.computeTableColumns(rects.table.width, content)
     };
+
+    this.reportTableContentWidth();
 
     return this.computedLayout;
   }
 
-  private computeTableColumns(tableWidth: number): { volume: PanelRect, price: PanelRect, orders: PanelRect } {
+  /** Ширина содержимого каждой колонки таблицы по видимым строкам. */
+  private measureColumnContentWidths(): { volume: number, price: number, orders: number } {
+    const range = this.viewport.getVisibleRange();
+    if (range == null || this.model.rows.length === 0) {
+      return {volume: 0, price: 0, orders: 0};
+    }
+
     const fontSize = this.viewport.metrics.fontSize;
 
-    // Оценка ширины колонки цены по самой длинной видимой цене.
-    let priceSample = '0000.00';
-    const range = this.viewport.getVisibleRange();
-    if (range != null && this.model.rows.length > 0) {
-      let maxLength = 0;
-      for (let i = range.start; i <= range.end && i < this.model.rows.length; i++) {
-        const formatted = this.formatters.formatPrice(
-          this.model.rows[i].price,
-          this.model.displaySettings.priceDecimalsCount
-        );
+    // Цена: самая длинная видимая цена плюс отступы.
+    let priceSample = '';
+    let maxLength = 0;
+    for (let i = range.start; i <= range.end && i < this.model.rows.length; i++) {
+      const formatted = this.formatters.formatPrice(
+        this.model.rows[i].price,
+        this.model.displaySettings.priceDecimalsCount
+      );
 
-        if (formatted.length > maxLength) {
-          maxLength = formatted.length;
-          priceSample = formatted;
-        }
+      if (formatted.length > maxLength) {
+        maxLength = formatted.length;
+        priceSample = formatted;
       }
     }
 
-    const pricePadding = 16;
-    const priceWidth = Math.min(
-      Math.ceil(this.fonts.measureTextWidth(priceSample, fontSize)) + pricePadding,
-      Math.max(40, tableWidth * 0.4)
+    const price = priceSample !== ''
+      ? Math.ceil(this.fonts.measureTextWidth(priceSample, fontSize)) + PRICE_COLUMN_PADDING
+      : 0;
+
+    const volume = this.volumeColumnElement.measureDesiredWidth(
+      this.model.rows,
+      range,
+      this.model.displaySettings,
+      this.model.showGrowingVolume,
+      this.fonts,
+      this.formatters,
+      fontSize
     );
 
-    const ordersWidth = Math.max(20, Math.min(tableWidth * 0.25, 90));
-    const volumeWidth = Math.max(0, tableWidth - priceWidth - ordersWidth);
+    const orders = this.ordersColumnElement.measureDesiredWidth(
+      this.model.rows,
+      range,
+      this.model.orders,
+      this.fonts,
+      fontSize
+    );
+
+    return {volume, price, orders};
+  }
+
+  /**
+   * Раскладка колонок таблицы по содержимому. Колонки никогда не обрезаются:
+   * цена и заявки берут ширину содержимого, объем забирает остаток (но не меньше
+   * своего содержимого, т.к. ширина таблицы не меньше суммарного содержимого).
+   */
+  private computeTableColumns(
+    tableWidth: number,
+    content: { volume: number, price: number, orders: number }
+  ): { volume: PanelRect, price: PanelRect, orders: PanelRect } {
+    const priceWidth = content.price;
+    const ordersWidth = content.orders;
+    const volumeWidth = Math.max(content.volume, tableWidth - priceWidth - ordersWidth);
 
     return {
       volume: {x: 0, width: volumeWidth},
       price: {x: volumeWidth, width: priceWidth},
       orders: {x: volumeWidth + priceWidth, width: ordersWidth}
     };
+  }
+
+  private reportTableContentWidth(): void {
+    const rounded = Math.ceil(this.tableContentWidth);
+    if (rounded !== this.lastReportedTableContentWidth) {
+      this.lastReportedTableContentWidth = rounded;
+      this.events.tableContentWidthChanged(rounded);
+    }
   }
 
   private updatePanelMasks(layout: ComputedLayout, height: number): void {
@@ -945,7 +1021,14 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
   private getClustersScrollState(layout: ComputedLayout): ClustersScrollState {
     const panelWidth = layout.clusters?.width ?? 0;
     const intervalsCount = Math.max(1, this.model.clustersSettings.displayIntervalsCount);
-    const columnWidth = Math.max(MIN_CLUSTER_COLUMN_WIDTH, panelWidth / intervalsCount);
+
+    // Колонка не уже своего содержимого: числа объема не обрезаются,
+    // а избыток ширины обрабатывается горизонтальной прокруткой панели.
+    const columnWidth = Math.max(
+      MIN_CLUSTER_COLUMN_WIDTH,
+      panelWidth / intervalsCount,
+      this.clustersContentColumnWidth
+    );
     const totalWidth = columnWidth * intervalsCount;
 
     return {
@@ -953,6 +1036,24 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
       columnWidth,
       totalWidth
     };
+  }
+
+  private recomputeClustersContentColumnWidth(): void {
+    const range = this.viewport.getVisibleRange();
+    if (range == null || this.model.clusters.length === 0) {
+      this.clustersContentColumnWidth = 0;
+      return;
+    }
+
+    this.clustersContentColumnWidth = this.clustersPanelElement.measureColumnContentWidth(
+      this.model.rows,
+      range,
+      this.model.clusters,
+      this.model.clustersSettings,
+      this.fonts,
+      this.formatters,
+      this.viewport.metrics.fontSize
+    );
   }
 
   private updateClustersScrollState(layout: ComputedLayout): void {

@@ -49,6 +49,9 @@ export class BitmapTextPool {
         }
       });
 
+      // Снэп к целым пикселям, чтобы текст не размывался на дробных позициях.
+      item.roundPixels = true;
+
       this.items.push(item);
       this.parent.addChild(item);
     }

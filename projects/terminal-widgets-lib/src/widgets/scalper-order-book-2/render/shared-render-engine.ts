@@ -136,8 +136,13 @@ export class SharedRenderEngine {
   }
 
   private getTargetResolution(): number {
+    // Целое разрешение >= dpr (суперсэмплинг при дробном масштабе экрана 125%/150%).
+    // На дробном DPI канва, как правило, не попадает на физическую пиксельную сетку
+    // (трансформации gridster и т.п.), и рендеринг 1:1 даёт мыло; рендеринг при целом
+    // разрешении с последующим уменьшением браузером сохраняет четкость.
+    // Должно совпадать с SharedFontProvider.getResolution.
     const dpr = globalThis.devicePixelRatio;
-    return Math.min(dpr > 0 ? dpr : 1, 2);
+    return Math.min(Math.ceil(dpr > 0 ? dpr : 1), 2);
   }
 
   /**
@@ -211,9 +216,12 @@ export class SharedRenderEngine {
       }
 
       // Канва движка только увеличивается, чтобы не пересоздавать back buffer на каждый кадр.
-      const targetWidth = Math.max(renderer.width, Math.ceil(frame.width));
-      const targetHeight = Math.max(renderer.height, Math.ceil(frame.height));
-      if (targetWidth > renderer.width || targetHeight > renderer.height) {
+      // Сравнение и resize - в CSS-координатах (renderer.screen), а не в пикселях канвы
+      // (renderer.width = CSS * resolution), иначе размер канвы вычисляется неверно.
+      const screen = renderer.screen;
+      const targetWidth = Math.max(screen.width, Math.ceil(frame.width));
+      const targetHeight = Math.max(screen.height, Math.ceil(frame.height));
+      if (targetWidth > screen.width || targetHeight > screen.height) {
         renderer.resize(targetWidth, targetHeight);
       }
 
