@@ -1,5 +1,6 @@
 ﻿{
   "sectionTitle": "Динамика",
+  "agreementTooltip": "Динамика по договору",
   "timeRangeOptions": {
     "W1": "1Н",
     "1M": "1М",

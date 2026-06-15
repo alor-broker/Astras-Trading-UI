@@ -1,7 +1,10 @@
 ﻿{
   "charts": {
     "agreementDynamics": {
-      "title": "Agreement Dynamics"
+      "label": "Dynamics"
+    },
+    "commissions": {
+      "label": "Commissions"
     }
   }
 }
