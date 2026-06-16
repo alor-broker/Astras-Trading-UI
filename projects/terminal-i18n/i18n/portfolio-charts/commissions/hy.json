@@ -1,0 +1,10 @@
+{
+  "periodOptions": {
+    "week": "Շաբաթ",
+    "month": "Ամիս",
+    "year": "Տարի"
+  },
+  "tooltip": {
+    "commissionAmount": "Հանձնաժողով"
+  }
+}

@@ -1,0 +1,45 @@
+<ng-container *transloco="let t; scope: 'portfolio-charts/commissions'">
+  <ng-container *ngrxLet="{
+  selectedPeriod: selectedPeriod$,
+  chartConfig: chartConfig$,
+  } as vm; suspenseTpl: loading">
+
+    <div class="d-flex flex-column h-100">
+      <div class="flex-fill overflow-hidden">
+        <nz-spin [nzSpinning]="isLoading()">
+          <div class="d-flex align-items-center justify-content-center h-100">
+            @if (vm.chartConfig != null) {
+              <canvas
+                [data]="vm.chartConfig.chartData"
+                [options]="vm.chartConfig.chartOptions"
+                baseChart
+                type="bar"
+              >
+              </canvas>
+            } @else {
+              <nz-empty nzNotFoundImage="simple"/>
+            }
+          </div>
+        </nz-spin>
+      </div>
+
+      <div class="mt-8 d-flex flex-row justify-content-center">
+        <nz-radio-group
+          (ngModelChange)="selectedPeriod$.next($event)"
+          [ngModel]="vm.selectedPeriod"
+        >
+          @for (item of availablePeriods; track item) {
+            <label [nzValue]="item" nz-radio-button>
+            {{ t('portfolioChartsCommissions.periodOptions.' + item, {fallback: item}) }}
+            </label>
+          }
+        </nz-radio-group>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <ng-template #loading>
+    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"/>
+  </ng-template>
+</ng-container>

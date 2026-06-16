@@ -1,7 +1,10 @@
 ﻿{
   "charts": {
     "agreementDynamics": {
-      "title": "Պայմանագրի դինամիկա"
+      "label": "Դինամիկա"
+    },
+    "commissions": {
+      "label": "Հանձնաժողովներ"
     }
   }
 }

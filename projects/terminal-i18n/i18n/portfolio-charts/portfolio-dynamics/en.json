@@ -1,5 +1,6 @@
 ﻿{
   "sectionTitle": "Dynamics",
+  "agreementTooltip": "Agreement Dynamics",
   "timeRangeOptions": {
     "W1": "W1",
     "1M": "1М",

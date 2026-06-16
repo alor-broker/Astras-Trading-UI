@@ -29,9 +29,9 @@
         <div class="bordered mt-20">
           <nz-collapse nzExpandIconPosition="end" nzGhost>
             <nz-collapse-panel [nzHeader]="header">
-              @if (currentAgreement$ | async; as currentAgreement) {
+              @if (selectedPortfolio$ | async; as selectedPortfolio) {
                 <div style="height:250px">
-                  <ats-agreement-dynamics [agreement]="currentAgreement"/>
+                  <ats-agreement-dynamics [portfolioKey]="selectedPortfolio"/>
                 </div>
               }
             </nz-collapse-panel>
