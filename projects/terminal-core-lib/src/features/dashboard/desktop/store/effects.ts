@@ -106,6 +106,7 @@ export class DashboardsEffects {
         DashboardsCurrentSelectionActions.selectPortfolio,
         DashboardsCurrentSelectionActions.selectInstruments,
         DashboardsInternalActions.drop,
+        DashboardsInternalActions.setInstrumentsSelection,
         DashboardsInternalActions.cleanInitialSettings
       ),
       withLatestFrom(DashboardsStreams.getAllDashboards(this.store)),
@@ -138,20 +139,34 @@ export class DashboardsEffects {
           }
 
           if (targetTemplate != null) {
-            return of(
-              DashboardItemsActions.removeWidgets({
+            const removeWidgetsAction = DashboardItemsActions.removeWidgets({
+              dashboardGuid: targetDashboard.guid,
+              widgetIds: targetDashboard.items.map(i => i.guid)
+            });
+            const addWidgetsAction = DashboardItemsActions.addWidgets({
                 dashboardGuid: targetDashboard.guid,
-                widgetIds: targetDashboard.items.map(i => i.guid)
-              }),
-              DashboardItemsActions.addWidgets({
+                widgets: targetTemplate.widgets.map(w => ({
+                  widgetType: w.widgetTypeId,
+                  position: w.position,
+                  initialSettings: w.initialSettings
+                }))
+              }
+            );
+
+            if (targetTemplate.instrumentsSelection != null) {
+              return of(
+                removeWidgetsAction,
+                DashboardsInternalActions.setInstrumentsSelection({
                   dashboardGuid: targetDashboard.guid,
-                  widgets: targetTemplate.widgets.map(w => ({
-                    widgetType: w.widgetTypeId,
-                    position: w.position,
-                    initialSettings: w.initialSettings
-                  }))
-                }
-              )
+                  instrumentsSelection: targetTemplate.instrumentsSelection
+                }),
+                addWidgetsAction
+              );
+            }
+
+            return of(
+              removeWidgetsAction,
+              addWidgetsAction
             );
           }
 

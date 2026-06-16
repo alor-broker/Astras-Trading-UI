@@ -1,6 +1,7 @@
 ﻿import {
   DashboardItemPosition,
-  DashboardType
+  DashboardType,
+  InstrumentGroups
 } from '../types/dashboard.types';
 
 export interface DefaultDashboardItem {
@@ -22,6 +23,7 @@ export interface DefaultDesktopDashboardConfig extends DashboardTemplateConfig {
   isFavorite: boolean;
   name?: string;
   widgets: DefaultDesktopDashboardItem[];
+  instrumentsSelection?: InstrumentGroups | null;
 }
 
 export interface QuickAccessPanelItem {
