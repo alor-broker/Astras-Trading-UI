@@ -45,6 +45,7 @@
 
 - Переменные, поля и параметры, содержащие `Observable` (`Subject`, `BehaviorSubject` и прочие потоки RxJS), именуй с суффиксом `$` (`data$`, `isActive$`, `currentState$`). И наоборот: суффикс `$` используется только для потоков — не вешай его на обычные значения (значение из потока называй `value`/`item`, а не `value$`).
 - Любой RxJS `subscribe(...)` должен иметь понятный lifecycle: для одноразовых операций используй `take(1)`/`first()` или другой завершающий оператор; для подписок компонентов, директив и сервисов используй `takeUntilDestroyed`, `OnDestroy` с явным `unsubscribe`, либо существующий lifecycle/teardown-механизм сервиса. Не оставляй долгоживущие подписки без закрытия.
+- Для компонентов, директив, Angular-сервисов и hooks предпочитай `DestroyRef` и `takeUntilDestroyed(...)`. Ручной `destroy$` используй только там, где нет Angular injection context или уже существует локальный lifecycle-механизм, который нельзя заменить без рефакторинга.
 - `Subject`, `BehaviorSubject` и другие вручную созданные subjects должны завершаться через `complete()` в lifecycle владельца (`ngOnDestroy`, `DestroyRef.onDestroy`, `destroy()` и т.п.), если они не являются намеренно долгоживущим state singleton.
 
 ## Angular
@@ -104,9 +105,16 @@
 
 - Сервис должен иметь одну ответственность.
 - Для singleton services используй `@Injectable({ providedIn: 'root' })`.
+- Не используй singleton service для page/component-scoped UI state, wizard/dialog state, временных таймеров и другого состояния, которое должно сбрасываться при уничтожении feature. Такой сервис должен явно подключаться через provider текущей feature/component.
 - Используй `inject()` вместо constructor injection.
 - Перед созданием нового общего сервиса проверь, нет ли подходящего сервиса в `CORE_SERVICES.md`.
 - Если сервис не может быть `providedIn: 'root'`, выноси providers в отдельный файл с суффиксом `.providers`.
+
+## API, DTO и HTTP ошибки
+
+- Типы, enum values и DTO добавляй только из контракта конкретного endpoint, который используется в коде. Не добавляй значения из общей OpenAPI schema, если описание явно говорит, что они возвращаются другим API или не относятся к текущему клиентскому endpoint.
+- HTTP client service должен владеть endpoint-specific нормализацией HTTP ошибок: использовать `catchHttpError(...)`, парсить контрактный error body и возвращать типизированный результат, `null` или default value согласно сценарию. UI/state services не должны разбирать `HttpErrorResponse`, если это можно сделать в API service.
+- Если ошибка HTTP запроса по сценарию должна быть тихо проигнорирована, выражай это в контракте API service явно: например `Observable<T | null>`, где `null` означает подавленную ошибку.
 
 ## Общие рекомендации рекомендации
 

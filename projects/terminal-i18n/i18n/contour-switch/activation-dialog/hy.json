@@ -1,0 +1,13 @@
+{
+  "title": "Առևտրային կոնտուրի ակտիվացում",
+  "activateButton": "Ակտիվացնել",
+  "cooldown": "Կրկին փորձեք {{seconds}} վրկ. հետո",
+  "messages": {
+    "tradingBlocked": "Առևտուրն արգելափակված է",
+    "contourActivated": "Կոնտուրն ակտիվացված է",
+    "activationUnavailable": "Ակտիվացումը հասանելի չէ",
+    "tradingUnavailable": "Առևտուրը ժամանակավորապես հասանելի չէ",
+    "activationFailed": "Չհաջողվեց ակտիվացնել կոնտուրը"
+  }
+}
+

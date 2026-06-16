@@ -1,0 +1,13 @@
+{
+  "title": "Trading contour activation",
+  "activateButton": "Activate",
+  "cooldown": "Try again in {{seconds}} sec.",
+  "messages": {
+    "tradingBlocked": "Trading is blocked",
+    "contourActivated": "Contour activated",
+    "activationUnavailable": "Activation is unavailable",
+    "tradingUnavailable": "Trading is temporarily unavailable",
+    "activationFailed": "Failed to activate contour"
+  }
+}
+

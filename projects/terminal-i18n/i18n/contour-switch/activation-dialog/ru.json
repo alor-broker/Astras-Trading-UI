@@ -1,0 +1,13 @@
+{
+  "title": "Активация торгового контура",
+  "activateButton": "Активировать",
+  "cooldown": "Повторная попытка через {{seconds}} сек.",
+  "messages": {
+    "tradingBlocked": "Торговля заблокирована",
+    "contourActivated": "Контур активирован",
+    "activationUnavailable": "Активация недоступна",
+    "tradingUnavailable": "Торговля временно недоступна",
+    "activationFailed": "Не удалось активировать контур"
+  }
+}
+
