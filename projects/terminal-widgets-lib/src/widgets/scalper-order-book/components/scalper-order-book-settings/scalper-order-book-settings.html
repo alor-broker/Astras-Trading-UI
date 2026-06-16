@@ -446,7 +446,7 @@
                 [nzDisabled]="form.controls.workingVolumes.enabled && !form.controls.workingVolumes.valid"
                 [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')"
                 class="working-volumes">
-                <div class="hint">{{ t('scalperOrderBookSettings.workingVolumesHint') }}</div>
+                <div class="mb-5">{{ t('scalperOrderBookSettings.workingVolumesHint') }}</div>
                 <nz-form-item class="one-row">
                   <nz-form-label
                     nzFor="showWorkingVolumesPanel">{{ t('scalperOrderBookSettings.showWorkingVolumesPanelLabel') }}
@@ -551,10 +551,14 @@
                             </nz-form-control>
                           </nz-form-item>
                         }
-                        <nz-form-item>
+                        <nz-form-item class="volume-highlight-options">
                           @for (optionForm of form.controls.volumeHighlightOptions.controls; track optionForm; let i = $index) {
-                            <div [formGroup]="optionForm" class="volume-highlight-options">
+                            <div [formGroup]="optionForm" class="volume-highlight-option">
+                              <nz-form-label nzFor="boundary"
+                                             nzRequired>{{ t('scalperOrderBookSettings.volumeLabel') }}
+                              </nz-form-label>
                               <nz-form-control
+                                class="volume-highlight-boundary-control"
                                 [nzErrorTip]="t(
                     'scalperOrderBookSettings.intervalError',
                     {
@@ -562,12 +566,12 @@
                      max: validationOptions.volumeHighlightOption.boundary.max
                     })"
                               >
-                                <nz-form-label nzFor="boundary"
-                                               nzRequired>{{ t('scalperOrderBookSettings.volumeLabel') }}
-                                </nz-form-label>
                                 <ats-input-number [allowDecimal]="false" formControlName="boundary"/>
                               </nz-form-control>
-                              <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
+                              <nz-form-control
+                                class="volume-highlight-color-control"
+                                [nzErrorTip]="t('scalperOrderBookSettings.colorError')"
+                              >
                                 <nz-color-picker [nzTooltipTitle]="t('scalperOrderBookSettings.colorLabel')"
                                                  class="color-picker"
                                                  formControlName="color"
