@@ -24,7 +24,17 @@ import {
   ChartData,
   ChartOptions
 } from 'chart.js';
+import eachMonthOfInterval from 'date-fns/eachMonthOfInterval';
+import eachWeekOfInterval from 'date-fns/eachWeekOfInterval';
+import eachYearOfInterval from 'date-fns/eachYearOfInterval';
+import endOfDay from 'date-fns/endOfDay';
 import {format} from 'date-fns';
+import startOfDay from 'date-fns/startOfDay';
+import startOfMonth from 'date-fns/startOfMonth';
+import startOfWeek from 'date-fns/startOfWeek';
+import startOfYear from 'date-fns/startOfYear';
+import subMonths from 'date-fns/subMonths';
+import subYears from 'date-fns/subYears';
 import {
   enUS,
   ru
@@ -63,6 +73,11 @@ interface ChartConfig {
   chartData: CommissionsChartData;
   chartOptions: CommissionsChartOptions;
   rawData: PortfolioCommission[];
+}
+
+interface PortfolioCommissionsDatesRange {
+  dateFrom: Date;
+  dateTo: Date;
 }
 
 @Component({
@@ -120,14 +135,22 @@ export class PortfolioCommissionsChart implements OnInit, OnDestroy {
     }).pipe(
       withRefresh(this.refreshIntervalSec * 1000, this.applicationStatusService.isActive$),
       tap(() => this.isLoading.set(true)),
-      switchMap(x =>
-        this.portfolioCommissionsService.getPortfolioCommissions(x.portfolio, x.selectedPeriod).pipe(
+      switchMap(x => {
+        const datesRange = this.getDatesRange(x.selectedPeriod);
+
+        return this.portfolioCommissionsService.getPortfolioCommissions(
+          x.portfolio,
+          x.selectedPeriod,
+          datesRange.dateFrom,
+          datesRange.dateTo
+        ).pipe(
           map(data => ({
             data,
-            period: x.selectedPeriod
+            period: x.selectedPeriod,
+            datesRange
           }))
-        )
-      ),
+        );
+      }),
       takeUntilDestroyed(this.destroyRef)
     );
 
@@ -143,17 +166,26 @@ export class PortfolioCommissionsChart implements OnInit, OnDestroy {
           return null;
         }
 
+        const completedCommissions = this.completeCommissions(
+          x.commissions.data,
+          x.commissions.period,
+          x.commissions.datesRange
+        );
+
         return {
-          chartData: this.prepareDatasets(x.commissions.data, x.themeColors),
-          chartOptions: this.prepareChartOptions(x.lang, x.commissions.period, x.translator),
-          rawData: x.commissions.data
+          chartData: this.prepareDatasets(completedCommissions, x.themeColors),
+          chartOptions: this.prepareChartOptions(x.lang, x.commissions.period, x.translator, completedCommissions),
+          rawData: completedCommissions
         };
       }),
       tap(() => this.isLoading.set(false))
     );
   }
 
-  private prepareDatasets(commissions: PortfolioCommission[], themeColors: ThemeColors): CommissionsChartData {
+  private prepareDatasets(
+    commissions: PortfolioCommission[],
+    themeColors: ThemeColors
+  ): CommissionsChartData {
     return {
       datasets: [
         {
@@ -171,7 +203,8 @@ export class PortfolioCommissionsChart implements OnInit, OnDestroy {
   private prepareChartOptions(
     lang: string,
     period: PortfolioCommissionPeriod,
-    translator: TranslatorFn
+    translator: TranslatorFn,
+    commissions: PortfolioCommission[]
   ): CommissionsChartOptions {
     return {
       maintainAspectRatio: false,
@@ -186,8 +219,14 @@ export class PortfolioCommissionsChart implements OnInit, OnDestroy {
           displayColors: false,
           callbacks: {
             title: (tooltipItems): string => {
+              const periodStart = commissions[tooltipItems[0].dataIndex]?.periodStart;
+
+              if (periodStart == null) {
+                return '';
+              }
+
               return format(
-                new Date(tooltipItems[0].parsed.x as unknown as string),
+                periodStart,
                 this.getDateFormat(period),
                 {
                   locale: this.getDateLocale(lang)
@@ -222,9 +261,10 @@ export class PortfolioCommissionsChart implements OnInit, OnDestroy {
             }
           },
           ticks: {
+            source: 'labels',
             autoSkip: true,
             maxTicksLimit: 6,
-            align: 'start'
+            align: 'center'
           }
         },
         y: {
@@ -233,6 +273,106 @@ export class PortfolioCommissionsChart implements OnInit, OnDestroy {
         }
       }
     };
+  }
+
+  private completeCommissions(
+    commissions: PortfolioCommission[],
+    period: PortfolioCommissionPeriod,
+    datesRange: PortfolioCommissionsDatesRange
+  ): PortfolioCommission[] {
+    const sourceByPeriodStart = new Map(
+      commissions.map(item => [
+        this.getPeriodStart(item.periodStart, period).getTime(),
+        item
+      ])
+    );
+    const account = commissions[0].account;
+
+    return this.getPeriodStarts(period, datesRange).map(periodStart => {
+      const sourceItem = sourceByPeriodStart.get(periodStart.getTime());
+
+      if (sourceItem != null) {
+        return {
+          ...sourceItem,
+          periodStart
+        };
+      }
+
+      return {
+        account,
+        periodStart,
+        period,
+        commissionAmount: 0
+      };
+    });
+  }
+
+  private getPeriodStarts(
+    period: PortfolioCommissionPeriod,
+    datesRange: PortfolioCommissionsDatesRange
+  ): Date[] {
+    switch (period) {
+      case PortfolioCommissionPeriod.Month: {
+        return eachMonthOfInterval({
+          start: datesRange.dateFrom,
+          end: datesRange.dateTo
+        });
+      }
+      case PortfolioCommissionPeriod.Year: {
+        return eachYearOfInterval({
+          start: datesRange.dateFrom,
+          end: datesRange.dateTo
+        });
+      }
+      default: {
+        return eachWeekOfInterval(
+          {
+            start: datesRange.dateFrom,
+            end: datesRange.dateTo
+          },
+          {weekStartsOn: 1}
+        );
+      }
+    }
+  }
+
+  private getDatesRange(period: PortfolioCommissionPeriod): PortfolioCommissionsDatesRange {
+    const now = new Date();
+
+    switch (period) {
+      case PortfolioCommissionPeriod.Month: {
+        return {
+          dateFrom: startOfDay(subYears(now, 1)),
+          dateTo: endOfDay(now)
+        };
+      }
+      case PortfolioCommissionPeriod.Year: {
+        return {
+          dateFrom: startOfDay(subYears(now, 10)),
+          dateTo: endOfDay(now)
+        };
+      }
+      default: {
+        return {
+          dateFrom: startOfDay(subMonths(now, 3)),
+          dateTo: endOfDay(now)
+        };
+      }
+    }
+  }
+
+  private getPeriodStart(date: Date, period: PortfolioCommissionPeriod): Date {
+    switch (period) {
+      case PortfolioCommissionPeriod.Month: {
+        return startOfMonth(date);
+      }
+      case PortfolioCommissionPeriod.Year: {
+        return startOfYear(date);
+      }
+      default: {
+        return startOfWeek(date, {weekStartsOn: 1});
+      }
+    }
   }
 
   private getMinUnit(period: PortfolioCommissionPeriod): 'day' | 'month' | 'year' {
@@ -269,7 +409,7 @@ export class PortfolioCommissionsChart implements OnInit, OnDestroy {
 
   private formatAmount(value: number, lang: string): string {
     return new Intl.NumberFormat(lang, {
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 3,
       minimumFractionDigits: 0
     }).format(value);
   }

@@ -3,11 +3,7 @@ import {
   Injectable
 } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import endOfDay from 'date-fns/endOfDay';
 import formatISO from 'date-fns/formatISO';
-import startOfDay from 'date-fns/startOfDay';
-import subMonths from 'date-fns/subMonths';
-import subYears from 'date-fns/subYears';
 import {
   map,
   Observable,
@@ -53,16 +49,16 @@ export class PortfolioCommissionsService {
 
   getPortfolioCommissions(
     portfolio: string,
-    period: PortfolioCommissionPeriod
+    period: PortfolioCommissionPeriod,
+    dateFrom: Date,
+    dateTo: Date
   ): Observable<PortfolioCommission[] | null> {
-    const datesRange = this.getDatesRange(period);
-
     return this.httpClient.get<PortfolioCommissionResponse[]>(
       `${this.baseUrl}/${portfolio}`,
       {
         params: {
-          dateFrom: formatISO(datesRange.dateFrom),
-          dateTo: formatISO(datesRange.dateTo),
+          dateFrom: formatISO(dateFrom),
+          dateTo: formatISO(dateTo),
           period
         }
       }
@@ -81,33 +77,5 @@ export class PortfolioCommissionsService {
       }),
       take(1)
     );
-  }
-
-  private getDatesRange(period: PortfolioCommissionPeriod): {
-    dateFrom: Date;
-    dateTo: Date;
-  } {
-    const now = new Date();
-
-    switch (period) {
-      case PortfolioCommissionPeriod.Month: {
-        return {
-          dateFrom: startOfDay(subYears(now, 1)),
-          dateTo: endOfDay(now)
-        };
-      }
-      case PortfolioCommissionPeriod.Year: {
-        return {
-          dateFrom: startOfDay(subYears(now, 10)),
-          dateTo: endOfDay(now)
-        };
-      }
-      default: {
-        return {
-          dateFrom: startOfDay(subMonths(now, 3)),
-          dateTo: endOfDay(now)
-        };
-      }
-    }
   }
 }
