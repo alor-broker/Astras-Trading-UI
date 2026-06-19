@@ -166,8 +166,6 @@ export interface ClustersScrollState {
 
 /** Полная модель данных рендера. Заполняется фасадом, читается элементами. */
 export interface RenderModelState {
-  /** Строки стакана по убыванию цены. */
-  rows: BodyRow[];
   orders: CurrentOrderDisplay[];
   /** Все сделки, отсортированные по возрастанию timestamp. */
   trades: InstrumentTradesItem[];
@@ -208,6 +206,14 @@ export interface ValueFormatters {
 /** Контекст кадра, передаваемый элементам отрисовки. */
 export interface FrameContext {
   readonly model: RenderModelState;
+  /**
+   * Материализованные строки видимого диапазона (локальные индексы `0..length-1`
+   * соответствуют абсолютным `[visibleRange.start, visibleRange.end]`).
+   * Сетка виртуальна: строки вне видимого окна не материализуются.
+   */
+  readonly visibleRows: BodyRow[];
+  /** Максимальный объем ask/bid по ордербуку (подсветка BiggestVolume). */
+  readonly maxAskBidVolume: number;
   readonly viewport: ViewportMetrics;
   readonly layout: ComputedLayout;
   readonly theme: ResolvedTheme;
@@ -259,8 +265,6 @@ export interface ScalperOrderBook2RendererEvents {
   tableContentWidthChanged(width: number): void;
   /** Изменение размера области отрисовки. */
   viewportSizeChanged(size: { width: number, height: number }): void;
-  /** Прокрутка приблизилась к краю списка строк. */
-  scrollEdgeReached(edge: 'top' | 'bottom'): void;
   /** Курсор вошел/покинул секцию таблицы стакана. */
   tablePointerInsideChanged(isInside: boolean): void;
   /** Запрошено контекстное меню панели кластеров. */

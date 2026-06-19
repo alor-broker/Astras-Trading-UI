@@ -6,7 +6,6 @@ import {
   ElementRef,
   inject,
   input,
-  NgZone,
   OnDestroy,
   OnInit,
   viewChild,
@@ -69,7 +68,6 @@ import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {ContextMenuService} from '@terminal-core-lib/common/services/context-menu.service';
 import {ScalperOrderBookDataContext} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book-data-context.types';
-import {PriceRow} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
 import {
   PriceUnits,
   ScalperOrderBookWidgetSettings,
@@ -102,6 +100,11 @@ import {
   PanelLayoutConstraints,
   TABLE_HARD_MIN_WIDTH
 } from '@terminal-widgets-lib/widgets/scalper-order-book-2/render/layout-helper';
+import {DisplayModel} from '@terminal-widgets-lib/widgets/scalper-order-book-2/render/price-grid/price-grid-types';
+import {DisplaySource} from '@terminal-widgets-lib/widgets/scalper-order-book-2/render/price-grid/display-source';
+import {DisplayModelStreamBuilder} from '@terminal-widgets-lib/widgets/scalper-order-book-2/utils/display-model-stream-builder';
+import {InstrumentTradesStreamBuilder} from '@terminal-widgets-lib/widgets/scalper-order-book-2/utils/instrument-trades-stream-builder';
+import {InstrumentTradesItem} from '@terminal-core-lib/features/instruments/services/instrument-trades-service.types';
 
 interface ScaleState {
   scaleFactor: number;
@@ -201,6 +204,15 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
 
   dataContext!: ScalperOrderBookDataContext;
 
+  /** Поток модели отображения (виртуальная ценовая сетка) для поверхности рендера. */
+  displayModel$!: Observable<DisplayModel | null>;
+
+  /** Лёгкий поток обезличенных сделок (без перекопирования/сортировки на каждый тик). */
+  trades$!: Observable<InstrumentTradesItem[]>;
+
+  /** Есть ли строки для отображения (для пустого состояния). */
+  hasRows$!: Observable<boolean>;
+
   widgetSettings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
@@ -237,16 +249,17 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
 
   private readonly documentRef = inject<Document>(DOCUMENT);
 
-  private readonly ngZone = inject(NgZone);
-
   private readonly destroyRef = inject(DestroyRef);
-
-  private lastContainerHeight = 0;
 
   private preExpandWidths: Record<string, number> | null = null;
 
   ngOnInit(): void {
     this.initContext();
+    this.initDisplayModel();
+    this.trades$ = InstrumentTradesStreamBuilder.build(
+      this.dataContext.extendedSettings$,
+      this.instrumentTradesService
+    );
     this.initWidgetSettings();
     this.initOverrideResetOnSettingsChange();
     this.initAutoAlign();
@@ -360,9 +373,7 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
         return;
       }
 
-      this.ngZone.runOutsideAngular(() => {
-        this.documentRef.body.style.cursor = 'col-resize';
-      });
+      this.documentRef.body.style.cursor = 'col-resize';
 
       const containerLeft = this.getContainerElement()?.getBoundingClientRect().left ?? 0;
 
@@ -374,10 +385,7 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
         map(e => e.clientX - containerLeft),
         takeUntil(fromEvent(this.documentRef, 'mouseup')),
         finalize(() => {
-          this.ngZone.runOutsideAngular(() => {
-            this.documentRef.body.style.cursor = 'default';
-          });
-
+          this.documentRef.body.style.cursor = 'default';
           this.persistCurrentWidths();
         }),
         takeUntilDestroyed(this.destroyRef)
@@ -544,17 +552,13 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
             filter((x): x is number => x != null && x > 0)
           )
         },
+        // Тяжёлый orderBookBody$ из общего контекста не используется (нет подписчиков):
+        // генерацию строк по видимому диапазону выполняет displayModel$ (см. initDisplayModel).
         bodyParamsGetters: {
-          getVisibleRowsCount: (rowHeight: number) => this.getDisplayRowsCount(rowHeight),
-          isFillingByHeightNeeded: (currentRows: PriceRow[], rowHeight: number) => this.isFillingByHeightNeeded(currentRows, rowHeight)
+          getVisibleRowsCount: () => 0,
+          isFillingByHeightNeeded: () => false
         },
-        changeNotifications: {
-          priceRowsRegenerationStarted: () => this.sinks.isLoading$.next(true),
-          priceRowsRegenerationCompleted: () => {
-            this.surface()?.alignTable();
-            this.sinks.isLoading$.next(false);
-          }
-        }
+        changeNotifications: null
       },
       {
         priceRowsStore: this.priceRowsStore,
@@ -563,6 +567,37 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
         portfolioSubscriptionsService: this.portfolioSubscriptionsService,
         instrumentTradesService: this.instrumentTradesService
       }
+    );
+  }
+
+  /**
+   * Поток модели отображения по видимому диапазону - лёгкая замена orderBookBody$.
+   * Решение о регенерации/расширении сетки выполняется за O(1), построение модели -
+   * за O(размера активной зоны ордербука).
+   */
+  private initDisplayModel(): void {
+    this.displayModel$ = DisplayModelStreamBuilder.build(
+      {
+        settings$: this.dataContext.extendedSettings$,
+        orderBook$: this.dataContext.orderBook$,
+        position$: this.dataContext.position$,
+        scaleFactor$: this.scalperOrderBookSharedContext.scaleFactor$,
+        // Центрирование на новой сетке выполняет рендер (setDisplayModel),
+        // здесь только индикатор загрузки во время регенерации.
+        notifications: {
+          priceRowsRegenerationStarted: () => this.sinks.isLoading$.next(true),
+          priceRowsRegenerationCompleted: () => this.sinks.isLoading$.next(false)
+        }
+      },
+      {
+        quotesService: this.quotesService
+      }
+    );
+
+    this.hasRows$ = this.displayModel$.pipe(
+      map(model => model != null),
+      distinctUntilChanged(),
+      shareReplay({bufferSize: 1, refCount: true})
     );
   }
 
@@ -673,37 +708,36 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
 
   private initHiddenOrdersIndicators(): void {
     this.hiddenOrdersIndicators$ = combineLatest([
-      this.dataContext.orderBookBody$,
+      this.displayModel$,
       this.dataContext.currentOrders$,
       this.sinks.displayRange$
     ]).pipe(
-      map(([orderBookBody, currentOrders, displayRange]) => {
-        if (displayRange == null || orderBookBody.length === 0) {
+      map(([model, currentOrders, displayRange]) => {
+        if (model == null || displayRange == null) {
           return {up: false, down: false};
         }
 
-        const upPrice = displayRange.start < orderBookBody.length
-          ? orderBookBody[displayRange.start]?.price
-          : null;
-        const downIndex = Math.min(displayRange.end, orderBookBody.length - 1);
-        const downPrice = downIndex >= 0
-          ? orderBookBody[downIndex]?.price
-          : null;
+        const source = new DisplaySource(model);
+
+        // Цены верхней и нижней видимых строк (бесконечная сетка, O(1)).
+        const upPrice = source.priceAt(displayRange.start);
+        const downPrice = source.priceAt(displayRange.end);
 
         const getOrderPrice = (order: { triggerPrice?: number, price?: number }): number | null =>
           order.triggerPrice ?? order.price ?? null;
 
         return {
-          up: (upPrice != null) && currentOrders.some(o => {
+          up: currentOrders.some(o => {
             const price = getOrderPrice(o);
             return price != null && price > upPrice;
           }),
-          down: (downPrice != null) && currentOrders.some(o => {
+          down: currentOrders.some(o => {
             const price = getOrderPrice(o);
             return price != null && price < downPrice;
           })
         };
       }),
+      distinctUntilChanged((prev, curr) => prev.up === curr.up && prev.down === curr.down),
       shareReplay({bufferSize: 1, refCount: true})
     );
   }
@@ -839,22 +873,6 @@ export class ScalperOrderBook2Body implements OnInit, OnDestroy {
         settings
       );
     });
-  }
-
-  private isFillingByHeightNeeded(currentRows: PriceRow[], rowHeight: number): boolean {
-    const displayRowsCount = this.getDisplayRowsCount(rowHeight);
-    const previousHeight = this.lastContainerHeight;
-    this.lastContainerHeight = this.getContainerHeight();
-
-    return currentRows.length < displayRowsCount || previousHeight < this.lastContainerHeight;
-  }
-
-  private getDisplayRowsCount(rowHeight: number): number {
-    return Math.ceil((this.getContainerHeight() * 2 / rowHeight));
-  }
-
-  private getContainerHeight(): number {
-    return this.sinks.contentSize$.value?.height ?? 0;
   }
 
   private initFloatingPanelPosition(stateKey: string, geContainerBounds: () => DOMRect | null): Observable<Point> {

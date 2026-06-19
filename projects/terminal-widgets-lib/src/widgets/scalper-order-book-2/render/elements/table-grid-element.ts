@@ -40,8 +40,9 @@ export class TableGridElement implements RenderElement {
     const lineColor = ctx.theme.tableBorder;
 
     // Горизонтальные линии уровней цены.
-    for (let i = range.start; i <= range.end && i < ctx.model.rows.length; i++) {
-      const row = ctx.model.rows[i];
+    for (let k = 0; k < ctx.visibleRows.length; k++) {
+      const i = range.start + k;
+      const row = ctx.visibleRows[k];
       if (!row.isMinorLinePrice && !row.isMajorLinePrice) {
         continue;
       }

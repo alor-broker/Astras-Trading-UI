@@ -12,8 +12,7 @@ import {
   FillSpec,
   FontProvider,
   FrameContext,
-  ValueFormatters,
-  VisibleRange
+  ValueFormatters
 } from '../render-contracts';
 import {ColorHelper} from '../color-helper';
 import {RenderElement} from './render-element';
@@ -105,13 +104,12 @@ export class ClustersPanelElement implements RenderElement {
 
   // Кэш агрегации по колонкам: пересчитывается только при изменении строк,
   // данных кластеров или видимого диапазона. Кадры hover/прокрутки используют кэш.
-  private cacheRowsRef: unknown = null;
+  // Ключ кэша по содержимому видимых строк (ценовые диапазоны), а не по ссылке окна:
+  // рендер пересоздаёт массив окна на каждый тик ордербука, но baseRange строк при
+  // неизменной сетке и диапазоне стабильны - агрегацию кластеров можно переиспользовать.
+  private cacheRowsKey = '';
 
   private cacheClustersRef: unknown = null;
-
-  private cacheRangeStart = -1;
-
-  private cacheRangeEnd = -1;
 
   private readonly cachedColumns: ({ cells: CellAggregate[], maxVolume: number } | undefined)[] = [];
 
@@ -155,7 +153,7 @@ export class ClustersPanelElement implements RenderElement {
         slot.mask.rect(maskLeft, 0, maskWidth, ctx.viewport.height).fill(0xffffff);
       }
 
-      this.drawColumn(ctx, range, clusters[col], col, left, slot);
+      this.drawColumn(ctx, clusters[col], col, left, slot);
       visibleColumnIndex++;
     }
 
@@ -214,12 +212,16 @@ export class ClustersPanelElement implements RenderElement {
   /** Рисует одну колонку кластера в её изолированный слот. */
   private drawColumn(
     ctx: FrameContext,
-    range: VisibleRange,
     cluster: TradesCluster,
     columnIndex: number,
     left: number,
     slot: ColumnSlot
   ): void {
+    const range = ctx.visibleRange;
+    if (range == null) {
+      return;
+    }
+
     const rowHeight = ctx.viewport.rowHeight;
     const columnWidth = ctx.clustersScroll.columnWidth;
     const right = left + columnWidth;
@@ -234,11 +236,12 @@ export class ClustersPanelElement implements RenderElement {
       alpha: borderColor.alpha
     });
 
-    const {cells, maxVolume} = this.getColumnCells(ctx.model.rows, ctx.model.clusters, cluster, range, columnIndex);
+    const {cells, maxVolume} = this.getColumnCells(ctx.visibleRows, ctx.model.clusters, cluster, columnIndex);
 
-    for (let i = range.start; i <= range.end && i < ctx.model.rows.length; i++) {
-      const row = ctx.model.rows[i];
-      const cell = cells[i - range.start];
+    for (let k = 0; k < ctx.visibleRows.length; k++) {
+      const i = range.start + k;
+      const row = ctx.visibleRows[k];
+      const cell = cells[k];
       const y = (i * rowHeight) - ctx.viewport.scrollOffset;
 
       const isMaxVolume = cell.volume != null && cell.volume > 0 && cell.volume === maxVolume;
@@ -292,8 +295,7 @@ export class ClustersPanelElement implements RenderElement {
    * обрабатывается горизонтальной прокруткой панели.
    */
   measureColumnContentWidth(
-    rows: BodyRow[],
-    range: VisibleRange,
+    visibleRows: BodyRow[],
     clusters: TradesCluster[],
     settings: ClustersDisplaySettings,
     fonts: FontProvider,
@@ -303,7 +305,7 @@ export class ClustersPanelElement implements RenderElement {
     let maxText = 0;
 
     for (let col = 0; col < clusters.length; col++) {
-      const {cells} = this.getColumnCells(rows, clusters, clusters[col], range, col);
+      const {cells} = this.getColumnCells(visibleRows, clusters, clusters[col], col);
       for (const cell of cells) {
         if (cell.volume != null) {
           const text = formatters.formatVolume(cell.volume, settings.volumeDisplayFormat);
@@ -323,43 +325,53 @@ export class ClustersPanelElement implements RenderElement {
 
   /** Возвращает агрегацию колонки из кэша, пересчитывая при изменении исходных данных. */
   private getColumnCells(
-    rows: BodyRow[],
+    visibleRows: BodyRow[],
     clusters: TradesCluster[],
     cluster: TradesCluster,
-    range: VisibleRange,
     columnIndex: number
   ): { cells: CellAggregate[], maxVolume: number } {
-    if (this.cacheRowsRef !== rows
-      || this.cacheClustersRef !== clusters
-      || this.cacheRangeStart !== range.start
-      || this.cacheRangeEnd !== range.end) {
+    const rowsKey = this.computeRowsKey(visibleRows);
+    if (this.cacheRowsKey !== rowsKey
+      || this.cacheClustersRef !== clusters) {
       this.cachedColumns.length = 0;
-      this.cacheRowsRef = rows;
+      this.cacheRowsKey = rowsKey;
       this.cacheClustersRef = clusters;
-      this.cacheRangeStart = range.start;
-      this.cacheRangeEnd = range.end;
     }
 
     let cached = this.cachedColumns[columnIndex];
     if (cached == null) {
-      cached = this.computeColumnCells(rows, cluster, range);
+      cached = this.computeColumnCells(visibleRows, cluster);
       this.cachedColumns[columnIndex] = cached;
     }
 
     return cached;
   }
 
+  /**
+   * Ключ кэша агрегации по содержимому окна: длина и крайние ценовые диапазоны.
+   * При равномерной сетке этого достаточно (baseRange детерминированы по индексу),
+   * схлопывание уровней меняет длину.
+   */
+  private computeRowsKey(visibleRows: BodyRow[]): string {
+    if (visibleRows.length === 0) {
+      return '0';
+    }
+
+    const first = visibleRows[0].baseRange;
+    const last = visibleRows[visibleRows.length - 1].baseRange;
+    return `${visibleRows.length}|${first.min}|${first.max}|${last.min}|${last.max}`;
+  }
+
   /** Агрегирует элементы кластера по видимым строкам стакана и находит максимальный объем. */
   private computeColumnCells(
-    rows: BodyRow[],
-    cluster: TradesCluster,
-    range: VisibleRange
+    visibleRows: BodyRow[],
+    cluster: TradesCluster
   ): { cells: CellAggregate[], maxVolume: number } {
     const cells: CellAggregate[] = [];
     let maxVolume = 0;
 
-    for (let i = range.start; i <= range.end && i < rows.length; i++) {
-      const baseRange = rows[i].baseRange;
+    for (const visibleRow of visibleRows) {
+      const baseRange = visibleRow.baseRange;
 
       let buySum = 0;
       let sellSum = 0;

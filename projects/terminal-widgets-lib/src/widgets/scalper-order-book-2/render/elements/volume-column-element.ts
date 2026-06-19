@@ -16,8 +16,7 @@ import {
   FontProvider,
   FrameContext,
   TableDisplaySettings,
-  ValueFormatters,
-  VisibleRange
+  ValueFormatters
 } from '../render-contracts';
 import {ColorHelper} from '../color-helper';
 import {RenderElement} from './render-element';
@@ -51,11 +50,6 @@ export class VolumeColumnElement implements RenderElement {
 
   private readonly textPool: BitmapTextPool;
 
-  // Кэш максимального объема: пересчитывается только при новой ссылке на строки.
-  private maxVolumeRowsRef: BodyRow[] | null = null;
-
-  private cachedMaxVolume = 0;
-
   // Кэш отсортированных опций подсветки с разобранными цветами.
   private highlightOptionsRef: VolumeHighlightOption[] | null = null;
 
@@ -83,11 +77,12 @@ export class VolumeColumnElement implements RenderElement {
     const settings = ctx.model.displaySettings;
 
     const maxOrderBookVolume = settings.volumeHighlightMode === VolumeHighlightMode.BiggestVolume
-      ? this.getMaxOrderBookVolume(ctx.model.rows)
+      ? ctx.maxAskBidVolume
       : 0;
 
-    for (let i = range.start; i <= range.end && i < ctx.model.rows.length; i++) {
-      const row = ctx.model.rows[i];
+    for (let k = 0; k < ctx.visibleRows.length; k++) {
+      const i = range.start + k;
+      const row = ctx.visibleRows[k];
       const volume = row.volume ?? 0;
       if (volume <= 0) {
         continue;
@@ -163,7 +158,6 @@ export class VolumeColumnElement implements RenderElement {
    */
   measureDesiredWidth(
     rows: BodyRow[],
-    range: VisibleRange,
     settings: TableDisplaySettings,
     showGrowingVolume: boolean,
     fonts: FontProvider,
@@ -173,8 +167,7 @@ export class VolumeColumnElement implements RenderElement {
     let maxContent = 0;
     const growingFontSize = Math.max(8, fontSize - 2);
 
-    for (let i = range.start; i <= range.end && i < rows.length; i++) {
-      const row = rows[i];
+    for (const row of rows) {
       const volume = row.volume ?? 0;
       if (volume <= 0) {
         continue;
@@ -250,15 +243,6 @@ export class VolumeColumnElement implements RenderElement {
     }
 
     return null;
-  }
-
-  private getMaxOrderBookVolume(rows: BodyRow[]): number {
-    if (this.maxVolumeRowsRef !== rows) {
-      this.maxVolumeRowsRef = rows;
-      this.cachedMaxVolume = rows.reduce((max, curr) => Math.max(max, curr.askVolume ?? 0, curr.bidVolume ?? 0), 0);
-    }
-
-    return this.cachedMaxVolume;
   }
 
   private getSortedHighlightOptions(options: VolumeHighlightOption[]): { boundary: number, fill: FillSpec }[] {

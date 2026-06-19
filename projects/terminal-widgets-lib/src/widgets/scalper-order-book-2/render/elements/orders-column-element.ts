@@ -13,8 +13,7 @@ import {
   FillSpec,
   FontProvider,
   FrameContext,
-  OrderIndicatorHitArea,
-  VisibleRange
+  OrderIndicatorHitArea
 } from '../render-contracts';
 import {RenderElement} from './render-element';
 import {BitmapTextPool} from './bitmap-text-pool';
@@ -84,8 +83,9 @@ export class OrdersColumnElement implements RenderElement {
         maxOrderPrice = Math.max(maxOrderPrice, price);
       }
 
-      for (let i = range.start; i <= range.end && i < ctx.model.rows.length; i++) {
-        const row = ctx.model.rows[i];
+      for (let k = 0; k < ctx.visibleRows.length; k++) {
+        const i = range.start + k;
+        const row = ctx.visibleRows[k];
         if (row.baseRange.max < minOrderPrice || row.baseRange.min > maxOrderPrice) {
           continue;
         }
@@ -187,7 +187,6 @@ export class OrdersColumnElement implements RenderElement {
    */
   measureDesiredWidth(
     rows: BodyRow[],
-    range: VisibleRange,
     orders: CurrentOrderDisplay[],
     fonts: FontProvider,
     fontSize: number
@@ -211,8 +210,7 @@ export class OrdersColumnElement implements RenderElement {
     }
 
     let maxWidth = 0;
-    for (let i = range.start; i <= range.end && i < rows.length; i++) {
-      const row = rows[i];
+    for (const row of rows) {
       if (row.baseRange.max < minOrderPrice || row.baseRange.min > maxOrderPrice) {
         continue;
       }
