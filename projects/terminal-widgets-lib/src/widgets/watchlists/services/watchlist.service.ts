@@ -33,9 +33,11 @@ import {
 import {QuotesService} from '@terminal-core-lib/features/instruments/services/quotes.service';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {Candle} from '@terminal-core-lib/features/instruments/services/candles-service.types';
+import {WatchlistHistoryTimeRangeHelper} from '../utils/watchlist-history-time-range.helper';
 
 class WatchlistSubscriptionState {
   constructor(
+    public readonly listId: string,
     public readonly watchlistUpdatesState: WatchlistUpdatesManager,
     public readonly instrumentsToWatchState: InstrumentsToWatchManager,
     public readonly collectionChangeSubscription: Subscription
@@ -49,7 +51,7 @@ class WatchlistSubscriptionState {
   }
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class WatchlistService implements OnDestroy {
   private readonly instrumentsService = inject(InstrumentsService);
 
@@ -62,19 +64,12 @@ export class WatchlistService implements OnDestroy {
   private readonly watchlistSubscriptionMap = new Map<string, WatchlistSubscriptionState>();
 
   unsubscribeFromList(listId: string): void {
-    const watchlistState = this.watchlistSubscriptionMap.get(listId);
-    if (watchlistState == null) {
-      return;
-    }
-
-    watchlistState.destroy();
-    this.watchlistSubscriptionMap.delete(listId);
+    this.destroySubscriptions(state => state.listId === listId);
   }
 
   subscribeToListUpdates(listId: string, timeframe: TimeframeValue): Observable<WatchedInstrument[]> {
     // reuse existing subscription in case of watchlist collections changes
     // for example, user selects one more list and existing lists can be reused
-    // timeframe will not be changed in this case
     const existingSubscription = this.watchlistSubscriptionMap.get(listId);
     if (existingSubscription != null) {
       return existingSubscription.watchlistUpdatesState.updates$;
@@ -103,6 +98,7 @@ export class WatchlistService implements OnDestroy {
     this.watchlistSubscriptionMap.set(
       listId,
       new WatchlistSubscriptionState(
+        listId,
         watchlistUpdatesState,
         instrumentsToWatchState,
         collectionChangeSubscription
@@ -117,48 +113,7 @@ export class WatchlistService implements OnDestroy {
   }
 
   clearSubscriptions(): void {
-    this.watchlistSubscriptionMap.forEach((value, key) => this.unsubscribeFromList(key));
-  }
-
-  private getHistoryFromTime(timeframe: TimeframeValue): number {
-    const nowDate = this.getHistoryToTime(timeframe);
-    switch (timeframe) {
-      case TimeframeValue.Day:
-        return nowDate - 3600 * 24 * 3;
-      case TimeframeValue.W:
-        return nowDate - 3600 * 24 * 21;
-      case TimeframeValue.Month:
-        return nowDate - 3600 * 24 * 31 * 3;
-      default:
-        return nowDate - 3600 * 24;
-    }
-  }
-
-  private getHistoryToTime(timeframe: TimeframeValue): number {
-    switch (timeframe) {
-      case TimeframeValue.Day:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, -1).getTime() / 1000);
-      case TimeframeValue.W:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - ((new Date().getDay() + 6) % 7), 0, 0, -1).getTime() / 1000);
-      case TimeframeValue.Month:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), 1, 0, 0, -1).getTime() / 1000);
-      case TimeframeValue.H4:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() - 3, 0, -1).getTime() / 1000);
-      case TimeframeValue.H:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), 0, -1).getTime() / 1000);
-      case TimeframeValue.M15:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes() - 14, -1).getTime() / 1000);
-      case TimeframeValue.M5:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes() - 4, -1).getTime() / 1000);
-      case TimeframeValue.M1:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), -1).getTime() / 1000);
-      case TimeframeValue.S10:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds() - 9, -1).getTime() / 1000);
-      case TimeframeValue.S5:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds() - 4, -1).getTime() / 1000);
-      case TimeframeValue.S1:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds(), -1).getTime() / 1000);
-    }
+    this.destroySubscriptions(() => true);
   }
 
   private refreshWatchItems(
@@ -287,9 +242,6 @@ export class WatchlistService implements OnDestroy {
     ])
       .pipe(
         map(([quote, candlePair]) => {
-          if (candlePair[1] != null && candlePair[1].time < this.getHistoryToTime(timeframe)) {
-            return {quote, lastCandle: candlePair[1]};
-          }
           return {quote, lastCandle: candlePair[0]};
         }),
         debounceTime(250)
@@ -318,28 +270,44 @@ export class WatchlistService implements OnDestroy {
       symbol: instrumentKey.symbol,
       exchange: instrumentKey.exchange,
       tf: timeframe,
-      from: this.getHistoryFromTime(timeframe),
-      to: this.getHistoryToTime(timeframe),
-      countBack: 1
+      from: WatchlistHistoryTimeRangeHelper.getFromTime(timeframe),
+      to: WatchlistHistoryTimeRangeHelper.getToTime(),
+      countBack: 2
     })
       .pipe(
         take(1),
         map(history => {
           if (history == null || history.history.length === 0) {
-            return null;
+            return [null, null];
           }
 
-          return history.history[history.history.length - 1];
+          const candles = history.history.slice(-2);
+          if (candles.length === 1) {
+            return [null, candles[0]];
+          }
+
+          return candles;
         }),
-        switchMap(historyCandle => {
+        switchMap(historyCandles => {
             return this.candlesService.getCandleSubscription(instrumentKey, timeframe)
               .pipe(
-                startWith(historyCandle, historyCandle),
+                startWith(...historyCandles),
                 pairwise(), // Needs to get last value of previous candle
                 filter((c, i) => c[0]?.time !== c[1]?.time || i === 0)
               );
           }
         )
       );
+  }
+
+  private destroySubscriptions(predicate: (state: WatchlistSubscriptionState) => boolean): void {
+    for (const [key, state] of Array.from(this.watchlistSubscriptionMap.entries())) {
+      if (!predicate(state)) {
+        continue;
+      }
+
+      state.destroy();
+      this.watchlistSubscriptionMap.delete(key);
+    }
   }
 }

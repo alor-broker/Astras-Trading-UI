@@ -36,13 +36,14 @@ export class CandlesService {
   private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
 
   getLastTwoDailyCandles(instrumentKey: InstrumentKey): Observable<{ cur: Candle, prev: Candle } | null> {
+    const now = new Date();
     return this.getHistory(
       {
         symbol: instrumentKey.symbol,
         exchange: instrumentKey.exchange,
         tf: 'D',
-        from: getUnixTime(subDays(new Date(), 2)),
-        to: Math.round(Date.now() / 1000),
+        from: getUnixTime(subDays(now, 21)),
+        to: getUnixTime(now),
         countBack: 2
       }
     ).pipe(
