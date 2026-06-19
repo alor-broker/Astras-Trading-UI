@@ -46,8 +46,9 @@ export class RowBackgroundsElement implements RenderElement {
     // В колонке заявок фон рисуется только для строк лучших цен (как в DOM версии).
     const mainColumnsWidth = ctx.layout.tableColumns.orders.x;
 
-    for (let i = range.start; i <= range.end && i < ctx.model.rows.length; i++) {
-      const row = ctx.model.rows[i];
+    for (let k = 0; k < ctx.visibleRows.length; k++) {
+      const i = range.start + k;
+      const row = ctx.visibleRows[k];
       const y = (i * rowHeight) - ctx.viewport.scrollOffset;
 
       const fill = this.getRowFill(ctx, row.rowType ?? null, (row.volume ?? 0) > 0, row.isBest === true);

@@ -43,6 +43,11 @@ import {
   LayoutHelper
 } from './layout-helper';
 import {ViewportController} from './viewport-controller';
+import {DisplayModel} from './price-grid/price-grid-types';
+import {
+  DisplaySource,
+  PriceSource
+} from './price-grid/display-source';
 import {ColorHelper} from './color-helper';
 import {SharedFontProvider} from './font-provider';
 import {FormatHelper} from './format-helper';
@@ -55,9 +60,6 @@ import {OrdersColumnElement} from './elements/orders-column-element';
 import {TradesPanelElement} from './elements/trades-panel-element';
 import {ClustersPanelElement} from './elements/clusters-panel-element';
 
-/** Количество строк до края, при котором запрашивается расширение ценового ряда. */
-const SCROLL_EDGE_BUFFER_ROWS = 10;
-
 /** Минимальная ширина колонки кластера в px (как в DOM версии). */
 const MIN_CLUSTER_COLUMN_WIDTH = 25;
 
@@ -66,6 +68,15 @@ const DRAG_START_THRESHOLD_PX = 4;
 
 /** Отступы колонки цены (по 2px слева и справа). */
 const PRICE_COLUMN_PADDING = 4;
+
+/** Пустой источник цен (нет сетки). */
+const EMPTY_SOURCE: PriceSource = {
+  isEmpty: true,
+  minIndex: Number.NEGATIVE_INFINITY,
+  maxIndex: Number.POSITIVE_INFINITY,
+  priceAt: () => 0,
+  nearestIndexByPrice: () => 0
+};
 
 const DEFAULT_THEME: RenderThemeColors = {
   buyColor: 'rgba(0,155,99,1)',
@@ -161,7 +172,22 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
 
   private rowsVersion = 0;
 
-  private readonly edgeNotifiedVersion: Record<'top' | 'bottom', number> = {top: -1, bottom: -1};
+  private displaySource: DisplaySource | null = null;
+
+  // Сигнатура текущей сетки (инструмент|масштаб|опорная цена) для детекта смены сетки.
+  private lastGridKey = '';
+
+  // Центрирование отложено до известной высоты области (гонка инициализации).
+  private pendingInitialCenter = false;
+
+  // Кэш материализованного окна видимых строк по (rowsVersion, диапазон).
+  private cachedWindow: BodyRow[] = [];
+
+  private cachedWindowVersion = -1;
+
+  private cachedWindowStart = -1;
+
+  private cachedWindowEnd = -1;
 
   private lastEmittedRange: VisibleRange | null = null;
 
@@ -227,7 +253,6 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
     this.formatters = new FormatHelper('ru');
 
     this.model = {
-      rows: [],
       orders: [],
       trades: [],
       ownTrades: [],
@@ -307,27 +332,49 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
   // Входные данные (вызываются кодом потока данных)
   // ------------------------------------------------------------------
 
-  setRows(rows: BodyRow[]): void {
-    const hadRows = this.model.rows.length > 0;
+  setDisplayModel(model: DisplayModel | null): void {
+    // Сетка считается новой при смене инструмента, масштаба или опорной цены
+    // (анкоринг по ордербуку вместо последней цены). Чистые тики ордербука не
+    // меняют сетку и не сбрасывают прокрутку.
+    const gridKey = model == null
+      ? ''
+      : `${model.instrumentKey.symbol}|${model.instrumentKey.exchange}|${model.instrumentKey.instrumentGroup ?? ''}|${model.startPrice}|${model.scaledStep}`;
+    const gridChanged = gridKey !== this.lastGridKey;
+    this.lastGridKey = gridKey;
 
-    this.model.rows = rows;
+    this.displaySource = model != null ? new DisplaySource(model) : null;
     this.rowsVersion++;
-    this.viewport.setRows(rows);
 
-    if (this.hoveredRowIndex != null && this.hoveredRowIndex >= rows.length) {
+    const source = this.currentSource();
+    this.viewport.setSource(source);
+
+    if (this.displaySource == null
+      || (this.hoveredRowIndex != null && this.hoveredRowIndex > this.displaySource.maxIndex)) {
       this.hoveredRowIndex = null;
     }
 
-    // Первое появление строк: центрируемся на стартовой строке ценового ряда,
-    // не дожидаясь внешнего выравнивания.
-    if (!hadRows && rows.length > 0) {
-      const startRowIndex = rows.findIndex(r => r.isStartRow);
-      if (startRowIndex >= 0) {
-        this.viewport.centerOnIndex(startRowIndex, rows, false);
-      }
+    // Новая сетка: центрируемся на середине спреда / лучших ценах.
+    // Если высота области ещё не известна (гонка инициализации), центрирование
+    // откладывается до первого ненулевого размера (см. initResizeObserver).
+    if (gridChanged && this.displaySource != null) {
+      this.centerInitial();
     }
 
     this.markDirty(DirtyFlags.Rows | DirtyFlags.Viewport);
+  }
+
+  /** Центрирует на цели выравнивания, откладывая до известной высоты области. */
+  private centerInitial(): void {
+    if (this.displaySource == null) {
+      return;
+    }
+
+    if (this.viewport.metrics.height > 0) {
+      this.pendingInitialCenter = false;
+      this.viewport.centerOnIndex(this.displaySource.centerIndex, this.displaySource, false);
+    } else {
+      this.pendingInitialCenter = true;
+    }
   }
 
   setOrders(orders: CurrentOrderDisplay[]): void {
@@ -392,8 +439,45 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
 
   /** Центрирует строку с указанным индексом в видимой области. */
   centerOnRowIndex(index: number, animate: boolean): void {
-    this.viewport.centerOnIndex(index, this.model.rows, animate);
+    this.viewport.centerOnIndex(index, this.currentSource(), animate);
     this.markDirty(DirtyFlags.Viewport);
+  }
+
+  /** Центрирует таблицу: середина спреда -> лучший ask -> bid -> опорная строка. */
+  alignTable(animate: boolean): void {
+    if (this.displaySource != null) {
+      this.centerOnRowIndex(this.displaySource.centerIndex, animate);
+    }
+  }
+
+  private currentSource(): PriceSource {
+    return this.displaySource ?? EMPTY_SOURCE;
+  }
+
+  /** Материализует окно видимых строк, кэшируя его по версии данных и диапазону. */
+  private getVisibleRows(range: VisibleRange | null): BodyRow[] {
+    if (range == null || this.displaySource == null) {
+      return [];
+    }
+
+    if (this.cachedWindowVersion === this.rowsVersion
+      && this.cachedWindowStart === range.start
+      && this.cachedWindowEnd === range.end) {
+      return this.cachedWindow;
+    }
+
+    const rows: BodyRow[] = [];
+    const limit = Math.min(range.end, this.displaySource.maxIndex);
+    for (let i = range.start; i <= limit; i++) {
+      rows.push(this.displaySource.rowAt(i));
+    }
+
+    this.cachedWindow = rows;
+    this.cachedWindowVersion = this.rowsVersion;
+    this.cachedWindowStart = range.start;
+    this.cachedWindowEnd = range.end;
+
+    return rows;
   }
 
   getViewportSize(): { width: number, height: number } {
@@ -434,7 +518,7 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
       return null;
     }
 
-    const isAnimating = this.viewport.advanceAnimation(this.model.rows);
+    const isAnimating = this.viewport.advanceAnimation(this.currentSource());
     if (isAnimating) {
       this.dirty |= DirtyFlags.Viewport;
     }
@@ -469,6 +553,8 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
 
     const ctx: FrameContext = {
       model: this.model,
+      visibleRows: this.getVisibleRows(visibleRange),
+      maxAskBidVolume: this.displaySource?.maxAskBidVolume ?? 0,
       viewport: metrics,
       layout,
       theme: this.theme,
@@ -591,6 +677,13 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
 
       this.viewport.setSize(width, height);
       this.computedLayout = null;
+
+      // Отложенное начальное центрирование: первый показ строк мог случиться
+      // до того, как стала известна высота области.
+      if (this.pendingInitialCenter && height > 0) {
+        this.centerInitial();
+      }
+
       this.markDirty(DirtyFlags.Viewport | DirtyFlags.Layout | DirtyFlags.ClustersScroll);
 
       this.events.viewportSizeChanged({width, height});
@@ -665,8 +758,8 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
       const tableLocalX = point.x - layout.table.x;
       if (tableLocalX < layout.tableColumns.orders.x) {
         const rowIndex = this.viewport.getRowIndexByY(point.y);
-        if (rowIndex != null && rowIndex < this.model.rows.length) {
-          this.events.rowMouseDown(e, this.model.rows[rowIndex]);
+        if (rowIndex != null && this.displaySource != null) {
+          this.events.rowMouseDown(e, this.displaySource.rowAt(rowIndex));
         }
       }
 
@@ -740,8 +833,8 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
         this.dragState = null;
         this.markDirty(DirtyFlags.Drag);
 
-        if (rowIndex != null && rowIndex < this.model.rows.length) {
-          this.events.ordersDropped(pending.orders, this.model.rows[rowIndex]);
+        if (rowIndex != null && this.displaySource != null) {
+          this.events.ordersDropped(pending.orders, this.displaySource.rowAt(rowIndex));
         }
       } else if (e.button === 0) {
         this.events.orderIndicatorClick(pending.orders);
@@ -769,7 +862,7 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
       ? e.deltaY * this.viewport.metrics.rowHeight
       : e.deltaY;
 
-    this.viewport.scrollBy(delta, this.model.rows);
+    this.viewport.scrollBy(delta, this.currentSource());
     this.markDirty(DirtyFlags.Viewport);
 
     const point = this.getLocalPoint(e);
@@ -840,10 +933,8 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
 
     let newHoverIndex: number | null = null;
     if (isHoverablePanel && y >= 0 && y <= this.viewport.metrics.height) {
+      // getRowIndexByY уже ограничивает индекс границами сетки.
       newHoverIndex = this.viewport.getRowIndexByY(y);
-      if (newHoverIndex != null && newHoverIndex >= this.model.rows.length) {
-        newHoverIndex = null;
-      }
     }
 
     if (newHoverIndex !== this.hoveredRowIndex) {
@@ -858,13 +949,13 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
   }
 
   private getHoveredRowInfo(): HoveredRowInfo | null {
-    if (this.hoveredRowIndex == null || this.hoveredRowIndex >= this.model.rows.length) {
+    if (this.hoveredRowIndex == null || this.displaySource == null) {
       return null;
     }
 
     return {
       rowIndex: this.hoveredRowIndex,
-      price: this.model.rows[this.hoveredRowIndex].price,
+      price: this.displaySource.priceAt(this.hoveredRowIndex),
       y: this.viewport.getRowY(this.hoveredRowIndex)
     };
   }
@@ -877,21 +968,6 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
     if (isChanged) {
       this.lastEmittedRange = range;
       this.events.visibleRangeChanged(range);
-    }
-
-    if (range == null || this.model.rows.length === 0) {
-      return;
-    }
-
-    if (range.start < SCROLL_EDGE_BUFFER_ROWS && this.edgeNotifiedVersion.top !== this.rowsVersion) {
-      this.edgeNotifiedVersion.top = this.rowsVersion;
-      this.events.scrollEdgeReached('top');
-    }
-
-    if ((this.model.rows.length - 1 - range.end) < SCROLL_EDGE_BUFFER_ROWS
-      && this.edgeNotifiedVersion.bottom !== this.rowsVersion) {
-      this.edgeNotifiedVersion.bottom = this.rowsVersion;
-      this.events.scrollEdgeReached('bottom');
     }
   }
 
@@ -925,7 +1001,8 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
   /** Ширина содержимого каждой колонки таблицы по видимым строкам. */
   private measureColumnContentWidths(): { volume: number, price: number, orders: number } {
     const range = this.viewport.getVisibleRange();
-    if (range == null || this.model.rows.length === 0) {
+    const visibleRows = this.getVisibleRows(range);
+    if (visibleRows.length === 0) {
       return {volume: 0, price: 0, orders: 0};
     }
 
@@ -934,9 +1011,9 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
     // Цена: самая длинная видимая цена плюс отступы.
     let priceSample = '';
     let maxLength = 0;
-    for (let i = range.start; i <= range.end && i < this.model.rows.length; i++) {
+    for (const row of visibleRows) {
       const formatted = this.formatters.formatPrice(
-        this.model.rows[i].price,
+        row.price,
         this.model.displaySettings.priceDecimalsCount
       );
 
@@ -951,8 +1028,7 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
       : 0;
 
     const volume = this.volumeColumnElement.measureDesiredWidth(
-      this.model.rows,
-      range,
+      visibleRows,
       this.model.displaySettings,
       this.model.showGrowingVolume,
       this.fonts,
@@ -961,8 +1037,7 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
     );
 
     const orders = this.ordersColumnElement.measureDesiredWidth(
-      this.model.rows,
-      range,
+      visibleRows,
       this.model.orders,
       this.fonts,
       fontSize
@@ -1039,15 +1114,14 @@ export class ScalperOrderBook2Renderer implements RenderSurface {
   }
 
   private recomputeClustersContentColumnWidth(): void {
-    const range = this.viewport.getVisibleRange();
-    if (range == null || this.model.clusters.length === 0) {
+    const visibleRows = this.getVisibleRows(this.viewport.getVisibleRange());
+    if (visibleRows.length === 0 || this.model.clusters.length === 0) {
       this.clustersContentColumnWidth = 0;
       return;
     }
 
     this.clustersContentColumnWidth = this.clustersPanelElement.measureColumnContentWidth(
-      this.model.rows,
-      range,
+      visibleRows,
       this.model.clusters,
       this.model.clustersSettings,
       this.fonts,

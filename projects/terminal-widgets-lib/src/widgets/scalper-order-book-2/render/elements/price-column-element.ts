@@ -56,8 +56,9 @@ export class PriceColumnElement implements RenderElement {
     const fontSize = ctx.viewport.fontSize;
     const decimals = ctx.model.displaySettings.priceDecimalsCount;
 
-    for (let i = range.start; i <= range.end && i < ctx.model.rows.length; i++) {
-      const row = ctx.model.rows[i];
+    for (let k = 0; k < ctx.visibleRows.length; k++) {
+      const i = range.start + k;
+      const row = ctx.visibleRows[k];
       const y = (i * rowHeight) - ctx.viewport.scrollOffset;
 
       // Маркер диапазона текущей позиции.

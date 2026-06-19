@@ -6,7 +6,7 @@
       }
     </div>
     <div class="flex-fill">
-      <div #bodyContainer *ngrxLet="{ isLoading: sinks.isLoading$ } as shared" class="container">
+      <div #bodyContainer *ngrxLet="{ isLoading: sinks.isLoading$, hasRows: hasRows$ } as shared" class="container">
         <nz-spin [nzSpinning]="shared.isLoading">
           <div class="surface-container">
             @if (dataContext) {
@@ -14,8 +14,10 @@
                 (clustersContextMenu)="showClustersContextMenu($event)"
                 (panelDoubleClick)="onPanelDoubleClick($event)"
                 [dataContext]="dataContext"
+                [displayModel]="displayModel$"
                 [isActive]="isActive()"
                 [sinks]="sinks"
+                [trades]="trades$"
               />
             }
 
@@ -99,7 +101,7 @@
               <ats-possible-actions-panel/>
             </div>
 
-            @if ((dataContext.orderBookBody$ | async)?.length === 0 && !shared.isLoading) {
+            @if (!shared.hasRows && !shared.isLoading) {
               <div class="position-absolute top-0 w-100">
                 <nz-empty class="ant-list-empty-text"
                           nzNotFoundImage="simple"

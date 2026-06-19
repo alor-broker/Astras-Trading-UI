@@ -2,11 +2,16 @@ import {
   ViewportMetrics,
   VisibleRange
 } from './render-contracts';
+import {PriceSource} from './price-grid/display-source';
 
 /**
  * Управляет вертикальной прокруткой списка строк стакана.
- * Прокрутка виртуальная: канва имеет фиксированный размер,
+ * Прокрутка виртуальная и бесконечная: канва имеет фиксированный размер,
  * смещение определяет, какие строки видимы.
+ *
+ * Источник цен ({@link PriceSource}) виртуален: цена строки по знаковому индексу
+ * вычисляется по формуле. Прокрутка не ограничена сверху (`minIndex = -Infinity`,
+ * более высокие цены) и ограничена снизу строкой с минимальной ценой > 0 (`maxIndex`).
  */
 export class ViewportController {
   private width = 0;
@@ -19,7 +24,11 @@ export class ViewportController {
 
   private scrollOffsetValue = 0;
 
-  private rowsCount = 0;
+  private isEmpty = true;
+
+  private minIndex = Number.NEGATIVE_INFINITY;
+
+  private maxIndex = Number.POSITIVE_INFINITY;
 
   private anchorPrice: number | null = null;
 
@@ -27,6 +36,8 @@ export class ViewportController {
   private anchorSubRowOffset = 0;
 
   private animationTargetOffset: number | null = null;
+
+  private lastSource: PriceSource | null = null;
 
   get scrollOffset(): number {
     return this.scrollOffsetValue;
@@ -53,20 +64,35 @@ export class ViewportController {
   }
 
   setGridSettings(rowHeight: number, fontSize: number): void {
+    const oldRowHeight = this.rowHeight;
     this.rowHeight = Math.max(1, rowHeight);
     this.fontSize = fontSize;
-    this.clampScrollOffset();
+
+    const source = this.lastSource;
+    // Высота строки меняет px-на-строку, поэтому сохраняем видимую цену якорной строки,
+    // иначе ценовой ряд «прыгнет» под курсором.
+    if (source != null && !source.isEmpty && this.anchorPrice != null && oldRowHeight > 0) {
+      const anchorIndex = source.nearestIndexByPrice(this.anchorPrice);
+      const scaledSubOffset = this.anchorSubRowOffset * (this.rowHeight / oldRowHeight);
+      this.scrollOffsetValue = (anchorIndex * this.rowHeight) + scaledSubOffset;
+      this.clampScrollOffset();
+      this.updateAnchor(source);
+    } else {
+      this.clampScrollOffset();
+    }
   }
 
   /**
-   * Обновляет количество строк, сохраняя видимую позицию по цене якорной строки.
-   * @param rows цены строк по убыванию
+   * Обновляет источник строк, сохраняя видимую позицию по цене якорной строки.
    */
-  setRows(rows: { price: number }[]): void {
+  setSource(source: PriceSource): void {
     const previousAnchor = this.anchorPrice;
-    this.rowsCount = rows.length;
+    this.lastSource = source;
+    this.isEmpty = source.isEmpty;
+    this.minIndex = source.minIndex;
+    this.maxIndex = source.maxIndex;
 
-    if (rows.length === 0) {
+    if (source.isEmpty) {
       this.anchorPrice = null;
       this.scrollOffsetValue = 0;
       this.animationTargetOffset = null;
@@ -74,33 +100,36 @@ export class ViewportController {
     }
 
     if (previousAnchor != null) {
-      const anchorIndex = this.findNearestRowIndex(rows, previousAnchor);
-      if (anchorIndex != null) {
-        const expectedOffset = (anchorIndex * this.rowHeight) + this.anchorSubRowOffset;
+      const anchorIndex = source.nearestIndexByPrice(previousAnchor);
+      const expectedOffset = (anchorIndex * this.rowHeight) + this.anchorSubRowOffset;
 
-        // Смещение корректируется только если якорная строка реально сдвинулась
-        // (например, ценовой ряд расширен сверху). Иначе обновление данных
-        // не должно влиять на прокрутку и анимацию.
-        if (Math.abs(expectedOffset - this.scrollOffsetValue) >= 0.5) {
-          this.scrollOffsetValue = expectedOffset;
-          this.animationTargetOffset = null;
+      // Смещение корректируется только если якорная строка реально сдвинулась
+      // (например, из-за схлопывания уровней выше). Иначе обновление данных
+      // не должно влиять на прокрутку.
+      if (Math.abs(expectedOffset - this.scrollOffsetValue) >= 0.5) {
+        const delta = expectedOffset - this.scrollOffsetValue;
+        this.scrollOffsetValue = expectedOffset;
+        // Анимация выравнивания не прерывается: цель сдвигается вместе со смещением,
+        // продолжая вести к той же логической строке.
+        if (this.animationTargetOffset != null) {
+          this.animationTargetOffset += delta;
         }
       }
     }
 
     this.clampScrollOffset();
-    this.updateAnchor(rows);
+    this.updateAnchor(source);
   }
 
-  scrollBy(deltaPx: number, rows: { price: number }[]): void {
+  scrollBy(deltaPx: number, source: PriceSource): void {
     this.animationTargetOffset = null;
     this.scrollOffsetValue += deltaPx;
     this.clampScrollOffset();
-    this.updateAnchor(rows);
+    this.updateAnchor(source);
   }
 
   /** Центрирует указанную строку в видимой области. */
-  centerOnIndex(index: number, rows: { price: number }[], animate: boolean): void {
+  centerOnIndex(index: number, source: PriceSource, animate: boolean): void {
     const targetOffset = this.clampOffsetValue(
       (index * this.rowHeight) - (this.height / 2) + (this.rowHeight / 2)
     );
@@ -110,7 +139,7 @@ export class ViewportController {
     } else {
       this.animationTargetOffset = null;
       this.scrollOffsetValue = targetOffset;
-      this.updateAnchor(rows);
+      this.updateAnchor(source);
     }
   }
 
@@ -118,7 +147,7 @@ export class ViewportController {
    * Продвигает анимацию прокрутки на один кадр.
    * @returns true, если анимация продолжается и требуются дополнительные кадры
    */
-  advanceAnimation(rows: { price: number }[]): boolean {
+  advanceAnimation(source: PriceSource): boolean {
     if (this.animationTargetOffset == null) {
       return false;
     }
@@ -129,24 +158,24 @@ export class ViewportController {
     if (Math.abs(distance) <= 1) {
       this.scrollOffsetValue = target;
       this.animationTargetOffset = null;
-      this.updateAnchor(rows);
+      this.updateAnchor(source);
       return false;
     }
 
     // Экспоненциальное приближение: быстро в начале, плавно в конце.
     this.scrollOffsetValue += distance * 0.25;
-    this.updateAnchor(rows);
+    this.updateAnchor(source);
     return true;
   }
 
   getVisibleRange(): VisibleRange | null {
-    if (this.rowsCount === 0 || this.height <= 0) {
+    if (this.isEmpty || this.height <= 0) {
       return null;
     }
 
-    const start = Math.max(0, Math.floor(this.scrollOffsetValue / this.rowHeight));
+    const start = Math.max(this.minIndex, Math.floor(this.scrollOffsetValue / this.rowHeight));
     const end = Math.min(
-      this.rowsCount - 1,
+      this.maxIndex,
       Math.ceil((this.scrollOffsetValue + this.height) / this.rowHeight) - 1
     );
 
@@ -157,14 +186,14 @@ export class ViewportController {
     return {start, end};
   }
 
-  /** Индекс строки по координате Y канвы. */
+  /** Индекс строки по координате Y канвы (знаковый). */
   getRowIndexByY(y: number): number | null {
-    if (this.rowsCount === 0 || this.rowHeight <= 0) {
+    if (this.isEmpty || this.rowHeight <= 0) {
       return null;
     }
 
     const index = Math.floor((this.scrollOffsetValue + y) / this.rowHeight);
-    if (index < 0 || index >= this.rowsCount) {
+    if (index < this.minIndex || index > this.maxIndex) {
       return null;
     }
 
@@ -176,50 +205,19 @@ export class ViewportController {
     return (index * this.rowHeight) - this.scrollOffsetValue;
   }
 
-  private findNearestRowIndex(rows: { price: number }[], price: number): number | null {
-    if (rows.length === 0) {
-      return null;
-    }
-
-    // Строки отсортированы по убыванию цены.
-    let low = 0;
-    let high = rows.length - 1;
-
-    if (price >= rows[0].price) {
-      return 0;
-    }
-
-    if (price <= rows[high].price) {
-      return high;
-    }
-
-    while (low < high - 1) {
-      const mid = (low + high) >> 1;
-      if (rows[mid].price > price) {
-        low = mid;
-      } else {
-        high = mid;
-      }
-    }
-
-    return Math.abs(rows[low].price - price) <= Math.abs(rows[high].price - price)
-      ? low
-      : high;
-  }
-
-  private updateAnchor(rows: { price: number }[]): void {
-    if (rows.length === 0) {
+  private updateAnchor(source: PriceSource): void {
+    if (source.isEmpty) {
       this.anchorPrice = null;
       this.anchorSubRowOffset = 0;
       return;
     }
 
     const topIndex = Math.min(
-      rows.length - 1,
-      Math.max(0, Math.round(this.scrollOffsetValue / this.rowHeight))
+      this.maxIndex,
+      Math.max(this.minIndex, Math.round(this.scrollOffsetValue / this.rowHeight))
     );
 
-    this.anchorPrice = rows[topIndex].price;
+    this.anchorPrice = source.priceAt(topIndex);
     this.anchorSubRowOffset = this.scrollOffsetValue - (topIndex * this.rowHeight);
   }
 
@@ -228,7 +226,10 @@ export class ViewportController {
   }
 
   private clampOffsetValue(value: number): number {
-    const maxOffset = Math.max(0, (this.rowsCount * this.rowHeight) - this.height);
-    return Math.min(Math.max(0, value), maxOffset);
+    // Бесконечно вверх (minOffset = -Infinity при minIndex = -Infinity),
+    // ограничено снизу строкой с минимальной ценой.
+    const minOffset = this.minIndex * this.rowHeight;
+    const maxOffset = ((this.maxIndex + 1) * this.rowHeight) - this.height;
+    return Math.min(Math.max(minOffset, value), Math.max(minOffset, maxOffset));
   }
 }

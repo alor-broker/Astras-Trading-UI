@@ -79,9 +79,13 @@ export class SharedFontProvider implements FontProvider {
   }
 
   private getResolution(): number {
-    // Должно совпадать с разрешением рендерера (SharedRenderEngine.getTargetResolution):
-    // целое >= dpr, иначе атлас глифов масштабируется при отрисовке и текст размывается.
     const dpr = globalThis.devicePixelRatio;
-    return Math.min(Math.ceil(dpr > 0 ? dpr : 1), 2);
+    const renderResolution = Math.min(Math.ceil(dpr > 0 ? dpr : 1), 2);
+
+    // Супер-сэмплинг атласа глифов: текстура шрифта плотнее разрешения рендерера, поэтому
+    // при отрисовке она уменьшается (а не растягивается) - мелкий текст остаётся чётким.
+    // Дополнительной стоимости отрисовки нет: плотнее только текстура шрифта, не сцена.
+    // Важно не делать разрешение МЕНЬШЕ разрешения рендерера (тогда атлас растянется и размоется).
+    return Math.min(renderResolution * 2, 4);
   }
 }

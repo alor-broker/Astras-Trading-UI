@@ -144,7 +144,7 @@ export class TradesPanelElement implements RenderElement {
       return;
     }
 
-    const priceItems = ctx.model.rows.slice(range.start, range.end + 1);
+    const priceItems = ctx.visibleRows;
     if (priceItems.length === 0) {
       return;
     }
@@ -399,8 +399,10 @@ export class TradesPanelElement implements RenderElement {
           .stroke({width: 1, color: stroke.color, alpha: stroke.alpha});
       },
       text: {
+        // Левый край на целом пикселе (текст с левым якорем), иначе bitmap-текст
+        // на дробной позиции от центрального якоря размывается.
         text: itemText,
-        x: xCenter,
+        x: xCenter - Math.round(textWidth / 2),
         y: yCenter,
         tint: textTint
       }
@@ -569,8 +571,9 @@ export class TradesPanelElement implements RenderElement {
 
     const text = this.getPooledText(this.ownTradeTexts, this.ownTradeTextsLayer, textIndex, ctx.fonts);
     this.applyText(text, {
+      // Левый край на целом пикселе (левый якорь) - текст не размывается.
       text: itemText,
-      x: Math.round(this.getCenter(xLeft, xRight)),
+      x: Math.round(this.getCenter(xLeft, xRight) - (textWidth / 2)),
       y: Math.round(this.getCenter(yTop, yTop + itemHeight)),
       tint: ctx.theme.textMaxContrast
     });
@@ -651,7 +654,9 @@ export class TradesPanelElement implements RenderElement {
       }
     });
 
-    created.anchor.set(0.5, 0.5);
+    // Левый якорь по X (целочисленный левый край), вертикальный центр по Y.
+    // Центральный якорь по X давал дробную позицию глифов -> размытие.
+    created.anchor.set(0, 0.5);
     created.roundPixels = true;
     pool.push(created);
     parent.addChild(created);

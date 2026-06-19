@@ -1,13 +1,13 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   ElementRef,
   inject,
   input,
   LOCALE_ID,
-  NgZone,
   OnDestroy,
   output,
   viewChild,
@@ -17,10 +17,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {
   BehaviorSubject,
   combineLatest,
-  of,
-  Subject,
-  take,
-  takeUntil
+  Observable,
+  of
 } from 'rxjs';
 import {
   distinctUntilChanged,
@@ -33,18 +31,15 @@ import {ThemeColors} from '@terminal-core-lib/features/themes/themes.types';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {NumberDisplayFormat} from '@terminal-core-lib/common/types/number-display-format.types';
 import {ContentSize} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {InstrumentTradesItem} from '@terminal-core-lib/features/instruments/services/instrument-trades-service.types';
 import {ActiveOrderBookHotKeysTypes} from '@terminal-core-lib/features/terminal-settings/terminal-settings.types';
 import {mapWith} from '@terminal-core-lib/common/utils/observable/map-with';
 import {ScalperOrderBookDataContext} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book-data-context.types';
-import {
-  CurrentOrderDisplay,
-  ScalperOrderBookRowType
-} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
+import {CurrentOrderDisplay} from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
 import {
   TradesClusterHighlightMode,
   VolumeHighlightMode
 } from '@terminal-widgets-lib/widgets/scalper-order-book/widget-settings.types';
-import {PriceRowsStore} from '@terminal-widgets-lib/widgets/scalper-order-book/utils/price-rows-store';
 import {ScalperCommandProcessorService} from '@terminal-widgets-lib/widgets/scalper-order-book/services/scalper-command-processor.service';
 import {ScalperHotKeyCommandService} from '@terminal-widgets-lib/widgets/scalper-order-book/services/scalper-hot-key-command.service';
 import {CancelOrdersCommand} from '@terminal-widgets-lib/widgets/scalper-order-book/commands/cancel-orders-command';
@@ -59,6 +54,7 @@ import {
   RenderThemeColors,
   VisibleRange
 } from '@terminal-widgets-lib/widgets/scalper-order-book-2/render/render-contracts';
+import {DisplayModel} from '@terminal-widgets-lib/widgets/scalper-order-book-2/render/price-grid/price-grid-types';
 import {ClustersStreamBuilder} from '@terminal-widgets-lib/widgets/scalper-order-book-2/utils/clusters-stream-builder';
 import {OwnTradesHelper} from '@terminal-widgets-lib/widgets/scalper-order-book-2/utils/own-trades-helper';
 
@@ -94,6 +90,12 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
 
   readonly sinks = input.required<SurfaceEventSinks>();
 
+  /** Поток модели отображения (виртуальная ценовая сетка), строится телом виджета. */
+  readonly displayModel = input.required<Observable<DisplayModel | null>>();
+
+  /** Лёгкий поток обезличенных сделок (порядок поддерживается потоком, без сортировки на тик). */
+  readonly trades = input.required<Observable<InstrumentTradesItem[]>>();
+
   readonly isActive = input(false);
 
   readonly clustersContextMenu = output<MouseEvent>();
@@ -112,17 +114,13 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
 
   private readonly tradeClustersService = inject(TradeClustersService);
 
-  private readonly priceRowsStore = inject(PriceRowsStore, {skipSelf: true});
-
   private readonly sharedContext = inject(SCALPER_ORDERBOOK_SHARED_CONTEXT, {skipSelf: true});
 
-  private readonly ngZone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly locale = inject(LOCALE_ID);
-
-  private readonly destroy$ = new Subject<void>();
 
   private renderer: ScalperOrderBook2Renderer | null = null;
 
@@ -140,112 +138,89 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
   private isRulerEnabled = false;
 
   ngAfterViewInit(): void {
-    this.ngZone.runOutsideAngular(() => {
-      void ScalperOrderBook2Renderer.create(
-        this.canvasHost().nativeElement,
-        {
-          rowMouseDown: (e, row) => this.ngZone.run(() => {
-            if (e.button === 0) {
-              this.commandProcessorService.processLeftMouseClick(e, row, this.dataContext());
-            } else if (e.button === 2) {
-              this.commandProcessorService.processRightMouseClick(e, row, this.dataContext());
-            }
-          }),
-          orderIndicatorClick: orders => this.ngZone.run(() => {
-            const activeOrders = orders.filter(o => !o.isDirty);
-            if (activeOrders.length > 0) {
-              this.cancelOrdersCommand.execute({
-                ordersToCancel: activeOrders.map(x => ({
-                  orderId: x.orderId,
-                  exchange: x.targetInstrument.exchange,
-                  portfolio: x.ownedPortfolio.portfolio,
-                  orderType: x.type
-                }))
-              });
-            }
-          }),
-          ordersDropped: (orders, targetRow) => this.ngZone.run(() => {
-            const activeOrders = orders.filter(o => !o.isDirty);
-            if (activeOrders.length > 0) {
-              this.commandProcessorService.updateOrdersPrice(activeOrders, targetRow, this.dataContext());
-            }
-          }),
-          hoverChanged: hover => {
-            if (this.isRulerEnabled) {
-              this.ngZone.run(() => this.sinks().hoveredRow$.next(hover));
-            } else {
-              this.sinks().hoveredRow$.next(hover);
-            }
-          },
-          // Диапазон видимых строк питает async pipe привязки (индикаторы заявок
-          // вне экрана), поэтому требуется вход в zone. Событие срабатывает
-          // только при пересечении границы строки, а не на каждый пиксель.
-          visibleRangeChanged: range => this.ngZone.run(() => this.sinks().displayRange$.next(this.toListRange(range))),
-          // Ширина содержимого таблицы меняется редко; вход в zone обновляет
-          // позиции resize-ручек и линейки в Angular-части.
-          tableContentWidthChanged: width => this.ngZone.run(() => this.sinks().tableContentWidth$.next(width)),
-          viewportSizeChanged: size => this.ngZone.run(() => this.sinks().contentSize$.next(size)),
-          scrollEdgeReached: edge => this.ngZone.run(() => this.extendRows(edge)),
-          tablePointerInsideChanged: isInside => this.sinks().isTableHovered$.next(isInside),
-          clustersContextMenuRequested: e => this.ngZone.run(() => this.clustersContextMenu.emit(e)),
-          panelDoubleClicked: panelId => this.ngZone.run(() => this.panelDoubleClick.emit(panelId))
-        }
-      ).then(renderer => {
-        if (this.isDestroyed) {
-          renderer.destroy();
-          return;
-        }
+    // Приложение zoneless: рендер - обычный JS, отдельная zone ему не нужна.
+    // Колбэки, меняющие Angular-состояние, помечают представление через ChangeDetectorRef.
+    void ScalperOrderBook2Renderer.create(
+      this.canvasHost().nativeElement,
+      {
+        rowMouseDown: (e, row) => this.runInAngular(() => {
+          if (e.button === 0) {
+            this.commandProcessorService.processLeftMouseClick(e, row, this.dataContext());
+          } else if (e.button === 2) {
+            this.commandProcessorService.processRightMouseClick(e, row, this.dataContext());
+          }
+        }),
+        orderIndicatorClick: orders => this.runInAngular(() => {
+          const activeOrders = orders.filter(o => !o.isDirty);
+          if (activeOrders.length > 0) {
+            this.cancelOrdersCommand.execute({
+              ordersToCancel: activeOrders.map(x => ({
+                orderId: x.orderId,
+                exchange: x.targetInstrument.exchange,
+                portfolio: x.ownedPortfolio.portfolio,
+                orderType: x.type
+              }))
+            });
+          }
+        }),
+        ordersDropped: (orders, targetRow) => this.runInAngular(() => {
+          const activeOrders = orders.filter(o => !o.isDirty);
+          if (activeOrders.length > 0) {
+            this.commandProcessorService.updateOrdersPrice(activeOrders, targetRow, this.dataContext());
+          }
+        }),
+        hoverChanged: hover => {
+          // Hover нужен Angular части только для маркера линейки. Когда линейка
+          // выключена, значение не отдаётся, чтобы не запускать change detection
+          // на каждое движение мыши (собственную подсветку строки рисует рендер).
+          if (this.isRulerEnabled) {
+            this.runInAngular(() => this.sinks().hoveredRow$.next(hover));
+          }
+        },
+        // Диапазон видимых строк питает async pipe привязки (индикаторы заявок
+        // вне экрана). Событие срабатывает только при пересечении границы строки.
+        visibleRangeChanged: range => this.runInAngular(() => this.sinks().displayRange$.next(this.toListRange(range))),
+        // Ширина содержимого таблицы меняется редко; обновляет позиции
+        // resize-ручек и линейки в Angular-части.
+        tableContentWidthChanged: width => this.runInAngular(() => this.sinks().tableContentWidth$.next(width)),
+        viewportSizeChanged: size => this.runInAngular(() => this.sinks().contentSize$.next(size)),
+        tablePointerInsideChanged: isInside => this.sinks().isTableHovered$.next(isInside),
+        clustersContextMenuRequested: e => this.runInAngular(() => this.clustersContextMenu.emit(e)),
+        panelDoubleClicked: panelId => this.runInAngular(() => this.panelDoubleClick.emit(panelId))
+      }
+    ).then(renderer => {
+      if (this.isDestroyed) {
+        renderer.destroy();
+        return;
+      }
 
-        this.renderer = renderer;
-        this.initDataBindings(renderer);
-      }).catch((err: unknown) => {
-        console.error('Failed to initialize scalper order book renderer', err);
-      });
+      this.renderer = renderer;
+      this.initDataBindings(renderer);
+    }).catch((err: unknown) => {
+      console.error('Failed to initialize scalper order book renderer', err);
     });
   }
 
   ngOnDestroy(): void {
     this.isDestroyed = true;
-    this.destroy$.next();
-    this.destroy$.complete();
     this.widthsOverride$.complete();
     this.renderer?.destroy();
     this.renderer = null;
   }
 
+  /**
+   * Выполняет действие, изменяющее Angular-состояние из колбэка рендера
+   * (DOM-событие/кадр вне CD), и помечает представление для проверки.
+   * В zoneless-приложении это замена повторного входа в NgZone.
+   */
+  private runInAngular(action: () => void): void {
+    action();
+    this.cdr.markForCheck();
+  }
+
   /** Центрирует таблицу: середина спреда → лучший ask → лучший bid → стартовая строка. */
   alignTable(): void {
-    this.dataContext().orderBookBody$.pipe(
-      take(1),
-      takeUntil(this.destroy$)
-    ).subscribe(orderBookBody => {
-      let targetIndex: number | null = null;
-
-      const spreadRows = orderBookBody.filter(r => r.rowType === ScalperOrderBookRowType.Spread || r.rowType === ScalperOrderBookRowType.Mixed);
-      if (spreadRows.length > 0) {
-        targetIndex = orderBookBody.indexOf(spreadRows[0]) + Math.round(spreadRows.length / 2);
-      } else {
-        const bestSellRowIndex = orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Ask && (r.isBest ?? false));
-        if (bestSellRowIndex >= 0) {
-          targetIndex = bestSellRowIndex;
-        } else {
-          const bestBidRowIndex = orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Bid && (r.isBest ?? false));
-          if (bestBidRowIndex >= 0) {
-            targetIndex = bestBidRowIndex;
-          } else {
-            const startRowIndex = orderBookBody.findIndex(r => r.isStartRow);
-            if (startRowIndex >= 0) {
-              targetIndex = startRowIndex;
-            }
-          }
-        }
-      }
-
-      if (targetIndex != null) {
-        const index = targetIndex;
-        this.ngZone.runOutsideAngular(() => this.renderer?.centerOnRowIndex(index, true));
-      }
-    });
+    this.renderer?.alignTable(true);
   }
 
   /** Временное переопределение ширин секций (resize, разворачивание панели). */
@@ -261,49 +236,27 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
     return {start: range.start, end: range.end};
   }
 
-  private extendRows(edge: 'top' | 'bottom'): void {
-    const isLoading = this.sinks().isLoading$.value;
-    if (isLoading) {
-      return;
-    }
-
-    const bufferItemsCount = 10;
-    this.sinks().isLoading$.next(true);
-
-    if (edge === 'top') {
-      this.priceRowsStore.extendTop(bufferItemsCount, () => {
-        this.sinks().isLoading$.next(false);
-      });
-    } else {
-      this.priceRowsStore.extendBottom(bufferItemsCount, () => {
-        this.sinks().isLoading$.next(false);
-      });
-    }
-  }
-
   private initDataBindings(renderer: ScalperOrderBook2Renderer): void {
-    const outside = (action: () => void): void => this.ngZone.runOutsideAngular(action);
-
     const dataContext = this.dataContext();
 
     const settings$ = dataContext.extendedSettings$;
 
-    dataContext.orderBookBody$.pipe(
+    this.displayModel().pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(rows => outside(() => renderer.setRows(rows)));
+    ).subscribe(model => renderer.setDisplayModel(model));
 
     dataContext.currentOrders$.pipe(
       // События приходят на каждое обновление портфеля. Без сравнения каждое из них
       // перерисовывало бы все экземпляры виджета, даже когда их заявки не изменились.
       distinctUntilChanged((prev, curr) => this.areOrdersEqual(prev, curr)),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(orders => outside(() => renderer.setOrders(orders)));
+    ).subscribe(orders => renderer.setOrders(orders));
 
-    dataContext.trades$.pipe(
+    // Поток уже поддерживает порядок по времени и обрезку по глубине - копировать
+    // и сортировать на каждый тик не нужно.
+    this.trades().pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(trades => outside(() => {
-      renderer.setTrades([...trades].sort((a, b) => a.timestamp - b.timestamp));
-    }));
+    ).subscribe(trades => renderer.setTrades(trades));
 
     combineLatest({
       ownTrades: dataContext.ownTrades$,
@@ -312,9 +265,9 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
       map(x => OwnTradesHelper.filterTradesByPosition(x.ownTrades, x.position)),
       distinctUntilChanged((prev, curr) => this.areOwnTradesEqual(prev, curr)),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(ownTrades => outside(() => {
+    ).subscribe(ownTrades => {
       renderer.setOwnTrades(ownTrades);
-    }));
+    });
 
     settings$.pipe(
       map(s => s.widgetSettings.showTradesClustersPanel ?? false),
@@ -330,19 +283,19 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
         );
       }),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(clusters => outside(() => renderer.setClusters(clusters)));
+    ).subscribe(clusters => renderer.setClusters(clusters));
 
     this.themeService.getThemeSettings().pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(theme => outside(() => renderer.setTheme(this.toRenderTheme(theme.themeColors))));
+    ).subscribe(theme => renderer.setTheme(this.toRenderTheme(theme.themeColors)));
 
     this.sharedContext.gridSettings$.pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(gridSettings => outside(() => renderer.setGridSettings(gridSettings)));
+    ).subscribe(gridSettings => renderer.setGridSettings(gridSettings));
 
     settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => outside(() => {
+    ).subscribe(settings => {
       const widgetSettings = settings.widgetSettings;
 
       this.isRulerEnabled = widgetSettings.showRuler ?? false;
@@ -374,20 +327,20 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
         displayIntervalsCount: widgetSettings.tradesClusterPanelSettings?.displayIntervalsCount
           ?? TradesClusterPanelSettingsDefaults.displayIntervalsCount
       });
-    }));
+    });
 
     combineLatest({
       settings: settings$,
       widthsOverride: this.widthsOverride$
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => outside(() => {
+    ).subscribe(x => {
       renderer.setLayout({
         widths: x.widthsOverride ?? x.settings.widgetSettings.layout?.widths ?? {},
         showTradesPanel: x.settings.widgetSettings.showTradesPanel ?? true,
         showClustersPanel: x.settings.widgetSettings.showTradesClustersPanel ?? true
       });
-    }));
+    });
 
     this.initHotkeys(renderer);
   }
@@ -403,8 +356,7 @@ export class ScalperOrderBook2Surface implements AfterViewInit, OnDestroy {
       if (command.type === ActiveOrderBookHotKeysTypes.toggleGrowingVolumeDisplay) {
         if (this.isActive()) {
           this.showGrowingVolume = !this.showGrowingVolume;
-          const visible = this.showGrowingVolume;
-          this.ngZone.runOutsideAngular(() => renderer.setGrowingVolumeVisible(visible));
+          renderer.setGrowingVolumeVisible(this.showGrowingVolume);
         }
 
         return;

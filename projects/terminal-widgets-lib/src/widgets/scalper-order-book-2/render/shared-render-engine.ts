@@ -140,7 +140,8 @@ export class SharedRenderEngine {
     // На дробном DPI канва, как правило, не попадает на физическую пиксельную сетку
     // (трансформации gridster и т.п.), и рендеринг 1:1 даёт мыло; рендеринг при целом
     // разрешении с последующим уменьшением браузером сохраняет четкость.
-    // Должно совпадать с SharedFontProvider.getResolution.
+    // Атлас шрифта (SharedFontProvider.getResolution) рендерится плотнее этого разрешения
+    // (супер-сэмплинг), чтобы мелкий текст оставался чётким; он не должен быть МЕНЬШЕ.
     const dpr = globalThis.devicePixelRatio;
     return Math.min(Math.ceil(dpr > 0 ? dpr : 1), 2);
   }
