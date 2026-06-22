@@ -3,6 +3,7 @@ import {
   Container,
   Renderer
 } from 'pixi.js';
+import {getRenderResolution} from './render-resolution';
 
 /**
  * Поверхность отрисовки, которую обслуживает общий движок.
@@ -136,14 +137,10 @@ export class SharedRenderEngine {
   }
 
   private getTargetResolution(): number {
-    // Целое разрешение >= dpr (суперсэмплинг при дробном масштабе экрана 125%/150%).
-    // На дробном DPI канва, как правило, не попадает на физическую пиксельную сетку
-    // (трансформации gridster и т.п.), и рендеринг 1:1 даёт мыло; рендеринг при целом
-    // разрешении с последующим уменьшением браузером сохраняет четкость.
-    // Атлас шрифта (SharedFontProvider.getResolution) рендерится плотнее этого разрешения
-    // (супер-сэмплинг), чтобы мелкий текст оставался чётким; он не должен быть МЕНЬШЕ.
-    const dpr = globalThis.devicePixelRatio;
-    return Math.min(Math.ceil(dpr > 0 ? dpr : 1), 2);
+    // Сцена рендерится минимум в 2x (супер-сэмплинг) даже при целом DPI: иначе
+    // субпиксельное положение глифов bitmap-текста мылит. Атлас шрифта
+    // (SharedFontProvider.getResolution) использует ТО ЖЕ разрешение. См. render-resolution.ts.
+    return getRenderResolution();
   }
 
   /**

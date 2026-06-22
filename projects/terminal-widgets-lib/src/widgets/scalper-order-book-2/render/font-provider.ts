@@ -4,6 +4,7 @@ import {
   TextStyle
 } from 'pixi.js';
 import {FontProvider} from './render-contracts';
+import {getRenderResolution} from './render-resolution';
 
 const FONT_FAMILY = 'Arial';
 const FONT_NAME_PREFIX = 'ats-scob2';
@@ -79,13 +80,8 @@ export class SharedFontProvider implements FontProvider {
   }
 
   private getResolution(): number {
-    const dpr = globalThis.devicePixelRatio;
-    const renderResolution = Math.min(Math.ceil(dpr > 0 ? dpr : 1), 2);
-
-    // Супер-сэмплинг атласа глифов: текстура шрифта плотнее разрешения рендерера, поэтому
-    // при отрисовке она уменьшается (а не растягивается) - мелкий текст остаётся чётким.
-    // Дополнительной стоимости отрисовки нет: плотнее только текстура шрифта, не сцена.
-    // Важно не делать разрешение МЕНЬШЕ разрешения рендерера (тогда атлас растянется и размоется).
-    return Math.min(renderResolution * 2, 4);
+    // Разрешение атласа глифов должно совпадать с разрешением рендерера сцены
+    // (см. render-resolution.ts): плотнее - 2:1 минификация и мыло, реже - растяжение.
+    return getRenderResolution();
   }
 }
