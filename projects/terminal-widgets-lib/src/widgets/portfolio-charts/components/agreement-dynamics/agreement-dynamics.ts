@@ -7,12 +7,14 @@ import {
   input,
   OnDestroy,
   OnInit,
+  signal,
   viewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   filter,
   Observable,
   switchMap
@@ -27,8 +29,13 @@ import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
 import {BaseChartDirective} from "ng2-charts";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
-import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {
+  NzRadioComponent,
+  NzRadioGroupComponent
+} from 'ng-zorro-antd/radio';
+import {FormsModule} from '@angular/forms';
 import {
   debounceTime,
   map,
@@ -56,6 +63,8 @@ import {ThemeService} from '@terminal-core-lib/features/themes/services/theme.se
 import {AccountService} from '@terminal-core-lib/features/client-info/services/account-service';
 import {PortfolioDynamics} from '@terminal-core-lib/features/client-info/services/account-service.types';
 import {ThemeColors} from '@terminal-core-lib/features/themes/themes.types';
+import {PortfoliosStoreFacade} from '@terminal-core-lib/features/portfolios/store/portfolios-store-facade';
+import {PortfolioKey} from '@terminal-core-lib/common/types/portfolio.types';
 
 enum TimeRange {
   W1 = "W1",
@@ -84,9 +93,12 @@ interface ChartConfig {
     BaseChartDirective,
     NzEmptyComponent,
     NzSpinComponent,
-    NzButtonComponent,
     NzResizeObserverDirective,
-    PercentPipe
+    PercentPipe,
+    NzTooltipDirective,
+    NzRadioGroupComponent,
+    NzRadioComponent,
+    FormsModule
   ],
   templateUrl: './agreement-dynamics.html',
   styleUrl: './agreement-dynamics.less',
@@ -102,11 +114,13 @@ export class AgreementDynamics implements OnInit, OnDestroy {
 
   readonly availableTimeRanges = Object.values(TimeRange);
 
-  isLoading = false;
+  readonly isLoading = signal(false);
 
-  readonly agreement = input<string>();
+  readonly portfolioKey = input.required<PortfolioKey>();
 
   private readonly accountService = inject(AccountService);
+
+  private readonly portfoliosStoreFacade = inject(PortfoliosStoreFacade);
 
   private readonly themeService = inject(ThemeService);
 
@@ -123,7 +137,7 @@ export class AgreementDynamics implements OnInit, OnDestroy {
     width: 0,
   });
 
-  private readonly agreementChanges$ = toObservable(this.agreement);
+  private readonly portfolioKeyChanges$ = toObservable(this.portfolioKey);
 
   ngOnDestroy(): void {
     this.selectedTimeRange$.complete();
@@ -131,13 +145,13 @@ export class AgreementDynamics implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     const chartData$ = combineLatest({
-      currentAgreement: this.agreementChanges$.pipe(filter(a => a != null)),
+      currentAgreement: this.getCurrentAgreement(),
       selectedTimeRange: this.selectedTimeRange$,
     }).pipe(
       withRefresh(this.refreshIntervalSec * 1000, this.applicationStatusService.isActive$),
-      tap(() => this.isLoading = true),
+      tap(() => this.isLoading.set(true)),
       switchMap(x => {
         const datesRange = this.getDatesRange(x.selectedTimeRange);
 
@@ -165,7 +179,7 @@ export class AgreementDynamics implements OnInit, OnDestroy {
       lang: this.translatorService.getLangChanges(),
       containerSize: sizeChange$,
     }).pipe(
-      tap(() => this.isLoading = true),
+      tap(() => this.isLoading.set(true)),
       map(x => {
         if (x.chartData.data == null) {
           return null;
@@ -178,7 +192,21 @@ export class AgreementDynamics implements OnInit, OnDestroy {
           agreement: x.chartData.agreement
         };
       }),
-      tap(() => this.isLoading = false),
+      tap(() => this.isLoading.set(false)),
+    );
+  }
+
+  private getCurrentAgreement(): Observable<string> {
+    return combineLatest({
+      targetPortfolio: this.portfolioKeyChanges$,
+      allPortfolios: this.portfoliosStoreFacade.portfolios$
+    }).pipe(
+      map(x => {
+        return x.allPortfolios.find(p => p.portfolio === x.targetPortfolio.portfolio && p.exchange === x.targetPortfolio.exchange);
+      }),
+      filter(p => !!p),
+      map(p => p.agreement),
+      distinctUntilChanged((previous, current) => previous === current)
     );
   }
 

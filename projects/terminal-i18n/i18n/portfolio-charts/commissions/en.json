@@ -1,0 +1,10 @@
+{
+  "periodOptions": {
+    "week": "Week",
+    "month": "Month",
+    "year": "Year"
+  },
+  "tooltip": {
+    "commissionAmount": "Commission"
+  }
+}

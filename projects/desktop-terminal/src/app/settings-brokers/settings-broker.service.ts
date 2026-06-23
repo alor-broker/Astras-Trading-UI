@@ -99,6 +99,7 @@ export class SettingsBrokerService {
                   position: w.position,
                   initialSettings: w.initialSettings
                 })),
+                instrumentsSelection: d.instrumentsSelection ?? undefined,
                 isFavorite: d.isFavorite,
                 type: d.type
               });

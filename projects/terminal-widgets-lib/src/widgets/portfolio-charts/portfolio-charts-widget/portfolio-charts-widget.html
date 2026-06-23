@@ -16,11 +16,29 @@
       />
     </ng-template>
     <ng-template #contentRef>
-      @if (currentAgreement$ | async; as currentAgreement) {
+      @if (settingsView$ | async; as settings) {
         <div class="d-flex flex-column h-100">
-          <span class="fs-5">{{ t('portfolioCharts.charts.agreementDynamics.title') }}</span>
+          <div class="d-flex flex-row justify-content-center flex-gap-10 mb-5">
+            @for (chart of availableCharts; track chart) {
+              <button
+                (click)="selectChart(chart)"
+                nz-button
+                nzGhost
+                [nzType]="chart === selectedChart() ? 'primary' : 'default'"
+              >
+                {{ t('portfolioCharts.charts.' + chart + '.label') }}
+              </button>
+            }
+          </div>
           <div class="flex-fill overflow-hidden">
-            <ats-agreement-dynamics [agreement]="currentAgreement"/>
+            @switch (selectedChart()) {
+              @case (chartTypes.AgreementDynamics) {
+                <ats-agreement-dynamics [portfolioKey]="settings.portfolioKey"/>
+              }
+              @case (chartTypes.Commissions) {
+                <ats-portfolio-commissions-chart [portfolio]="settings.portfolioKey.portfolio"/>
+              }
+            }
           </div>
         </div>
       }

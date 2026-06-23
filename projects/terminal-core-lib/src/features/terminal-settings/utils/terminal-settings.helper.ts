@@ -19,7 +19,7 @@ export class TerminalSettingsHelper {
       timezoneDisplayOption: TimezoneDisplayOption.MskTime,
       isLogoutOnUserIdle: false,
       userIdleDurationMin: 15,
-      badgesBind: false,
+      badgesBind: true,
       badgesColors: BaseBadges,
       tableRowHeight: TableRowHeight.Medium,
       hotKeysSettings: this.getDefaultHotkeys(),
@@ -27,7 +27,7 @@ export class TerminalSettingsHelper {
       designSettings: {
         theme: ThemeType.dark,
         fontFamily: FontFamilies.NotoSans,
-        gridType: GridType.Fit
+        gridType: GridType.VerticalFixed
       },
       instantNotificationsSettings: this.getDefaultInstantNotificationsSettings()
     } as TerminalSettings;

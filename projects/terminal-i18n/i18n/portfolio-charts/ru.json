@@ -1,7 +1,10 @@
 ﻿{
   "charts": {
     "agreementDynamics": {
-      "title": "Динамика по договору"
+      "label": "Динамика"
+    },
+    "commissions": {
+      "label": "Комиссии"
     }
   }
 }
