@@ -36,8 +36,7 @@
     >
       @if (vm.orderBookPosition.lossOrProfitPoints) {
         @if (vm.lossOrProfitDisplayType === 'points') {
-          <span>{{ vm.orderBookPosition.lossOrProfitPoints }}{{ t('scalperOrderBookCurrentPositionState.positions') }}
-            .</span>
+          <span>{{ vm.orderBookPosition.lossOrProfitPoints }}{{ t('scalperOrderBookCurrentPositionState.positions') }}.</span>
         }
         @if (vm.lossOrProfitDisplayType === 'percentage') {
           <span>{{ vm.orderBookPosition.lossOrProfitPercent }}%</span>
