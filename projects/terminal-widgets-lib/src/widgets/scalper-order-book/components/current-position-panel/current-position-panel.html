@@ -4,7 +4,7 @@
       orderBookPosition: orderBookPosition$,
       lossOrProfitDisplayType: lossOrProfitDisplayType$
     } as vm"
-    class="container lh-1"
+    class="current-position-panel__container lh-1"
   >
     <div
       [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
@@ -48,4 +48,3 @@
     </div>
   </div>
 </ng-container>
-

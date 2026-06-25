@@ -1,8 +1,9 @@
 ats-current-position-panel {
+  container-type: inline-size;
   display: block;
   width: 100%;
 
-  .container {
+  > .current-position-panel__container {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -37,4 +38,11 @@ ats-current-position-panel {
   }
 }
 
+@container (max-width: 149px) {
+  ats-current-position-panel {
+    > .current-position-panel__container {
+      flex-direction: column;
+    }
+  }
+}
 
