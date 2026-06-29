@@ -5,6 +5,13 @@ ats-widget-skeleton {
   width: 100%;
   display: flex;
   flex-direction: column;
+  border: 2px solid transparent;
+  border-radius: var(--ats-border-radius-base);
+
+  // Highlight the widget while its settings dialog is open (desktop).
+  &.ats-widget-settings-active {
+    border-color: var(--ats-border-color-active);
+  }
 
   .blocked-widget-overlay {
     position: absolute;
@@ -26,6 +33,25 @@ ats-widget-skeleton {
 
     &.hide-scroll {
       overflow: hidden;
+    }
+  }
+
+  .widget-editing-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    overflow: hidden;
+    color: var(--ats-text-color-secondary);
+
+    &__icon {
+      font-size: 28px;
+    }
+
+    &__text {
+      font-size: var(--ats-font-size-base);
+      text-align: center;
     }
   }
 }

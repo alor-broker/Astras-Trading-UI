@@ -33,6 +33,7 @@
   "allowCustomTimeframesWarning": "Այս տարբերակն իրականացված է TradingView-ի կողմից։ Որոշ շրջանակներ կարող են չաջակցվել, կամ ցուցադրվող տվյալները կարող են ստացվել ավելի փոքր շրջանակների տվյալները համատեղելով",
   "chartOrdersGroupLabel": "Պատվերների Կառավարում",
   "editWithoutConfirmationLabel": "Խմբագրել գինը առանց հաստատման",
+  "otherGroupLabel": "Այլ",
   "lineMarkerPositionOptions": {
     "right": "Աջ կողմում",
     "middle": "Կենտրոնում",

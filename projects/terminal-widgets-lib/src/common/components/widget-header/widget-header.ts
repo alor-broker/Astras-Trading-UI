@@ -82,7 +82,7 @@ export class WidgetHeader implements OnInit {
 
   readonly titleTemplate = input<TemplateRef<unknown> | null>(null);
 
-  readonly switchSettings = output();
+  readonly switchSettings = output<HTMLElement>();
 
   titleText!: string;
 
@@ -178,7 +178,7 @@ export class WidgetHeader implements OnInit {
 
   onSwitchSettings(event: MouseEvent | TouchEvent): void {
     this.preventMouseEvents(event);
-    this.switchSettings.emit();
+    this.switchSettings.emit(event.currentTarget as HTMLElement);
   }
 
   preventMouseEvents(event: MouseEvent | TouchEvent): void {

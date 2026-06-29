@@ -1,0 +1,105 @@
+<ng-container *transloco="let t; scope: 'shared/widget-settings'">
+  <div class="ats-widget-settings-editor">
+    <header class="ats-widget-settings-editor__header">
+      <h3 class="ats-widget-settings-editor__title">
+        {{ t('sharedWidgetSettings.dialogTitle', { widgetName: widgetName() }) }}
+      </h3>
+      <button
+        (click)="cancelClick.emit()"
+        [attr.aria-label]="t('cancelBtnText')"
+        class="ats-widget-settings-editor__close"
+        nz-button
+        nzSize="small"
+        nzType="text"
+      >
+        <span nz-icon nzTheme="outline" nzType="close"></span>
+      </button>
+    </header>
+
+    <div class="ats-widget-settings-editor__body">
+      @if (auxToggles().length > 0) {
+        <div class="ats-widget-settings-editor__aux">
+          @for (toggle of auxToggles(); track toggle.id) {
+            <button
+              (click)="auxToggleSelect.emit(toggle.id)"
+              [attr.aria-pressed]="toggle.id === activeAuxToggle()"
+              [class.active]="toggle.id === activeAuxToggle()"
+              [nzTooltipTitle]="toggle.tooltip"
+              class="ats-widget-settings-editor__aux-toggle"
+              nz-tooltip
+              nzTooltipPlacement="right"
+              type="button"
+            >
+              <span [nzType]="toggle.icon" nz-icon nzTheme="outline"></span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (hasGroups()) {
+        <div class="ats-widget-settings-editor__nav">
+          @for (group of navGroups(); track group.groupId()) {
+            @let isActive = activeGroup()?.groupId() === group.groupId();
+            @let isBlocked = !canLeaveCurrent() && !isActive;
+            <button
+              (click)="onGroupSelect(group, isActive)"
+              [attr.aria-disabled]="isBlocked"
+              [class.active]="isActive"
+              [class.disabled]="isBlocked"
+              [nzTooltipTitle]="isBlocked ? t('sharedWidgetSettings.invalidGroupTooltip') : ''"
+              class="ats-widget-settings-editor__nav-item"
+              nz-tooltip
+              nzTooltipPlacement="right"
+              type="button"
+            >
+              @if (group.icon(); as icon) {
+                <span [nzType]="icon" class="ats-widget-settings-editor__nav-icon" nz-icon nzTheme="outline"></span>
+              }
+              <span class="ats-widget-settings-editor__nav-title">{{ group.title() }}</span>
+              @if (!group.isValid()) {
+                <span class="ats-widget-settings-editor__nav-invalid" nz-icon nzTheme="outline" nzType="exclamation-circle"></span>
+              }
+            </button>
+          }
+        </div>
+
+        <div class="ats-widget-settings-editor__fields">
+          @if (activeGroup(); as group) {
+            <ng-container *ngTemplateOutlet="group.fieldsTpl()"/>
+          }
+        </div>
+      } @else {
+        <div class="ats-widget-settings-editor__simple">
+          <ng-container *ngTemplateOutlet="defaultContent()"/>
+        </div>
+      }
+    </div>
+
+    <footer class="ats-widget-settings-editor__footer">
+      @if (showCopy()) {
+        <button
+          (click)="copyClick.emit()"
+          [disabled]="!canCopy()"
+          [nzTooltipMouseEnterDelay]="0.5"
+          [nzTooltipTitle]="t('sharedWidgetSettings.copyTooltip')"
+          class="ats-widget-settings-editor__copy"
+          nz-button
+          nz-tooltip
+          nzType="link"
+        >
+          <span nz-icon nzTheme="outline" nzType="copy"></span>
+          <span>{{ t('copyBtnText') }}</span>
+        </button>
+      }
+
+      <span class="ats-widget-settings-editor__spacer"></span>
+
+      <button (click)="cancelClick.emit()" nz-button nzType="default">
+        {{ t('cancelBtnText') }}
+      </button>
+      <button (click)="saveClick.emit()" [disabled]="!canSave()" nz-button nzType="primary">
+        {{ t('saveBtnText') }}
+      </button>
+    </footer>
+  </div>
+</ng-container>

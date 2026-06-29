@@ -4,12 +4,12 @@
       [content]="contentRef"
       [header]="headerRef"
       [isBlockWidget]="isBlockWidget()"
-      [settings]="settingsRef"
+      [settingsEditor]="settingsEditor"
       [showContentScroll]="false"
-      [showSettings]="showSettings()"
+      [showEditingPlaceholder]="true"
     >
       <ng-template #headerRef>
-        <ats-widget-header (switchSettings)="toggleSettings()"
+        <ats-widget-header (switchSettings)="settingsEditor.openSettings($event)"
                            [guid]="guid"
                            [hasSettings]="true"
                            [linkToActive]="settings.linkToActive ?? null"
@@ -27,10 +27,9 @@
       <ng-template #contentRef>
         <ats-tech-chart [guid]="guid"/>
       </ng-template>
-      <ng-template #settingsRef>
-        <ats-tech-chart-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
-      </ng-template>
     </ats-widget-skeleton>
+
+    <ats-tech-chart-settings #settingsEditor [guid]="guid" [widgetInstance]="widgetInstance()"/>
   }
 
 </ng-container>

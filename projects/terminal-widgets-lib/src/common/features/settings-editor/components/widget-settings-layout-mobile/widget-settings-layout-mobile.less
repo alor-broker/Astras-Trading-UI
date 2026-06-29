@@ -1,0 +1,48 @@
+@import 'scrollable';
+
+ats-widget-settings-layout-mobile {
+  display: contents;
+
+  .ats-widget-settings-editor__body {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  // Aux toggles: horizontal, centered, pinned to the top.
+  .ats-widget-settings-editor__aux {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-split);
+  }
+
+  .ats-widget-settings-editor__sections {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    .scrollable(var(--ats-scrollbar-color));
+  }
+
+  .ats-widget-settings-editor__section {
+    display: flex;
+    flex-direction: column;
+
+    & + & {
+      padding-top: 8px;
+      border-top: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-split);
+    }
+  }
+
+  .ats-widget-settings-editor__section-title {
+    margin: 0 0 8px;
+    font-size: var(--ats-font-size-lg);
+    font-weight: var(--ats-font-weight-bold);
+    color: var(--ats-text-color);
+  }
+}

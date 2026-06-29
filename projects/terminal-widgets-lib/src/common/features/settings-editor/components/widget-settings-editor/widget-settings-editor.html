@@ -1,0 +1,35 @@
+<ng-template #defaultContentTpl>
+  <ng-content/>
+</ng-template>
+
+<ng-template #contentTpl>
+  @if (isMobile()) {
+    <ats-widget-settings-layout-mobile
+      (auxToggleSelect)="selectAuxToggle($event)"
+      (saveClick)="saveClick.emit()"
+      [activeAuxToggle]="activeAuxToggle()"
+      [auxToggles]="auxToggles()"
+      [canSave]="canSave()"
+      [defaultContent]="defaultContentTpl"
+      [navGroups]="navGroups()"
+    />
+  } @else {
+    <ats-widget-settings-layout-desktop
+      (auxToggleSelect)="selectAuxToggle($event)"
+      (cancelClick)="cancelClick.emit()"
+      (copyClick)="copyClick.emit()"
+      (groupSelect)="selectGroup($event)"
+      (saveClick)="saveClick.emit()"
+      [activeAuxToggle]="activeAuxToggle()"
+      [activeGroup]="activeGroup()"
+      [auxToggles]="auxToggles()"
+      [canCopy]="canCopy()"
+      [canLeaveCurrent]="canLeaveCurrent()"
+      [canSave]="canSave()"
+      [defaultContent]="defaultContentTpl"
+      [navGroups]="navGroups()"
+      [showCopy]="showCopy()"
+      [widgetName]="widgetName()"
+    />
+  }
+</ng-template>

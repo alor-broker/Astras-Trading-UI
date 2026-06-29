@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from '@angular/core';
 import {
@@ -15,7 +15,6 @@ import {
   Observable,
   take
 } from "rxjs";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {map} from "rxjs/operators";
 import {
   NzMarks,
@@ -28,14 +27,6 @@ import {
   NzFormItemComponent,
   NzFormLabelComponent
 } from 'ng-zorro-antd/form';
-import {
-  NzCollapseComponent,
-  NzCollapsePanelComponent
-} from 'ng-zorro-antd/collapse';
-import {
-  NzColDirective,
-  NzRowDirective
-} from 'ng-zorro-antd/grid';
 import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 import {
   NzOptionComponent,
@@ -52,12 +43,14 @@ import {
   TradeDisplayMarker
 } from '@terminal-widgets-lib/widgets/tech-chart/widget-settings.types';
 import {NzInputDirective} from 'ng-zorro-antd/input';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
-import {DeviceService} from '@terminal-core-lib/common/services/device.service';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsGroup} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-group/widget-settings-group';
+import {SettingsDeviceVisible} from '@terminal-widgets-lib/common/features/settings-editor/directives/widget-settings-device-visible.directive';
+import {SettingsDeviceVisibility} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-visibility.types';
 import {ThemeService} from '@terminal-core-lib/features/themes/services/theme.service';
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
 import {SyntheticInstrumentsHelper} from '@terminal-widgets-lib/widgets/tech-chart/utils/synthetic-instruments.helper';
-import {DeviceInfo} from '@terminal-core-lib/common/services/device-service-types';
 import {InstrumentEqualityComparer} from '@terminal-core-lib/common/utils/instrument-key.helper';
 import {InstrumentBoardSelect} from '@terminal-core-lib/features/instruments/components/instrument-board-select/instrument-board-select';
 import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/components/inline-instrument-search/inline-instrument-search';
@@ -65,18 +58,15 @@ import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/co
 @Component({
   selector: 'ats-tech-chart-settings',
   templateUrl: './tech-chart-settings.html',
-  styleUrls: ['./tech-chart-settings.less'],
   imports: [
-    WidgetSettings,
+    WidgetSettingsEditor,
+    WidgetSettingsGroup,
+    SettingsDeviceVisible,
     TranslocoDirective,
     FormsModule,
     NzFormDirective,
     ReactiveFormsModule,
-    NzCollapseComponent,
-    NzCollapsePanelComponent,
-    NzRowDirective,
     NzFormItemComponent,
-    NzColDirective,
     NzFormLabelComponent,
     NzFormControlComponent,
     NzInputDirective,
@@ -94,10 +84,14 @@ import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/co
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class TechChartSettings extends WidgetSettingsBase<TechChartWidgetSettings> implements OnInit {
+export class TechChartSettings extends WidgetSettingsBase<TechChartWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   readonly availableLineMarkerPositions = Object.values(LineMarkerPosition);
 
   readonly TradeDisplayMarkers = TradeDisplayMarker;
+
+  readonly DeviceVisibility = SettingsDeviceVisibility;
 
   readonly validationOptions = {
     markerSize: {
@@ -108,23 +102,31 @@ export class TechChartSettings extends WidgetSettingsBase<TechChartWidgetSetting
 
   isSyntheticInstrument = SyntheticInstrumentsHelper.isSyntheticInstrument;
 
-  deviceInfo$!: Observable<DeviceInfo>;
-
   protected settings$!: Observable<TechChartWidgetSettings>;
 
   private readonly formBuilder = inject(FormBuilder);
 
+  // Form is organized into the same groups as the UI, so a group's validity is
+  // simply `form.controls.<group>.valid` — no per-control checks needed.
   readonly form = this.formBuilder.group({
-    // instrument
-    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
-    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
-    // view
-    showTrades: this.formBuilder.nonNullable.control(false),
-    showOrders: this.formBuilder.nonNullable.control(true),
-    ordersLineMarkerPosition: this.formBuilder.nonNullable.control(LineMarkerPosition.Right),
-    showPosition: this.formBuilder.nonNullable.control(true),
-    positionLineMarkerPosition: this.formBuilder.nonNullable.control(LineMarkerPosition.Right),
-    panels: this.formBuilder.group({
+    instrument: this.formBuilder.group({
+      instrumentKey: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+      instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
+    }),
+    portfolioIndicators: this.formBuilder.group({
+      showOrders: this.formBuilder.nonNullable.control(true),
+      ordersLineMarkerPosition: this.formBuilder.nonNullable.control(LineMarkerPosition.Right),
+      showPosition: this.formBuilder.nonNullable.control(true),
+      positionLineMarkerPosition: this.formBuilder.nonNullable.control(LineMarkerPosition.Right),
+      showTrades: this.formBuilder.nonNullable.control(false),
+      trades: this.formBuilder.group({
+        marker: this.formBuilder.nonNullable.control(TradeDisplayMarker.Note),
+        markerSize: this.formBuilder.nonNullable.control(20, Validators.required),
+        buyTradeColor: this.formBuilder.nonNullable.control('', Validators.required),
+        sellTradeColor: this.formBuilder.nonNullable.control('', Validators.required),
+      }),
+    }),
+    chartElements: this.formBuilder.group({
       header: this.formBuilder.nonNullable.control(true),
       headerSymbolSearch: this.formBuilder.nonNullable.control(true),
       headerChartType: this.formBuilder.nonNullable.control(true),
@@ -138,19 +140,13 @@ export class TechChartSettings extends WidgetSettingsBase<TechChartWidgetSetting
       drawingsToolbar: this.formBuilder.nonNullable.control(true),
       timeframesBottomToolbar: this.formBuilder.nonNullable.control(true),
     }),
-    trades: this.formBuilder.group({
-      marker: this.formBuilder.nonNullable.control(TradeDisplayMarker.Note),
-      markerSize: this.formBuilder.nonNullable.control(20, Validators.required),
-      buyTradeColor: this.formBuilder.nonNullable.control('', Validators.required),
-      sellTradeColor: this.formBuilder.nonNullable.control('', Validators.required),
-    }),
-    allowCustomTimeframes: this.formBuilder.nonNullable.control(false),
-    orders: this.formBuilder.group({
+    orderManagement: this.formBuilder.group({
       editWithoutConfirmation: this.formBuilder.nonNullable.control(false),
+    }),
+    other: this.formBuilder.group({
+      allowCustomTimeframes: this.formBuilder.nonNullable.control(false),
     })
   });
-
-  private readonly deviceService = inject(DeviceService);
 
   private readonly themeService = inject(ThemeService);
 
@@ -158,23 +154,12 @@ export class TechChartSettings extends WidgetSettingsBase<TechChartWidgetSetting
     return this.form.valid;
   }
 
-  override ngOnInit(): void {
-    this.initSettingsStream();
-
-    this.deviceInfo$ = this.deviceService.deviceInfo$
-      .pipe(
-        take(1)
-      );
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      this.setCurrentFormValues(settings);
-    });
+  protected get instrument(): InstrumentKey | null {
+    return this.form.controls.instrument.controls.instrumentKey.value;
   }
 
   instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+    this.form.controls.instrument.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   getSliderMarks(minValue: number, maxValue: number): NzMarks {
@@ -185,16 +170,26 @@ export class TechChartSettings extends WidgetSettingsBase<TechChartWidgetSetting
   }
 
   protected getUpdatedSettings(initialSettings: TechChartWidgetSettings): Partial<TechChartWidgetSettings> {
-    const formValue = this.form!.value as Partial<TechChartSettings & { instrument: InstrumentKey }>;
-    const newSettings = {
-      ...this.form!.value,
-      symbol: formValue.instrument?.symbol,
-      exchange: formValue.instrument?.exchange,
-    } as TechChartWidgetSettings & { instrument?: InstrumentKey };
+    const value = this.form.getRawValue();
+    const instrument = value.instrument.instrumentKey;
 
-    delete newSettings.instrument;
+    const newSettings: Partial<TechChartWidgetSettings> = {
+      symbol: instrument?.symbol ?? '',
+      exchange: instrument?.exchange ?? '',
+      instrumentGroup: value.instrument.instrumentGroup,
+      showOrders: value.portfolioIndicators.showOrders,
+      ordersLineMarkerPosition: value.portfolioIndicators.ordersLineMarkerPosition,
+      showPosition: value.portfolioIndicators.showPosition,
+      positionLineMarkerPosition: value.portfolioIndicators.positionLineMarkerPosition,
+      showTrades: value.portfolioIndicators.showTrades,
+      trades: value.portfolioIndicators.trades,
+      panels: value.chartElements,
+      orders: value.orderManagement,
+      allowCustomTimeframes: value.other.allowCustomTimeframes
+    };
 
-    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && InstrumentEqualityComparer.equals(initialSettings as InstrumentKey, newSettings as InstrumentKey);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false)
+      && InstrumentEqualityComparer.equals(initialSettings as InstrumentKey, newSettings as InstrumentKey);
 
     return newSettings;
   }
@@ -207,19 +202,29 @@ export class TechChartSettings extends WidgetSettingsBase<TechChartWidgetSetting
       this.form.reset();
 
       this.form.controls.instrument.setValue({
-        symbol: settings.symbol,
-        exchange: settings.exchange ?? '',
+        instrumentKey: {
+          symbol: settings.symbol,
+          exchange: settings.exchange ?? '',
+          instrumentGroup: settings.instrumentGroup ?? null
+        },
         instrumentGroup: settings.instrumentGroup ?? null
       });
-      this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
 
-      this.form.controls.showTrades.setValue(settings.showTrades ?? false);
-      this.form.controls.showOrders.setValue(settings.showOrders ?? true);
-      this.form.controls.ordersLineMarkerPosition.setValue(settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right);
-      this.form.controls.showPosition.setValue(settings.showPosition ?? true);
-      this.form.controls.positionLineMarkerPosition.setValue(settings.positionLineMarkerPosition ?? LineMarkerPosition.Right);
+      this.form.controls.portfolioIndicators.setValue({
+        showOrders: settings.showOrders ?? true,
+        ordersLineMarkerPosition: settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right,
+        showPosition: settings.showPosition ?? true,
+        positionLineMarkerPosition: settings.positionLineMarkerPosition ?? LineMarkerPosition.Right,
+        showTrades: settings.showTrades ?? false,
+        trades: {
+          marker: settings.trades?.marker ?? TradeDisplayMarker.Note,
+          markerSize: settings.trades?.markerSize ?? 20,
+          buyTradeColor: settings.trades?.buyTradeColor ?? colors.buyColorAccent,
+          sellTradeColor: settings.trades?.sellTradeColor ?? colors.sellColorAccent
+        }
+      });
 
-      this.form.controls.panels.setValue({
+      this.form.controls.chartElements.setValue({
         header: settings.panels?.header ?? true,
         headerSymbolSearch: settings.panels?.headerSymbolSearch ?? true,
         headerCompare: settings.panels?.headerCompare ?? true,
@@ -234,18 +239,13 @@ export class TechChartSettings extends WidgetSettingsBase<TechChartWidgetSetting
         timeframesBottomToolbar: settings.panels?.timeframesBottomToolbar ?? true,
       });
 
-      this.form.controls.trades.setValue({
-        marker: settings.trades?.marker ?? TradeDisplayMarker.Note,
-        buyTradeColor: settings.trades?.buyTradeColor ?? colors.buyColorAccent,
-        sellTradeColor: settings.trades?.sellTradeColor ?? colors.sellColorAccent,
-        markerSize: settings.trades?.markerSize ?? 20
-      });
-
-      this.form.controls.orders.setValue({
+      this.form.controls.orderManagement.setValue({
         editWithoutConfirmation: settings.orders?.editWithoutConfirmation ?? false
       });
 
-      this.form.controls.allowCustomTimeframes.setValue(settings.allowCustomTimeframes ?? false);
+      this.form.controls.other.setValue({
+        allowCustomTimeframes: settings.allowCustomTimeframes ?? false
+      });
     });
   }
 }
