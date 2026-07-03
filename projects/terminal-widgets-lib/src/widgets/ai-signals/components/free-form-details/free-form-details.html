@@ -1,0 +1,25 @@
+<ng-template #nodeTemplate let-nodes>
+  <div class="d-flex flex-column flex-gap-2">
+    @for (node of nodes; track node.key) {
+      <div class="node">
+        <div class="d-flex flex-row flex-gap-5">
+          <span class="key">{{ node.key }}</span>
+          @if (node.value != null) {
+            @if (node.isCode) {
+              <code class="value">{{ node.value }}</code>
+            } @else {
+              <span class="heading-color value">{{ node.value }}</span>
+            }
+          }
+        </div>
+        @if (node.children.length > 0) {
+          <div class="children">
+            <ng-container *ngTemplateOutlet="nodeTemplate; context: {$implicit: node.children}"/>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
+
+<ng-container *ngTemplateOutlet="nodeTemplate; context: {$implicit: nodes()}"/>

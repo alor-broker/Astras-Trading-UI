@@ -1,0 +1,7 @@
+{
+  "lastUpdatedLabel": "Updated",
+  "refreshTooltip": "Refresh",
+  "noTickersHint": "Add tickers to track AI signals",
+  "loadFailed": "Failed to load signals",
+  "retry": "Retry"
+}

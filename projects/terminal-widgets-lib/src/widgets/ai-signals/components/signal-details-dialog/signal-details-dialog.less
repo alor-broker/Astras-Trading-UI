@@ -1,0 +1,47 @@
+.ats-ai-signal-details-dialog {
+  max-width: calc(100vw - 16px);
+
+  .ant-modal-title {
+    margin-right: 10px;
+
+    .title-date {
+      color: var(--ats-text-color-secondary);
+    }
+  }
+
+  .body {
+    max-height: 70vh;
+    overflow-y: auto;
+
+    .models-used,
+    .news-period,
+    .no-trade-hint {
+      color: var(--ats-text-color-secondary);
+    }
+
+    .reasoning {
+      white-space: pre-wrap;
+      margin: 0;
+    }
+
+    .issues-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .analyst-name {
+      overflow-wrap: anywhere;
+    }
+
+    .ant-collapse-header {
+      padding-left: 0;
+    }
+  }
+
+  &.full-screen {
+    .body {
+      max-height: none;
+      height: 100%;
+    }
+  }
+}

@@ -1,0 +1,32 @@
+<ng-container *transloco="let t; scope: 'ai-signals/ticker-list-manager'">
+  <div class="d-flex flex-column flex-gap-5">
+    <div class="d-flex flex-row flex-wrap align-items-center flex-gap-5">
+      @for (ticker of tickers(); track ticker) {
+        <nz-tag (nzOnClose)="removeTicker(ticker)" nzMode="closeable">{{ ticker }}</nz-tag>
+      }
+
+      @if (showSearch()) {
+        <div class="search-box">
+          <ats-inline-instrument-search
+            (instrumentSelected)="onInstrumentSelected($event)"
+            [exchange]="searchExchange"
+            [showHelpTooltip]="false"
+          />
+        </div>
+      } @else {
+        @if (canAddMore()) {
+          <nz-tag (click)="openSearch()" class="add-tag">
+            <span nz-icon nzType="plus"></span>
+            <span>{{ t('aiSignalsTickerListManager.addTicker') }}</span>
+          </nz-tag>
+        } @else {
+          <span class="fs-9 hint">{{ t('aiSignalsTickerListManager.maxTickersHint', {max: maxTickersCount()}) }}</span>
+        }
+      }
+    </div>
+
+    @if (showDuplicateHint()) {
+      <span class="fs-9 warning-color">{{ t('aiSignalsTickerListManager.duplicateTickerHint') }}</span>
+    }
+  </div>
+</ng-container>

@@ -1,0 +1,20 @@
+{
+  "directions": {
+    "BULLISH": "Bullish",
+    "BEARISH": "Bearish",
+    "NEUTRAL": "Neutral"
+  },
+  "actions": {
+    "BUY_PULLBACK": "Buy on pullback",
+    "BUY_BREAKOUT": "Buy on breakout",
+    "SELL_RALLY": "Sell on rally",
+    "SELL_BREAKDOWN": "Sell on breakdown",
+    "NO_TRADE": "No trade"
+  },
+  "rowStatuses": {
+    "noData": "No signal",
+    "error": "Signal not generated",
+    "degraded": "Signal generated with limitations"
+  },
+  "confidenceLabel": "Confidence"
+}

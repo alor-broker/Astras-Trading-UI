@@ -1,0 +1,8 @@
+{
+  "entryPrice": "Entry",
+  "stopLoss": "Stop loss",
+  "takeProfit1": "Target 1",
+  "takeProfit2": "Target 2",
+  "currentPrice": "Current price",
+  "riskReward": "Risk/reward"
+}

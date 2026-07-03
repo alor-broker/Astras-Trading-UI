@@ -1,0 +1,25 @@
+ats-signal-list-item {
+  display: block;
+
+  .item {
+    border-radius: var(--ats-border-radius-base);
+
+    &.clickable {
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--ats-table-row-hover-bg);
+      }
+    }
+
+    .icon-wrapper {
+      cursor: pointer;
+      display: inline-flex;
+    }
+
+    .no-trade,
+    .date {
+      color: var(--ats-text-color-secondary);
+    }
+  }
+}

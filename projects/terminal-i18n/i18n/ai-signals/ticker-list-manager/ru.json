@@ -1,0 +1,5 @@
+{
+  "addTicker": "Добавить",
+  "maxTickersHint": "Максимум {{max}} тикеров",
+  "duplicateTickerHint": "Тикер уже добавлен"
+}
