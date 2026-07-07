@@ -6,12 +6,14 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {FreeFormValueHelper} from '../../utils/free-form-value.helper';
 
 @Component({
   selector: 'ats-free-form-details',
   imports: [
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    NzIconDirective
   ],
   templateUrl: './free-form-details.html',
   styleUrl: './free-form-details.less',

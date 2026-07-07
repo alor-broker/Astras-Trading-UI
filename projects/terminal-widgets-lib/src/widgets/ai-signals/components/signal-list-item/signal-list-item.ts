@@ -21,6 +21,9 @@ import {
   SignalRowStatus,
   SignalRowViewModel
 } from '../../types/ai-signals-view.types';
+import {ConfidenceMeter} from '../confidence-meter/confidence-meter';
+
+type SignalAccent = 'bullish' | 'bearish' | 'neutral' | 'inactive';
 
 @Component({
   selector: 'ats-signal-list-item',
@@ -30,7 +33,8 @@ import {
     NzIconDirective,
     NzTooltipDirective,
     InstrumentIcon,
-    AtsPrice
+    AtsPrice,
+    ConfidenceMeter
   ],
   templateUrl: './signal-list-item.html',
   styleUrl: './signal-list-item.less',
@@ -51,6 +55,23 @@ export class SignalListItem {
   protected readonly directions = SignalDirection;
 
   protected readonly isClickable = computed(() => this.row().raw != null);
+
+  protected readonly accent = computed<SignalAccent>(() => {
+    const row = this.row();
+
+    if (row.status === SignalRowStatus.NoData || row.status === SignalRowStatus.Error) {
+      return 'inactive';
+    }
+
+    switch (row.direction) {
+      case SignalDirection.Bullish:
+        return 'bullish';
+      case SignalDirection.Bearish:
+        return 'bearish';
+      default:
+        return 'neutral';
+    }
+  });
 
   protected readonly directionIcon = computed(() => {
     switch (this.row().direction) {

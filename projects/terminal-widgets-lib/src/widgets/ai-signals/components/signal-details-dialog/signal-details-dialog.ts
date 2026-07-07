@@ -17,6 +17,7 @@ import {
   NzCollapseComponent,
   NzCollapsePanelComponent
 } from 'ng-zorro-antd/collapse';
+import {MarkdownComponent} from 'ngx-markdown';
 import {AtsPrice} from '@terminal-core-lib/common/pipes/price';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
 import {
@@ -32,6 +33,9 @@ import {AiSignalsViewModelHelper} from '../../utils/ai-signals-view-model.helper
 import {TradePlanChart} from '../trade-plan-chart/trade-plan-chart';
 import {AnalystsChart} from '../analysts-chart/analysts-chart';
 import {FreeFormDetails} from '../free-form-details/free-form-details';
+import {ConfidenceMeter} from '../confidence-meter/confidence-meter';
+
+type SignalAccent = 'bullish' | 'bearish' | 'neutral';
 
 @Component({
   selector: 'ats-signal-details-dialog',
@@ -45,9 +49,11 @@ import {FreeFormDetails} from '../free-form-details/free-form-details';
     NzCollapseComponent,
     NzCollapsePanelComponent,
     AtsPrice,
+    MarkdownComponent,
     TradePlanChart,
     AnalystsChart,
-    FreeFormDetails
+    FreeFormDetails,
+    ConfidenceMeter
   ],
   templateUrl: './signal-details-dialog.html',
   styleUrl: './signal-details-dialog.less',
@@ -76,6 +82,41 @@ export class SignalDetailsDialog {
     }
 
     return AiSignalsViewModelHelper.toDetailsViewModel(row);
+  });
+
+  protected readonly hasVerdict = computed(() => {
+    const details = this.details();
+    if (details == null) {
+      return false;
+    }
+
+    return details.direction != null
+      || details.action != null
+      || details.confidence != null
+      || details.currentPrice != null
+      || details.expectedHoldingDays != null;
+  });
+
+  protected readonly accent = computed<SignalAccent>(() => {
+    switch (this.details()?.direction) {
+      case SignalDirection.Bullish:
+        return 'bullish';
+      case SignalDirection.Bearish:
+        return 'bearish';
+      default:
+        return 'neutral';
+    }
+  });
+
+  protected readonly directionIcon = computed(() => {
+    switch (this.details()?.direction) {
+      case SignalDirection.Bullish:
+        return 'rise';
+      case SignalDirection.Bearish:
+        return 'fall';
+      default:
+        return 'minus';
+    }
   });
 
   protected readonly hasRiskInfo = computed(() => {

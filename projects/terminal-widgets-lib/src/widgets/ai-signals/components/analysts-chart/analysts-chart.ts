@@ -78,7 +78,7 @@ export class AnalystsChart {
 
     return {
       chartData: {
-        labels: analysts.map(analyst => this.truncateModelName(analyst.modelName)),
+        labels: analysts.map(analyst => `#${analyst.index}`),
         datasets: [
           {
             type: 'bar',
@@ -108,7 +108,8 @@ export class AnalystsChart {
         tooltip: {
           displayColors: false,
           callbacks: {
-            title: (tooltipItems: TooltipItem<'bar'>[]): string => analysts[tooltipItems[0].dataIndex].modelName,
+            title: (tooltipItems: TooltipItem<'bar'>[]): string =>
+              translator(['analystLabel'], {number: analysts[tooltipItems[0].dataIndex].index}),
             label: (tooltipItem: TooltipItem<'bar'>): string => this.getTooltipLabel(analysts[tooltipItem.dataIndex], translator)
           }
         }
@@ -160,15 +161,5 @@ export class AnalystsChart {
       default:
         return themeColors.mixColor;
     }
-  }
-
-  private truncateModelName(modelName: string): string {
-    const maxLength = 12;
-    // model names look like "google/gemini-pro"; the part after the vendor prefix is the most meaningful
-    const shortName = modelName.split('/').pop() ?? modelName;
-
-    return shortName.length > maxLength
-      ? `${shortName.substring(0, maxLength)}…`
-      : shortName;
   }
 }

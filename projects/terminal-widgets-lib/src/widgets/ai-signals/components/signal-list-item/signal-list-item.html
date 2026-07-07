@@ -1,59 +1,75 @@
 <ng-container *transloco="let t; scope: 'ai-signals'">
   @let r = row();
   <div (click)="onRowClick()"
+       [class.bearish]="accent() === 'bearish'"
+       [class.bullish]="accent() === 'bullish'"
        [class.clickable]="isClickable()"
-       class="item d-flex flex-row flex-wrap align-items-center justify-content-between flex-gap-5 p-5"
+       [class.inactive]="accent() === 'inactive'"
+       [class.neutral]="accent() === 'neutral'"
+       class="item d-flex flex-column flex-gap-5 p-5"
   >
-    <div class="d-flex flex-row align-items-center flex-gap-5">
-      <span (click)="onIconClick($event)" class="icon-wrapper">
-        <ats-instrument-icon [symbol]="r.ticker"/>
-      </span>
-      <span class="heading-color">{{ r.ticker }}</span>
+    <div class="d-flex flex-row flex-wrap align-items-center justify-content-between flex-gap-5">
+      <div class="d-flex flex-row align-items-center flex-gap-5">
+        <span (click)="onIconClick($event)" class="icon-wrapper">
+          <ats-instrument-icon [symbol]="r.ticker"/>
+        </span>
+        <span class="heading-color fw-bold ticker">{{ r.ticker }}</span>
 
-      @switch (r.status) {
-        @case (rowStatuses.NoData) {
-          <nz-tag>{{ t('aiSignals.rowStatuses.noData') }}</nz-tag>
-        }
-        @case (rowStatuses.Error) {
-          <span class="sell-color" nz-icon nzType="close-circle"></span>
-          <span class="sell-color">{{ t('aiSignals.rowStatuses.error') }}</span>
-        }
-        @default {
-          @if (r.direction != null) {
-            <span [class.buy-color]="r.direction === directions.Bullish"
-                  [class.sell-color]="r.direction === directions.Bearish"
-                  class="text-nowrap"
-            >
-              <span [nzType]="directionIcon()" nz-icon></span>
-              <span>{{ t('aiSignals.directions.' + r.direction) }}</span>
+        @switch (r.status) {
+          @case (rowStatuses.NoData) {
+            <nz-tag>{{ t('aiSignals.rowStatuses.noData') }}</nz-tag>
+          }
+          @case (rowStatuses.Error) {
+            <span class="sell-color d-flex flex-row align-items-center flex-gap-2 text-nowrap">
+              <span nz-icon nzType="close-circle"></span>
+              <span class="fs-9">{{ t('aiSignals.rowStatuses.error') }}</span>
             </span>
           }
-          @if (r.action != null) {
-            <span [class.no-trade]="r.action === actions.NoTrade" class="text-nowrap">
-              {{ t('aiSignals.actions.' + r.action) }}
-            </span>
-          }
-          @if (r.status === rowStatuses.Degraded) {
-            <span [nz-tooltip]="t('aiSignals.rowStatuses.degraded')"
-                  class="warning-color"
-                  nz-icon
-                  nzType="warning"
-            ></span>
+          @default {
+            @if (r.direction != null) {
+              <span [class.buy-color]="r.direction === directions.Bullish"
+                    [class.sell-color]="r.direction === directions.Bearish"
+                    class="d-flex flex-row align-items-center flex-gap-2 text-nowrap"
+              >
+                <span [nzType]="directionIcon()" nz-icon></span>
+                <span>{{ t('aiSignals.directions.' + r.direction) }}</span>
+              </span>
+            }
+            @if (r.status === rowStatuses.Degraded) {
+              <span [nz-tooltip]="t('aiSignals.rowStatuses.degraded')"
+                    class="warning-color"
+                    nz-icon
+                    nzType="warning"
+              ></span>
+            }
           }
         }
+      </div>
+
+      @if (r.currentPrice != null) {
+        <span class="heading-color fw-bold text-nowrap">{{ r.currentPrice | atsPrice }}</span>
       }
     </div>
 
     @if (r.status === rowStatuses.Ok || r.status === rowStatuses.Degraded) {
       <div class="d-flex flex-row align-items-center flex-gap-10">
-        @if (r.confidence != null) {
-          <span [nz-tooltip]="t('aiSignals.confidenceLabel')" class="text-nowrap">
-            {{ r.confidence }}/10
+        @if (r.action != null) {
+          <span [class.no-trade]="r.action === actions.NoTrade" class="fs-9 text-nowrap action">
+            {{ t('aiSignals.actions.' + r.action) }}
           </span>
         }
-        @if (r.currentPrice != null) {
-          <span class="heading-color text-nowrap">{{ r.currentPrice | atsPrice }}</span>
+
+        @if (r.confidence != null) {
+          <span [nz-tooltip]="t('aiSignals.confidenceLabel')"
+                class="d-flex flex-row align-items-center flex-gap-5 flex-fill conviction"
+          >
+            <span class="flex-fill meter-wrap">
+              <ats-confidence-meter [confidence]="r.confidence" [direction]="r.direction"/>
+            </span>
+            <span class="fs-9 text-nowrap confidence-value">{{ r.confidence }}/10</span>
+          </span>
         }
+
         @if (r.forecastDateDisplay != null) {
           <span class="fs-9 date text-nowrap">{{ r.forecastDateDisplay }}</span>
         }

@@ -62,35 +62,55 @@
             </ng-template>
           }
 
-          <div class="d-flex flex-row flex-wrap align-items-center flex-gap-10">
-            @if (vm.direction != null) {
-              <span [class.buy-color]="vm.direction === directions.Bullish"
-                    [class.sell-color]="vm.direction === directions.Bearish"
-                    class="text-nowrap"
-              >
-                {{ t('aiSignals.directions.' + vm.direction) }}
-              </span>
-            }
-            @if (vm.action != null) {
-              <nz-tag>{{ t('aiSignals.actions.' + vm.action) }}</nz-tag>
-            }
-            @if (vm.confidence != null) {
-              <span class="text-nowrap">{{ t('aiSignals.confidenceLabel') }}: {{ vm.confidence }}/10</span>
-            }
-            @if (vm.currentPrice != null) {
-              <span class="text-nowrap">{{ td('aiSignalsDetails.currentPrice') }}: {{ vm.currentPrice | atsPrice }}</span>
-            }
-            @if (vm.expectedHoldingDays != null) {
-              <span class="text-nowrap">{{ td('aiSignalsDetails.holdingDays', {days: vm.expectedHoldingDays}) }}</span>
-            }
-          </div>
+          @if (hasVerdict()) {
+            <div [class.bearish]="accent() === 'bearish'"
+                 [class.bullish]="accent() === 'bullish'"
+                 [class.neutral]="accent() === 'neutral'"
+                 class="verdict d-flex flex-column flex-gap-10 p-10"
+            >
+              <div class="d-flex flex-row flex-wrap align-items-center justify-content-between flex-gap-10">
+                @if (vm.direction != null) {
+                  <span [class.buy-color]="vm.direction === directions.Bullish"
+                        [class.sell-color]="vm.direction === directions.Bearish"
+                        class="fs-5 fw-bold d-flex flex-row align-items-center flex-gap-5 text-nowrap"
+                  >
+                    <span [nzType]="directionIcon()" nz-icon></span>
+                    <span>{{ t('aiSignals.directions.' + vm.direction) }}</span>
+                  </span>
+                }
+                @if (vm.action != null) {
+                  <nz-tag>{{ t('aiSignals.actions.' + vm.action) }}</nz-tag>
+                }
+              </div>
 
-          @if (vm.modelsUsed != null) {
-            <span class="fs-9 models-used">{{ td('aiSignalsDetails.modelsUsed') }}: {{ vm.modelsUsed }}</span>
+              @if (vm.confidence != null) {
+                <div class="d-flex flex-column flex-gap-5">
+                  <div class="d-flex flex-row align-items-center justify-content-between flex-gap-10 fs-9">
+                    <span class="conf-label">{{ t('aiSignals.confidenceLabel') }}</span>
+                    <span class="fw-bold conf-value">{{ vm.confidence }}/10</span>
+                  </div>
+                  <ats-confidence-meter [confidence]="vm.confidence" [direction]="vm.direction"/>
+                </div>
+              }
+
+              @if (vm.currentPrice != null || vm.expectedHoldingDays != null) {
+                <div class="d-flex flex-row flex-wrap flex-gap-10 fs-9 verdict-meta">
+                  @if (vm.currentPrice != null) {
+                    <span class="text-nowrap">
+                      {{ td('aiSignalsDetails.currentPrice') }}:
+                      <span class="heading-color">{{ vm.currentPrice | atsPrice }}</span>
+                    </span>
+                  }
+                  @if (vm.expectedHoldingDays != null) {
+                    <span class="text-nowrap">{{ td('aiSignalsDetails.holdingDays', {days: vm.expectedHoldingDays}) }}</span>
+                  }
+                </div>
+              }
+            </div>
           }
 
           @if (vm.action === actions.NoTrade) {
-            <span class="no-trade-hint">{{ td('aiSignalsDetails.noTradePlan') }}</span>
+            <span class="fs-9 no-trade-hint">{{ td('aiSignalsDetails.noTradePlan') }}</span>
           }
 
           <nz-collapse nzExpandIconPosition="end" nzGhost>
@@ -179,7 +199,7 @@
                       <nz-collapse-panel [nzHeader]="analystHeader">
                         <ng-template #analystHeader>
                           <span class="d-flex flex-row flex-wrap align-items-center flex-gap-5">
-                            <span class="analyst-name">{{ analyst.modelName }}</span>
+                            <span class="analyst-name">{{ t('aiSignals.analystLabel', {number: analyst.index}) }}</span>
                             @if (analyst.direction != null) {
                               <span [class.buy-color]="analyst.direction === directions.Bullish"
                                     [class.sell-color]="analyst.direction === directions.Bearish"
@@ -215,7 +235,7 @@
                   @if (vm.newsPeriodDays != null) {
                     <span class="fs-9 news-period">{{ td('aiSignalsDetails.newsPeriod', {days: vm.newsPeriodDays}) }}</span>
                   }
-                  <p class="reasoning">{{ vm.newsSummary }}</p>
+                  <markdown [data]="vm.newsSummary" class="markdown-body"/>
                 </div>
               </nz-collapse-panel>
             }

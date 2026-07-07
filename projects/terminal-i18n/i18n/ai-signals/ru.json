@@ -16,5 +16,6 @@
     "error": "Сигнал не сформирован",
     "degraded": "Сигнал сформирован с ограничениями"
   },
-  "confidenceLabel": "Уверенность"
+  "confidenceLabel": "Уверенность",
+  "analystLabel": "Аналитик {{number}}"
 }

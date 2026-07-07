@@ -59,7 +59,8 @@ export interface ChecklistItemViewModel {
 }
 
 export interface AnalystViewModel {
-  modelName: string;
+  // 1-based ordinal shown to the user instead of the API model name (kept anonymous by design)
+  index: number;
   direction: SignalDirection | null;
   action: SignalAction | null;
   confidence: number | null;
@@ -75,7 +76,6 @@ export interface SignalDetailsViewModel {
   currentPrice: number | null;
   forecastDateDisplay: string | null;
   expectedHoldingDays: number | null;
-  modelsUsed: string | null;
   reasoning: string | null;
   tradePlan: TradePlanViewModel | null;
   checklist: ChecklistItemViewModel[];

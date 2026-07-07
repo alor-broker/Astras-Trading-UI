@@ -14,7 +14,6 @@
   "newsRisk": "Новостной риск",
   "gapRisk": "Риск гэпа",
   "avoidReasons": "Причины воздержаться",
-  "modelsUsed": "Модели",
   "noTradePlan": "Сделка не рекомендуется",
   "newsPeriod": "За {{days}} дн.",
   "riskLevels": {

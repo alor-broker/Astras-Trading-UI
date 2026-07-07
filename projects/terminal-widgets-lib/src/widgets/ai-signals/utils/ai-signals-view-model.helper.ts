@@ -47,7 +47,6 @@ export class AiSignalsViewModelHelper {
       currentPrice: row.currentPrice,
       forecastDateDisplay: row.forecastDateDisplay,
       expectedHoldingDays: consensus?.expected_holding_days ?? null,
-      modelsUsed: this.toNonEmptyString(consensus?.models_used),
       reasoning: this.toNonEmptyString(consensus?.reasoning),
       tradePlan: row.action === SignalAction.NoTrade
         ? null
@@ -56,7 +55,7 @@ export class AiSignalsViewModelHelper {
       newsRisk: this.toEnumValue(consensus?.risk_notes?.news_risk, RiskLevel),
       gapRisk: this.toEnumValue(consensus?.risk_notes?.gap_risk, RiskLevel),
       avoidReasons: consensus?.risk_notes?.avoid_reasons ?? [],
-      analysts: (signal.analysts ?? []).map(analyst => this.toAnalystViewModel(analyst)),
+      analysts: (signal.analysts ?? []).map((analyst, index) => this.toAnalystViewModel(analyst, index + 1)),
       newsSummary: this.toNonEmptyString(signal.news?.summary),
       newsPeriodDays: signal.news?.period_days ?? null,
       fundamental: this.toFundamentalDisplayData(signal.fundamental),
@@ -170,15 +169,15 @@ export class AiSignalsViewModelHelper {
       .sort((left, right) => left.key.localeCompare(right.key));
   }
 
+  // the API model name is intentionally dropped here; analysts are shown to the user only by their ordinal
   private static toAnalystViewModel(analyst: {
-    model_name?: string | null;
     direction?: SignalDirection | null;
     action?: SignalAction | null;
     confidence?: number | null;
     reasoning?: string | null;
-  }): AnalystViewModel {
+  }, index: number): AnalystViewModel {
     return {
-      modelName: this.toNonEmptyString(analyst.model_name) ?? '?',
+      index,
       direction: this.toEnumValue(analyst.direction, SignalDirection),
       action: this.toEnumValue(analyst.action, SignalAction),
       confidence: analyst.confidence ?? null,

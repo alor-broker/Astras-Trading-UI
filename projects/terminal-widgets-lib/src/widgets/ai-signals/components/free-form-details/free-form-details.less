@@ -1,18 +1,56 @@
 ats-free-form-details {
   display: block;
-  font-size: 0.85rem;
 
-  .node {
-    .key {
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    align-items: flex-start;
+  }
+
+  .stat {
+    flex: 0 0 auto;
+    min-width: 76px;
+    max-width: 100%;
+
+    .stat-label {
       color: var(--ats-text-color-secondary);
+      font-size: 0.7rem;
+      line-height: 1.35;
     }
 
-    .value {
+    .stat-value {
+      color: var(--ats-heading-color);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
       overflow-wrap: anywhere;
     }
 
-    .children {
-      padding-left: 12px;
+    .stat-bool {
+      font-size: 0.9rem;
+      line-height: 1.35;
+
+      &.stat-off {
+        color: var(--ats-disabled-color);
+      }
+    }
+  }
+
+  .group {
+    flex: 1 1 100%;
+    min-width: 0;
+
+    .group-title {
+      color: var(--ats-text-color);
+      font-weight: var(--ats-font-weight-bold);
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+
+    .group-body {
+      padding-left: 10px;
+      border-left: var(--ats-border-width-base) solid var(--ats-border-color-split);
     }
   }
 }

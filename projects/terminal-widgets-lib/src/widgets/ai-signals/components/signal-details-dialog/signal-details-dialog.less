@@ -13,7 +13,39 @@
     max-height: 70vh;
     overflow-y: auto;
 
-    .models-used,
+    .verdict {
+      border: var(--ats-border-width-base) solid var(--ats-border-color-split);
+      border-left-width: 3px;
+      border-radius: var(--ats-border-radius-base);
+
+      &.bullish {
+        border-left-color: var(--ats-buy-color);
+        background-color: var(--ats-buy-color-background);
+      }
+
+      &.bearish {
+        border-left-color: var(--ats-sell-color);
+        background-color: var(--ats-sell-color-background);
+      }
+
+      &.neutral {
+        border-left-color: var(--ats-mix-color);
+        background-color: var(--ats-background-color-light);
+      }
+
+      .conf-label {
+        color: var(--ats-text-color-secondary);
+      }
+
+      .conf-value {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .verdict-meta {
+        color: var(--ats-text-color-secondary);
+      }
+    }
+
     .news-period,
     .no-trade-hint {
       color: var(--ats-text-color-secondary);
@@ -22,6 +54,69 @@
     .reasoning {
       white-space: pre-wrap;
       margin: 0;
+    }
+
+    .markdown-body {
+      display: block;
+      color: var(--ats-text-color);
+      font-size: 0.82rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        color: var(--ats-heading-color);
+        line-height: 1.3;
+        margin: 10px 0 4px;
+      }
+
+      h1 {
+        font-size: 1rem;
+      }
+
+      h2 {
+        font-size: 0.9rem;
+      }
+
+      h3,
+      h4 {
+        font-size: 0.82rem;
+      }
+
+      p {
+        margin: 0 0 6px;
+      }
+
+      ul,
+      ol {
+        margin: 0 0 6px;
+        padding-left: 18px;
+      }
+
+      li {
+        margin-bottom: 2px;
+      }
+
+      strong {
+        font-weight: var(--ats-font-weight-bold);
+        color: var(--ats-heading-color);
+      }
+
+      hr {
+        border: none;
+        border-top: var(--ats-border-width-base) solid var(--ats-border-color-split);
+        margin: 10px 0;
+      }
+
+      > *:first-child {
+        margin-top: 0;
+      }
+
+      > *:last-child {
+        margin-bottom: 0;
+      }
     }
 
     .issues-list {

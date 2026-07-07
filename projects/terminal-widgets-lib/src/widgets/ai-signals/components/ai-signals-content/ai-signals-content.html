@@ -9,11 +9,14 @@
 
     @if (displayStatus() === displayStatuses.Loaded) {
       <div class="d-flex flex-row align-items-center justify-content-between flex-gap-5 status-line">
-        <span class="fs-9 last-updated">
-          @if (lastUpdatedAt() != null) {
-            {{ t('aiSignalsContent.lastUpdatedLabel') }} {{ lastUpdatedAt() | date: 'HH:mm:ss' }}
-          }
-        </span>
+        @if (lastUpdatedAt() != null) {
+          <span class="fs-9 d-flex flex-row align-items-center flex-gap-5 last-updated">
+            <span class="live-dot"></span>
+            <span>{{ t('aiSignalsContent.lastUpdatedLabel') }} {{ lastUpdatedAt() | date: 'HH:mm:ss' }}</span>
+          </span>
+        } @else {
+          <span></span>
+        }
         <button (click)="refresh()"
                 [nz-tooltip]="t('aiSignalsContent.refreshTooltip')"
                 nz-button

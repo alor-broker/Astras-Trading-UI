@@ -14,7 +14,6 @@
   "newsRisk": "News risk",
   "gapRisk": "Gap risk",
   "avoidReasons": "Reasons to avoid",
-  "modelsUsed": "Models",
   "noTradePlan": "No trade is recommended",
   "newsPeriod": "For the last {{days}} d.",
   "riskLevels": {

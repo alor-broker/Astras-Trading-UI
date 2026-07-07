@@ -16,5 +16,6 @@
     "error": "Signal not generated",
     "degraded": "Signal generated with limitations"
   },
-  "confidenceLabel": "Confidence"
+  "confidenceLabel": "Confidence",
+  "analystLabel": "Analyst {{number}}"
 }
