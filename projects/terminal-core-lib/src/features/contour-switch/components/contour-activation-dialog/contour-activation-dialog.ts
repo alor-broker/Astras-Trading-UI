@@ -17,10 +17,7 @@ import {
   NzModalContentDirective
 } from 'ng-zorro-antd/modal';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {
-  NzResultComponent,
-  NzResultExtraDirective
-} from 'ng-zorro-antd/result';
+import {NzResultComponent} from 'ng-zorro-antd/result';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {
   ContourActivationDialogMessage,
@@ -42,10 +39,10 @@ type ContourActivationResultViewStatus = 'warning' | 'error' | 'success';
     NzModalContentDirective,
     NzButtonComponent,
     NzResultComponent,
-    NzResultExtraDirective,
     TranslocoDirective
   ],
   templateUrl: './contour-activation-dialog.html',
+  styleUrl: './contour-activation-dialog.less',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
@@ -81,6 +78,10 @@ export class ContourActivationDialog {
 
   protected readonly isActionVisible = computed(() =>
     this.message() !== ContourActivationDialogMessage.ContourActivated
+  );
+
+  protected readonly isDisclaimerVisible = computed(() =>
+    this.message() === ContourActivationDialogMessage.TradingBlocked
   );
 
   private readonly dialogService = inject(ContourActivationDialogService);

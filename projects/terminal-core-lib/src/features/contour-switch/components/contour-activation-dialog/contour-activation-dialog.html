@@ -1,6 +1,7 @@
 <nz-modal
   (nzOnCancel)="close()"
   *transloco="let t; scope: 'contour-switch/activation-dialog'"
+  nzClassName="ats-contour-activation-dialog"
   [nzFooter]="null"
   [nzTitle]="t('contourSwitchActivationDialog.title')"
   [nzVisible]="isVisible()">
@@ -10,19 +11,88 @@
       [nzSubTitle]="cooldownSeconds() == null
         ? ''
         : t('contourSwitchActivationDialog.cooldown', {seconds: cooldownSeconds()})"
-      [nzTitle]="t('contourSwitchActivationDialog.messages.' + message())">
-      @if (isActionVisible()) {
-        <div nz-result-extra>
-          <button
-            (click)="activateCurrentContour()"
-            [disabled]="isActionDisabled()"
-            [nzLoading]="isActivationLoading()"
-            nz-button
-            nzType="primary">
-            {{ t('contourSwitchActivationDialog.activateButton') }}
-          </button>
-        </div>
-      }
-    </nz-result>
+      [nzTitle]="t('contourSwitchActivationDialog.messages.' + message())" />
+
+    @if (isDisclaimerVisible()) {
+      <div class="contour-activation-dialog-disclaimer">
+        <p><strong>{{ t('contourSwitchActivationDialog.disclaimer.greeting') }}</strong></p>
+
+        <p>
+          {{ t('contourSwitchActivationDialog.disclaimer.confirmationPrefix') }}
+          <strong>
+            «{{ t('contourSwitchActivationDialog.disclaimer.activateButtonUppercase') }}»
+          </strong>{{ t('contourSwitchActivationDialog.disclaimer.confirmationSuffix') }}
+        </p>
+
+        <p>{{ t('contourSwitchActivationDialog.disclaimer.afterActivation') }}</p>
+        <ul>
+          <li>
+            {{ t('contourSwitchActivationDialog.disclaimer.afterActivationItems.tradingAvailable') }}
+          </li>
+          <li>
+            {{ t('contourSwitchActivationDialog.disclaimer.afterActivationItems.otherContourBlocked') }}
+          </li>
+          <li>
+            {{ t('contourSwitchActivationDialog.disclaimer.afterActivationItems.simultaneousTradingUnavailable') }}
+          </li>
+        </ul>
+
+        <p>
+          {{ t('contourSwitchActivationDialog.disclaimer.switchingPrefix') }}
+          <strong>«{{ t('contourSwitchActivationDialog.disclaimer.activateButton') }}»</strong>
+          {{ t('contourSwitchActivationDialog.disclaimer.switchingMiddle') }}
+          <strong>«{{ t('contourSwitchActivationDialog.disclaimer.tradingBlocked') }}»</strong>.
+          {{ t('contourSwitchActivationDialog.disclaimer.switchingSuffix') }}
+        </p>
+
+        <p>{{ t('contourSwitchActivationDialog.disclaimer.blockedOrderIntro') }}</p>
+        <p>
+          <strong>«{{ t('contourSwitchActivationDialog.disclaimer.blockedOrderError') }}»</strong>.
+        </p>
+
+        <p>
+          <strong>{{ t('contourSwitchActivationDialog.disclaimer.importantLabel') }}</strong>
+          {{ t('contourSwitchActivationDialog.disclaimer.importantText') }}
+        </p>
+
+        <p>
+          {{ t('contourSwitchActivationDialog.disclaimer.reserveIntroPrefix') }}
+          <strong>{{ t('contourSwitchActivationDialog.disclaimer.reserveContour') }}</strong>
+          {{ t('contourSwitchActivationDialog.disclaimer.reserveIntroSuffix') }}
+        </p>
+        <ul>
+          <li>
+            {{ t('contourSwitchActivationDialog.disclaimer.reserveItems.stopOrdersUnavailable') }}
+          </li>
+          <li>
+            {{ t('contourSwitchActivationDialog.disclaimer.reserveItems.stopOrdersHidden') }}
+          </li>
+          <li>{{ t('contourSwitchActivationDialog.disclaimer.reserveItems.orderDelay') }}</li>
+          <li>
+            {{ t('contourSwitchActivationDialog.disclaimer.reserveItems.marketDataInterval') }}
+          </li>
+        </ul>
+
+        <p>
+          {{ t('contourSwitchActivationDialog.disclaimer.finalConfirmationPrefix') }}
+          <strong>
+            «{{ t('contourSwitchActivationDialog.disclaimer.activateButtonUppercase') }}»
+          </strong>{{ t('contourSwitchActivationDialog.disclaimer.finalConfirmationSuffix') }}
+        </p>
+      </div>
+    }
+
+    @if (isActionVisible()) {
+      <div class="contour-activation-dialog-actions">
+        <button
+          (click)="activateCurrentContour()"
+          [disabled]="isActionDisabled()"
+          [nzLoading]="isActivationLoading()"
+          nz-button
+          nzType="primary">
+          {{ t('contourSwitchActivationDialog.activateButton') }}
+        </button>
+      </div>
+    }
   </ng-container>
 </nz-modal>
