@@ -260,8 +260,7 @@ export class InfiniteScrollTable implements OnChanges, AfterViewInit, OnInit {
       switchMap(x => x.cdkVirtualScrollViewport!.scrolledIndexChange),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe((upperItemIndex: number) => {
-      const dataLength = this.data().length;
-      if (upperItemIndex > 0 && (upperItemIndex >= dataLength - this.visibleItemsCount - 1)) {
+      if (upperItemIndex >= this.data().length - this.visibleItemsCount - 1) {
         this.scrolled.emit();
       }
     });
