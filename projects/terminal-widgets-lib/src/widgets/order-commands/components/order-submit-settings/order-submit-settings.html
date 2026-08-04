@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t; scope: 'order-commands/order-submit-settings'">
     @if (deviceInfo$ | async; as deviceInfo) {
-      <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+      <form [formGroup]="form" [nzLayout]="'vertical'" nz-form class="settings-form">
         @if (!deviceInfo.isMobile) {
           <nz-form-item>
             <nz-form-label nzFor="instrument" nzRequired>{{ t('orderCommandsOrderSubmitSettings.tickerLabel') }}
