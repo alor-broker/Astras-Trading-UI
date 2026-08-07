@@ -1,0 +1,24 @@
+<ng-container *transloco="let t; scope: 'invest-ideas/idea-metrics'">
+  @let displayIdea = idea();
+  <dl>
+    <div class="row">
+      <dt>{{t('investIdeasIdeaMetrics.targetReturnLabel', {fallback: 'Целевая доходность'})}}</dt>
+      <dd class="positive-color">{{ displayIdea.forecast }}</dd>
+    </div>
+
+    <div class="row">
+      <dt>{{t('investIdeasIdeaMetrics.buyPriceLabel', {fallback: 'Цена покупки'})}}</dt>
+      <dd class="heading-color">{{ displayIdea.buyPrice }}</dd>
+    </div>
+
+    <div class="row">
+      <dt>{{t('investIdeasIdeaMetrics.sellPriceLabel', {fallback: 'Цена продажи'})}}</dt>
+      <dd class="positive-color">{{ displayIdea.sellPrice }}</dd>
+    </div>
+
+    <div class="row">
+      <dt>{{t('investIdeasIdeaMetrics.validUntilLabel', {fallback: 'Действительна'})}}</dt>
+      <dd class="heading-color">{{ displayIdea.validUntil }}</dd>
+    </div>
+  </dl>
+</ng-container>

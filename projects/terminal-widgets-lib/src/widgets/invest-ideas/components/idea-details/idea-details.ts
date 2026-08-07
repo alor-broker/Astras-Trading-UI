@@ -1,38 +1,26 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  model,
-  OnDestroy,
-  ViewEncapsulation
-} from '@angular/core';
-import {AsyncPipe} from "@angular/common";
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, model, ViewEncapsulation} from '@angular/core';
 import {LetDirective} from "@ngrx/component";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzModalComponent} from "ng-zorro-antd/modal";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
-import {
-  BehaviorSubject,
-  Observable,
-  switchMap
-} from "rxjs";
+import {Observable, of, switchMap} from "rxjs";
 import {map} from "rxjs/operators";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {CandlesService} from '@terminal-core-lib/features/instruments/services/candles.service';
-import {InstrumentsService} from '@terminal-core-lib/features/instruments/services/instruments.service';
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {ApplicationStatusService} from '@terminal-core-lib/common/services/application-status.service';
-import {
-  Idea,
-  IdeaSymbol
-} from '@terminal-widgets-lib/widgets/invest-ideas/services/invest-ideas-service.types';
-import {ArrayHelper} from '@terminal-core-lib/common/utils/array.helper';
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
 import {createRefresh} from '@terminal-core-lib/common/utils/observable/create-refresh';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {InstrumentIcon} from '@terminal-core-lib/common/components/instrument-icon/instrument-icon';
-import {SubmitOrderForSymbol} from '@terminal-widgets-lib/widgets/invest-ideas/components/submit-order-for-symbol/submit-order-for-symbol';
+import {
+  SubmitOrderForSymbol
+} from '@terminal-widgets-lib/widgets/invest-ideas/components/submit-order-for-symbol/submit-order-for-symbol';
+import {
+  IdeaResponse,
+  IdeaResponseFormat
+} from '@terminal-widgets-lib/widgets/invest-ideas/services/invest-ideas-service.types';
+import {CandlesService} from '@terminal-core-lib/features/instruments/services/candles.service';
+import {IdeaMetrics} from '@terminal-widgets-lib/widgets/invest-ideas/components/idea-metrics/idea-metrics';
+import {ExpandableTextComponent} from '@terminal-core-lib/common/components/expandable-text/expandable-text';
 
 interface InstrumentPrice {
   lastPrice: number;
@@ -42,54 +30,37 @@ interface InstrumentPrice {
 @Component({
   selector: 'ats-idea-details',
   imports: [
-    AsyncPipe,
     LetDirective,
     NzIconDirective,
     NzModalComponent,
     NzTypographyComponent,
     InstrumentIcon,
-    SubmitOrderForSymbol
+    SubmitOrderForSymbol,
+    IdeaMetrics,
+    ExpandableTextComponent
   ],
   templateUrl: './idea-details.html',
   styleUrl: './idea-details.less',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class IdeaDetails implements OnDestroy {
-  readonly displayIdea = model<Idea | null>(null);
+export class IdeaDetails {
+  readonly displayIdea = model<IdeaResponse | null>(null);
+  readonly priceInfo$ = toObservable(this.displayIdea)
+    .pipe(
+      switchMap(idea => {
+        if (idea == null || idea.format !== IdeaResponseFormat.StructuredJson) {
+          return of(null);
+        }
 
-  readonly selectedTicker$ = new BehaviorSubject<IdeaSymbol | null>(null);
+        return this.getPriceInfo({symbol: idea.ticker, exchange: idea.exchange});
+      })
+    );
 
+  protected readonly IdeaResponseFormat = IdeaResponseFormat;
   private readonly candlesService = inject(CandlesService);
-
-  private readonly instrumentsService = inject(InstrumentsService);
-
-  readonly ideaSymbols = computed(() => {
-    const idea = this.displayIdea();
-    if (idea == null) {
-      return [];
-    }
-
-    this.selectedTicker$.next(ArrayHelper.firstOrNull(idea.symbols));
-    return idea.symbols.map(i => ({
-      ...i,
-      instrument$: this.instrumentsService.getInstrument({symbol: i.ticker, exchange: i.exchange}),
-      priceInfo$: this.getPriceInfo({symbol: i.ticker, exchange: i.exchange})
-    }));
-  });
-
   private readonly applicationStatusService = inject(ApplicationStatusService);
-
   private readonly destroyRef = inject(DestroyRef);
-
-  isTickerEquals(a: IdeaSymbol | null, b: IdeaSymbol | null): boolean {
-    return a?.ticker === b?.ticker
-      && a?.exchange === b?.exchange;
-  };
-
-  ngOnDestroy(): void {
-    this.selectedTicker$.complete();
-  }
 
   protected close(): void {
     this.displayIdea.set(null);

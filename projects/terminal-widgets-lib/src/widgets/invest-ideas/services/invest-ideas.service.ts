@@ -1,18 +1,14 @@
-﻿import {
-  inject,
-  Injectable
-} from '@angular/core';
+﻿import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ErrorHandlerService} from '@terminal-core-lib/features/errors-handler/error-handler.service';
 import {
+  IdeaHtmlBodyResponse,
+  IdeaResponseFormat,
   IdeasPagedResponse,
   INVEST_IDEAS_URL_PROVIDER,
   Page
 } from '@terminal-widgets-lib/widgets/invest-ideas/services/invest-ideas-service.types';
-import {
-  Observable,
-  of
-} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {catchHttpError} from '@terminal-core-lib/common/utils/observable/catch-http-error';
 
@@ -36,7 +32,8 @@ export class InvestIdeasService {
     }
 
     const params: Record<string, string | number> = {
-      ...page
+      ...page,
+      type: 'idea'
     };
 
     if (language != null) {
@@ -50,15 +47,29 @@ export class InvestIdeasService {
       }
     ).pipe(
       map(response => {
-        response.list = response.list.map(idea => ({
-          ...idea,
-          body: this.sanitizeHtmlContent(idea.body)
-        }));
+        response.list = response.list.map(idea => {
+          if ('body' in idea) {
+            return this.processIdeaHtmlBodyResponse(idea);
+          }
+
+          return {
+            ...idea,
+            format: IdeaResponseFormat.StructuredJson
+          };
+        });
 
         return response;
       }),
       catchHttpError<IdeasPagedResponse | null>(null, this.errorHandlerService)
     );
+  }
+
+  private processIdeaHtmlBodyResponse(response: IdeaHtmlBodyResponse): IdeaHtmlBodyResponse {
+    return {
+      ...response,
+      format: IdeaResponseFormat.HtmlBody,
+      body: this.sanitizeHtmlContent(response.body)
+    };
   }
 
   private sanitizeHtmlContent(html: string): string {

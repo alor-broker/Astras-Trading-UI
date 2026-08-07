@@ -1,0 +1,23 @@
+ats-expandable-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .content {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: var(--ats-expandable-text-rows);
+    -webkit-box-orient: vertical;
+    white-space: pre-line;
+
+    &.expanded {
+      display: block;
+      overflow: visible;
+      -webkit-line-clamp: unset;
+    }
+  }
+
+  .expand-button {
+    padding: 0;
+  }
+}
