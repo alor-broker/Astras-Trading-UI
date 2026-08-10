@@ -23,7 +23,7 @@ import {
 } from 'ng-zorro-antd/collapse';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {AsyncPipe} from '@angular/common';
+import {AsyncPipe, DatePipe} from '@angular/common';
 import {AppReleaseService} from '../../services/app-release.service';
 import {ReleaseMeta} from '../../services/app-releases-service.types';
 
@@ -40,7 +40,8 @@ import {ReleaseMeta} from '../../services/app-releases-service.types';
     NzCollapsePanelComponent,
     NzTypographyComponent,
     NzIconDirective,
-    AsyncPipe
+    AsyncPipe,
+    DatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
