@@ -13,58 +13,53 @@
 
 <ng-template #content>
   @if (idea != null) {
-    <p [nzEllipsisRows]="5" class="content" nz-typography nzEllipsis nzExpandable>{{ idea.body }}</p>
+    @if (idea.format === IdeaResponseFormat.HtmlBody) {
+      <p class="content">{{ idea.body }}</p>
+    } @else {
+      <div>
+        <ats-idea-metrics [idea]="idea"/>
+      </div>
 
-    <div class="d-flex flex-column flex-gap-10">
+      <div class="mb-10">
+        <ats-expandable-text [rows]="3" [expandButtonTemplate]="expandBtn">
+          {{ idea.description }}
+        </ats-expandable-text>
+        <ng-template #expandBtn>
+          <nz-icon nzType="down" nzTheme="outline"  class="primary-color"/>
+        </ng-template>
+      </div>
 
-      @let items = ideaSymbols();
-      @let selectedItem = selectedTicker$ | async;
-
-      @for (item of items; track item) {
-        <div
-          (click)="selectedTicker$.next(item)"
-          [class.selected]="isTickerEquals(item, selectedItem)"
-          class="d-flex flex-row flex-nowrap flex-gap-10 align-items-center justify-content-between p-5"
-        >
-          <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
-            <ats-instrument-icon [symbol]="item.ticker" size="large"/>
-            <div class="d-flex flex-column">
-              <span *ngrxLet="item.instrument$ as instrument" class="heading-color" nz-typography nzEllipsis>
-                @if (instrument != null) {
-                  {{ instrument.shortName }}
-                } @else {
-                  {{ item.ticker }}
-                }
-              </span>
-              <span nz-typography nzEllipsis>{{ item.ticker }}</span>
-            </div>
+      <div class="d-flex flex-row flex-nowrap flex-gap-10 align-items-center justify-content-between  symbol">
+        <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5 overflow-hidden">
+          <ats-instrument-icon [symbol]="idea.ticker" size="large"/>
+          <div class="d-flex flex-column  overflow-hidden">
+              <span class="heading-color" nz-typography nzEllipsis>{{ idea.company }}</span>
+            <span nz-typography nzEllipsis>{{ idea.ticker }}</span>
           </div>
+        </div>
 
-          <div *ngrxLet="item.priceInfo$ as priceInfo" class="d-flex flex-column align-items-end">
-            @if (priceInfo != null) {
-              <span class="heading-color">{{ priceInfo.lastPrice }}</span>
-              <span
-                [class]="{
+        <div *ngrxLet="priceInfo$ as priceInfo" class="d-flex flex-column align-items-end">
+          @if (priceInfo != null) {
+            <span class="heading-color">{{ priceInfo.lastPrice }}</span>
+            <span
+              [class]="{
                   'positive-color': priceInfo.dayChangePercent >= 0,
                   'negative-color': priceInfo.dayChangePercent < 0
                   }"
-              >
+            >
                   @if (priceInfo.dayChangePercent > 0) {
                     <span>+</span>
                   }
 
-                <span>{{ priceInfo.dayChangePercent }}%</span>
+              <span>{{ priceInfo.dayChangePercent }}%</span>
                 </span>
-            }
-          </div>
+          }
         </div>
-      }
-    </div>
+      </div>
 
-    @if (selectedItem != null) {
       <div class="mt-15">
         <div>
-          <ats-submit-order-for-symbol [symbol]="selectedItem"/>
+          <ats-submit-order-for-symbol [symbol]="{symbol: idea.ticker, exchange: idea.exchange}"/>
         </div>
       </div>
     }

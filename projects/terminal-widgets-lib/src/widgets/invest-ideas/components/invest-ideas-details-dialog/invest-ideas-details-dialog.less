@@ -3,19 +3,22 @@
     margin-right: 10px;
   }
 
-  .body {
-    max-height: 500px;
+  .ant-modal-body {
+    padding-top: 0 !important;
 
-    .content {
-      white-space: pre-wrap;
-    }
+    .body {
+      max-height: 500px;
+      .content {
+        white-space: pre-wrap;
+      }
 
-    .symbol {
-      cursor: pointer;
+      .symbol {
+        cursor: pointer;
 
-      &:hover {
-        background-color: var(--ats-table-row-hover-bg);
-        border-radius: var(--ats-border-radius-base);
+        &:hover {
+          background-color: var(--ats-table-row-hover-bg);
+          border-radius: var(--ats-border-radius-base);
+        }
       }
     }
   }

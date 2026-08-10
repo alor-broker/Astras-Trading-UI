@@ -43,14 +43,19 @@
       }
 
       @if (settings.showNews ?? true) {
-        <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.newsTitle') }}</span>
+        <span class="section-header mt-20">{{ t('mobileHomeScreen.newsTitle') }}</span>
         <div class="px-5">
           <ats-mobile-home-screen-news (showMore)="openNews()"/>
         </div>
       }
 
+      @if (settings.showIdeas ?? false) {
+        <span class="section-header mt-20">{{ t('mobileHomeScreen.ideasTitle') }}</span>
+        <ats-invest-ideas-compact/>
+      }
+
       @if (settings.showMarketTrends ?? true) {
-        <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.marketTrendsTitle') }}</span>
+        <span class="section-header mt-20">{{ t('mobileHomeScreen.marketTrendsTitle') }}</span>
         <ats-market-trends (instrumentSelected)="openOrder($event)" (showMore)="openAllInstruments($event)"
                            [extendedFilter]="settings.marketTrendsExtendedFilter ?? []"
                            [itemsCount]="settings.marketTrendsItemsCount ?? 10" [marketFilters]="{
@@ -60,11 +65,6 @@
         minTradeAmount: settings.marketTrendsMinTradeAmount,
         minCapitalization: settings.marketTrendsMinCapitalization
         }" [sectors]="settings.marketTrendsSectors ?? []"/>
-      }
-
-      @if (settings.showIdeas ?? false) {
-        <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.ideasTitle') }}</span>
-        <ats-invest-ideas-compact/>
       }
     </div>
   </ng-container>

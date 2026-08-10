@@ -1,30 +1,22 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  model,
-  output,
-  ViewEncapsulation
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, model, output, ViewEncapsulation} from '@angular/core';
 
 import {LetDirective} from "@ngrx/component";
 import {NzModalComponent} from "ng-zorro-antd/modal";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
-import {
-  Observable,
-  switchMap
-} from "rxjs";
+import {Observable, of, switchMap} from "rxjs";
 import {map} from "rxjs/operators";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {Idea} from '@terminal-widgets-lib/widgets/invest-ideas/services/invest-ideas-service.types';
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
 import {CandlesService} from '@terminal-core-lib/features/instruments/services/candles.service';
 import {ApplicationStatusService} from '@terminal-core-lib/common/services/application-status.service';
 import {createRefresh} from '@terminal-core-lib/common/utils/observable/create-refresh';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {InstrumentIcon} from '@terminal-core-lib/common/components/instrument-icon/instrument-icon';
+import {
+  IdeaResponse,
+  IdeaResponseFormat
+} from '@terminal-widgets-lib/widgets/invest-ideas/services/invest-ideas-service.types';
+import {IdeaMetrics} from '@terminal-widgets-lib/widgets/invest-ideas/components/idea-metrics/idea-metrics';
 
 interface InstrumentPrice {
   lastPrice: number;
@@ -37,7 +29,8 @@ interface InstrumentPrice {
     LetDirective,
     NzModalComponent,
     NzTypographyComponent,
-    InstrumentIcon
+    InstrumentIcon,
+    IdeaMetrics
   ],
   templateUrl: './invest-ideas-details-dialog.html',
   styleUrl: './invest-ideas-details-dialog.less',
@@ -45,21 +38,22 @@ interface InstrumentPrice {
   encapsulation: ViewEncapsulation.None
 })
 export class InvestIdeasDetailsDialog {
-  readonly displayIdea = model<Idea | null>(null);
+  readonly displayIdea = model<IdeaResponse | null>(null);
 
-  readonly ideaSymbols = computed(() => {
-    const idea = this.displayIdea();
-    if (idea == null) {
-      return [];
-    }
+  readonly priceInfo$ = toObservable(this.displayIdea)
+    .pipe(
+      switchMap(idea => {
+        if (idea == null || idea.format !== IdeaResponseFormat.StructuredJson) {
+          return of(null);
+        }
 
-    return idea.symbols.map(i => ({
-      ...i,
-      priceInfo$: this.getPriceInfo({symbol: i.ticker, exchange: i.exchange})
-    }));
-  });
+        return this.getPriceInfo({symbol: idea.ticker, exchange: idea.exchange});
+      })
+    );
 
   readonly symbolSelected = output<InstrumentKey>();
+
+  protected readonly IdeaResponseFormat = IdeaResponseFormat;
 
   private readonly candlesService = inject(CandlesService);
 

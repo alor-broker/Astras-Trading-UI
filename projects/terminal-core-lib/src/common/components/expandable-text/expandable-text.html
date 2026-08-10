@@ -1,0 +1,20 @@
+<div
+  #content
+  [class.expanded]="expanded()"
+  class="content"
+>
+  <ng-content/>
+</div>
+
+@if (isOverflowing() && !expanded()) {
+  <button
+    (click)="expand()"
+    class="expand-button"
+    nz-button
+    nzType="link"
+    type="button"
+    nzBlock
+  >
+    <ng-container [ngTemplateOutlet]="expandButtonTemplate()"/>
+  </button>
+}

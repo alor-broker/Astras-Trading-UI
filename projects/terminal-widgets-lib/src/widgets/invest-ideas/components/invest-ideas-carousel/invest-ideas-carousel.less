@@ -9,6 +9,7 @@ ats-invest-ideas-carousel {
     align-items: center;
     z-index: 10;
     font-size: 1rem;
+    color: var(--ats-primary-color);
 
     &.left {
       left: 0;
@@ -16,6 +17,11 @@ ats-invest-ideas-carousel {
 
     &.right {
       right: 0;
+    }
+
+    &:hover {
+      background-color: var(--ats-table-row-hover-bg);
+      cursor: pointer;
     }
   }
 
@@ -30,6 +36,11 @@ ats-invest-ideas-carousel {
       gap: 10px;
       align-items: center;
       justify-content: space-between;
+
+      &:hover {
+        background-color: var(--ats-table-row-hover-bg);
+        border-radius: var(--ats-border-radius-base);
+      }
     }
   }
 
@@ -46,26 +57,10 @@ ats-invest-ideas-carousel {
         .slick-track {
           height: 100%;
         }
-
-        .slick-dots {
-          .invest-ideas-carousel-dots();
-        }
       }
-    }
 
-    .nav-buttons {
-      color: var(--ats-primary-color);
-      border-radius: var(--ats-border-radius-base);
-
-      &:hover {
-        background-color: color-mix(in srgb, var(--ats-select-item-selected-bg) 50%, transparent);
-      }
-    }
-
-    .symbol {
-      &:hover {
-        background-color: var(--ats-table-row-hover-bg);
-        border-radius: var(--ats-border-radius-base);
+      .slick-dots {
+        .invest-ideas-carousel-dots();
       }
     }
   }
