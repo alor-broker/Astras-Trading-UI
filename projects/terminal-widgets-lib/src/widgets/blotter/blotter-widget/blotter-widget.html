@@ -14,7 +14,7 @@
                          [guid]="guid"
                          [hasSettings]="settings != null"
                          [linkToActive]="settings?.linkToActive ?? null"
-                         [selectedBadgeColor]="settings?.badgeColor"
+                         [selectedBadgeColor]="$safeNavigationMigration(settings?.badgeColor)"
                          [showBadgesMenu]="(showBadge$ | async) ?? false"
                          [widgetMeta]="widgetInstance().widgetMeta"
                          badgeShape="square"

@@ -3,7 +3,7 @@ import {
   Injectable
 } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import formatISO from 'date-fns/formatISO';
+import {formatISO} from 'date-fns';
 import {
   map,
   Observable,

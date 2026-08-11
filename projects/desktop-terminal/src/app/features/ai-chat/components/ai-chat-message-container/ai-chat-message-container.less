@@ -1,4 +1,17 @@
 atsd-ai-chat-message-container {
+  animation: flyIn 100ms ease-out;
+
+  @keyframes flyIn {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
   .right {
     flex-direction: row-reverse;
 

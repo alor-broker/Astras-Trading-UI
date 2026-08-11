@@ -4,7 +4,8 @@ import {
   inject,
   input,
   OnInit,
-  output
+  output,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NumberDisplayFormat} from '@terminal-core-lib/common/types/number-display-format.types';
@@ -22,6 +23,7 @@ import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {OrderbookService} from '@terminal-widgets-lib/widgets/orderbook/services/orderbook.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class OrderbookTableBase implements OnInit {

@@ -24,11 +24,11 @@ import {
   ChartData,
   ChartOptions
 } from 'chart.js';
-import endOfDay from 'date-fns/endOfDay';
-import {format} from 'date-fns';
-import startOfDay from 'date-fns/startOfDay';
-import subMonths from 'date-fns/subMonths';
-import subYears from 'date-fns/subYears';
+import {
+  format,
+  Locale,
+  subYears
+} from 'date-fns';
 import {
   enUS,
   ru
@@ -59,6 +59,7 @@ import {
   PortfolioCommissionPeriod,
   PortfolioCommissionsService
 } from '../../services/portfolio-commissions.service';
+import { startOfDay, endOfDay, subMonths } from "date-fns";
 
 type CommissionsChartData = ChartData<'bar', number[], Date>;
 type CommissionsChartOptions = ChartOptions<'bar'>;

@@ -3,7 +3,8 @@
   DestroyRef,
   inject,
   input,
-  output
+  output,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import {
   combineLatest,
@@ -31,6 +32,7 @@ import {InputNumberValidation} from "@terminal-core-lib/common/constants/validat
 import {priceStepMultiplicity} from "@terminal-core-lib/features/forms/validators/price-step-multiplicity";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class BaseEditOrderForm {

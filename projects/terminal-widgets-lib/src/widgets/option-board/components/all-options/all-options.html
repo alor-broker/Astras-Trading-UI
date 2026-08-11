@@ -114,7 +114,7 @@
                     <div [nzTooltipTitle]="t(
                       'optionBoard.currentPriceTooltip',
                       {
-                      price: optionsMatrix.underlyingAsset?.lastPrice
+                      price: $safeNavigationMigration(optionsMatrix.underlyingAsset?.lastPrice)
                       }
                       )"
                          [style.width]="layoutSizes.priceColumnWidth + 'px'"

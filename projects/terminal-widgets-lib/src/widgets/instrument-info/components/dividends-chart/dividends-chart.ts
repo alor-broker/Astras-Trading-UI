@@ -19,7 +19,10 @@ import {
 } from "rxjs";
 import {ThemeColors} from '@terminal-core-lib/features/themes/themes.types';
 import {TranslatorFn} from "@terminal-core-lib/features/translations/services/translator-service.types";
-import {format} from 'date-fns';
+import {
+  format,
+  Locale
+} from 'date-fns';
 import {
   enUS,
   ru

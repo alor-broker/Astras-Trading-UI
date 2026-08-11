@@ -13,7 +13,8 @@ import {
   inject,
   input,
   OnDestroy,
-  output
+  output,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import {
   filter,
@@ -48,6 +49,7 @@ import {InputNumberValidation} from '@terminal-core-lib/common/constants/validat
 import {priceStepMultiplicity} from '@terminal-core-lib/features/forms/validators/price-step-multiplicity';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class BaseOrderForm implements OnDestroy {

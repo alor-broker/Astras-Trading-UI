@@ -14,7 +14,7 @@
       <form [formGroup]="editForm" nz-form nzLayout="inline">
         <nz-form-item>
           <nz-form-control [nzErrorTip]="contentError">
-            <nz-input-group [nzSuffix]="suffix">
+            <nz-input-wrapper>
               <input #editInput
                      (blur)="emitValueIfValid()"
                      (click)="$event.stopPropagation()"
@@ -24,10 +24,8 @@
                      nz-input
                      type="text"
               />
-              <ng-template #suffix>
-                <span nz-icon nzType="enter"></span>
-              </ng-template>
-            </nz-input-group>
+              <span *nzInputSuffix nz-icon nzType="enter"></span>
+            </nz-input-wrapper>
           </nz-form-control>
           <ng-template #contentError>
             @let restrictions = lengthRestrictions();

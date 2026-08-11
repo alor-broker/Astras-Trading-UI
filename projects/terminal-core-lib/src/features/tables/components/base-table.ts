@@ -5,7 +5,8 @@
   inject,
   OnDestroy,
   OnInit,
-  signal
+  signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -33,6 +34,7 @@ export interface Sort {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: '',
 })
 export abstract class BaseTableComponent<

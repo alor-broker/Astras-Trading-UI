@@ -9,7 +9,7 @@
         </div>
         @if (vm.loadingStatus === loadingStatuses.NoData || vm.loadingStatus === loadingStatuses.Error) {
           <nz-empty
-            [nzNotFoundContent]="loadingError?.errorMessage ?? t('instrumentsCorrelationCorrelationChart.errorCodes.' + loadingError?.errorCode)"
+            [nzNotFoundContent]="loadingError?.errorMessage ?? t('instrumentsCorrelationCorrelationChart.errorCodes.' + $safeNavigationMigration(loadingError?.errorCode))"
             class="ant-list-empty-text"
             nzNotFoundImage="simple"
           />

@@ -4,7 +4,7 @@
           [nzContent]="content"
           [nzFooter]="null"
           [nzMaskClosable]="true"
-          [nzTitle]="idea?.title"
+          [nzTitle]="$safeNavigationMigration(idea?.title)"
           [nzVisible]="displayIdea() !== null"
           nzClassName="ats-invest-ideas-details-dialog"
 />
