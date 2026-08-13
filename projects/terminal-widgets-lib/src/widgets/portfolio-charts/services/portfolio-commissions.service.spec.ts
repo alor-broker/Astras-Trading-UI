@@ -4,7 +4,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting
 } from '@angular/common/http/testing';
-import formatISO from 'date-fns/formatISO';
+import {formatISO} from 'date-fns/formatISO';
 import {CORE_API_URL_PROVIDER} from '@terminal-core-lib/config/api-url-providers';
 import {ErrorHandlerService} from '@terminal-core-lib/features/errors-handler/error-handler.service';
 import {

@@ -29,6 +29,7 @@
           "options": {
             "browser": "projects/desktop-terminal/src/main.ts",
             "tsConfig": "projects/desktop-terminal/tsconfig.app.json",
+            "polyfills": [],
             "inlineStyleLanguage": "less",
             "assets": [
               {
@@ -176,6 +177,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
+            "runnerConfig": "vitest.config.ts",
             "reporters": [
               "default",
               "github-actions"
@@ -203,6 +205,7 @@
           "options": {
             "browser": "projects/mobile-terminal/src/main.ts",
             "tsConfig": "projects/mobile-terminal/tsconfig.app.json",
+            "polyfills": [],
             "inlineStyleLanguage": "less",
             "assets": [
               {
@@ -350,6 +353,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
+            "runnerConfig": "vitest.config.ts",
             "reporters": [
               "default",
               "github-actions"
@@ -377,6 +381,7 @@
           "options": {
             "browser": "projects/admin-terminal/src/main.ts",
             "tsConfig": "projects/admin-terminal/tsconfig.app.json",
+            "polyfills": [],
             "inlineStyleLanguage": "less",
             "assets": [
               {
@@ -518,6 +523,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
+            "runnerConfig": "vitest.config.ts",
             "reporters": [
               "default",
               "github-actions"
@@ -554,6 +560,7 @@
           "options": {
             "buildTarget": "desktop-terminal:build:development",
             "tsConfig": "projects/terminal-core-lib/tsconfig.spec.json",
+            "runnerConfig": "vitest.config.ts",
             "reporters": [
               "default",
               "github-actions"
@@ -590,6 +597,7 @@
           "options": {
             "buildTarget": "desktop-terminal:build:development",
             "tsConfig": "projects/terminal-widgets-lib/tsconfig.spec.json",
+            "runnerConfig": "vitest.config.ts",
             "reporters": [
               "default",
               "github-actions"
