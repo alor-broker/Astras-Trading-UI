@@ -34,7 +34,7 @@
           <span class="position-relative z-3 px-2 text-nowrap">
             @if (vm.settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix) {
               <ats-short-number [allowRounding]="true"
-                                [value]="$safeNavigationMigration(item?.volume)"/>
+                                [value]="item?.volume ?? null"/>
             } @else {
               <span>{{ item?.volume }}</span>
             }

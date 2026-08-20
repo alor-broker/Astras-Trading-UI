@@ -11,7 +11,7 @@
   <ng-template #header>
     <div class="header">
       <span>{{ currentVersion?.id }}</span>
-      <span [nzType]="'secondary'" class="ml-8" nz-typography>{{ $safeNavigationMigration(currentVersion?.createdAt) | date: 'dd.MM.yyyy' }}</span>
+      <span [nzType]="'secondary'" class="ml-8" nz-typography>{{ currentVersion?.createdAt | date: 'dd.MM.yyyy' }}</span>
     </div>
   </ng-template>
   <ng-container *nzModalContent>
@@ -72,4 +72,3 @@
     </div>
   </ng-container>
 </nz-modal>
-

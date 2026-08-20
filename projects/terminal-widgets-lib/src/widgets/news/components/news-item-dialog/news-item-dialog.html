@@ -13,6 +13,6 @@
     <div class="header">{{ targetNewsItem?.header }}</div>
   </ng-template>
   <ng-container *nzModalContent>
-    <div [innerHTML]="$safeNavigationMigration(targetNewsItem?.content)" class="scrollable show-scroll"></div>
+    <div [innerHTML]="targetNewsItem?.content ?? ''" class="scrollable show-scroll"></div>
   </ng-container>
 </nz-modal>

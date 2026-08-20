@@ -24,7 +24,7 @@
                   <nz-form-label nzFor="exchange" nzRequired>{{ t('scalperOrderBookSettings.exchangeLabel') }}
                   </nz-form-label>
                   <nz-form-control>
-                    <input [value]="$safeNavigationMigration(form.value.instrument?.exchange)" nz-input readonly type="text"/>
+                    <input [value]="form.value.instrument?.exchange ?? ''" nz-input readonly type="text"/>
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>

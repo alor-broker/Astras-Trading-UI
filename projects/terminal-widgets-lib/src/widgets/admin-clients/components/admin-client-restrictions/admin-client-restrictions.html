@@ -16,7 +16,7 @@
             nzSpinning="true"
           />
           <span
-            class="mt-10 heading-color">{{ t('adminClientsAdminClientRestrictions.loadingText', {clientName: $safeNavigationMigration(targetClient()?.clientName)}) }}
+            class="mt-10 heading-color">{{ t('adminClientsAdminClientRestrictions.loadingText', {clientName: targetClient()?.clientName ?? ''}) }}
             ...</span>
         </div>
       } @else {
@@ -88,4 +88,3 @@
     </div>
   </nz-modal>
 </ng-container>
-

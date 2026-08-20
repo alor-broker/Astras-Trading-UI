@@ -123,7 +123,7 @@
                   [nzMaxTagCount]="10"
                   [nzMaxTagPlaceholder]="tagPlaceHolder"
                   [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
-                  [valueChanges]="$safeNavigationMigration(form!.get('stopOrdersColumns')?.valueChanges)"
+                  [valueChanges]="form.controls.stopOrdersColumns.valueChanges"
                   atsRemoveSelectTitles
                   formControlName="stopOrdersColumns"
                   nzMode="multiple"

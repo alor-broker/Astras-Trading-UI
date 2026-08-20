@@ -24,11 +24,11 @@
                            [fixedHeader]="true"
                            [itemsCount]="settings.itemsCount"
                            [marketFilters]="{
-        targetMarkets: $safeNavigationMigration(settings.marketFilters?.targetMarkets),
-        ignoredBoards: $safeNavigationMigration(settings.marketFilters?.ignoredBoards),
-        instrumentTypes: $safeNavigationMigration(settings.marketFilters?.instrumentTypes),
-        minTradeAmount: $safeNavigationMigration(settings.marketFilters?.minTradeAmount),
-        minCapitalization: $safeNavigationMigration(settings.marketFilters?.minCapitalization)
+        targetMarkets: settings.marketFilters?.targetMarkets,
+        ignoredBoards: settings.marketFilters?.ignoredBoards,
+        instrumentTypes: settings.marketFilters?.instrumentTypes,
+        minTradeAmount: settings.marketFilters?.minTradeAmount,
+        minCapitalization: settings.marketFilters?.minCapitalization
         }"
                            [sectors]="settings.displaySectors"
                            [showMoreButton]="false"

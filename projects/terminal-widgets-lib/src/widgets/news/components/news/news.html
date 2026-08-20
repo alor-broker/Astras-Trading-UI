@@ -42,6 +42,6 @@
 
 <ats-news-item-dialog [newsItem]="selectedNewsListItem"/>
 <ats-news-filters (closed)="applyAllFilters($event)"
-                  [currentFilters]="$safeNavigationMigration((settings$ | async)?.allNewsFilters)"
+                  [currentFilters]="(settings$ | async)?.allNewsFilters ?? null"
                   [isVisible]="isAllFiltersVisible"
 />

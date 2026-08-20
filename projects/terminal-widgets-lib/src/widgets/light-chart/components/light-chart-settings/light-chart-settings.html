@@ -22,7 +22,7 @@
             <nz-form-item>
               <nz-form-control>
                 <nz-form-label nzFor="exchange" nzRequired>{{ t('lightChartSettings.exchangeLabel') }}</nz-form-label>
-                <input [value]="$safeNavigationMigration(form.value.instrument?.exchange)" disabled nz-input type="text"/>
+                <input [value]="form.value.instrument?.exchange ?? ''" disabled nz-input type="text"/>
               </nz-form-control>
             </nz-form-item>
           }
