@@ -11,11 +11,32 @@ export interface IdeaSymbol {
   shortName?: string;
 }
 
-export interface Idea {
+export enum IdeaResponseFormat {
+  HtmlBody = 'html_body',
+  StructuredJson = 'structured_json',
+}
+
+export interface IdeaHtmlBodyResponse {
+  format: IdeaResponseFormat.HtmlBody;
   title: string;
   body: string;
-  symbols: IdeaSymbol[];
 }
+
+export interface IdeaStructuredResponse {
+  format: IdeaResponseFormat.StructuredJson;
+  id: string;
+  title: string;
+  description: string;
+  ticker: string;
+  exchange: string;
+  company: string;
+  forecast: string;
+  buyPrice: string;
+  sellPrice: string;
+  validUntil: string;
+}
+
+export type IdeaResponse = IdeaHtmlBodyResponse | IdeaStructuredResponse;
 
 export interface PageState {
   currentPage: number;
@@ -27,7 +48,7 @@ export interface PageState {
 }
 
 export interface IdeasPagedResponse extends PageState {
-  list: Idea[];
+  list: IdeaResponse[];
 }
 
 export interface InvestIdeasUrlProvider {

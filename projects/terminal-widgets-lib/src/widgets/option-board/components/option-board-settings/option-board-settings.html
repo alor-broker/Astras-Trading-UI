@@ -17,7 +17,7 @@
       <nz-form-item>
         <nz-form-label nzFor="exchange" nzRequired>{{ t('form.exchange.label') }}</nz-form-label>
         <nz-form-control>
-          <input [value]="form.value.instrument?.exchange" disabled nz-input type="text"/>
+          <input [value]="form.value.instrument?.exchange ?? ''" disabled nz-input type="text"/>
         </nz-form-control>
       </nz-form-item>
       <nz-collapse [nzBordered]="false" nzGhost>

@@ -677,6 +677,10 @@ export class AllInstruments extends LazyLoadingBaseTable<
         return;
       }
 
+      if(res.pageInfo != null && res.pageInfo.endCursor == null) {
+        return;
+      }
+
       const newInstruments = res.edges?.map((ie: InstrumentsEdge) => ({
         ...ie.node,
         id: ie.cursor

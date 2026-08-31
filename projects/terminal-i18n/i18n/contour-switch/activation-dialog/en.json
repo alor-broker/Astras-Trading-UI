@@ -8,6 +8,38 @@
     "activationUnavailable": "Activation is unavailable",
     "tradingUnavailable": "Trading is temporarily unavailable",
     "activationFailed": "Failed to activate contour"
+  },
+  "disclaimer": {
+    "greeting": "Dear client!",
+    "confirmationPrefix": "By clicking",
+    "activateButtonUppercase": "ACTIVATE",
+    "confirmationSuffix": ", you confirm the switch of trading operations to the selected ASTRAS terminal contour.",
+    "afterActivation": "After activation:",
+    "afterActivationItems": {
+      "tradingAvailable": "trading operations will become available on the selected contour;",
+      "otherContourBlocked": "trading operations on the other contour will be blocked;",
+      "simultaneousTradingUnavailable": "trading through the primary and reserve contours at the same time is not possible."
+    },
+    "switchingPrefix": "To switch to another contour, open its page and click",
+    "activateButton": "Activate",
+    "switchingMiddle": "next to the message",
+    "tradingBlocked": "Trading is blocked",
+    "switchingSuffix": "You may need to refresh the page with F5 before activation.",
+    "blockedOrderIntro": "When you attempt to place an order on a blocked contour, the terminal will display the message:",
+    "blockedOrderError": "Order placement error (Access is blocked on the current contour)",
+    "importantLabel": "Important:",
+    "importantText": "after each switch, trading becomes available on the activated contour and is blocked on the other one. If contours are switched too frequently, the terminal may impose a temporary restriction and ask you to try activation again later.",
+    "reserveIntroPrefix": "The following specifics apply when using the",
+    "reserveContour": "reserve contour",
+    "reserveIntroSuffix": ":",
+    "reserveItems": {
+      "stopOrdersUnavailable": "conditional orders are unavailable;",
+      "stopOrdersHidden": "conditional orders created on the primary contour are not displayed;",
+      "orderDelay": "an additional delay of 100 to 200 milliseconds applies to order operations;",
+      "marketDataInterval": "market data updates over WebSocket arrive once every 5 seconds."
+    },
+    "finalConfirmationPrefix": "By clicking",
+    "finalConfirmationSuffix": ", you confirm that you have read and understood the contour switching procedure and the specifics of using the reserve contour."
   }
 }
 

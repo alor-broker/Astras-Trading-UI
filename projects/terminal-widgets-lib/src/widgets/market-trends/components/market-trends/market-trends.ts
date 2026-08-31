@@ -29,6 +29,7 @@ import {
   PercentPipe
 } from "@angular/common";
 import {LetDirective} from "@ngrx/component";
+import {NzContextMenuService} from "ng-zorro-antd/dropdown";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
@@ -60,6 +61,7 @@ import {ApplicationStatusService} from '@terminal-core-lib/common/services/appli
 import {withRefresh} from '@terminal-core-lib/common/utils/observable/with-refresh';
 import {InputMaybe} from '@terminal-core-lib/features/news/graphql/schema/graphql.types';
 import {InstrumentIcon} from '@terminal-core-lib/common/components/instrument-icon/instrument-icon';
+import {AddToWatchlistMenu} from '@terminal-core-lib/features/watchlist/components/add-to-watchlist-menu/add-to-watchlist-menu';
 
 export interface DisplayParams {
   growOrder: SortEnumType;
@@ -90,7 +92,8 @@ export interface MarketFilters {
     NzTabComponent,
     NzTypographyComponent,
     NzTabsComponent,
-    InstrumentIcon
+    InstrumentIcon,
+    AddToWatchlistMenu
   ],
   templateUrl: './market-trends.html',
   styleUrl: './market-trends.less',
@@ -127,6 +130,8 @@ export class MarketTrends implements OnInit {
   readonly showMore = output<DisplayParams>();
 
   private readonly graphQlService = inject(GraphQlService);
+
+  private readonly nzContextMenuService = inject(NzContextMenuService);
 
   private readonly applicationStatusService = inject(ApplicationStatusService);
 
@@ -204,6 +209,17 @@ export class MarketTrends implements OnInit {
       exchange: item.basicInformation.exchange,
       instrumentGroup: item.boardInformation.board
     };
+  }
+
+  protected openContextMenu($event: MouseEvent, menu: AddToWatchlistMenu, item: InstrumentInfoType): void {
+    this.nzContextMenuService.close(true);
+
+    const menuRef = menu.menuRef();
+    if (menuRef != null) {
+      menu.itemToAdd.set(this.toInstrumentKey(item));
+
+      this.nzContextMenuService.create($event, menuRef);
+    }
   }
 
   protected processShowMore(): void {

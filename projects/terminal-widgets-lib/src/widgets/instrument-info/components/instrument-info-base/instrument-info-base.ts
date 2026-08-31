@@ -1,7 +1,8 @@
 import {
   Component,
   input,
-  output
+  output,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 
@@ -12,6 +13,7 @@ export interface TargetInstrumentKey {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: '',
 })
 export class InstrumentInfoBase {

@@ -1,6 +1,18 @@
 atsd-ai-chat-chat-suggested-message-container {
   display: flex;
   flex-direction: row-reverse;
+  animation: flyIn 200ms ease-out;
+
+  @keyframes flyIn {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
 
   .content-body {
     cursor: pointer;

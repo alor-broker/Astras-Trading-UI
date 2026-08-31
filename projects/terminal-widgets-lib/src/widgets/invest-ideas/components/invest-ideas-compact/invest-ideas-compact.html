@@ -8,22 +8,28 @@
               <div class="mb-10">
                 <span class="fs-6 heading-color" nz-typography nzEllipsis>{{ idea.title }}</span>
               </div>
-              <div>
-                <p [nzEllipsisRows]="3" nz-typography nzEllipsis>{{ idea.body }}</p>
-              </div>
-              <div class="d-flex flex-row flex-nowrap justify-content-start flex-gap-10">
-                @for (instrument of idea.instruments; track instrument) {
-                  @if ($index < 4) {
-                    @if (instrument | async; as instrumentInfo) {
-                      <div class="d-flex flex-column align-items-center flex-gap-5 symbol">
-                        <ats-instrument-icon [symbol]="instrumentInfo.symbol" shape="rounded-square"
-                                             size="large"/>
-                        <span class="heading-color" nz-typography nzEllipsis>{{ instrumentInfo.shortName }}</span>
-                      </div>
-                    }
-                  }
-                }
-              </div>
+
+              @if (idea.format === IdeaResponseFormat.HtmlBody) {
+                <div>
+                  <p [nzEllipsisRows]="8" nz-typography nzEllipsis>{{ idea.body }}</p>
+                </div>
+              } @else {
+                <div>
+                  <ats-idea-metrics [idea]="idea"/>
+                </div>
+                <div
+                  class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5 overflow-hidden">
+                  <ats-instrument-icon [symbol]="idea.ticker" size="large"/>
+                  <div class="d-flex flex-column overflow-hidden">
+                          <span
+                            class="heading-color"
+                            nz-typography
+                            nzEllipsis>{{ idea.company }}</span>
+                    <span nz-typography nzEllipsis>{{ idea.ticker }}</span>
+                  </div>
+                </div>
+              }
+
             </div>
           </div>
         }

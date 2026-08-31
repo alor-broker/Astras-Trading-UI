@@ -17,6 +17,7 @@ import {AsyncPipe} from '@angular/common';
 import {WidgetHeader} from '@terminal-widgets-lib/common/components/widget-header/widget-header';
 import {WatchlistSettings} from '@terminal-widgets-lib/widgets/watchlists/components/watchlist-settings/watchlist-settings';
 import {WatchlistView} from '@terminal-widgets-lib/widgets/watchlists/components/watchlist-view/watchlist-view';
+import {WatchlistService} from '@terminal-widgets-lib/widgets/watchlists/services/watchlist.service';
 
 @Component({
   selector: 'ats-watchlists-widget',
@@ -29,6 +30,9 @@ import {WatchlistView} from '@terminal-widgets-lib/widgets/watchlists/components
     WatchlistView
   ],
   templateUrl: './watchlists-widget.html',
+  providers: [
+    WatchlistService
+  ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

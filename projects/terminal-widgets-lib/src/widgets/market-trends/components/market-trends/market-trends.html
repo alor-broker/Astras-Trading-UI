@@ -52,7 +52,11 @@
 
         <tbody>
           @for (item of vm.displayItems.nodes; track trackBy(item)) {
-            <tr (click)="instrumentSelected.emit(toInstrumentKey(item))" class="item">
+            <tr
+              (click)="instrumentSelected.emit(toInstrumentKey(item))"
+              (contextmenu)="openContextMenu($event, contextMenu, item)"
+              class="item"
+            >
               <td class="text-start">
                 <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
                   <ats-instrument-icon [symbol]="item.basicInformation.symbol" size="large"/>
@@ -97,6 +101,8 @@
         {{ t('marketTrendsMarketTrends.moreItemsButton.title') }}
       </button>
     }
+
+    <ats-add-to-watchlist-menu #contextMenu/>
 
   </ng-container>
 

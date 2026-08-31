@@ -164,6 +164,7 @@ export class SettingsBrokerService {
 
     if (terminalSettings == null) {
       this.terminalSettingsService.init(null);
+      this.setTerminalSettingsDefaults();
       this.globalLoadingIndicatorService.releaseLoading(loadingId);
       return;
     }
@@ -178,8 +179,18 @@ export class SettingsBrokerService {
       take(1)
     ).subscribe(x => {
         this.terminalSettingsService.init(x.updatedData);
+      this.setTerminalSettingsDefaults();
         this.globalLoadingIndicatorService.releaseLoading(loadingId);
       }
+    );
+  }
+
+  private setTerminalSettingsDefaults(): void {
+    this.terminalSettingsService.updateSettings(
+      {
+        badgesBind: false
+      },
+      false
     );
   }
 }

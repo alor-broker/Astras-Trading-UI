@@ -7,7 +7,8 @@
   InputSignal,
   OnInit,
   output,
-  viewChild
+  viewChild,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {WidgetSettings} from '@terminal-core-lib/features/widget-settings/widget-settings.types';
 import {
@@ -33,6 +34,7 @@ export interface WidgetSettingsForm {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class WidgetSettingsBase<T extends WidgetSettings> implements WidgetSettingsForm, OnInit, WidgetSettingsEditorRef {

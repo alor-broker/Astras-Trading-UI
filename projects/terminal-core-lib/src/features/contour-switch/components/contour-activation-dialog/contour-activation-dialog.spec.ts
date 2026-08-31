@@ -25,6 +25,7 @@ interface DialogAccessor {
   cooldownSeconds: () => number | null;
   isActionDisabled: () => boolean;
   isActionVisible: () => boolean;
+  isDisclaimerVisible: () => boolean;
   activateCurrentContour(): void;
   close(): void;
 }
@@ -88,6 +89,7 @@ describe('ContourActivationDialog', () => {
     expect(component.resultStatus()).toBe('warning');
     expect(component.isActionDisabled()).toBe(false);
     expect(component.isActionVisible()).toBe(true);
+    expect(component.isDisclaimerVisible()).toBe(true);
   });
 
   it('should show activated state when activation succeeds', () => {
@@ -103,6 +105,7 @@ describe('ContourActivationDialog', () => {
     expect(component.resultStatus()).toBe('success');
     expect(component.isActionDisabled()).toBe(true);
     expect(component.isActionVisible()).toBe(false);
+    expect(component.isDisclaimerVisible()).toBe(false);
   });
 
   it('should disable action while activation request is pending', () => {

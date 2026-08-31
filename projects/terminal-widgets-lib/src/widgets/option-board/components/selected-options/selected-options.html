@@ -18,7 +18,7 @@
           [nzFrontPagination]="false"
           [nzLoading]="isLoading$ | async"
           [nzNoResult]="empty"
-          [nzScroll]="{ y: vm.contentSize?.height + 'px' }"
+          [nzScroll]="{ y: vm.contentSize?.height != null ? vm.contentSize.height + 'px' : null }"
           [nzShowPagination]="false"
           atsTableRowHeight
         >

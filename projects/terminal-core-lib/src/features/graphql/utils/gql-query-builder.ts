@@ -1,8 +1,8 @@
 ﻿import {ZodPropertiesOf} from './zod-types.helper';
 import {ZodObject} from 'zod/v3';
-import VariableOptions from "gql-query-builder/build/VariableOptions";
 import {GqlFieldsExtractor} from './gql-fields-extractor';
 import * as queryBuilder from 'gql-query-builder';
+import {VariableOptions} from 'gql-query-builder';
 
 export type Variables = VariableOptions;
 

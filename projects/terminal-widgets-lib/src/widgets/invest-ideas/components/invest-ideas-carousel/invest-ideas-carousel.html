@@ -10,7 +10,7 @@
       </span>
     }
 
-    <div class="h-100 overflow-hidden mx-15">
+    <div class="h-100 overflow-hidden mx-20">
       <nz-carousel
         #carousel
         [nzDotPosition]="'top'"
@@ -25,36 +25,53 @@
                 <div class="mb-10">
                   <span class="fs-6 heading-color" nz-typography nzEllipsis>{{ idea.title }}</span>
                 </div>
-                <div>
-                  <p
-                    (click)="selectedIdea.set(idea)"
-                    [nzEllipsisRows]="3"
-                    class="cursor-pointer user-select-none"
-                    nz-typography
-                    nzEllipsis
-                  >
-                    {{ idea.body }}
-                  </p>
-                </div>
 
-                <div class="flex-fill d-flex flex-column flex-gap-10 show-scroll">
-                  @for (symbol of idea.symbols; track symbol) {
-                    <div
-                      (click)="instrumentSelected.emit({symbol: symbol.ticker, exchange: symbol.exchange})"
-                      class="symbol p-5 cursor-pointer"
+                @if (idea.format === IdeaResponseFormat.HtmlBody) {
+                  <div>
+                    <p
+                      [nzEllipsisRows]="10"
+                      class="cursor-pointer user-select-none"
+                      nz-typography
+                      nzEllipsis
+                      (click)="selectedIdea.set(idea)"
                     >
-                      <div
-                        class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5 overflow-hidden">
-                        <ats-instrument-icon [symbol]="symbol.ticker" size="large"/>
-                        <div class="d-flex flex-column overflow-hidden">
-                          <span class="heading-color" nz-typography
-                                nzEllipsis>{{ symbol.shortName ?? symbol.ticker }}</span>
-                          <span nz-typography nzEllipsis>{{ symbol.ticker }}</span>
-                        </div>
+                      {{ idea.body }}
+                    </p>
+                  </div>
+                } @else {
+                  <div>
+                    <ats-idea-metrics [idea]="idea"/>
+                  </div>
+
+                  <div>
+                    <p
+                      [nzEllipsisRows]="3"
+                      class="cursor-pointer user-select-none"
+                      nz-typography
+                      nzEllipsis
+                      (click)="selectedIdea.set(idea)"
+                    >
+                      {{ idea.description }}
+                    </p>
+                  </div>
+
+                  <div
+                    (click)="instrumentSelected.emit({symbol: idea.ticker, exchange: idea.exchange}); $event.stopPropagation()"
+                    class="symbol p-5 cursor-pointer"
+                  >
+                    <div
+                      class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5 overflow-hidden">
+                      <ats-instrument-icon [symbol]="idea.ticker" size="large"/>
+                      <div class="d-flex flex-column overflow-hidden">
+                          <span
+                            class="heading-color"
+                            nz-typography
+                            nzEllipsis>{{ idea.company }}</span>
+                        <span nz-typography nzEllipsis>{{ idea.ticker }}</span>
                       </div>
                     </div>
-                  }
-                </div>
+                  </div>
+                }
               </div>
             </div>
           </div>

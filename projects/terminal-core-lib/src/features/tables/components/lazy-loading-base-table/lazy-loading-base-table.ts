@@ -1,6 +1,7 @@
 import {
   Component,
-  signal
+  signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   BaseTableComponent,
@@ -9,6 +10,7 @@ import {
 import {toObservable} from '@angular/core/rxjs-interop';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class LazyLoadingBaseTable<

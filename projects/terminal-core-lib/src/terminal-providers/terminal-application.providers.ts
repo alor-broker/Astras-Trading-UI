@@ -11,7 +11,8 @@ import hy from '@angular/common/locales/hy';
 import ru from '@angular/common/locales/ru';
 import {
   provideHttpClient,
-  withInterceptorsFromDi
+  withInterceptorsFromDi,
+  withXhr
 } from '@angular/common/http';
 import {
   provideRouter,
@@ -46,6 +47,7 @@ import {provideWidgetSettingsStorage} from '@terminal-core-lib/features/widget-s
 import {provideWidgetLocalState} from '@terminal-core-lib/features/widget-local-state/widget-local-state.providers';
 // DO NOT REMOVE. This import is required for chart.js
 import 'chartjs-adapter-date-fns';
+import {provideNzDateFnsAdapter} from 'ng-zorro-antd/core/time';
 
 export type TerminalApplicationProvider = Provider | EnvironmentProviders;
 
@@ -96,7 +98,8 @@ export class TerminalApplicationProvidersBuilder {
       ),
       provideAnimationsAsync(),
       provideNzI18n(ru_RU),
-      provideHttpClient(withInterceptorsFromDi()),
+      provideNzDateFnsAdapter(),
+      provideHttpClient(withXhr(), withInterceptorsFromDi()),
       {
         provide: Window,
         useValue: window

@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t; scope: 'order-commands/order-submit-settings'">
     @if (deviceInfo$ | async; as deviceInfo) {
-      <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+      <form [formGroup]="form" [nzLayout]="'vertical'" nz-form class="settings-form">
         @if (!deviceInfo.isMobile) {
           <nz-form-item>
             <nz-form-label nzFor="instrument" nzRequired>{{ t('orderCommandsOrderSubmitSettings.tickerLabel') }}
@@ -23,7 +23,7 @@
             <nz-form-label nzFor="exchange" nzRequired>{{ t('orderCommandsOrderSubmitSettings.exchangeLabel') }}
             </nz-form-label>
             <nz-form-control>
-              <input [value]="form.value.instrument?.exchange" disabled nz-input type="text"/>
+              <input [value]="form.value.instrument?.exchange ?? ''" disabled nz-input type="text"/>
             </nz-form-control>
           </nz-form-item>
         }
@@ -38,7 +38,8 @@
         @if (form.getRawValue().enableLimitOrdersFastEditing) {
           <nz-form-item>
             <nz-collapse [nzBordered]="false" nzGhost>
-              <nz-collapse-panel [nzActive]="true" [nzDisabled]="!form.controls.limitOrderPriceMoveSteps.valid"
+              <nz-collapse-panel [nzActive]="true"
+                                 [nzCollapsible]="!form.controls.limitOrderPriceMoveSteps.valid ? 'disabled' : 'header'"
                                  [nzHeader]="t('orderCommandsOrderSubmitSettings.denominationSettings')">
                 <nz-form-item>
                   <span nz-typography nzType="secondary">
@@ -99,7 +100,8 @@
         @if (form.getRawValue().showVolumePanel) {
           <nz-form-item>
             <nz-collapse [nzBordered]="false" nzGhost>
-              <nz-collapse-panel [nzActive]="true" [nzDisabled]="!form.controls.workingVolumes.valid"
+              <nz-collapse-panel [nzActive]="true"
+                                 [nzCollapsible]="!form.controls.workingVolumes.valid ? 'disabled' : 'header'"
                                  [nzHeader]="t('orderCommandsOrderSubmitSettings.volumeSettings')">
                 <nz-form-item>
                   <span nz-typography nzType="secondary">

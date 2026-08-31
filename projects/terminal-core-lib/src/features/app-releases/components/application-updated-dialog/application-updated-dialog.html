@@ -9,7 +9,10 @@
   nzClassName="ats-application-updated-dialog"
 >
   <ng-template #header>
-    <div class="header">{{ currentVersion?.id }}</div>
+    <div class="header">
+      <span>{{ currentVersion?.id }}</span>
+      <span [nzType]="'secondary'" class="ml-8" nz-typography>{{ currentVersion?.createdAt | date: 'dd.MM.yyyy' }}</span>
+    </div>
   </ng-template>
   <ng-container *nzModalContent>
     <p>
@@ -69,4 +72,3 @@
     </div>
   </ng-container>
 </nz-modal>
-

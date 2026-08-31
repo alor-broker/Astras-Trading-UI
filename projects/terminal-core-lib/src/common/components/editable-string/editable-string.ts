@@ -35,7 +35,8 @@ import {
 } from 'ng-zorro-antd/form';
 import {
   NzInputDirective,
-  NzInputGroupComponent
+  NzInputSuffixDirective,
+  NzInputWrapperComponent
 } from 'ng-zorro-antd/input';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -49,10 +50,11 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
     NzFormDirective,
     ReactiveFormsModule,
     NzFormControlComponent,
-    NzInputGroupComponent,
     NzInputDirective,
+    NzInputWrapperComponent,
     NzIconDirective,
-    NzButtonComponent
+    NzButtonComponent,
+    NzInputSuffixDirective
   ],
   templateUrl: './editable-string.html',
   styleUrl: './editable-string.less',
