@@ -11,8 +11,8 @@ import {
 import {
   BehaviorSubject,
   combineLatest,
+  defer,
   delay,
-  fromEvent,
   NEVER,
   Observable,
   of,
@@ -105,8 +105,6 @@ export class SetupInstrumentNotifications implements OnInit, OnDestroy {
 
   readonly isLoading$ = new BehaviorSubject(false);
 
-  readonly refresh$ = new BehaviorSubject(null);
-
   readonly lessMore = Condition;
 
   instrument$!: Observable<Instrument>;
@@ -145,37 +143,14 @@ export class SetupInstrumentNotifications implements OnInit, OnDestroy {
 
   private readonly instrumentKeyChanges$ = toObservable(this.instrumentKey).pipe(shareReplay(1));
 
-  private readonly activeChanges$ = toObservable(this.active);
-
   ngOnDestroy(): void {
     this.isLoading$.complete();
-    this.refresh$.complete();
   }
 
   ngOnInit(): void {
     this.initInstrument();
     this.initNotificationStatusCheck();
     this.initCurrentInstrumentSubscriptions();
-    this.initNotificationsUpdateSubscription();
-
-    this.pushNotificationsService.subscriptionsUpdated$.pipe(
-      filter(x => x == null || x === PushSubscriptionType.PriceSpark),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.refresh$.next(null);
-    });
-
-    this.pushNotificationsService.getMessages()
-      .pipe(
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => this.refresh$.next(null));
-
-    this.activeChanges$.pipe(
-      filter(x => x),
-      takeUntilDestroyed(this.destroyRef)
-    )
-      .subscribe(() => this.refresh$.next(null));
 
     combineLatest({
       initialValues: of(this.initialValues()),
@@ -206,8 +181,11 @@ export class SetupInstrumentNotifications implements OnInit, OnDestroy {
     this.isLoading$.next(true);
     this.pushNotificationsService.cancelSubscription(id).pipe(
       take(1)
-    ).subscribe(() =>
-      this.refresh$.next(null));
+    ).subscribe(result => {
+      if (!result) {
+        this.isLoading$.next(false);
+      }
+    });
   }
 
   addSubscription(): void {
@@ -231,9 +209,12 @@ export class SetupInstrumentNotifications implements OnInit, OnDestroy {
         });
       }),
       take(1)
-    ).subscribe(() => {
-      this.newPriceChangeSubscriptionForm.reset();
-      this.refresh$.next(null);
+    ).subscribe(result => {
+      if (result) {
+        this.newPriceChangeSubscriptionForm.reset();
+      } else {
+        this.isLoading$.next(false);
+      }
     });
   }
 
@@ -249,26 +230,26 @@ export class SetupInstrumentNotifications implements OnInit, OnDestroy {
       this.isNotificationsAllowed$.pipe(
         filter(x => x),
         delay(0), // Needs to prevent ExpressionChangedAfterItHasBeenChecked error
-        switchMap(() => this.refresh$),
-        switchMap(() => this.instrumentKeyChanges$),
-        tap(() => this.isLoading$.next(true)),
-        mapWith(instrumentKey => {
-            if (!instrumentKey) {
-              return of([]);
-            }
-
-            return this.pushNotificationsService.getCurrentSubscriptions();
-          },
-          (instrumentKey, allSubscriptions) => {
-            return (allSubscriptions ?? [])
-              .filter(x => x.subscriptionType === PushSubscriptionType.PriceSpark)
-              .map(x => x as PriceSparkSubscription)
-              .filter(x => x.instrument === instrumentKey?.symbol
-                && x.exchange === instrumentKey.exchange
-                && (!(instrumentKey.instrumentGroup ?? '') || instrumentKey.instrumentGroup === x.board))
-              .sort((a, b) => this.sortSubscriptions(a, b));
+        switchMap(() => defer(() => {
+          this.isLoading$.next(true);
+          return combineLatest({
+            instrumentKey: this.instrumentKeyChanges$,
+            allSubscriptions: this.pushNotificationsService.getCurrentSubscriptions()
+          });
+        })),
+        map(({instrumentKey, allSubscriptions}) => {
+          if (!instrumentKey) {
+            return [];
           }
-        ),
+
+          return (allSubscriptions ?? [])
+            .filter(x => x.subscriptionType === PushSubscriptionType.PriceSpark)
+            .map(x => x as PriceSparkSubscription)
+            .filter(x => x.instrument === instrumentKey.symbol
+              && x.exchange === instrumentKey.exchange
+              && (!(instrumentKey.instrumentGroup ?? '') || instrumentKey.instrumentGroup === x.board))
+            .sort((a, b) => this.sortSubscriptions(a, b));
+        }),
         tap(() => this.isLoading$.next(false))
       );
   }
@@ -292,14 +273,5 @@ export class SetupInstrumentNotifications implements OnInit, OnDestroy {
     }
 
     return priceCompare;
-  }
-
-  private initNotificationsUpdateSubscription(): void {
-    fromEvent(document, 'visibilitychange')
-      .pipe(
-        filter(() => document.visibilityState === 'visible'),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => this.refresh$.next(null));
   }
 }
