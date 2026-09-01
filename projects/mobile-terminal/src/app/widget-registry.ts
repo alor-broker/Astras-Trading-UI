@@ -19,6 +19,7 @@ import {AllInstrumentsWidget} from '@terminal-widgets-lib/widgets/all-instrument
 import {OptionBoardWidget} from '@terminal-widgets-lib/widgets/option-board/option-board-widget/option-board-widget';
 import {MobileHomeScreenWidget} from '@terminal-widgets-lib/widgets/mobile-home-screen/mobile-home-screen-widget/mobile-home-screen-widget';
 import {MobileTradeScreenWidget} from '@terminal-widgets-lib/widgets/mobile-trade-screen/mobile-trade-screen-widget/mobile-trade-screen-widget';
+import {AiSignalsWidget} from '@terminal-widgets-lib/widgets/ai-signals/ai-signals-widget/ai-signals-widget';
 
 /**
  * Registry of all widget components available in the mobile terminal.
@@ -41,6 +42,7 @@ const MOBILE_WIDGET_REGISTRY: Map<string, Type<unknown>> = new Map<string, Type<
   ['option-board', OptionBoardWidget],
   ['mobile-home-screen', MobileHomeScreenWidget],
   ['trade-screen', MobileTradeScreenWidget],
+  ['ai-signals', AiSignalsWidget],
   // Add new mobile widgets here
 ]);
 

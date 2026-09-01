@@ -1,0 +1,29 @@
+<ng-container *transloco="let t; scope: 'ai-signals/trade-plan-chart'">
+  <div class="d-flex flex-column flex-gap-5">
+    @if (chartSettings(); as settings) {
+      <div class="chart-container w-100">
+        <canvas [data]="settings.chartData"
+                [options]="settings.chartOptions"
+                baseChart
+                type="bar"
+        >
+        </canvas>
+      </div>
+    }
+
+    <div class="d-flex flex-row flex-wrap flex-gap-10">
+      @for (row of levelRows(); track row.labelKey) {
+        <span class="fs-9 text-nowrap">
+          <span class="level-label">{{ t('aiSignalsTradePlanChart.' + row.labelKey) }}:</span>
+          <span class="heading-color">{{ row.value | atsPrice }}</span>
+        </span>
+      }
+      @if (plan().riskRewardRatio != null) {
+        <span class="fs-9 text-nowrap">
+          <span class="level-label">{{ t('aiSignalsTradePlanChart.riskReward') }}:</span>
+          <span class="heading-color">{{ plan().riskRewardRatio | atsPrice: 2 }}</span>
+        </span>
+      }
+    </div>
+  </div>
+</ng-container>
