@@ -58,6 +58,8 @@
 
 Пример виджета для ориентира: `projects/terminal-widgets-lib/src/widgets/orders-basket`.
 
+Для новых и мигрированных виджетов содержимое `WidgetSkeleton` передавай через именованные projection-slot'ы: `atsWidgetHeader`, `atsWidgetContent` и, для нового редактора настроек, `atsWidgetSettingsEditor`. Инпуты `[header]`, `[content]`, `[settings]` и `[showSettings]`, принимающие `TemplateRef`, являются deprecated fallback для legacy-виджетов.
+
 ## Структура папки виджета
 
 Каждому виджету соответствует отдельная папка. Она может содержать:

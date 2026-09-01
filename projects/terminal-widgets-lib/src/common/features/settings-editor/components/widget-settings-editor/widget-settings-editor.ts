@@ -18,14 +18,14 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
 import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
-import {TranslatorService} from '@terminal-core-lib/features/translations/services/translator.service';
-import {WidgetsHelper} from '@terminal-widgets-lib/common/utils/widget-name.helper';
 import {WidgetSettingsGroup} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-group/widget-settings-group';
 import {WidgetSettingsLayoutDesktop} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-layout-desktop/widget-settings-layout-desktop';
 import {WidgetSettingsLayoutMobile} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-layout-mobile/widget-settings-layout-mobile';
+import {WidgetSettingsPlaceholder} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-placeholder/widget-settings-placeholder';
 import {WidgetSettingsDialogService} from '@terminal-widgets-lib/common/features/settings-editor/services/widget-settings-dialog.service';
 import {WidgetSettingsDialogHandle} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-dialog.types';
 import {WidgetSettingsAuxToggle} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-aux-toggle.types';
+import {WidgetSettingsEditorRef} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-editor-ref.types';
 
 /**
  * Device-agnostic widget settings editor. The widget just calls `open(trigger)`;
@@ -44,14 +44,18 @@ import {WidgetSettingsAuxToggle} from '@terminal-widgets-lib/common/features/set
   selector: 'ats-widget-settings-editor',
   imports: [
     WidgetSettingsLayoutDesktop,
-    WidgetSettingsLayoutMobile
+    WidgetSettingsLayoutMobile,
+    WidgetSettingsPlaceholder
   ],
   templateUrl: './widget-settings-editor.html',
-  styleUrl: './widget-settings-editor.less',
+  styleUrls: [
+    './widget-settings-editor.less',
+    '../../styles/widget-settings-controls.less'
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class WidgetSettingsEditor {
+export class WidgetSettingsEditor implements WidgetSettingsEditorRef {
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly canSave = input.required<boolean>();
@@ -59,6 +63,9 @@ export class WidgetSettingsEditor {
   readonly canCopy = input.required<boolean>();
 
   readonly showCopy = input(false);
+
+  /** Show an editor-owned placeholder in the widget while a desktop dialog is open. */
+  readonly showPlaceholder = input(false);
 
   /** Optional standardized aux toggles (icon + tooltip + id). Empty = no aux panel. */
   readonly auxToggles = input<readonly WidgetSettingsAuxToggle[]>([]);
@@ -69,49 +76,30 @@ export class WidgetSettingsEditor {
 
   readonly copyClick = output();
 
-  /** The editor content template — stamped into the desktop overlay or the mobile content slot. */
-  readonly contentTpl = viewChild.required<TemplateRef<unknown>>('contentTpl');
+  /** Desktop-only content stamped into the dialog overlay. */
+  private readonly desktopContentTpl = viewChild.required<TemplateRef<unknown>>('desktopContentTpl');
 
   /** Currently active aux toggle id (two-way); defaults to the first toggle. */
   protected readonly activeAuxToggle = model<string | null>(null);
 
   protected readonly groups = contentChildren(WidgetSettingsGroup, {descendants: true});
 
-  protected readonly navGroups = computed(() => this.groups().filter(group => group.effectiveVisible()));
-
-  protected readonly canLeaveCurrent = computed(() => this.activeGroup()?.isValid() ?? true);
+  protected readonly visibleGroups = computed(() => this.groups().filter(group => group.effectiveVisible()));
 
   protected readonly isMobile = toSignal(
     inject(DeviceService).deviceInfo$.pipe(map(info => info.isMobile)),
     {initialValue: false}
   );
 
-  private readonly selectedId = signal<string | null>(null);
-
-  protected readonly activeGroup = computed(() => {
-    const nav = this.navGroups();
-    const selected = this.selectedId();
-
-    return nav.find(group => group.groupId() === selected) ?? nav[0] ?? null;
-  });
-
-  private readonly translatorService = inject(TranslatorService);
-
-  protected readonly widgetName = computed(() => {
-    const meta = this.widgetInstance().widgetMeta;
-
-    return meta != null
-      ? WidgetsHelper.getWidgetName(meta.widgetName, this.translatorService.getActiveLang())
-      : '';
-  });
-
   private readonly opened = signal(false);
 
   /** Whether the editor is currently open (dialog on desktop, inline on mobile). */
   readonly isOpen = this.opened.asReadonly();
 
-  /** Open on mobile: the content is rendered inline by the widget (in the content slot). */
-  readonly isInlineOpen = computed(() => this.opened() && this.isMobile());
+  /** Whether the skeleton must hide the widget's regular content. */
+  readonly shouldHideWidgetContent = computed(() =>
+    this.opened() && (this.isMobile() || this.showPlaceholder())
+  );
 
   private readonly viewContainerRef = inject(ViewContainerRef);
 
@@ -137,7 +125,7 @@ export class WidgetSettingsEditor {
     if (!this.isMobile()) {
       this.dialogHandle = this.dialogService.open({
         trigger,
-        contentTpl: this.contentTpl(),
+        contentTpl: this.desktopContentTpl(),
         viewContainerRef: this.viewContainerRef,
         afterClosed: (): void => {
           this.opened.set(false);
@@ -151,14 +139,6 @@ export class WidgetSettingsEditor {
     this.opened.set(false);
     this.dialogHandle?.close();
     this.dialogHandle = null;
-  }
-
-  selectGroup(groupId: string): void {
-    if (!this.canLeaveCurrent()) {
-      return;
-    }
-
-    this.selectedId.set(groupId);
   }
 
   selectAuxToggle(id: string): void {

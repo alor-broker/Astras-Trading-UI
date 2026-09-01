@@ -1,13 +1,13 @@
 <ng-container *transloco="let t; scope: 'shared/widget-settings'">
-  <div class="ats-widget-settings-editor">
-    <header class="ats-widget-settings-editor__header">
-      <h3 class="ats-widget-settings-editor__title">
+  <div class="layout">
+    <header class="header">
+      <h3 class="title">
         {{ t('sharedWidgetSettings.dialogTitle', { widgetName: widgetName() }) }}
       </h3>
       <button
         (click)="cancelClick.emit()"
         [attr.aria-label]="t('cancelBtnText')"
-        class="ats-widget-settings-editor__close"
+        class="close"
         nz-button
         nzSize="small"
         nzType="text"
@@ -16,73 +16,33 @@
       </button>
     </header>
 
-    <div class="ats-widget-settings-editor__body">
+    <div class="body">
       @if (auxToggles().length > 0) {
-        <div class="ats-widget-settings-editor__aux">
-          @for (toggle of auxToggles(); track toggle.id) {
-            <button
-              (click)="auxToggleSelect.emit(toggle.id)"
-              [attr.aria-pressed]="toggle.id === activeAuxToggle()"
-              [class.active]="toggle.id === activeAuxToggle()"
-              [nzTooltipTitle]="toggle.tooltip"
-              class="ats-widget-settings-editor__aux-toggle"
-              nz-tooltip
-              nzTooltipPlacement="right"
-              type="button"
-            >
-              <span [nzType]="toggle.icon" nz-icon nzTheme="outline"></span>
-            </button>
-          }
-        </div>
+        <ats-widget-settings-aux-panel
+          (toggleSelect)="auxToggleSelect.emit($event)"
+          [activeToggle]="activeAuxToggle()"
+          [orientation]="AuxPanelOrientation.Vertical"
+          [toggles]="auxToggles()"
+        />
       }
 
       @if (hasGroups()) {
-        <div class="ats-widget-settings-editor__nav">
-          @for (group of navGroups(); track group.groupId()) {
-            @let isActive = activeGroup()?.groupId() === group.groupId();
-            @let isBlocked = !canLeaveCurrent() && !isActive;
-            <button
-              (click)="onGroupSelect(group, isActive)"
-              [attr.aria-disabled]="isBlocked"
-              [class.active]="isActive"
-              [class.disabled]="isBlocked"
-              [nzTooltipTitle]="isBlocked ? t('sharedWidgetSettings.invalidGroupTooltip') : ''"
-              class="ats-widget-settings-editor__nav-item"
-              nz-tooltip
-              nzTooltipPlacement="right"
-              type="button"
-            >
-              @if (group.icon(); as icon) {
-                <span [nzType]="icon" class="ats-widget-settings-editor__nav-icon" nz-icon nzTheme="outline"></span>
-              }
-              <span class="ats-widget-settings-editor__nav-title">{{ group.title() }}</span>
-              @if (!group.isValid()) {
-                <span class="ats-widget-settings-editor__nav-invalid" nz-icon nzTheme="outline" nzType="exclamation-circle"></span>
-              }
-            </button>
-          }
-        </div>
-
-        <div class="ats-widget-settings-editor__fields">
-          @if (activeGroup(); as group) {
-            <ng-container *ngTemplateOutlet="group.fieldsTpl()"/>
-          }
-        </div>
+        <ats-widget-settings-group-selector [groups]="groups()"/>
       } @else {
-        <div class="ats-widget-settings-editor__simple">
+        <div class="simple">
           <ng-container *ngTemplateOutlet="defaultContent()"/>
         </div>
       }
     </div>
 
-    <footer class="ats-widget-settings-editor__footer">
+    <footer class="footer">
       @if (showCopy()) {
         <button
           (click)="copyClick.emit()"
           [disabled]="!canCopy()"
           [nzTooltipMouseEnterDelay]="0.5"
           [nzTooltipTitle]="t('sharedWidgetSettings.copyTooltip')"
-          class="ats-widget-settings-editor__copy"
+          class="copy"
           nz-button
           nz-tooltip
           nzType="link"
@@ -92,7 +52,7 @@
         </button>
       }
 
-      <span class="ats-widget-settings-editor__spacer"></span>
+      <span class="spacer"></span>
 
       <button (click)="cancelClick.emit()" nz-button nzType="default">
         {{ t('cancelBtnText') }}

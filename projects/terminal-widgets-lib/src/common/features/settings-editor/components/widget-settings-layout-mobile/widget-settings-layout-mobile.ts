@@ -10,10 +10,10 @@ import {
 import {NgTemplateOutlet} from '@angular/common';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {WidgetSettingsGroup} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-group/widget-settings-group';
+import {WidgetSettingsAuxPanel} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-aux-panel/widget-settings-aux-panel';
 import {WidgetSettingsAuxToggle} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-aux-toggle.types';
+import {WidgetSettingsAuxPanelOrientation} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-aux-panel.types';
 
 /**
  * Mobile presentation of the settings editor: no title header (the widget header
@@ -27,8 +27,7 @@ import {WidgetSettingsAuxToggle} from '@terminal-widgets-lib/common/features/set
     NgTemplateOutlet,
     TranslocoDirective,
     NzButtonComponent,
-    NzIconDirective,
-    NzTooltipDirective
+    WidgetSettingsAuxPanel
   ],
   templateUrl: './widget-settings-layout-mobile.html',
   styleUrl: './widget-settings-layout-mobile.less',
@@ -40,7 +39,7 @@ export class WidgetSettingsLayoutMobile {
 
   readonly activeAuxToggle = input.required<string | null>();
 
-  readonly navGroups = input.required<readonly WidgetSettingsGroup[]>();
+  readonly groups = input.required<readonly WidgetSettingsGroup[]>();
 
   readonly defaultContent = input.required<TemplateRef<unknown> | null>();
 
@@ -50,5 +49,7 @@ export class WidgetSettingsLayoutMobile {
 
   readonly saveClick = output();
 
-  readonly hasGroups = computed(() => this.navGroups().length > 0);
+  protected readonly hasGroups = computed(() => this.groups().length > 0);
+
+  protected readonly AuxPanelOrientation = WidgetSettingsAuxPanelOrientation;
 }

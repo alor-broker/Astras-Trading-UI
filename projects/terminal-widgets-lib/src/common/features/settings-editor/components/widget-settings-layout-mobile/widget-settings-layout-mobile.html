@@ -1,43 +1,33 @@
 <ng-container *transloco="let t; scope: 'shared/widget-settings'">
-  <div class="ats-widget-settings-editor">
-    <div class="ats-widget-settings-editor__body">
+  <div class="layout">
+    <div class="body">
       @if (auxToggles().length > 0) {
-        <div class="ats-widget-settings-editor__aux">
-          @for (toggle of auxToggles(); track toggle.id) {
-            <button
-              (click)="auxToggleSelect.emit(toggle.id)"
-              [attr.aria-pressed]="toggle.id === activeAuxToggle()"
-              [class.active]="toggle.id === activeAuxToggle()"
-              [nzTooltipTitle]="toggle.tooltip"
-              class="ats-widget-settings-editor__aux-toggle"
-              nz-tooltip
-              nzTooltipPlacement="bottom"
-              type="button"
-            >
-              <span [nzType]="toggle.icon" nz-icon nzTheme="outline"></span>
-            </button>
-          }
-        </div>
+        <ats-widget-settings-aux-panel
+          (toggleSelect)="auxToggleSelect.emit($event)"
+          [activeToggle]="activeAuxToggle()"
+          [orientation]="AuxPanelOrientation.Horizontal"
+          [toggles]="auxToggles()"
+        />
       }
 
       @if (hasGroups()) {
-        <div class="ats-widget-settings-editor__sections">
-          @for (group of navGroups(); track group.groupId()) {
-            <section class="ats-widget-settings-editor__section">
-              <h4 class="ats-widget-settings-editor__section-title">{{ group.title() }}</h4>
+        <div class="sections">
+          @for (group of groups(); track group.groupId()) {
+            <section class="section">
+              <h4 class="section-title">{{ group.title() }}</h4>
               <ng-container *ngTemplateOutlet="group.fieldsTpl()"/>
             </section>
           }
         </div>
       } @else {
-        <div class="ats-widget-settings-editor__simple">
+        <div class="simple">
           <ng-container *ngTemplateOutlet="defaultContent()"/>
         </div>
       }
     </div>
 
-    <footer class="ats-widget-settings-editor__footer">
-      <span class="ats-widget-settings-editor__spacer"></span>
+    <footer class="footer">
+      <span class="spacer"></span>
       <button (click)="saveClick.emit()" [disabled]="!canSave()" nz-button nzType="primary">
         {{ t('saveBtnText') }}
       </button>

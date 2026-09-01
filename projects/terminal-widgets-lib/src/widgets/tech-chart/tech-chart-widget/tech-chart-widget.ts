@@ -28,6 +28,11 @@ import {TechChart} from '@terminal-widgets-lib/widgets/tech-chart/components/tec
 import {TechChartSettings} from '@terminal-widgets-lib/widgets/tech-chart/components/tech-chart-settings/tech-chart-settings';
 import {SyntheticInstrumentsHelper} from '@terminal-widgets-lib/widgets/tech-chart/utils/synthetic-instruments.helper';
 import {map} from 'rxjs/operators';
+import {WidgetSettingsEditorSlot} from '@terminal-widgets-lib/common/features/settings-editor/directives/widget-settings-editor-slot.directive';
+import {
+  WidgetSkeletonContentSlot,
+  WidgetSkeletonHeaderSlot
+} from '@terminal-widgets-lib/common/components/widget-skeleton/widget-skeleton-slots.directive';
 
 @Component({
   selector: 'ats-tech-chart-widget',
@@ -38,7 +43,10 @@ import {map} from 'rxjs/operators';
     WidgetHeader,
     WidgetHeaderInstrumentSwitch,
     TechChart,
-    TechChartSettings
+    TechChartSettings,
+    WidgetSettingsEditorSlot,
+    WidgetSkeletonContentSlot,
+    WidgetSkeletonHeaderSlot
   ],
   templateUrl: './tech-chart-widget.html',
   encapsulation: ViewEncapsulation.None,

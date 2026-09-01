@@ -1,0 +1,40 @@
+.ats-widget-settings-layout-desktop,
+.ats-widget-settings-layout-mobile {
+  .ant-form:not(.ant-form-inline) {
+    .ant-form-item.one-row {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+
+      .ant-form-item-row {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 4px;
+      }
+
+      > nz-form-control,
+      > nz-form-label,
+      .ant-form-item-control,
+      .ant-form-item-label {
+        flex: none;
+        max-width: none;
+        min-width: 0;
+        width: auto;
+      }
+
+      .ant-form-item-label {
+        padding: 0;
+        text-align: left;
+
+        > label {
+          height: auto;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}

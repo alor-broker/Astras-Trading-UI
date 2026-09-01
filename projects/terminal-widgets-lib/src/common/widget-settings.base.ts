@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   computed,
   DestroyRef,
@@ -52,14 +52,10 @@ export abstract class WidgetSettingsBase<T extends WidgetSettings> implements Wi
 
   protected readonly settingsEditor = viewChild(WidgetSettingsEditor);
 
-  /** Whether the settings editor is currently open; widgets can use it to hide stale content. */
-  readonly isEditing = computed(() => this.settingsEditor()?.isOpen() ?? false);
-
-  /** Open on mobile: the editor content is shown inline in the widget content slot. */
-  readonly isInlineOpen = computed(() => this.settingsEditor()?.isInlineOpen() ?? false);
-
-  /** The editor content template, rendered inline in the widget content slot on mobile. */
-  readonly editorContentTpl = computed(() => this.settingsEditor()?.contentTpl() ?? null);
+  /** Whether the skeleton must hide the widget's regular content. */
+  readonly shouldHideWidgetContent = computed(() =>
+    this.settingsEditor()?.shouldHideWidgetContent() ?? false
+  );
 
   get showCopy(): boolean {
     return this.manageDashboardsService != null;

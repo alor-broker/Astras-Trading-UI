@@ -2,62 +2,56 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  contentChild,
   input,
   TemplateRef,
   ViewEncapsulation
 } from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
-import {TranslocoDirective} from '@jsverse/transloco';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {WidgetSettingsEditorRef} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-editor-ref.types';
+import {
+  WidgetSkeletonContentSlot,
+  WidgetSkeletonHeaderSlot
+} from '@terminal-widgets-lib/common/components/widget-skeleton/widget-skeleton-slots.directive';
 
 @Component({
   selector: 'ats-widget-skeleton',
-  imports: [
-    NgTemplateOutlet,
-    TranslocoDirective,
-    NzIconDirective
-  ],
+  imports: [NgTemplateOutlet],
   templateUrl: './widget-skeleton.html',
   styleUrl: './widget-skeleton.less',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetSkeleton {
-  readonly header = input.required<TemplateRef<unknown>>();
+  /** @deprecated Use the `atsWidgetHeader` named slot. */
+  readonly header = input<TemplateRef<unknown> | null>(null);
 
-  readonly content = input.required<TemplateRef<unknown>>();
+  /** @deprecated Use the `atsWidgetContent` named slot. */
+  readonly content = input<TemplateRef<unknown> | null>(null);
 
-  // Legacy inline-settings inputs for widgets not yet migrated to the editor.
+  /** @deprecated Legacy inline settings fallback for widgets not yet migrated to the editor. */
   readonly settings = input<TemplateRef<unknown> | null>();
 
+  /** @deprecated Legacy inline settings visibility. */
   readonly showSettings = input(false);
 
   readonly isBlockWidget = input.required<boolean>();
 
   readonly showContentScroll = input(false);
 
-  /** Editor-based widgets: a single ref providing the content template and editing state. */
+  /** Editor-based widgets: a ref that controls regular-content visibility. */
   readonly settingsEditor = input<WidgetSettingsEditorRef | null>(null);
 
-  /**
-   * Opt-in: when the editor is open, replace stale content with an "editing
-   * settings" placeholder (for widgets that do not reflect settings live).
-   */
-  readonly showEditingPlaceholder = input(false);
+  protected readonly projectedHeader = contentChild(WidgetSkeletonHeaderSlot);
 
-  /** Template to render in the content slot instead of the content (editor inline or legacy settings). */
-  protected readonly inlineSettings = computed<TemplateRef<unknown> | null>(() => {
-    const editor = this.settingsEditor();
+  protected readonly projectedContent = contentChild(WidgetSkeletonContentSlot);
 
-    if (editor != null) {
-      return editor.isInlineOpen() ? editor.editorContentTpl() : null;
-    }
+  protected readonly shouldHideWidgetContent = computed(() =>
+    this.settingsEditor()?.shouldHideWidgetContent() ?? false
+  );
 
-    return this.showSettings() ? (this.settings() ?? null) : null;
-  });
-
-  protected readonly showPlaceholder = computed(() =>
-    this.showEditingPlaceholder() && (this.settingsEditor()?.isEditing() ?? false)
+  /** Legacy settings template rendered instead of the regular widget content. */
+  protected readonly inlineSettings = computed<TemplateRef<unknown> | null>(() =>
+    this.showSettings() ? (this.settings() ?? null) : null
   );
 }

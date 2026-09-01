@@ -1,0 +1,20 @@
+<div
+  [class.horizontal]="!isVertical()"
+  [class.vertical]="isVertical()"
+  class="aux-panel"
+>
+  @for (toggle of toggles(); track toggle.id) {
+    <button
+      (click)="toggleSelect.emit(toggle.id)"
+      [attr.aria-pressed]="toggle.id === activeToggle()"
+      [class.active]="toggle.id === activeToggle()"
+      [nzTooltipPlacement]="tooltipPlacement()"
+      [nzTooltipTitle]="toggle.tooltip"
+      class="toggle"
+      nz-tooltip
+      type="button"
+    >
+      <span [nzType]="toggle.icon" nz-icon nzTheme="outline"></span>
+    </button>
+  }
+</div>
