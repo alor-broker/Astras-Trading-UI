@@ -903,6 +903,7 @@
       }
     },
     "category": "info",
+    "isDemoOnly": true,
     "desktopMeta": {
       "headerIcon": "robot",
       "galleryIcon": "robot",
