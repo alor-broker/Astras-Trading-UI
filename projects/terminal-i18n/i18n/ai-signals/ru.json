@@ -1,0 +1,21 @@
+{
+  "directions": {
+    "BULLISH": "Рост",
+    "BEARISH": "Падение",
+    "NEUTRAL": "Нейтрально"
+  },
+  "actions": {
+    "BUY_PULLBACK": "Покупка на откате",
+    "BUY_BREAKOUT": "Покупка на пробое",
+    "SELL_RALLY": "Продажа на росте",
+    "SELL_BREAKDOWN": "Продажа на пробое вниз",
+    "NO_TRADE": "Без сделки"
+  },
+  "rowStatuses": {
+    "noData": "Нет сигнала",
+    "error": "Сигнал не сформирован",
+    "degraded": "Сигнал сформирован с ограничениями"
+  },
+  "confidenceLabel": "Уверенность",
+  "analystLabel": "Аналитик {{number}}"
+}

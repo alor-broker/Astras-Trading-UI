@@ -1,0 +1,30 @@
+{
+  "errorsTitle": "Ошибки",
+  "warningsTitle": "Предупреждения",
+  "tradePlanSection": "Торговый план",
+  "checklistSection": "Чек-лист условий",
+  "riskSection": "Риски",
+  "reasoningSection": "Обоснование",
+  "analystsSection": "Мнения аналитиков",
+  "newsSection": "Новости",
+  "fundamentalSection": "Фундаментальные показатели",
+  "technicalSection": "Технический анализ",
+  "currentPrice": "Текущая цена",
+  "holdingDays": "Горизонт: {{days}} дн.",
+  "newsRisk": "Новостной риск",
+  "gapRisk": "Риск гэпа",
+  "avoidReasons": "Причины воздержаться",
+  "noTradePlan": "Сделка не рекомендуется",
+  "newsPeriod": "За {{days}} дн.",
+  "riskLevels": {
+    "LOW": "Низкий",
+    "MEDIUM": "Средний",
+    "HIGH": "Высокий"
+  },
+  "checklist": {
+    "F1_daily_bearish_regime": "Дневной нисходящий тренд",
+    "F2_structure_supports_downside_and_entry_not_bottom_fishing": "Структура поддерживает снижение, вход не у дна",
+    "F3_not_oversold_at_entry": "Нет перепроданности на входе",
+    "F4_rr_at_least_2": "Прибыль/риск не менее 2"
+  }
+}

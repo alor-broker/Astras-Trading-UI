@@ -892,5 +892,41 @@
     "hideOnDashboardType": [
       "admin-main"
     ]
+  },
+  {
+    "typeId": "ai-signals",
+    "widgetName": {
+      "default": "AI Signals",
+      "translations": {
+        "ru": "ИИ сигналы",
+        "en": "AI Signals",
+        "hy": "ԱԲ ազդանշաններ"
+      }
+    },
+    "category": "info",
+    "isDemoOnly": true,
+    "desktopMeta": {
+      "headerIcon": "robot",
+      "galleryIcon": "robot",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 27,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "robot",
+      "ribbonIcon": "robot",
+      "enabled": true,
+      "galleryOrder": 18,
+      "selectableForQuickAccessPanel": true
+    },
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   }
 ]
