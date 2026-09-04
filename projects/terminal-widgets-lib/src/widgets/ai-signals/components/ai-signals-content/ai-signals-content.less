@@ -3,7 +3,18 @@ ats-ai-signals-content {
   height: 100%;
 
   .container {
+    .toolbar {
+      flex-shrink: 0;
+
+      ats-ticker-list-manager,
+      .status-line {
+        flex: 0 0 auto;
+      }
+    }
+
     .status-line {
+      white-space: nowrap;
+
       .last-updated {
         color: var(--ats-text-color-secondary);
 

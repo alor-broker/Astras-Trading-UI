@@ -1,79 +1,60 @@
 <ng-container *transloco="let t; scope: 'ai-signals'">
   @let r = row();
   <div (click)="onRowClick()"
+       (keydown.enter)="onRowKeydown($event)"
+       (keydown.space)="onRowKeydown($event)"
+       [attr.role]="isClickable() ? 'button' : null"
+       [attr.tabindex]="isClickable() ? 0 : null"
        [class.bearish]="accent() === 'bearish'"
        [class.bullish]="accent() === 'bullish'"
        [class.clickable]="isClickable()"
        [class.inactive]="accent() === 'inactive'"
        [class.neutral]="accent() === 'neutral'"
-       class="item d-flex flex-column flex-gap-5 p-5"
+       class="item d-flex flex-row align-items-center flex-gap-10 px-10 py-5"
   >
-    <div class="d-flex flex-row flex-wrap align-items-center justify-content-between flex-gap-5">
-      <div class="d-flex flex-row align-items-center flex-gap-5">
-        <span (click)="onIconClick($event)" class="icon-wrapper">
+    <div class="instrument-column d-flex flex-column flex-gap-5">
+      <div class="instrument-heading d-flex flex-row align-items-center flex-gap-5">
+        <button type="button" (click)="onIconClick($event)" class="icon-wrapper" [attr.aria-label]="r.ticker" [disabled]="r.exchange == null">
           <ats-instrument-icon [symbol]="r.ticker"/>
-        </span>
+        </button>
         <span class="heading-color fw-bold ticker">{{ r.ticker }}</span>
-
-        @switch (r.status) {
-          @case (rowStatuses.NoData) {
-            <nz-tag>{{ t('aiSignals.rowStatuses.noData') }}</nz-tag>
-          }
-          @case (rowStatuses.Error) {
-            <span class="sell-color d-flex flex-row align-items-center flex-gap-2 text-nowrap">
-              <span nz-icon nzType="close-circle"></span>
-              <span class="fs-9">{{ t('aiSignals.rowStatuses.error') }}</span>
-            </span>
-          }
-          @default {
-            @if (r.direction != null) {
-              <span [class.buy-color]="r.direction === directions.Bullish"
-                    [class.sell-color]="r.direction === directions.Bearish"
-                    class="d-flex flex-row align-items-center flex-gap-2 text-nowrap"
-              >
-                <span [nzType]="directionIcon()" nz-icon></span>
-                <span>{{ t('aiSignals.directions.' + r.direction) }}</span>
-              </span>
-            }
-            @if (r.status === rowStatuses.Degraded) {
-              <span [nz-tooltip]="t('aiSignals.rowStatuses.degraded')"
-                    class="warning-color"
-                    nz-icon
-                    nzType="warning"
-              ></span>
-            }
-          }
-        }
       </div>
-
-      @if (r.currentPrice != null) {
-        <span class="heading-color fw-bold text-nowrap">{{ r.currentPrice | atsPrice }}</span>
+      @if (r.forecastDateDisplay != null) {
+        <span class="fs-9 date">{{ r.forecastDateDisplay }}</span>
       }
     </div>
 
-    @if (r.status === rowStatuses.Ok || r.status === rowStatuses.Degraded) {
-      <div class="d-flex flex-row align-items-center flex-gap-10">
-        @if (r.action != null) {
-          <span [class.no-trade]="r.action === actions.NoTrade" class="fs-9 text-nowrap action">
-            {{ t('aiSignals.actions.' + r.action) }}
-          </span>
-        }
-
-        @if (r.confidence != null) {
-          <span [nz-tooltip]="t('aiSignals.confidenceLabel')"
-                class="d-flex flex-row align-items-center flex-gap-5 flex-fill conviction"
-          >
-            <span class="flex-fill meter-wrap">
-              <ats-confidence-meter [confidence]="r.confidence" [direction]="r.direction"/>
-            </span>
-            <span class="fs-9 text-nowrap confidence-value">{{ r.confidence }}/10</span>
-          </span>
-        }
-
-        @if (r.forecastDateDisplay != null) {
-          <span class="fs-9 date text-nowrap">{{ r.forecastDateDisplay }}</span>
-        }
-      </div>
+    @switch (r.status) {
+      @case (rowStatuses.NoData) {
+        <nz-tag>{{ t('aiSignals.rowStatuses.noData') }}</nz-tag>
+      }
+      @case (rowStatuses.NotAnalyzed) {
+        <span class="text-color status-message d-flex flex-row align-items-center flex-gap-5"
+              nz-tooltip #statusHint="nzTooltip" tabindex="0"
+              [nzTooltipTitle]="r.statusNote"
+              (focus)="statusHint.show()" (blur)="statusHint.hide()">
+          <span nz-icon nzType="info-circle"></span>
+          <span class="fs-9">{{ t('aiSignals.rowStatuses.notAnalyzed') }}</span>
+        </span>
+      }
+      @case (rowStatuses.Error) {
+        <span class="sell-color status-message d-flex flex-row align-items-center flex-gap-5">
+          <span nz-icon nzType="close-circle"></span>
+          <span class="fs-9">{{ t('aiSignals.rowStatuses.error') }}</span>
+        </span>
+      }
+      @default {
+        <ats-signal-overview [details]="r" [showAction]="false" [compact]="true">
+          @if (r.status === rowStatuses.Degraded) {
+            <span [nz-tooltip]="t('aiSignals.rowStatuses.degraded')"
+                  [attr.aria-label]="t('aiSignals.rowStatuses.degraded')"
+                  class="warning-color"
+                  nz-icon
+                  nzType="warning"
+            ></span>
+          }
+        </ats-signal-overview>
+      }
     }
   </div>
 </ng-container>

@@ -1,5 +1,11 @@
 {
-  "addTicker": "Ավելացնել",
-  "maxTickersHint": "Առավելագույնը {{max}} թիքեր",
-  "duplicateTickerHint": "Թիքերն արդեն ավելացված է"
+  "editList": "Խմբագրել ցանկը",
+  "dialogTitle": "Գործիքներ ԱԲ ազդանշանների համար",
+  "apply": "Կիրառել",
+  "cancel": "Չեղարկել",
+  "selectAll": "Ընտրել բոլորը",
+  "selectionCount": "Ընտրված է {{count}}՝ {{total}}-ից",
+  "loadFailed": "Չհաջողվեց բեռնել գործիքները",
+  "retry": "Կրկնել",
+  "noInstruments": "Կանխատեսման ամսաթիվ ունեցող գործիքներ չկան"
 }

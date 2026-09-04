@@ -1,32 +1,32 @@
 <ng-container *transloco="let t; scope: 'ai-signals/content'">
   <div class="container d-flex flex-column flex-gap-5 h-100 p-5">
-    <ats-ticker-list-manager
-      (tickerAdded)="addTicker($event)"
-      (tickerRemoved)="removeTicker($event)"
-      [maxTickersCount]="maxTickersCount"
-      [tickers]="(savedTickers$ | async) ?? []"
-    />
+    <div class="toolbar d-flex flex-row flex-wrap align-items-center justify-content-between flex-gap-5">
+      <ats-ticker-list-manager
+        (tickersChanged)="saveTickers($event)"
+        [tickers]="(savedTickers$ | async) ?? []"
+      />
 
-    @if (displayStatus() === displayStatuses.Loaded) {
-      <div class="d-flex flex-row align-items-center justify-content-between flex-gap-5 status-line">
-        @if (lastUpdatedAt() != null) {
-          <span class="fs-9 d-flex flex-row align-items-center flex-gap-5 last-updated">
-            <span class="live-dot"></span>
-            <span>{{ t('aiSignalsContent.lastUpdatedLabel') }} {{ lastUpdatedAt() | date: 'HH:mm:ss' }}</span>
-          </span>
-        } @else {
-          <span></span>
-        }
-        <button (click)="refresh()"
-                [nz-tooltip]="t('aiSignalsContent.refreshTooltip')"
-                nz-button
-                nzSize="small"
-                nzType="text"
-        >
-          <span nz-icon nzType="reload"></span>
-        </button>
-      </div>
-    }
+      @if (displayStatus() === displayStatuses.Loaded) {
+        <div class="d-flex flex-row flex-nowrap align-items-center flex-gap-5 status-line">
+          @if (lastUpdatedAt() != null) {
+            <span class="fs-9 d-flex flex-row align-items-center flex-gap-5 last-updated">
+              <span class="live-dot"></span>
+              <span>{{ t('aiSignalsContent.lastUpdatedLabel') }} {{ lastUpdatedAt() | date: 'HH:mm:ss' }}</span>
+            </span>
+          }
+          <button (click)="refresh()"
+                  [nz-tooltip]="t('aiSignalsContent.refreshTooltip')"
+                  [attr.aria-label]="t('aiSignalsContent.refreshTooltip')"
+                  nz-button
+                  nzSize="small"
+                  nzType="text"
+                  type="button"
+          >
+            <span nz-icon nzType="reload"></span>
+          </button>
+        </div>
+      }
+    </div>
 
     <div class="content-area flex-fill show-scroll">
       @switch (displayStatus()) {

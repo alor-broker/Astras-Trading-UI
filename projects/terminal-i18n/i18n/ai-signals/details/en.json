@@ -1,30 +1,20 @@
 {
   "errorsTitle": "Errors",
   "warningsTitle": "Warnings",
-  "tradePlanSection": "Trade plan",
-  "checklistSection": "Conditions checklist",
+  "analysisDetailsButton": "Analysis details",
+  "participateButton": "Participate",
   "riskSection": "Risks",
-  "reasoningSection": "Reasoning",
-  "analystsSection": "Analyst opinions",
-  "newsSection": "News",
-  "fundamentalSection": "Fundamentals",
-  "technicalSection": "Technical analysis",
-  "currentPrice": "Current price",
-  "holdingDays": "Horizon: {{days}} d.",
+  "analystsSection": "AI analyst opinions",
+  "newsSection": "News summary",
+  "newsSectionWithPeriod": "News summary for the last {{days}} days",
   "newsRisk": "News risk",
   "gapRisk": "Gap risk",
+  "newsRiskTooltip": "AI assessment of the risk from news and significant events during the holding period.",
+  "gapRiskTooltip": "AI assessment of the risk of a price gap between trading sessions.",
   "avoidReasons": "Reasons to avoid",
-  "noTradePlan": "No trade is recommended",
-  "newsPeriod": "For the last {{days}} d.",
   "riskLevels": {
     "LOW": "Low",
     "MEDIUM": "Medium",
     "HIGH": "High"
-  },
-  "checklist": {
-    "F1_daily_bearish_regime": "Daily bearish regime",
-    "F2_structure_supports_downside_and_entry_not_bottom_fishing": "Structure supports downside, entry is not bottom fishing",
-    "F3_not_oversold_at_entry": "Not oversold at entry",
-    "F4_rr_at_least_2": "Risk/reward at least 2"
   }
 }

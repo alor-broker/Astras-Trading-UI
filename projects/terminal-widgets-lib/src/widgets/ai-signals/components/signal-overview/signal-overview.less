@@ -1,0 +1,82 @@
+ats-signal-overview {
+  display: block;
+  min-width: 0;
+  flex: 1 1 0;
+
+  .summary-content {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .summary-header {
+    .signal-kind {
+      align-items: baseline;
+      min-width: 0;
+    }
+
+    .direction,
+    .action {
+      cursor: help;
+    }
+
+    .action {
+      color: var(--ats-text-color-secondary);
+      text-decoration: underline dotted;
+      text-underline-offset: 3px;
+    }
+
+    .direction-icon {
+      margin-right: 5px;
+    }
+  }
+
+  .holding-days,
+  .no-trade-hint {
+    color: var(--ats-text-color-secondary);
+  }
+
+  .confidence {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    margin-left: auto;
+    flex: 0 0 auto;
+    cursor: help;
+
+    .ant-progress-text {
+      color: var(--confidence-color);
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .expected-profit {
+    font-size: 1.35rem;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .outlook {
+    align-items: baseline;
+  }
+
+  &.compact {
+    .overview {
+      gap: 8px;
+    }
+
+    .summary-content {
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .expected-profit {
+      font-size: 0.95rem;
+    }
+
+    .outlook {
+      gap: 2px 5px;
+    }
+  }
+}

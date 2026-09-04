@@ -1,20 +1,22 @@
 import {
-  knownShortChecklistKeys,
+  AnalystReasoning,
   RiskLevel,
   SignalAction,
+  SignalAnalysisStatus,
   SignalBatchResult,
   SignalDirection,
-  SignalForecast
+  SignalForecast,
+  TradePlan
 } from '../services/ai-signals-service.types';
 import {
-  aiSignalsDefaultExchange,
   AnalystViewModel,
-  ChecklistItemViewModel,
   SignalDetailsViewModel,
   SignalRowStatus,
   SignalRowViewModel,
   TradePlanViewModel
 } from '../types/ai-signals-view.types';
+
+import {TradePlanViewHelper} from './trade-plan-view.helper';
 
 export class AiSignalsViewModelHelper {
   static normalizeTicker(value: string): string {
@@ -24,19 +26,23 @@ export class AiSignalsViewModelHelper {
   static toRowViewModels(requestedTickers: string[], response: SignalBatchResult): SignalRowViewModel[] {
     const signals = response.signals ?? [];
 
-    return requestedTickers
+    return [...new Set(requestedTickers
       .map(ticker => this.normalizeTicker(ticker))
-      .filter(ticker => ticker.length > 0)
-      .map(ticker => this.toRowViewModel(ticker, signals));
+      .filter(ticker => ticker.length > 0))]
+      .map(ticker => this.toRowViewModel(ticker, signals))
+      .sort((left, right) => (right.confidence ?? -1) - (left.confidence ?? -1));
   }
 
   static toDetailsViewModel(row: SignalRowViewModel): SignalDetailsViewModel | null {
     const signal = row.raw;
-    if (signal == null) {
+    if (signal == null || !this.canOpenDetails(row)) {
       return null;
     }
 
     const consensus = signal.consensus ?? null;
+    const tradePlan = row.action === SignalAction.NoTrade
+      ? null
+      : this.toTradePlanViewModel(consensus?.trade_plan);
 
     return {
       ticker: row.ticker,
@@ -45,23 +51,23 @@ export class AiSignalsViewModelHelper {
       action: row.action,
       confidence: row.confidence,
       currentPrice: row.currentPrice,
+      expectedProfitPercent: row.expectedProfitPercent,
       forecastDateDisplay: row.forecastDateDisplay,
-      expectedHoldingDays: consensus?.expected_holding_days ?? null,
+      expectedHoldingDays: row.expectedHoldingDays,
       reasoning: this.toNonEmptyString(consensus?.reasoning),
-      tradePlan: row.action === SignalAction.NoTrade
-        ? null
-        : this.toTradePlanViewModel(signal),
-      checklist: this.toChecklistItems(consensus?.short_checklist),
+      tradePlan,
       newsRisk: this.toEnumValue(consensus?.risk_notes?.news_risk, RiskLevel),
       gapRisk: this.toEnumValue(consensus?.risk_notes?.gap_risk, RiskLevel),
-      avoidReasons: consensus?.risk_notes?.avoid_reasons ?? [],
-      analysts: (signal.analysts ?? []).map((analyst, index) => this.toAnalystViewModel(analyst, index + 1)),
+      avoidReasons: this.toNonEmptyStrings(consensus?.risk_notes?.avoid_reasons),
+      analysts: Array.isArray(signal.analysts)
+        ? signal.analysts.map((analyst, index) => this.toAnalystViewModel(analyst, index + 1, row.currentPrice))
+        : [],
       newsSummary: this.toNonEmptyString(signal.news?.summary),
-      newsPeriodDays: signal.news?.period_days ?? null,
+      newsPeriodDays: this.toPositiveInteger(signal.news?.period_days),
       fundamental: this.toFundamentalDisplayData(signal.fundamental),
       technicalAnalysis: this.toTechnicalAnalysisDisplayData(signal.technical_analysis),
-      errors: signal.errors ?? [],
-      warnings: signal.warnings ?? []
+      errors: this.toNonEmptyStrings(signal.errors),
+      warnings: this.toNonEmptyStrings(signal.warnings)
     };
   }
 
@@ -73,6 +79,10 @@ export class AiSignalsViewModelHelper {
     return (Object.values(enumType) as string[]).includes(value)
       ? value as T
       : null;
+  }
+
+  static canOpenDetails(row: SignalRowViewModel): boolean {
+    return row.raw != null && row.status !== SignalRowStatus.NotAnalyzed && row.status !== SignalRowStatus.NoData;
   }
 
   static formatForecastDate(forecastDate: string | null | undefined): string | null {
@@ -90,28 +100,39 @@ export class AiSignalsViewModelHelper {
   }
 
   private static toRowViewModel(requestedTicker: string, signals: SignalForecast[]): SignalRowViewModel {
-    const signal = signals.find(s => s.ticker.toUpperCase() === requestedTicker) ?? null;
+    const signal = signals.find(s => (
+      typeof s.ticker === 'string'
+      && this.normalizeTicker(s.ticker) === requestedTicker
+    )) ?? null;
 
     if (signal == null) {
       return {
         ticker: requestedTicker,
-        exchange: aiSignalsDefaultExchange,
+        exchange: null,
         status: SignalRowStatus.NoData,
+        statusNote: null,
         direction: null,
         action: null,
         confidence: null,
+        expectedProfitPercent: null,
+        expectedHoldingDays: null,
         currentPrice: null,
         forecastDateDisplay: null,
         raw: null
       };
     }
 
-    const consensus = signal.consensus ?? null;
-    const warnings = signal.warnings ?? [];
-    const errors = signal.errors ?? [];
+    const isNotAnalyzed = signal.status === SignalAnalysisStatus.NotAnalyzed;
+    const consensus = isNotAnalyzed ? null : signal.consensus ?? null;
+    const warnings = this.toNonEmptyStrings(signal.warnings);
+    const errors = this.toNonEmptyStrings(signal.errors);
+    const action = this.toEnumValue(consensus?.action, SignalAction);
+    const tradePlan = action === SignalAction.NoTrade ? null : this.toTradePlanViewModel(consensus?.trade_plan);
 
     let status = SignalRowStatus.Ok;
-    if (consensus == null) {
+    if (isNotAnalyzed) {
+      status = SignalRowStatus.NotAnalyzed;
+    } else if (consensus == null) {
       status = SignalRowStatus.Error;
     } else if (warnings.length > 0 || errors.length > 0) {
       status = SignalRowStatus.Degraded;
@@ -119,69 +140,60 @@ export class AiSignalsViewModelHelper {
 
     return {
       ticker: requestedTicker,
-      exchange: this.toExchange(signal),
+      exchange: this.toNonEmptyString(signal.exchange)?.toUpperCase() ?? null,
       status,
+      statusNote: this.toNonEmptyString(signal.status_note),
       direction: this.toEnumValue(consensus?.direction, SignalDirection),
-      action: this.toEnumValue(consensus?.action, SignalAction),
-      confidence: consensus?.confidence ?? null,
-      currentPrice: signal.current_price ?? null,
+      action,
+      confidence: this.toConfidence(consensus?.confidence),
+      expectedProfitPercent: TradePlanViewHelper.expectedProfitPercent(tradePlan, action),
+      expectedHoldingDays: this.toPositiveInteger(consensus?.expected_holding_days),
+      currentPrice: this.toPositiveNumber(signal.current_price),
       forecastDateDisplay: this.formatForecastDate(signal.forecast_date),
       raw: signal
     };
   }
 
-  private static toExchange(signal: SignalForecast): string {
-    // full_ticker has the "SBER:MOEX" format
-    const exchange = signal.full_ticker?.split(':')[1]?.trim() ?? '';
-
-    return exchange.length > 0
-      ? exchange.toUpperCase()
-      : aiSignalsDefaultExchange;
-  }
-
-  private static toTradePlanViewModel(signal: SignalForecast): TradePlanViewModel | null {
-    const tradePlan = signal.consensus?.trade_plan;
+  private static toTradePlanViewModel(tradePlan: TradePlan | null | undefined): TradePlanViewModel | null {
     if (tradePlan == null) {
       return null;
     }
 
-    return {
-      entryPrice: tradePlan.entry_price ?? null,
-      stopLoss: tradePlan.stop_loss ?? null,
-      takeProfit1: tradePlan.take_profit_1 ?? null,
-      takeProfit2: tradePlan.take_profit_2 ?? null,
-      riskRewardRatio: tradePlan.risk_reward_ratio ?? null
+    const viewModel: TradePlanViewModel = {
+      entryPrice: this.toPositiveNumber(tradePlan.entry_price),
+      stopLoss: this.toPositiveNumber(tradePlan.stop_loss),
+      takeProfit1: this.toPositiveNumber(tradePlan.take_profit_1),
+      takeProfit2: this.toPositiveNumber(tradePlan.take_profit_2),
+      riskRewardRatio: this.toPositiveNumber(tradePlan.risk_reward_ratio)
     };
-  }
 
-  private static toChecklistItems(checklist: Record<string, boolean> | null | undefined): ChecklistItemViewModel[] {
-    if (checklist == null) {
-      return [];
-    }
-
-    return Object.entries(checklist)
-      .filter((entry): entry is [string, boolean] => typeof entry[1] === 'boolean')
-      .map(([key, passed]) => ({
-        key,
-        labelKey: knownShortChecklistKeys.includes(key) ? key : null,
-        passed
-      }))
-      .sort((left, right) => left.key.localeCompare(right.key));
+    return Object.values(viewModel).some(value => value != null)
+      ? viewModel
+      : null;
   }
 
   // the API model name is intentionally dropped here; analysts are shown to the user only by their ordinal
-  private static toAnalystViewModel(analyst: {
-    direction?: SignalDirection | null;
-    action?: SignalAction | null;
-    confidence?: number | null;
-    reasoning?: string | null;
-  }, index: number): AnalystViewModel {
+  private static toAnalystViewModel(
+    analyst: AnalystReasoning | null,
+    index: number,
+    currentPrice: number | null
+  ): AnalystViewModel {
+    const action = this.toEnumValue(analyst?.action, SignalAction);
+    const tradePlan = action === SignalAction.NoTrade ? null : this.toTradePlanViewModel(analyst?.trade_plan);
+
     return {
       index,
-      direction: this.toEnumValue(analyst.direction, SignalDirection),
-      action: this.toEnumValue(analyst.action, SignalAction),
-      confidence: analyst.confidence ?? null,
-      reasoning: this.toNonEmptyString(analyst.reasoning)
+      direction: this.toEnumValue(analyst?.direction, SignalDirection),
+      action,
+      confidence: this.toConfidence(analyst?.confidence),
+      currentPrice,
+      expectedHoldingDays: this.toPositiveInteger(analyst?.expected_holding_days),
+      expectedProfitPercent: TradePlanViewHelper.expectedProfitPercent(tradePlan, action),
+      reasoning: this.toNonEmptyString(analyst?.reasoning),
+      tradePlan,
+      newsRisk: this.toEnumValue(analyst?.risk_notes?.news_risk, RiskLevel),
+      gapRisk: this.toEnumValue(analyst?.risk_notes?.gap_risk, RiskLevel),
+      avoidReasons: this.toNonEmptyStrings(analyst?.risk_notes?.avoid_reasons)
     };
   }
 
@@ -234,7 +246,7 @@ export class AiSignalsViewModelHelper {
   }
 
   private static toNonEmptyString(value: string | null | undefined): string | null {
-    if (value == null) {
+    if (typeof value !== 'string') {
       return null;
     }
 
@@ -242,6 +254,34 @@ export class AiSignalsViewModelHelper {
 
     return trimmed.length > 0
       ? trimmed
+      : null;
+  }
+
+  private static toNonEmptyStrings(values: string[] | null | undefined): string[] {
+    if (!Array.isArray(values)) {
+      return [];
+    }
+
+    return values
+      .map(value => typeof value === 'string' ? this.toNonEmptyString(value) : null)
+      .filter((value): value is string => value != null);
+  }
+
+  private static toPositiveNumber(value: number | null | undefined): number | null {
+    return typeof value === 'number' && Number.isFinite(value) && value > 0
+      ? value
+      : null;
+  }
+
+  private static toPositiveInteger(value: number | null | undefined): number | null {
+    return typeof value === 'number' && Number.isInteger(value) && value > 0
+      ? value
+      : null;
+  }
+
+  private static toConfidence(value: number | null | undefined): number | null {
+    return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 10
+      ? value
       : null;
   }
 }

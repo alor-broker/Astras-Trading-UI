@@ -28,8 +28,7 @@ import {
   of,
   shareReplay,
   Subject,
-  switchMap,
-  take
+  switchMap
 } from 'rxjs';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
@@ -52,7 +51,6 @@ import {
 import {
   aiSignalsTickersRecordKey,
   ContentDisplayStatus,
-  maxTickersCount,
   SignalRowViewModel,
   TickersStateRecord
 } from '../../types/ai-signals-view.types';
@@ -91,8 +89,6 @@ export class AiSignalsContent implements OnInit {
   readonly instrumentSelected = output<InstrumentKey>();
 
   protected readonly displayStatuses = ContentDisplayStatus;
-
-  protected readonly maxTickersCount = maxTickersCount;
 
   // Loading until the tickers record is restored from the widget local state
   protected readonly displayStatus = signal<ContentDisplayStatus>(ContentDisplayStatus.Loading);
@@ -161,36 +157,8 @@ export class AiSignalsContent implements OnInit {
     this.manualRefresh$.next();
   }
 
-  protected addTicker(ticker: string): void {
-    const normalizedTicker = AiSignalsViewModelHelper.normalizeTicker(ticker);
-    if (normalizedTicker.length === 0) {
-      return;
-    }
-
-    this.savedTickers$.pipe(
-      take(1)
-    ).subscribe(currentTickers => {
-      if (
-        currentTickers.includes(normalizedTicker)
-        || currentTickers.length >= maxTickersCount
-      ) {
-        return;
-      }
-
-      this.saveTickers([...currentTickers, normalizedTicker]);
-    });
-  }
-
-  protected removeTicker(ticker: string): void {
-    this.savedTickers$.pipe(
-      take(1)
-    ).subscribe(currentTickers => {
-      this.saveTickers(currentTickers.filter(currentTicker => currentTicker !== ticker));
-    });
-  }
-
   protected openDetails(row: SignalRowViewModel): void {
-    if (row.raw != null) {
+    if (AiSignalsViewModelHelper.canOpenDetails(row)) {
       this.selectedSignal.set(row);
     }
   }
@@ -253,7 +221,7 @@ export class AiSignalsContent implements OnInit {
     );
   }
 
-  private saveTickers(tickers: string[]): void {
+  protected saveTickers(tickers: string[]): void {
     this.widgetLocalStateService.setStateRecord<TickersStateRecord>(
       this.guid(),
       aiSignalsTickersRecordKey,

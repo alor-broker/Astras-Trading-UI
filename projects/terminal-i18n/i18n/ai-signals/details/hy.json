@@ -1,30 +1,20 @@
 {
   "errorsTitle": "Սխալներ",
   "warningsTitle": "Զգուշացումներ",
-  "tradePlanSection": "Առևտրային պլան",
-  "checklistSection": "Պայմանների ցուցակ",
+  "analysisDetailsButton": "Վերլուծության մանրամասներ",
+  "participateButton": "Մասնակցել",
   "riskSection": "Ռիսկեր",
-  "reasoningSection": "Հիմնավորում",
-  "analystsSection": "Վերլուծաբանների կարծիքներ",
-  "newsSection": "Նորություններ",
-  "fundamentalSection": "Ֆունդամենտալ ցուցանիշներ",
-  "technicalSection": "Տեխնիկական վերլուծություն",
-  "currentPrice": "Ընթացիկ գին",
-  "holdingDays": "Հորիզոն՝ {{days}} օր",
+  "analystsSection": "ԱԲ վերլուծաբանների կարծիքներ",
+  "newsSection": "Նորությունների ամփոփում",
+  "newsSectionWithPeriod": "Վերջին {{days}} օրվա նորությունների ամփոփում",
   "newsRisk": "Նորությունների ռիսկ",
   "gapRisk": "Գեփի ռիսկ",
+  "newsRiskTooltip": "Դիրքը պահելու ընթացքում նորությունների և նշանակալի իրադարձությունների ազդեցության ռիսկի ԱԲ գնահատական։",
+  "gapRiskTooltip": "Առևտրային նստաշրջանների միջև գնային խզման ռիսկի ԱԲ գնահատական։",
   "avoidReasons": "Ձեռնպահ մնալու պատճառներ",
-  "noTradePlan": "Գործարք չի առաջարկվում",
-  "newsPeriod": "{{days}} օրվա ընթացքում",
   "riskLevels": {
     "LOW": "Ցածր",
     "MEDIUM": "Միջին",
     "HIGH": "Բարձր"
-  },
-  "checklist": {
-    "F1_daily_bearish_regime": "Օրական նվազող միտում",
-    "F2_structure_supports_downside_and_entry_not_bottom_fishing": "Կառուցվածքը հաստատում է անկումը, մուտքը հատակին չէ",
-    "F3_not_oversold_at_entry": "Մուտքի պահին գերվաճառված չէ",
-    "F4_rr_at_least_2": "Շահույթ/ռիսկ առնվազն 2"
   }
 }

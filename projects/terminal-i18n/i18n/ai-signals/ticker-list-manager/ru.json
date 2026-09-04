@@ -1,5 +1,11 @@
 {
-  "addTicker": "Добавить",
-  "maxTickersHint": "Максимум {{max}} тикеров",
-  "duplicateTickerHint": "Тикер уже добавлен"
+  "editList": "Редактировать список",
+  "dialogTitle": "Инструменты для ИИ-сигналов",
+  "apply": "Применить",
+  "cancel": "Отмена",
+  "selectAll": "Выбрать все",
+  "selectionCount": "Выбрано {{count}} из {{total}}",
+  "loadFailed": "Не удалось загрузить инструменты",
+  "retry": "Повторить",
+  "noInstruments": "Нет инструментов с датой прогноза"
 }

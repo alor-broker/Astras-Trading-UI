@@ -1,0 +1,28 @@
+<ng-container *transloco="let t; scope: 'ai-signals/technical-analysis'">
+  <div class="levels-table">
+    <div class="level-row levels-header">
+      <span class="level-name">{{ t('aiSignalsTechnicalAnalysis.level') }}</span>
+      <span class="level-price">{{ t('aiSignalsTechnicalAnalysis.price') }}</span>
+      <span class="level-distance">{{ t('aiSignalsTechnicalAnalysis.distanceFromPrice') }}</span>
+    </div>
+    @for (row of rows(); track row.key) {
+      <div class="level-row">
+        <span class="level-name heading-color">{{ t('aiSignalsTechnicalAnalysis.fields.' + row.key) }}</span>
+        <span class="level-price text-max-contrast-color">{{ row.price | number:'1.0-4' }}</span>
+        <div class="level-track" aria-hidden="true">
+          <span class="level-bar" [class.below]="row.delta < 0"
+                [style.left.%]="row.left" [style.width.%]="row.width"></span>
+          <span class="level-point" [class.below]="row.delta < 0"
+                [style.left.%]="row.delta < 0 ? row.left : row.left + row.width"></span>
+        </div>
+        <span class="level-delta">{{ row.delta > 0 ? '+' : '' }}{{ row.delta | number:'1.0-2' }}%</span>
+      </div>
+    }
+    <div class="level-row scale-row" aria-hidden="true">
+      <span class="level-name"></span>
+      <span class="level-price"></span>
+      <div class="level-track scale-label">0%</div>
+      <span class="level-delta"></span>
+    </div>
+  </div>
+</ng-container>

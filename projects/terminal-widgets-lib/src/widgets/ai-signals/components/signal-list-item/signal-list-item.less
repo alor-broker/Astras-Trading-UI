@@ -31,28 +31,46 @@ ats-signal-list-item {
       }
     }
 
+    &:focus-visible,
+    .icon-wrapper:focus-visible {
+      outline: 2px solid var(--ats-primary-color);
+      outline-offset: 2px;
+    }
+
+    .instrument-column {
+      flex: 0 0 84px;
+      max-width: 35%;
+      min-width: 0;
+    }
+
+    .instrument-heading,
+    .status-message {
+      min-width: 0;
+    }
+
+    .ticker {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .icon-wrapper {
       cursor: pointer;
       display: inline-flex;
+      flex: none;
+      padding: 0;
+      border: 0;
+      background: transparent;
+
+      &:disabled {
+        cursor: default;
+      }
     }
 
-    .action,
-    .no-trade,
     .date {
       color: var(--ats-text-color-secondary);
-    }
-
-    .conviction {
-      min-width: 90px;
-
-      .meter-wrap {
-        display: flex;
-      }
-
-      .confidence-value {
-        color: var(--ats-text-color-secondary);
-        font-variant-numeric: tabular-nums;
-      }
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
     }
   }
 

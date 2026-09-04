@@ -1,0 +1,60 @@
+{
+  "title": "Fundamentals",
+  "millions": "million {{currency}}",
+  "millionsUnknownCurrency": "millions (currency not specified)",
+  "bank": "Bank",
+  "disclosed": "Report disclosed",
+  "decisionDate": "Assessment date",
+  "trends": "Quarterly trends",
+  "insufficientHistory": "Not enough history for a chart",
+  "yoy": "YoY change",
+  "yoyTooltip": "Change compared with the same period last year. The sign indicates the direction of change, not whether its impact is positive or negative.",
+  "noValue": "—",
+  "evEbitda": "EV/EBITDA",
+  "asOf": "As of",
+  "dividendReported": "Reported dividends",
+  "absentCount": "Metrics not disclosed: {{count}}",
+  "statementTooltip": "The accounting standard used to prepare the report: {{statement}}.",
+  "reportPeriodTooltip": "Reporting period: {{period}}. This is the period covered by the figures, not the report publication date.",
+  "reportQuarterTooltip": "Reporting period: quarter {{quarter}} of {{year}}. This is the period covered by the figures, not the report publication date.",
+  "statementTooltips": {
+    "MSFO": "International Financial Reporting Standards. The displayed figures were prepared under this standard.",
+    "RSBU": "Russian Accounting Standards. The displayed figures were prepared under this standard."
+  },
+  "statements": {
+    "MSFO": "IFRS",
+    "RSBU": "RAS"
+  },
+  "groups": {
+    "income": "Financial results",
+    "balance": "Balance sheet and debt",
+    "cashflow": "Cash flows",
+    "banking": "Banking metrics",
+    "other": "Other metrics"
+  },
+  "metrics": {
+    "Revenue": "Revenue",
+    "GrossProfit": "Gross profit",
+    "OperatingIncome": "Operating income",
+    "EBITDA": "EBITDA",
+    "NetIncome": "Net income",
+    "netIncomeOwner": "Net income attributable to shareholders",
+    "TotalAssets": "Total assets",
+    "TotalEquity": "Total equity",
+    "NetDebt": "Net debt",
+    "totalDebt": "Total debt",
+    "cash_equivalents": "Cash and cash equivalents",
+    "OperatingCashflow": "Operating cash flow",
+    "Capex": "Capital expenditure",
+    "FinancialCashflow": "Cash flow from financing activities",
+    "Dividend": "Dividends",
+    "Buyback": "Share buybacks",
+    "FinRevenue": "Bank revenue",
+    "FinPercentIncomeNet": "Net interest income",
+    "FinCommissionIncomeNet": "Net fee and commission income",
+    "FinReserveForCreditLoss": "Provisions for credit losses",
+    "FinIncomeNet": "Bank net income",
+    "FinPortfolioCredit": "Loan portfolio",
+    "FinDeposits": "Deposits"
+  }
+}

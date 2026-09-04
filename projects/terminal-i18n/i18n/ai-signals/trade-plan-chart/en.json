@@ -1,8 +1,11 @@
 {
   "entryPrice": "Entry",
   "stopLoss": "Stop loss",
-  "takeProfit1": "Target 1",
-  "takeProfit2": "Target 2",
+  "takeProfit1": "Cons. target",
+  "takeProfit2": "Opt. target",
+  "takeProfit1Tooltip": "Target 1 — conservative target",
+  "takeProfit2Tooltip": "Target 2 — optimistic target",
   "currentPrice": "Current price",
-  "riskReward": "Risk/reward"
+  "priceRange": "Price range: {{min}} to {{max}}",
+  "noPrices": "Price levels not provided"
 }

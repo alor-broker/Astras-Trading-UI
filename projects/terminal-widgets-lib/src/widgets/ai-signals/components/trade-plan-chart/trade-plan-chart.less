@@ -1,12 +1,163 @@
+@import '../../styles/analysis-shared';
+
 ats-trade-plan-chart {
   display: block;
 
-  .chart-container {
-    position: relative;
-    height: 180px;
+  .trade-plan {
+    container-name: trade-plan;
+    container-type: inline-size;
+    .analysis-panel();
+
+    &.compact {
+      padding: 0;
+      border: 0;
+      background-color: transparent;
+
+      .scale {
+        padding: 12px 10px;
+      }
+    }
+
+    .scale {
+      padding: 12px 8px 4px;
+
+      .price-axis {
+        margin-top: 14px;
+        color: var(--ats-text-color-secondary);
+        font-variant-numeric: tabular-nums;
+
+        .price-bound {
+          position: relative;
+          overflow-wrap: anywhere;
+          min-width: 0;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            height: 4px;
+            border-left: 1px solid var(--ats-border-color-base);
+          }
+
+          &:first-child::before { left: 0; }
+
+          &:last-child {
+            text-align: right;
+
+            &::before { right: 0; }
+          }
+        }
+      }
+
+      .track {
+        position: relative;
+        height: 6px;
+        border-radius: 3px;
+        background-color: color-mix(in srgb, var(--ats-border-color-split) 35%, transparent);
+
+        .range {
+          position: absolute;
+          top: 0;
+          height: 100%;
+        }
+
+        .risk-range {
+          background-color: var(--ats-sell-color);
+          opacity: 0.25;
+        }
+
+        .optimistic-range {
+          background-color: var(--ats-processing-color);
+          opacity: 0.35;
+        }
+
+        .reward-range {
+          background-color: var(--ats-buy-color);
+          box-shadow: 0 0 5px color-mix(in srgb, var(--ats-buy-color) 45%, transparent);
+          opacity: 0.9;
+          z-index: 1;
+        }
+
+        .marker {
+          position: absolute;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          display: flex;
+          width: 20px;
+          height: 20px;
+          cursor: help;
+          z-index: 3;
+
+          &[data-level='currentPrice'] { z-index: 5; }
+          &[data-level='entryPrice'] { z-index: 4; }
+          &[data-level='takeProfit2'] { z-index: 2; }
+
+          &:focus-visible {
+            outline: 2px solid var(--ats-primary-color);
+            outline-offset: 2px;
+          }
+        }
+      }
+    }
+
+    .empty-plan {
+      color: var(--ats-text-color-secondary);
+    }
+
+    .legend {
+      gap: 8px;
+      padding-top: 10px;
+      border-top: var(--ats-border-width-base) solid var(--ats-border-color-split);
+
+      .legend-row {
+        display: flex;
+        gap: 16px;
+      }
+
+      .value-label,
+      .missing-value {
+        color: var(--ats-text-color-secondary);
+      }
+
+      .legend-item {
+        min-width: 0;
+        flex: 1 1 0;
+        gap: 8px;
+      }
+
+      .legend-marker-slot {
+        width: 12px;
+        height: 12px;
+        flex: 0 0 12px;
+      }
+
+      .legend-text {
+        min-width: 0;
+      }
+
+      .value-label {
+        overflow: hidden;
+        cursor: help;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .value {
+        font-variant-numeric: tabular-nums;
+      }
+    }
   }
 
-  .level-label {
-    color: var(--ats-text-color-secondary);
+  @container trade-plan (min-width: 760px) {
+    .trade-plan {
+      .legend {
+        flex-direction: row;
+        gap: 16px;
+
+        .legend-row {
+          display: contents;
+        }
+      }
+    }
   }
 }

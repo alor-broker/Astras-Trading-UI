@@ -1,29 +1,86 @@
 <ng-container *transloco="let t; scope: 'ai-signals/trade-plan-chart'">
-  <div class="d-flex flex-column flex-gap-5">
-    @if (chartSettings(); as settings) {
-      <div class="chart-container w-100">
-        <canvas [data]="settings.chartData"
-                [options]="settings.chartOptions"
-                baseChart
-                type="bar"
-        >
-        </canvas>
+  <div [class.compact]="compact()" class="trade-plan d-flex flex-column flex-gap-15 p-10">
+    @if (scale(); as planScale) {
+      <div class="scale">
+        <div class="track">
+          @if (planScale.riskRange != null) {
+            <span [style.left.%]="planScale.riskRange.leftPercent"
+                  [style.width.%]="planScale.riskRange.widthPercent"
+                  class="range risk-range"
+            ></span>
+          }
+          @if (planScale.optimisticRange != null) {
+            <span [style.left.%]="planScale.optimisticRange.leftPercent"
+                  [style.width.%]="planScale.optimisticRange.widthPercent"
+                  class="range optimistic-range"
+            ></span>
+          }
+          @if (planScale.rewardRange != null) {
+            <span [style.left.%]="planScale.rewardRange.leftPercent"
+                  [style.width.%]="planScale.rewardRange.widthPercent"
+                  class="range reward-range"
+            ></span>
+          }
+
+          @for (level of planScale.levels; track level.labelKey) {
+            <span [attr.aria-label]="t('aiSignalsTradePlanChart.' + level.tooltipKey) + ': ' + (level.value | atsPrice)"
+                  [attr.data-level]="level.labelKey"
+                  [nzTooltipTitle]="t('aiSignalsTradePlanChart.' + level.tooltipKey) + ': ' + (level.value | atsPrice)"
+                  [style.left.%]="level.positionPercent"
+                  class="marker"
+                  nz-tooltip
+                  #levelHint="nzTooltip"
+                  tabindex="0"
+                  (focus)="levelHint.show()"
+                  (blur)="levelHint.hide()"
+            >
+              <ats-trade-plan-marker [level]="level.labelKey"/>
+            </span>
+          }
+        </div>
+        @if (showPriceRange()) {
+          <div class="price-axis d-flex flex-row justify-content-between flex-gap-10 fs-9"
+               role="group"
+               [attr.aria-label]="t('aiSignalsTradePlanChart.priceRange', {min: (planScale.bounds.min | atsPrice), max: (planScale.bounds.max | atsPrice)})">
+            <span class="price-bound">{{ planScale.bounds.min | atsPrice }}</span>
+            <span class="price-bound">{{ planScale.bounds.max | atsPrice }}</span>
+          </div>
+        }
       </div>
+    } @else if (compact()) {
+      <span class="empty-plan">{{ t('aiSignalsTradePlanChart.noPrices') }}</span>
     }
 
-    <div class="d-flex flex-row flex-wrap flex-gap-10">
-      @for (row of levelRows(); track row.labelKey) {
-        <span class="fs-9 text-nowrap">
-          <span class="level-label">{{ t('aiSignalsTradePlanChart.' + row.labelKey) }}:</span>
-          <span class="heading-color">{{ row.value | atsPrice }}</span>
-        </span>
-      }
-      @if (plan().riskRewardRatio != null) {
-        <span class="fs-9 text-nowrap">
-          <span class="level-label">{{ t('aiSignalsTradePlanChart.riskReward') }}:</span>
-          <span class="heading-color">{{ plan().riskRewardRatio | atsPrice: 2 }}</span>
-        </span>
-      }
-    </div>
+    @if (!compact()) {
+      <div class="legend d-flex flex-column flex-gap-10">
+        @for (legendRow of legendRows(); track $index) {
+          <div class="legend-row flex-row flex-nowrap flex-gap-10">
+            @for (level of legendRow.levels; track level.labelKey) {
+              <div class="legend-item d-flex flex-row align-items-center flex-gap-10">
+                <span class="legend-marker-slot d-flex align-items-center justify-content-center">
+                  @if (level.value != null) {
+                    <ats-trade-plan-marker [level]="level.labelKey" [legend]="true"/>
+                  }
+                </span>
+
+                <span class="legend-text d-flex flex-column flex-gap-2">
+                  <span [nzTooltipTitle]="t('aiSignalsTradePlanChart.' + level.tooltipKey)"
+                        class="value-label fs-9"
+                        nz-tooltip
+                  >
+                    {{ t('aiSignalsTradePlanChart.' + level.labelKey) }}
+                  </span>
+                  @if (level.value != null) {
+                    <span class="heading-color fw-bold value">{{ level.value | atsPrice }}</span>
+                  } @else {
+                    <span class="missing-value">—</span>
+                  }
+                </span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
   </div>
 </ng-container>

@@ -1,6 +1,6 @@
 {
   "directions": {
-    "BULLISH": "Bullish",
+    "BULLISH": "Price growth",
     "BEARISH": "Bearish",
     "NEUTRAL": "Neutral"
   },
@@ -12,10 +12,12 @@
     "NO_TRADE": "No trade"
   },
   "rowStatuses": {
+    "notAnalyzed": "Not analyzed",
     "noData": "No signal",
     "error": "Signal not generated",
     "degraded": "Signal generated with limitations"
   },
-  "confidenceLabel": "Confidence",
-  "analystLabel": "Analyst {{number}}"
+  "analystLabel": "AI analyst {{number}}",
+  "indicator": "Indicator",
+  "value": "Value"
 }

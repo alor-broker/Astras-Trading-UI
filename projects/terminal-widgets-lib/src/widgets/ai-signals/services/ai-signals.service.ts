@@ -14,7 +14,7 @@ import {
 } from '@terminal-core-lib/config/api-url-providers';
 import {ErrorHandlerService} from '@terminal-core-lib/features/errors-handler/error-handler.service';
 import {catchHttpError} from '@terminal-core-lib/common/utils/observable/catch-http-error';
-import {SignalBatchResult} from './ai-signals-service.types';
+import {SignalBatchResult, SignalInstrumentsResult} from './ai-signals-service.types';
 
 @Injectable({providedIn: 'root'})
 export class AiSignalsService {
@@ -25,6 +25,13 @@ export class AiSignalsService {
   private readonly coreApiUrlProvider = inject<CoreApiUrlProvider>(CORE_API_URL_PROVIDER);
 
   private readonly baseUrl = `${this.coreApiUrlProvider.apiUrl}/investai`;
+
+  getInstruments(): Observable<SignalInstrumentsResult | null> {
+    return this.httpClient.get<SignalInstrumentsResult>(`${this.baseUrl}/instruments`).pipe(
+      catchHttpError<SignalInstrumentsResult | null>(null, this.errorHandlerService),
+      take(1)
+    );
+  }
 
   // null means either an empty request or a suppressed HTTP error already passed to the error handler
   getLatestSignals(tickers: string[]): Observable<SignalBatchResult | null> {
