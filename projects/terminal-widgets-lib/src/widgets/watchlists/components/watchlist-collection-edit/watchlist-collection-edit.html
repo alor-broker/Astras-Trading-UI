@@ -33,6 +33,7 @@
         <nz-list-item>
           <nz-select
             [(ngModel)]="selectedPresetWatchlist"
+            [ngModelOptions]="{standalone: true}"
             [nzPlaceHolder]="t('instrumentsSettings.standardListPlaceholder')"
             nzShowSearch>
             @for (list of presetLists; track list) {

@@ -9,7 +9,8 @@
     <div class="d-flex flex-column h-100">
       <div class="d-flex flex-row flex-gap-5 flex-no-wrap justify-content-center">
         <nz-select (ngModelChange)="selectedChartType$.next($event)"
-                   [ngModel]="selectedChartType$ | async">
+                   [ngModel]="selectedChartType$ | async"
+                   [ngModelOptions]="{standalone: true}">
           @for (chartType of chartTypes; track chartType) {
             <nz-option [nzLabel]="t('optionBoardOptionBoardChart.' + chartType + '.chartTitle', { fallback: chartType})"
                        [nzValue]="chartType"/>

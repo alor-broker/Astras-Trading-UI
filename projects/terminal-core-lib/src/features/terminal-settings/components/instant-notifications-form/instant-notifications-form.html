@@ -9,6 +9,7 @@
           </div>
           <div>
             <nz-switch (click)="toggleNotificationType(notificationType.value)" [ngModel]="notificationType.enabled"
+                       [ngModelOptions]="{standalone: true}"
                        [nzControl]="true"/>
           </div>
         </div>
@@ -34,6 +35,7 @@
             (ngModelChange)="excludedPortfoliosChange($event)"
             [compareWith]="compareFn"
             [ngModel]="excludedPortfolios"
+            [ngModelOptions]="{standalone: true}"
             [nzPlaceHolder]="t('terminalSettingsInstantNotificationsForm.hiddenPortfoliosForNotificationsPlaceholder')"
             nzAllowClear
             nzMode="multiple"

@@ -92,6 +92,7 @@
                     <nz-form-control>
                       <ats-input-number (ngModelChange)="volumeChange($event, spread.id!)"
                                         [ngModel]="volumes[spread.id!]"
+                                        [ngModelOptions]="{standalone: true}"
                                         placeholder="0"/>
                     </nz-form-control>
                   </nz-form-item>
@@ -136,4 +137,3 @@
               nzNotFoundImage="simple"/>
   </ng-template>
 </ng-container>
-

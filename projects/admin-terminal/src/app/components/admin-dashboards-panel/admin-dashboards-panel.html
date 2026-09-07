@@ -2,6 +2,7 @@
   <nz-radio-group
     (ngModelChange)="selectDashboard($event)"
     [ngModel]="vm.selectedValue"
+    [ngModelOptions]="{standalone: true}"
     nzButtonStyle="solid"
   >
     @for (option of vm.options; track option.value) {

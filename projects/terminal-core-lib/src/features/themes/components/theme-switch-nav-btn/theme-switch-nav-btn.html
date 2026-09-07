@@ -1,6 +1,7 @@
 <nz-switch
   (ngModelChange)="changeTheme()"
   [ngModel]="isDarkThemeApplied"
+  [ngModelOptions]="{standalone: true}"
   [nzCheckedChildren]="checkedTemplate"
   [nzLoading]="isLoading()"
   [nzUnCheckedChildren]="unCheckedTemplate"

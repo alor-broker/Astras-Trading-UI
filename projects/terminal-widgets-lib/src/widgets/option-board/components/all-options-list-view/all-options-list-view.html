@@ -120,6 +120,7 @@
                             <nz-select
                               (ngModelChange)="changeCellLayout(side, index, $event)"
                               [ngModel]="cellLayout.displayParameter"
+                              [ngModelOptions]="{standalone: true}"
                               [nzDropdownMatchSelectWidth]="false"
                               [nzShowArrow]="true"
                               [nzSize]="'small'"
