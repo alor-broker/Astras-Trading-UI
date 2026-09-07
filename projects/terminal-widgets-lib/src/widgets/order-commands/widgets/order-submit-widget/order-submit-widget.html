@@ -34,6 +34,7 @@
                 />
               </div>
               <div>
+                @for (formState of orderFormStates(); track formState.revision) {
                 <nz-tabs #orderTabs nzSize="small" nzTabPosition="top">
                   @if (ordersConfig) {
                     @if (ordersConfig.limitOrder.isSupported) {
@@ -51,10 +52,13 @@
                           </div>
                         }
                         <div>
-                          <ats-limit-order-form [activated]="limitOrderTab.isActive"
+                          <ats-limit-order-form (submitted)="resetRequestedOrder()"
+                                                [activated]="limitOrderTab.isActive"
+                                                [initialValues]="formState.params?.initialValues ?? null"
                                                 [instrument]="currentInstrument"
                                                 [limitOrderConfig]="ordersConfig.limitOrder.orderConfig!"
                                                 [portfolioKey]="currentPortfolio"
+                                                [side]="formState.params?.side ?? null"
                           />
                         </div>
                         @if (settings.enableLimitOrdersFastEditing && settings.limitOrderPriceMoveSteps.length > 0) {
@@ -83,10 +87,13 @@
                             />
                           </div>
                         }
-                        <ats-market-order-form [activated]="marketOrderTab.isActive"
+                        <ats-market-order-form (submitted)="resetRequestedOrder()"
+                                               [activated]="marketOrderTab.isActive"
+                                               [initialValues]="formState.params?.initialValues ?? null"
                                                [instrument]="currentInstrument"
                                                [marketOrderConfig]="ordersConfig.marketOrder.orderConfig!"
                                                [portfolioKey]="currentPortfolio"
+                                               [side]="formState.params?.side ?? null"
                         />
                       </nz-tab>
                     }
@@ -104,9 +111,12 @@
                             />
                           </div>
                         }
-                        <ats-stop-order-form [activated]="stopOrderTab.isActive"
+                        <ats-stop-order-form (submitted)="resetRequestedOrder()"
+                                             [activated]="stopOrderTab.isActive"
+                                             [initialValues]="formState.params?.initialValues ?? null"
                                              [instrument]="currentInstrument"
                                              [portfolioKey]="currentPortfolio"
+                                             [side]="formState.params?.side ?? null"
                         />
                       </nz-tab>
                     }
@@ -128,6 +138,7 @@
                     }
                   }
                 </nz-tabs>
+                }
               </div>
             }
           }

@@ -38,3 +38,5 @@ export interface SubmitOrderContext {
 }
 
 export const SUBMIT_ORDER_CONTEXT = new InjectionToken<SubmitOrderContext>('SubmitOrderContext');
+
+export const SubmitOrderEventKey = 'submitOrder';

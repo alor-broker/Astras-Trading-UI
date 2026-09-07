@@ -2,8 +2,10 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
+  signal,
   viewChild,
   viewChildren,
   ViewEncapsulation
@@ -15,6 +17,7 @@ import {ValueHelper} from '@terminal-core-lib/common/utils/value.helper';
 import {DASHBOARD_CONTEXT_SERVICE} from '@terminal-core-lib/features/dashboard/services/dashboard-context-service.types';
 import {
   asyncScheduler,
+  combineLatest,
   distinctUntilChanged,
   Observable,
   shareReplay,
@@ -66,6 +69,16 @@ import {StopOrderForm} from '@terminal-widgets-lib/widgets/order-commands/compon
 import {OrderSubmitSettings} from '@terminal-widgets-lib/widgets/order-commands/components/order-submit-settings/order-submit-settings';
 import {SetupInstrumentNotifications} from '@terminal-widgets-lib/widgets/order-commands/components/setup-instrument-notifications/setup-instrument-notifications';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {
+  OrderFormType,
+  SubmitOrderEventKey,
+  SubmitOrderParams
+} from '@terminal-core-lib/features/orders/types/submit-order-context.types';
+
+interface OrderFormState {
+  revision: number;
+  params: SubmitOrderParams | null;
+}
 
 @Component({
   selector: 'ats-order-submit-widget',
@@ -126,6 +139,13 @@ export class OrderSubmitWidget extends WidgetBase<OrderSubmitWidgetSettings> imp
 
   private readonly orderTabsChanges$ = toObservable(this.orderTabs);
 
+  private readonly orderFormState = signal<OrderFormState>({
+    revision: 0,
+    params: null
+  });
+
+  protected readonly orderFormStates = computed(() => [this.orderFormState()]);
+
   override ngOnInit(): void {
     super.ngOnInit();
 
@@ -138,7 +158,13 @@ export class OrderSubmitWidget extends WidgetBase<OrderSubmitWidgetSettings> imp
       distinctUntilChanged((previous, current) => this.isEqualOrderSubmitSettings(previous, current)),
       switchMap(settings => this.instrumentService.getInstrument(settings)),
       filter((i): i is Instrument => !!i),
-      tap(() => this.commonParametersService.reset()),
+      tap(instrument => {
+        const requestedParams = this.orderFormState().params;
+        if (requestedParams != null && !this.isRequestedInstrument(instrument, requestedParams)) {
+          this.resetRequestedOrder();
+        }
+        this.commonParametersService.reset();
+      }),
       shareReplay(1)
     );
 
@@ -157,14 +183,49 @@ export class OrderSubmitWidget extends WidgetBase<OrderSubmitWidgetSettings> imp
         });
       });
     });
+
+    this.eventsBusService.subscribe(event => event.key === SubmitOrderEventKey, {replayLast: true}).pipe(
+      map(event => event.payload as SubmitOrderParams | undefined),
+      filter((params): params is SubmitOrderParams => params != null),
+      switchMap(params => combineLatest({
+        instrument: this.currentInstrument$,
+        settings: this.settings$
+      }).pipe(
+        filter(({instrument, settings}) =>
+          (settings.linkToActive ?? true) && this.isRequestedInstrument(instrument, params)
+        ),
+        take(1),
+        map(() => params)
+      )),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(params => {
+      this.commonParametersService.reset();
+      this.orderFormState.update(state => ({
+        revision: state.revision + 1,
+        params
+      }));
+
+      this.eventsBusService.publish({key: SubmitOrderEventKey});
+    });
   }
 
   setCommonParameters(params: Partial<CommonParameters>): void {
     this.commonParametersService.setParameters(params);
   }
 
+  protected resetRequestedOrder(): void {
+    if (this.orderFormState().params == null) {
+      return;
+    }
+
+    this.orderFormState.update(state => ({
+      revision: state.revision + 1,
+      params: null
+    }));
+  }
+
   ngAfterViewInit(): void {
-    this.setDefaultOrderType();
+    this.initOrderTypeSelection();
   }
 
   protected override createSettingsIfMissing(): void {
@@ -183,31 +244,50 @@ export class OrderSubmitWidget extends WidgetBase<OrderSubmitWidgetSettings> imp
     );
   }
 
-  private setDefaultOrderType(): void {
+  private initOrderTypeSelection(): void {
     this.orderTabsChanges$.pipe(
       map(x => x.length > 0 ? x[0] : undefined),
       filter(t => t != null),
-      take(1)
+      subscribeOn(asyncScheduler),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(t => {
+      const requestedOrderType = this.orderFormState().params?.initialValues.orderType;
+      if (requestedOrderType != null) {
+        this.activateOrderType(t, requestedOrderType);
+        return;
+      }
+
       this.settings$.pipe(
         take(1),
         subscribeOn(asyncScheduler)
       ).subscribe(s => {
         if (s.defaultOrderType != null) {
-          switch (s.defaultOrderType) {
-            case 'limit':
-              this.activateCommandTab(t, this.limitOrderTab());
-              break;
-            case 'market':
-              this.activateCommandTab(t, this.marketOrderTab());
-              break;
-            case "stop":
-              this.activateCommandTab(t, this.stopOrderTab());
-              break;
-          }
+          this.activateOrderType(t, s.defaultOrderType as OrderFormType);
         }
       });
     });
+  }
+
+  private isRequestedInstrument(instrument: Instrument, params: SubmitOrderParams): boolean {
+    const requested = params.instrumentKey;
+    return instrument.symbol === requested.symbol
+      && instrument.exchange === requested.exchange
+      && (requested.isin == null || instrument.isin === requested.isin)
+      && (requested.instrumentGroup == null || instrument.instrumentGroup === requested.instrumentGroup);
+  }
+
+  private activateOrderType(tabsSet: NzTabsComponent, orderType: OrderFormType): void {
+    switch (orderType) {
+      case OrderFormType.Limit:
+        this.activateCommandTab(tabsSet, this.limitOrderTab());
+        break;
+      case OrderFormType.Market:
+        this.activateCommandTab(tabsSet, this.marketOrderTab());
+        break;
+      case OrderFormType.Stop:
+        this.activateCommandTab(tabsSet, this.stopOrderTab());
+        break;
+    }
   }
 
   private isEqualOrderSubmitSettings(
