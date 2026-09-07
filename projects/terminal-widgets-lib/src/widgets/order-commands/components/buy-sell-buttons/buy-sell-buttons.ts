@@ -23,6 +23,8 @@ import {Side} from '@terminal-core-lib/common/types/side.types';
 export class BuySellButtons {
   readonly sides = Side;
 
+  readonly side = input<Side | null>(null);
+
   readonly buyBtnDisabled = input(false);
 
   readonly sellBtnDisabled = input(false);

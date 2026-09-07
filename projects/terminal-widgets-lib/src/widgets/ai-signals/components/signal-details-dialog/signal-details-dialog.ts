@@ -15,8 +15,8 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzModalComponent} from 'ng-zorro-antd/modal';
 import {map} from 'rxjs';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
-import {InstrumentKeyHelper} from '@terminal-core-lib/common/utils/instrument-key.helper';
-import {OrdersDialogService} from '@terminal-core-lib/features/orders/services/orders-dialog.service';
+import {SUBMIT_ORDER_CONTEXT} from '@terminal-core-lib/features/orders/types/submit-order-context.types';
+import {SignalOrderHelper} from '../../utils/signal-order.helper';
 import {SignalRowViewModel} from '../../types/ai-signals-view.types';
 import {SignalSummaryViewHelper} from '../../utils/signal-summary-view.helper';
 import {SignalDetailsService} from '../../services/signal-details.service';
@@ -46,11 +46,11 @@ export class SignalDetailsDialog {
 
   private readonly expandedSignal = signal<SignalRowViewModel | null>(null);
 
-  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly submitOrderContext = inject(SUBMIT_ORDER_CONTEXT, {optional: true});
 
-  protected readonly isOrderDialogSupported = this.ordersDialogService.dialogOptions.isNewOrderDialogSupported;
+  private readonly orderParams = computed(() => SignalOrderHelper.toSubmitOrderParams(this.displaySignal()));
 
-  protected readonly canParticipate = computed(() => this.isOrderDialogSupported && this.displaySignal()?.exchange != null);
+  protected readonly canTrade = computed(() => this.submitOrderContext != null && this.orderParams() != null);
 
   protected readonly isMobile$ = inject(DeviceService).deviceInfo$.pipe(
     map(deviceInfo => deviceInfo.isMobile)
@@ -73,19 +73,14 @@ export class SignalDetailsDialog {
     this.expandedSignal.set(this.displaySignal());
   }
 
-  protected openOrderDialog(): void {
-    const signal = this.displaySignal();
-    if (signal?.exchange == null || !this.isOrderDialogSupported) {
+  protected submitOrder(): void {
+    const params = this.orderParams();
+    if (params == null || this.submitOrderContext == null) {
       return;
     }
 
-    this.ordersDialogService.openNewOrderDialog({
-      instrumentKey: InstrumentKeyHelper.toInstrumentKey({
-        symbol: signal.ticker,
-        exchange: signal.exchange
-      }),
-      initialValues: {}
-    });
+    this.close();
+    this.submitOrderContext.submitOrder(params);
   }
 
   protected close(): void {

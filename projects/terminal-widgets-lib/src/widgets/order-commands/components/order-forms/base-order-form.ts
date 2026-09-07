@@ -63,6 +63,8 @@ export abstract class BaseOrderForm implements OnDestroy {
 
   readonly activated = input.required<boolean>();
 
+  readonly side = input<Side | null>(null);
+
   protected readonly portfolioKeyChanges$ = toObservable(this.portfolioKey).pipe(
     startWith(null),
     shareReplay(1)
@@ -89,7 +91,7 @@ export abstract class BaseOrderForm implements OnDestroy {
   }
 
   submitOrder(side: Side): void {
-    if (!this.canSubmit) {
+    if (!this.canSubmit || (this.side() != null && side !== this.side())) {
       return;
     }
     this.requestProcessing$.next({orderSide: side});
