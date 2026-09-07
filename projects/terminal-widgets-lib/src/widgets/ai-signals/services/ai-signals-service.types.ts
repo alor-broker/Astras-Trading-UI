@@ -18,9 +18,11 @@ export enum RiskLevel {
   High = 'HIGH'
 }
 
-// Status values confirmed by the /investai/signals/latest signal-2 response.
+// Status values confirmed by the current /investai/signals/latest contract and response.
 export enum SignalAnalysisStatus {
   Ok = 'ok',
+  NotReady = 'not_ready',
+  Expired = 'expired',
   NotAnalyzed = 'not_analyzed'
 }
 
@@ -46,29 +48,22 @@ export interface ConsensusForecast {
   expected_holding_days?: number | null;
   trade_plan?: TradePlan | null;
   risk_notes?: RiskNotes | null;
-  short_checklist?: Record<string, boolean> | null;
   reasoning?: string | null;
-  consensus_type?: string | null;
-  consensus_confidence?: number | null;
-  models_used?: string | null;
 }
 
 export interface AnalystReasoning {
-  model_name?: string | null;
   direction?: SignalDirection | null;
   action?: SignalAction | null;
   confidence?: number | null;
   expected_holding_days?: number | null;
   trade_plan?: TradePlan | null;
   risk_notes?: RiskNotes | null;
-  short_checklist?: Record<string, boolean> | null;
   reasoning?: string | null;
 }
 
 export interface SignalNews {
   summary?: string | null;
   period_days?: number | null;
-  request_datetime?: string | null;
 }
 
 export interface SignalForecast {
@@ -76,9 +71,6 @@ export interface SignalForecast {
   status?: SignalAnalysisStatus | null;
   status_note?: string | null;
   exchange?: string | null;
-  broker_symbol?: string | null;
-  full_ticker?: string | null;
-  request_datetime?: string | null;
   forecast_date?: string | null;
   current_price?: number | null;
   // May be absent for not_analyzed; otherwise inspect errors and warnings.
@@ -93,63 +85,22 @@ export interface SignalForecast {
   warnings?: string[] | null;
 }
 
-export interface SignalBatchMeta {
-  n_requests?: number | null;
-  n_with_consensus?: number | null;
-  n_no_consensus?: number | null;
-  n_degraded?: number | null;
-  n_not_ready?: number | null;
-  n_not_analyzed?: number | null;
-  include?: {
-    served_from?: string | null;
-    date?: string | null;
-  } | null;
-  notes?: string[] | null;
-}
-
 export interface SignalBatchResult {
-  schema_version?: string | null;
-  generated_at?: string | null;
-  decision_datetime?: string | null;
-  market?: string | null;
-  exchange?: string | null;
-  currency?: string | null;
-  capital_rub?: number | null;
-  capital_amount?: number | null;
-  // signal-2 also includes placeholders with status=not_analyzed for missing tickers.
+  // signal-2 includes a row for every requested instrument, including placeholders.
   signals?: SignalForecast[] | null;
-  meta?: SignalBatchMeta | null;
-}
-
-// GET /investai/instruments has its own coverage statuses, distinct from signal statuses.
-export enum SignalInstrumentStatus {
-  Ok = 'ok',
-  NotReady = 'not_ready',
-  NotAnalyzed = 'not_analyzed'
 }
 
 export interface SignalInstrument {
   ticker: string;
   exchange: string;
-  broker_symbol: string;
-  full_ticker: string;
-  market_profile: string;
-  status: SignalInstrumentStatus;
-  signals_count?: number;
-  consensus_count?: number;
-  first_forecast_date?: string | null;
   last_forecast_date?: string | null;
-  last_consensus_date?: string | null;
+}
+
+export interface SignalInstrumentKey {
+  ticker: string;
+  exchange: string;
 }
 
 export interface SignalInstrumentsResult {
-  schema_version?: string;
-  generated_at?: string | null;
-  exchange?: string;
-  market_profile?: string;
-  currency?: string;
-  count?: number;
-  n_ok?: number;
   instruments?: SignalInstrument[];
-  notes?: string[];
 }

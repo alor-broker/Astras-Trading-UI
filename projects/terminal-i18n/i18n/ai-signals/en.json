@@ -13,6 +13,8 @@
   },
   "rowStatuses": {
     "notAnalyzed": "Not analyzed",
+    "notReady": "Decision not ready",
+    "expired": "Signal expired",
     "noData": "No signal",
     "error": "Signal not generated",
     "degraded": "Signal generated with limitations"

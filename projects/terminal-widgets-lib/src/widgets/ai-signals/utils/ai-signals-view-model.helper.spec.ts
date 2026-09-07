@@ -5,16 +5,18 @@ import {
   RiskLevel,
   SignalBatchResult,
   SignalDirection,
-  SignalForecast
+  SignalForecast,
+  SignalInstrumentKey
 } from '../services/ai-signals-service.types';
 import {SignalRowStatus} from '../types/ai-signals-view.types';
 
 function createSignal(overrides?: Partial<SignalForecast>): SignalForecast {
+  const ticker = overrides?.ticker ?? 'SBER';
+  const exchange = overrides?.exchange === undefined ? 'MOEX' : overrides.exchange;
+
   return {
-    ticker: 'SBER',
-    exchange: 'MOEX',
-    full_ticker: 'SBER:MOEX',
-    request_datetime: '2026-07-01T12:00:00',
+    ticker,
+    exchange,
     forecast_date: '2026-07-01',
     current_price: 101.5,
     consensus: {
@@ -37,10 +39,12 @@ function createSignal(overrides?: Partial<SignalForecast>): SignalForecast {
   };
 }
 
+function requested(...tickers: string[]): SignalInstrumentKey[] {
+  return tickers.map(ticker => ({ticker, exchange: 'MOEX'}));
+}
+
 function createResponse(signals: SignalForecast[]): SignalBatchResult {
   return {
-    schema_version: 'signal-1',
-    generated_at: '2026-07-01T15:30:00',
     signals
   };
 }
@@ -48,14 +52,14 @@ function createResponse(signals: SignalForecast[]): SignalBatchResult {
 describe('AiSignalsViewModelHelper', () => {
   describe('toRowViewModels', () => {
     it('should deduplicate saved tickers and normalize ticker names in the response', () => {
-      const tickers = [' sber ', 'SBER', '', 'gazp'];
+      const tickers = requested(' sber ', 'SBER', '', 'gazp');
       const rows = AiSignalsViewModelHelper.toRowViewModels(tickers, createResponse([
         createSignal({ticker: ' sber '}), createSignal({ticker: 'GAZP'})
       ]));
 
       expect(rows.map(row => row.ticker)).toEqual(['SBER', 'GAZP']);
       expect(rows.every(row => row.status === SignalRowStatus.Ok)).toBe(true);
-      expect(tickers).toEqual([' sber ', 'SBER', '', 'gazp']);
+      expect(tickers).toEqual(requested(' sber ', 'SBER', '', 'gazp'));
     });
 
     it('should handle a signal-2 not_analyzed placeholder without treating it as an error', () => {
@@ -64,18 +68,14 @@ describe('AiSignalsViewModelHelper', () => {
         status: SignalAnalysisStatus.NotAnalyzed,
         status_note: '  инструмент не анализировался — данных в системе нет  ',
         exchange: 'MOEX',
-        broker_symbol: 'MOEX:YNDX',
-        full_ticker: 'YNDX:MOEX',
         errors: [],
         warnings: []
       };
       const response: SignalBatchResult = {
-        schema_version: 'signal-2',
-        signals: [placeholder, createSignal({status: SignalAnalysisStatus.Ok})],
-        meta: {n_requests: 2, n_not_analyzed: 1, n_not_ready: 0}
+        signals: [placeholder, createSignal({status: SignalAnalysisStatus.Ok})]
       };
 
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['YNDX', 'SBER'], response);
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('YNDX', 'SBER'), response);
       const skipped = rows[1];
 
       expect(rows.map(row => row.ticker)).toEqual(['SBER', 'YNDX']);
@@ -93,7 +93,7 @@ describe('AiSignalsViewModelHelper', () => {
     it('should not expose stale consensus values when status explicitly says not_analyzed', () => {
       const signal = createSignal({status: SignalAnalysisStatus.NotAnalyzed});
 
-      const [row] = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const [row] = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       expect(row.status).toBe(SignalRowStatus.NotAnalyzed);
       expect(row.confidence).toBeNull();
@@ -103,10 +103,34 @@ describe('AiSignalsViewModelHelper', () => {
       expect(row.expectedHoldingDays).toBeNull();
     });
 
+    it.each([
+      [SignalAnalysisStatus.NotReady, SignalRowStatus.NotReady],
+      [SignalAnalysisStatus.Expired, SignalRowStatus.Expired]
+    ])('should keep %s non-interactive and ignore stale consensus data', (apiStatus, rowStatus) => {
+      const signal = createSignal({
+        status: apiStatus,
+        status_note: 'server status reason'
+      });
+
+      const [row] = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
+
+      expect(row).toMatchObject({
+        status: rowStatus,
+        statusNote: 'server status reason',
+        direction: null,
+        action: null,
+        confidence: null,
+        expectedProfitPercent: null,
+        expectedHoldingDays: null
+      });
+      expect(AiSignalsViewModelHelper.canOpenDetails(row)).toBe(false);
+      expect(AiSignalsViewModelHelper.toDetailsViewModel(row)).toBeNull();
+    });
+
     it('should not treat status ok as success when consensus is absent', () => {
       const signal = createSignal({status: SignalAnalysisStatus.Ok, consensus: null});
 
-      const [row] = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const [row] = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       expect(row.status).toBe(SignalRowStatus.Error);
       expect(AiSignalsViewModelHelper.canOpenDetails(row)).toBe(true);
@@ -115,7 +139,7 @@ describe('AiSignalsViewModelHelper', () => {
     it('should preserve degraded analysis when status ok includes warnings', () => {
       const signal = createSignal({status: SignalAnalysisStatus.Ok, warnings: ['partial analysis']});
 
-      const [row] = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const [row] = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       expect(row.status).toBe(SignalRowStatus.Degraded);
       expect(row.confidence).toBe(8);
@@ -125,7 +149,7 @@ describe('AiSignalsViewModelHelper', () => {
     it('should fall back to consensus diagnostics for an unknown server status', () => {
       const signal = createSignal({status: 'future_status' as SignalAnalysisStatus});
 
-      const [row] = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const [row] = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       expect(row.status).toBe(SignalRowStatus.Ok);
       expect(AiSignalsViewModelHelper.canOpenDetails(row)).toBe(true);
@@ -134,14 +158,16 @@ describe('AiSignalsViewModelHelper', () => {
     it('should use explicit exchange and normalize an empty status note', () => {
       const signal = createSignal({exchange: ' spbx ', status_note: '  '});
 
-      const [row] = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const [row] = AiSignalsViewModelHelper.toRowViewModels([
+        {ticker: 'SBER', exchange: 'SPBX'}
+      ], createResponse([signal]));
 
       expect(row.exchange).toBe('SPBX');
       expect(row.statusNote).toBeNull();
     });
 
     it('should map a signal with consensus to an Ok row', () => {
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([createSignal()]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([createSignal()]));
 
       expect(rows).toHaveLength(1);
       expect(rows[0].status).toBe(SignalRowStatus.Ok);
@@ -158,7 +184,7 @@ describe('AiSignalsViewModelHelper', () => {
     });
 
     it('should mark a requested ticker missing from the response as NoData', () => {
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER', 'GAZP'], createResponse([createSignal()]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER', 'GAZP'), createResponse([createSignal()]));
 
       expect(rows).toHaveLength(2);
       expect(rows[1].ticker).toBe('GAZP');
@@ -172,7 +198,7 @@ describe('AiSignalsViewModelHelper', () => {
         errors: ['market_data collection failed']
       });
 
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       expect(rows[0].status).toBe(SignalRowStatus.Error);
       expect(rows[0].raw).not.toBeNull();
@@ -181,7 +207,7 @@ describe('AiSignalsViewModelHelper', () => {
     it('should mark a signal with warnings as Degraded', () => {
       const signal = createSignal({warnings: ['news_service unavailable']});
 
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       expect(rows[0].status).toBe(SignalRowStatus.Degraded);
     });
@@ -189,22 +215,23 @@ describe('AiSignalsViewModelHelper', () => {
     it('should mark a signal with consensus and non-empty errors as Degraded', () => {
       const signal = createSignal({errors: ['fundamental collection failed']});
 
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       expect(rows[0].status).toBe(SignalRowStatus.Degraded);
     });
 
-    it('should leave missing exchanges unknown instead of guessing from full_ticker or defaulting to MOEX', () => {
+    it('should preserve the requested instrument key when a response cannot be matched', () => {
       const response = createResponse([
-        createSignal({ticker: 'SBER', exchange: undefined, full_ticker: 'SBER:SPBX'}),
-        createSignal({ticker: 'GAZP', exchange: ' ', full_ticker: null})
+        createSignal({ticker: 'SBER', exchange: null}),
+        createSignal({ticker: 'GAZP', exchange: ' '})
       ]);
 
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER', 'GAZP', 'LKOH'], response);
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER', 'GAZP', 'LKOH'), response);
 
-      expect(rows[0].exchange).toBeNull();
-      expect(rows[1].exchange).toBeNull();
-      expect(rows[2].exchange).toBeNull();
+      expect(rows[0].exchange).toBe('MOEX');
+      expect(rows[1].exchange).toBe('MOEX');
+      expect(rows[2].exchange).toBe('MOEX');
+      expect(rows.every(row => row.status === SignalRowStatus.NoData)).toBe(true);
     });
 
     it('should preserve the requested order for equal confidence and match case-insensitively', () => {
@@ -213,14 +240,14 @@ describe('AiSignalsViewModelHelper', () => {
         createSignal({ticker: 'SBER'})
       ]);
 
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['sber', ' gazp '], response);
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('sber', ' gazp '), response);
 
       expect(rows.map(row => row.ticker)).toEqual(['SBER', 'GAZP']);
       expect(rows.every(row => row.status === SignalRowStatus.Ok)).toBe(true);
     });
 
     it('should sort by descending confidence without changing the watchlist or response order', () => {
-      const tickers = ['LOW', 'HIGH', 'MEDIUM'];
+      const tickers = requested('LOW', 'HIGH', 'MEDIUM');
       const signals = [
         createSignal({ticker: 'LOW', consensus: {confidence: 2}}),
         createSignal({ticker: 'HIGH', consensus: {confidence: 10}}),
@@ -230,7 +257,7 @@ describe('AiSignalsViewModelHelper', () => {
       const rows = AiSignalsViewModelHelper.toRowViewModels(tickers, createResponse(signals));
 
       expect(rows.map(row => row.ticker)).toEqual(['HIGH', 'MEDIUM', 'LOW']);
-      expect(tickers).toEqual(['LOW', 'HIGH', 'MEDIUM']);
+      expect(tickers).toEqual(requested('LOW', 'HIGH', 'MEDIUM'));
       expect(signals.map(signal => signal.ticker)).toEqual(['LOW', 'HIGH', 'MEDIUM']);
     });
 
@@ -243,7 +270,7 @@ describe('AiSignalsViewModelHelper', () => {
       ];
 
       const rows = AiSignalsViewModelHelper.toRowViewModels(
-        ['UNKNOWN', 'INVALID', 'ERROR', 'MISSING', 'ZERO'], createResponse(signals)
+        requested('UNKNOWN', 'INVALID', 'ERROR', 'MISSING', 'ZERO'), createResponse(signals)
       );
 
       expect(rows.map(row => row.ticker)).toEqual(['ZERO', 'UNKNOWN', 'INVALID', 'ERROR', 'MISSING']);
@@ -257,7 +284,7 @@ describe('AiSignalsViewModelHelper', () => {
         trade_plan: {entry_price: 100, take_profit_1: 90}
       }});
 
-      const [row] = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const [row] = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
       const details = AiSignalsViewModelHelper.toDetailsViewModel(row);
 
       expect(row.expectedProfitPercent).toBe(10);
@@ -267,7 +294,7 @@ describe('AiSignalsViewModelHelper', () => {
     });
 
     it('should not invent profit or holding days when the API omits them', () => {
-      const [row] = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([
+      const [row] = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([
         createSignal({consensus: {action: SignalAction.BuyPullback}})
       ]));
 
@@ -276,7 +303,7 @@ describe('AiSignalsViewModelHelper', () => {
     });
 
     it('should mark all tickers as NoData for a response without signals', () => {
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER', 'GAZP'], {});
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER', 'GAZP'), {});
 
       expect(rows).toHaveLength(2);
       expect(rows.every(row => row.status === SignalRowStatus.NoData)).toBe(true);
@@ -291,7 +318,7 @@ describe('AiSignalsViewModelHelper', () => {
         }
       });
 
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       expect(rows[0].status).toBe(SignalRowStatus.Ok);
       expect(rows[0].direction).toBeNull();
@@ -301,13 +328,13 @@ describe('AiSignalsViewModelHelper', () => {
 
   describe('toDetailsViewModel', () => {
     it('should return null for a NoData row', () => {
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([]));
 
       expect(AiSignalsViewModelHelper.toDetailsViewModel(rows[0])).toBeNull();
     });
 
     it('should map consensus details including the trade plan', () => {
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([createSignal()]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([createSignal()]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 
@@ -331,7 +358,6 @@ describe('AiSignalsViewModelHelper', () => {
           trade_plan: {entry_price: 100, take_profit_1: 90}
         },
         analysts: [{
-          model_name: 'private-model',
           direction: SignalDirection.Bearish,
           action: SignalAction.SellRally,
           confidence: 0,
@@ -341,7 +367,7 @@ describe('AiSignalsViewModelHelper', () => {
           reasoning: 'Analyst reasoning'
         }]
       });
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 
@@ -351,7 +377,6 @@ describe('AiSignalsViewModelHelper', () => {
         index: 1, confidence: 0, expectedHoldingDays: 3, expectedProfitPercent: 10,
         newsRisk: RiskLevel.Low, gapRisk: RiskLevel.High, avoidReasons: ['risk'], reasoning: 'Analyst reasoning'
       });
-      expect(details!.analysts[0]).not.toHaveProperty('model_name');
     });
 
     it('should not expose a trade plan for a NO_TRADE signal', () => {
@@ -363,7 +388,7 @@ describe('AiSignalsViewModelHelper', () => {
           trade_plan: null
         }
       });
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 
@@ -376,7 +401,7 @@ describe('AiSignalsViewModelHelper', () => {
         errors: ['market_data collection failed'],
         warnings: ['news_service unavailable']
       });
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 
@@ -385,7 +410,7 @@ describe('AiSignalsViewModelHelper', () => {
     });
 
     it('should hide optional blocks that are absent in the signal', () => {
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([createSignal()]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([createSignal()]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 
@@ -412,7 +437,7 @@ describe('AiSignalsViewModelHelper', () => {
           }
         }
       });
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 
@@ -441,7 +466,7 @@ describe('AiSignalsViewModelHelper', () => {
           }
         }
       });
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 
@@ -451,7 +476,7 @@ describe('AiSignalsViewModelHelper', () => {
 
     it('should hide the fundamental block when the server reports it as unavailable', () => {
       const signal = createSignal({fundamental: {available: false}});
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 
@@ -466,7 +491,7 @@ describe('AiSignalsViewModelHelper', () => {
           custom_block: {value: 1}
         }
       });
-      const rows = AiSignalsViewModelHelper.toRowViewModels(['SBER'], createResponse([signal]));
+      const rows = AiSignalsViewModelHelper.toRowViewModels(requested('SBER'), createResponse([signal]));
 
       const details = AiSignalsViewModelHelper.toDetailsViewModel(rows[0]);
 

@@ -19,12 +19,15 @@ import {NzSpinComponent} from 'ng-zorro-antd/spin';
 import {concat, map, of, switchMap} from 'rxjs';
 import {InstrumentIcon} from '@terminal-core-lib/common/components/instrument-icon/instrument-icon';
 import {AiSignalsService} from '../../services/ai-signals.service';
-import {AiSignalsViewModelHelper} from '../../utils/ai-signals-view-model.helper';
-import {SignalInstrumentsHelper} from '../../utils/signal-instruments.helper';
+import {
+  SignalInstrumentOption,
+  SignalInstrumentsHelper
+} from '../../utils/signal-instruments.helper';
+import {SignalInstrumentKey} from '../../services/ai-signals-service.types';
 
 interface InstrumentsState {
   loading: boolean;
-  tickers: string[] | null;
+  instruments: SignalInstrumentOption[] | null;
 }
 
 @Component({
@@ -45,13 +48,13 @@ interface InstrumentsState {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TickerListManager {
-  readonly tickers = input.required<string[]>();
+  readonly instruments = input.required<SignalInstrumentKey[]>();
 
-  readonly tickersChanged = output<string[]>();
+  readonly instrumentsChanged = output<SignalInstrumentKey[]>();
 
   protected readonly isOpen = signal(false);
 
-  protected readonly draftTickers = signal<ReadonlySet<string>>(new Set());
+  protected readonly draftInstrumentKeys = signal<ReadonlySet<string>>(new Set());
 
   private readonly refreshVersion = signal(0);
 
@@ -62,32 +65,38 @@ export class TickerListManager {
   // Closing the dialog or destroying the component cancels an in-flight request.
   protected readonly instrumentsState = toSignal(toObservable(this.loadRequest).pipe(
     switchMap(request => request == null
-      ? of<InstrumentsState>({loading: true, tickers: null})
+      ? of<InstrumentsState>({loading: true, instruments: null})
       : concat(
-        of<InstrumentsState>({loading: true, tickers: null}),
+        of<InstrumentsState>({loading: true, instruments: null}),
         this.aiSignalsService.getInstruments().pipe(
           map(response => ({
             loading: false,
-            tickers: response == null ? null : SignalInstrumentsHelper.availableTickers(response.instruments)
+            instruments: response == null ? null : SignalInstrumentsHelper.availableInstruments(response.instruments)
           }))
         )
       ))
-  ), {initialValue: {loading: true, tickers: null} as InstrumentsState});
+  ), {initialValue: {loading: true, instruments: null} as InstrumentsState});
 
-  protected readonly selectedTickers = computed(() =>
-    (this.instrumentsState().tickers ?? []).filter(ticker => this.draftTickers().has(ticker))
-  );
+  protected readonly selectedInstruments = computed(() => {
+    const availableInstruments = this.instrumentsState().instruments ?? [];
+    const selectedKeys = this.draftInstrumentKeys();
 
-  protected readonly allSelected = computed(() => this.selectedTickers().length > 0
-    && this.selectedTickers().length === this.instrumentsState().tickers?.length);
+    return SignalInstrumentsHelper.resolveAvailableInstruments(
+      availableInstruments.filter(instrument => selectedKeys.has(SignalInstrumentsHelper.toKey(instrument))),
+      availableInstruments
+    );
+  });
 
-  protected readonly partiallySelected = computed(() => this.selectedTickers().length > 0 && !this.allSelected());
+  protected readonly allSelected = computed(() => this.selectedInstruments().length > 0
+    && this.selectedInstruments().length === this.instrumentsState().instruments?.length);
+
+  protected readonly partiallySelected = computed(() => this.selectedInstruments().length > 0 && !this.allSelected());
 
   protected readonly canApply = computed(() => !this.instrumentsState().loading
-    && this.instrumentsState().tickers != null);
+    && this.instrumentsState().instruments != null);
 
   protected open(): void {
-    this.draftTickers.set(new Set(this.tickers().map(ticker => AiSignalsViewModelHelper.normalizeTicker(ticker))));
+    this.draftInstrumentKeys.set(new Set(this.instruments().map(instrument => SignalInstrumentsHelper.toKey(instrument))));
     this.isOpen.set(true);
   }
 
@@ -100,19 +109,26 @@ export class TickerListManager {
   }
 
   protected toggleAll(checked: boolean): void {
-    this.draftTickers.set(new Set(checked ? this.instrumentsState().tickers ?? [] : []));
+    this.draftInstrumentKeys.set(new Set(checked
+      ? (this.instrumentsState().instruments ?? []).map(instrument => SignalInstrumentsHelper.toKey(instrument))
+      : []));
   }
 
-  protected toggleTicker(ticker: string, checked: boolean): void {
-    this.draftTickers.update(tickers => {
-      const next = new Set(tickers);
+  protected toggleTicker(instrument: SignalInstrumentOption, checked: boolean): void {
+    this.draftInstrumentKeys.update(instrumentKeys => {
+      const next = new Set(instrumentKeys);
+      const key = SignalInstrumentsHelper.toKey(instrument);
       if (checked) {
-        next.add(ticker);
+        next.add(key);
       } else {
-        next.delete(ticker);
+        next.delete(key);
       }
       return next;
     });
+  }
+
+  protected isSelected(instrument: SignalInstrumentOption): boolean {
+    return this.draftInstrumentKeys().has(SignalInstrumentsHelper.toKey(instrument));
   }
 
   protected apply(): void {
@@ -120,7 +136,7 @@ export class TickerListManager {
       return;
     }
 
-    this.tickersChanged.emit(this.selectedTickers());
+    this.instrumentsChanged.emit(this.selectedInstruments());
     this.close();
   }
 }

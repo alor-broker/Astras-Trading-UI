@@ -9,7 +9,7 @@ describe('SignalOrderHelper', () => {
   function row(action = SignalAction.BuyPullback, plan: TradePlan | null = {
     entry_price: 100, take_profit_1: 110, take_profit_2: 120, stop_loss: 90
   }, overrides: Partial<SignalForecast> = {}): SignalRowViewModel {
-    return AiSignalsViewModelHelper.toRowViewModels(['SBER'], {signals: [{
+    return AiSignalsViewModelHelper.toRowViewModels([{ticker: 'SBER', exchange: 'MOEX'}], {signals: [{
       ticker: 'SBER', exchange: 'MOEX', current_price: 105,
       consensus: {action, trade_plan: plan}, ...overrides
     }]})[0];

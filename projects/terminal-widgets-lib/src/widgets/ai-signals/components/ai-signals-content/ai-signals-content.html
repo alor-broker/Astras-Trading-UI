@@ -2,8 +2,8 @@
   <div class="container d-flex flex-column flex-gap-5 h-100 p-5">
     <div class="toolbar d-flex flex-row flex-wrap align-items-center justify-content-between flex-gap-5">
       <ats-ticker-list-manager
-        (tickersChanged)="saveTickers($event)"
-        [tickers]="(savedTickers$ | async) ?? []"
+        (instrumentsChanged)="saveInstruments($event)"
+        [instruments]="(savedInstruments$ | async) ?? []"
       />
 
       @if (displayStatus() === displayStatuses.Loaded) {
@@ -48,7 +48,7 @@
         }
         @case (displayStatuses.Loaded) {
           <div class="d-flex flex-column flex-gap-5">
-            @for (row of rows() ?? []; track row.ticker) {
+            @for (row of rows() ?? []; track row.exchange + ':' + row.ticker) {
               <ats-signal-list-item
                 (instrumentSelected)="instrumentSelected.emit($event)"
                 (openDetails)="openDetails(row)"

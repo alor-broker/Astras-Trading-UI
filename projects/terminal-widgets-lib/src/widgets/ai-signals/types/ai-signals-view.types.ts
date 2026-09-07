@@ -2,19 +2,22 @@ import {
   RiskLevel,
   SignalAction,
   SignalDirection,
-  SignalForecast
+  SignalForecast,
+  SignalInstrumentKey
 } from '../services/ai-signals-service.types';
 
-export const aiSignalsTickersRecordKey = 'tickers';
+export const aiSignalsInstrumentsRecordKey = 'instruments';
 
-export interface TickersStateRecord {
-  tickers: string[];
+export interface InstrumentsStateRecord {
+  instruments: SignalInstrumentKey[];
 }
 
 export enum SignalRowStatus {
   Ok = 'ok',
   Degraded = 'degraded',
   Error = 'error',
+  Expired = 'expired',
+  NotReady = 'notReady',
   NotAnalyzed = 'notAnalyzed',
   NoData = 'noData'
 }
@@ -58,7 +61,6 @@ export interface TradePlanPriceRange {
 }
 
 export interface AnalystViewModel extends SignalSummaryViewModel {
-  // 1-based ordinal shown to the user instead of the API model name (kept anonymous by design)
   index: number;
 }
 

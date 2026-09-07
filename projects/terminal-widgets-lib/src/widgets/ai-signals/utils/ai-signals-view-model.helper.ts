@@ -6,6 +6,7 @@ import {
   SignalBatchResult,
   SignalDirection,
   SignalForecast,
+  SignalInstrumentKey,
   TradePlan
 } from '../services/ai-signals-service.types';
 import {
@@ -18,18 +19,30 @@ import {
 
 import {TradePlanViewHelper} from './trade-plan-view.helper';
 
+interface RequestedSignalInstrument {
+  key: string;
+  ticker: string;
+  exchange: string;
+}
+
 export class AiSignalsViewModelHelper {
   static normalizeTicker(value: string): string {
     return value.trim().toUpperCase();
   }
 
-  static toRowViewModels(requestedTickers: string[], response: SignalBatchResult): SignalRowViewModel[] {
+  static toRowViewModels(requestedTickers: readonly SignalInstrumentKey[], response: SignalBatchResult): SignalRowViewModel[] {
     const signals = response.signals ?? [];
 
-    return [...new Set(requestedTickers
-      .map(ticker => this.normalizeTicker(ticker))
-      .filter(ticker => ticker.length > 0))]
-      .map(ticker => this.toRowViewModel(ticker, signals))
+    const requestedInstruments = new Map<string, RequestedSignalInstrument>();
+    for (const value of requestedTickers) {
+      const instrument = this.toRequestedInstrument(value);
+      if (instrument != null) {
+        requestedInstruments.set(instrument.key, instrument);
+      }
+    }
+
+    return [...requestedInstruments.values()]
+      .map(instrument => this.toRowViewModel(instrument, signals))
       .sort((left, right) => (right.confidence ?? -1) - (left.confidence ?? -1));
   }
 
@@ -82,7 +95,15 @@ export class AiSignalsViewModelHelper {
   }
 
   static canOpenDetails(row: SignalRowViewModel): boolean {
-    return row.raw != null && row.status !== SignalRowStatus.NotAnalyzed && row.status !== SignalRowStatus.NoData;
+    if (row.raw == null
+      || row.status === SignalRowStatus.NotAnalyzed
+      || row.status === SignalRowStatus.NotReady
+      || row.status === SignalRowStatus.Expired
+      || row.status === SignalRowStatus.NoData) {
+      return false;
+    }
+
+    return true;
   }
 
   static formatForecastDate(forecastDate: string | null | undefined): string | null {
@@ -99,16 +120,13 @@ export class AiSignalsViewModelHelper {
     return `${parts[2]}.${parts[1]}.${parts[0]}`;
   }
 
-  private static toRowViewModel(requestedTicker: string, signals: SignalForecast[]): SignalRowViewModel {
-    const signal = signals.find(s => (
-      typeof s.ticker === 'string'
-      && this.normalizeTicker(s.ticker) === requestedTicker
-    )) ?? null;
+  private static toRowViewModel(requestedInstrument: RequestedSignalInstrument, signals: SignalForecast[]): SignalRowViewModel {
+    const signal = signals.find(s => this.toSignalKey(s) === requestedInstrument.key) ?? null;
 
     if (signal == null) {
       return {
-        ticker: requestedTicker,
-        exchange: null,
+        ticker: requestedInstrument.ticker,
+        exchange: requestedInstrument.exchange,
         status: SignalRowStatus.NoData,
         statusNote: null,
         direction: null,
@@ -123,7 +141,9 @@ export class AiSignalsViewModelHelper {
     }
 
     const isNotAnalyzed = signal.status === SignalAnalysisStatus.NotAnalyzed;
-    const consensus = isNotAnalyzed ? null : signal.consensus ?? null;
+    const isNotReady = signal.status === SignalAnalysisStatus.NotReady;
+    const isExpired = signal.status === SignalAnalysisStatus.Expired;
+    const consensus = isNotAnalyzed || isNotReady || isExpired ? null : signal.consensus ?? null;
     const warnings = this.toNonEmptyStrings(signal.warnings);
     const errors = this.toNonEmptyStrings(signal.errors);
     const action = this.toEnumValue(consensus?.action, SignalAction);
@@ -132,6 +152,10 @@ export class AiSignalsViewModelHelper {
     let status = SignalRowStatus.Ok;
     if (isNotAnalyzed) {
       status = SignalRowStatus.NotAnalyzed;
+    } else if (isExpired) {
+      status = SignalRowStatus.Expired;
+    } else if (isNotReady) {
+      status = SignalRowStatus.NotReady;
     } else if (consensus == null) {
       status = SignalRowStatus.Error;
     } else if (warnings.length > 0 || errors.length > 0) {
@@ -139,7 +163,7 @@ export class AiSignalsViewModelHelper {
     }
 
     return {
-      ticker: requestedTicker,
+      ticker: this.toNonEmptyString(signal.ticker)?.toUpperCase() ?? requestedInstrument.ticker,
       exchange: this.toNonEmptyString(signal.exchange)?.toUpperCase() ?? null,
       status,
       statusNote: this.toNonEmptyString(signal.status_note),
@@ -152,6 +176,29 @@ export class AiSignalsViewModelHelper {
       forecastDateDisplay: this.formatForecastDate(signal.forecast_date),
       raw: signal
     };
+  }
+
+  private static toRequestedInstrument(value: SignalInstrumentKey): RequestedSignalInstrument | null {
+    const exchange = value.exchange.trim().toUpperCase();
+    const ticker = this.normalizeTicker(value.ticker);
+    if (exchange.length === 0 || ticker.length === 0 || exchange.includes(':') || ticker.includes(':')) {
+      return null;
+    }
+
+    return {
+      key: `${exchange}:${ticker}`,
+      exchange,
+      ticker
+    };
+  }
+
+  private static toSignalKey(signal: SignalForecast): string | null {
+    const exchange = this.toNonEmptyString(signal.exchange)?.toUpperCase() ?? null;
+    const ticker = this.toNonEmptyString(signal.ticker)?.toUpperCase() ?? null;
+
+    return exchange != null && ticker != null
+      ? `${exchange}:${ticker}`
+      : null;
   }
 
   private static toTradePlanViewModel(tradePlan: TradePlan | null | undefined): TradePlanViewModel | null {
@@ -172,7 +219,6 @@ export class AiSignalsViewModelHelper {
       : null;
   }
 
-  // the API model name is intentionally dropped here; analysts are shown to the user only by their ordinal
   private static toAnalystViewModel(
     analyst: AnalystReasoning | null,
     index: number,

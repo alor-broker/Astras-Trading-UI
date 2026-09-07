@@ -1,4 +1,4 @@
-import {SignalInstrument, SignalInstrumentStatus} from '../services/ai-signals-service.types';
+import {SignalInstrument} from '../services/ai-signals-service.types';
 import {SignalInstrumentsHelper} from './signal-instruments.helper';
 
 describe('SignalInstrumentsHelper', () => {
@@ -6,10 +6,6 @@ describe('SignalInstrumentsHelper', () => {
     return {
       ticker: 'SBER',
       exchange: 'MOEX',
-      broker_symbol: 'MOEX:SBER',
-      full_ticker: 'SBER:MOEX',
-      market_profile: 'moex',
-      status: SignalInstrumentStatus.Ok,
       last_forecast_date: '2026-09-04',
       ...overrides
     };
@@ -24,7 +20,11 @@ describe('SignalInstrumentsHelper', () => {
     ];
     const original = structuredClone(instruments);
 
-    expect(SignalInstrumentsHelper.availableTickers(instruments)).toEqual(['GAZP', 'ROSN', 'SBER']);
+    expect(SignalInstrumentsHelper.availableInstruments(instruments)).toEqual([
+      {ticker: 'GAZP', exchange: 'MOEX'},
+      {ticker: 'ROSN', exchange: 'MOEX'},
+      {ticker: 'SBER', exchange: 'MOEX'}
+    ]);
     expect(instruments).toEqual(original);
   });
 
@@ -38,18 +38,27 @@ describe('SignalInstrumentsHelper', () => {
       createInstrument()
     ];
 
-    expect(SignalInstrumentsHelper.availableTickers(instruments)).toEqual(['SBER']);
-  });
-
-  it('should include not_ready instruments with a forecast date even without a consensus', () => {
-    const instrument = createInstrument({status: SignalInstrumentStatus.NotReady, last_consensus_date: null});
-
-    expect(SignalInstrumentsHelper.availableTickers([instrument])).toEqual(['SBER']);
+    expect(SignalInstrumentsHelper.availableInstruments(instruments)).toEqual([{ticker: 'SBER', exchange: 'MOEX'}]);
   });
 
   it('should return an empty list for missing or empty coverage', () => {
-    expect(SignalInstrumentsHelper.availableTickers(undefined)).toEqual([]);
-    expect(SignalInstrumentsHelper.availableTickers(null)).toEqual([]);
-    expect(SignalInstrumentsHelper.availableTickers([])).toEqual([]);
+    expect(SignalInstrumentsHelper.availableInstruments(undefined)).toEqual([]);
+    expect(SignalInstrumentsHelper.availableInstruments(null)).toEqual([]);
+    expect(SignalInstrumentsHelper.availableInstruments([])).toEqual([]);
+  });
+
+  it('should resolve selections by exchange and ticker', () => {
+    const available = SignalInstrumentsHelper.availableInstruments([
+      createInstrument({ticker: 'SBER', exchange: 'MOEX'}),
+      createInstrument({ticker: 'AAPL', exchange: 'ITS'})
+    ]);
+
+    expect(SignalInstrumentsHelper.resolveAvailableInstruments([
+      {ticker: 'aapl', exchange: 'its'},
+      {ticker: 'SBER', exchange: 'MOEX'}
+    ], available)).toEqual([
+      {ticker: 'AAPL', exchange: 'ITS'},
+      {ticker: 'SBER', exchange: 'MOEX'}
+    ]);
   });
 });

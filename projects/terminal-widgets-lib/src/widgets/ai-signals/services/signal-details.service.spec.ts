@@ -18,13 +18,13 @@ describe('SignalDetailsService', () => {
     TestBed.configureTestingModule({providers: [SignalDetailsService, quotes.provider]});
     service = TestBed.inject(SignalDetailsService);
     scheduler = new TestScheduler((actual, expected) => expect(actual).toEqual(expected));
-    row = AiSignalsViewModelHelper.toRowViewModels(['SBER'], {
+    row = AiSignalsViewModelHelper.toRowViewModels([{ticker: 'SBER', exchange: 'MOEX'}], {
       signals: [{
         ticker: 'SBER',
         exchange: 'MOEX',
         current_price: 100,
         consensus: {action: SignalAction.BuyPullback, trade_plan: {entry_price: 100, take_profit_1: 110}},
-        analysts: [{model_name: 'Analyst', trade_plan: {entry_price: 99, take_profit_1: 109}}],
+        analysts: [{trade_plan: {entry_price: 99, take_profit_1: 109}}],
         fundamental: {available: true, latest: {Revenue: {value_mln: 10}}},
         technical_analysis: {tf_86400: {basic_data: {price: 100}}}
       }]
@@ -126,7 +126,7 @@ describe('SignalDetailsService', () => {
   });
 
   it('should not request a quote for a closed dialog or a skipped signal', () => {
-    const skippedRow = AiSignalsViewModelHelper.toRowViewModels(['YNDX'], {
+    const skippedRow = AiSignalsViewModelHelper.toRowViewModels([{ticker: 'YNDX', exchange: 'MOEX'}], {
       signals: [{ticker: 'YNDX', status: SignalAnalysisStatus.NotAnalyzed}]
     })[0];
 

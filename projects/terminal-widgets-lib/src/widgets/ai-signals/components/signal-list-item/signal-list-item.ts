@@ -54,7 +54,11 @@ export class SignalListItem {
   protected readonly accent = computed<SignalAccent>(() => {
     const row = this.row();
 
-    if (row.status === SignalRowStatus.NoData || row.status === SignalRowStatus.Error || row.status === SignalRowStatus.NotAnalyzed) {
+    if (row.status === SignalRowStatus.NoData
+      || row.status === SignalRowStatus.Error
+      || row.status === SignalRowStatus.Expired
+      || row.status === SignalRowStatus.NotReady
+      || row.status === SignalRowStatus.NotAnalyzed) {
       return 'inactive';
     }
 

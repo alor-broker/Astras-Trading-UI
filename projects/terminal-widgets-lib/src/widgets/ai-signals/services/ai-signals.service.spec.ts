@@ -42,7 +42,7 @@ describe('AiSignalsService', () => {
 
   describe('getInstruments', () => {
     it('should request the full instrument coverage without restricting tickers or status', async () => {
-      const response: SignalInstrumentsResult = {instruments: [], count: 0};
+      const response: SignalInstrumentsResult = {instruments: []};
 
       const resultPromise = firstValueFrom(service.getInstruments());
 
@@ -66,23 +66,29 @@ describe('AiSignalsService', () => {
 
   describe('getLatestSignals', () => {
     it('should request every selected ticker without the former ten-ticker limit', async () => {
-      const tickers = Array.from({length: 48}, (value, index) => `TICKER${index}`);
-      const resultPromise = firstValueFrom(service.getLatestSignals(tickers));
+      const instruments = Array.from({length: 48}, (value, index) => ({ticker: `TICKER${index}`, exchange: 'MOEX'}));
+      const resultPromise = firstValueFrom(service.getLatestSignals(instruments));
 
       const request = httpTestingController.expectOne(r => r.url === expectedRequestUrl);
-      expect(request.request.params.get('tickers')).toBe(tickers.join(','));
+      expect(request.request.params.get('tickers')).toBe(
+        instruments.map(instrument => `${instrument.exchange}:${instrument.ticker}`).join(',')
+      );
       request.flush({signals: []});
 
       await expect(resultPromise).resolves.toEqual({signals: []});
     });
 
     it('should request the latest signals with normalized tickers', async () => {
-      const response: SignalBatchResult = {schema_version: 'signal-1', signals: []};
+      const response: SignalBatchResult = {signals: []};
 
-      const resultPromise = firstValueFrom(service.getLatestSignals([' sber ', 'GAZP', 'sber', '']));
+      const resultPromise = firstValueFrom(service.getLatestSignals([
+        {ticker: ' sber ', exchange: ' moex '},
+        {ticker: 'GAZP', exchange: 'MOEX'},
+        {ticker: 'sber', exchange: 'MOEX'}
+      ]));
 
       const request = httpTestingController.expectOne(
-        r => r.url === expectedRequestUrl && r.params.get('tickers') === 'SBER,GAZP'
+        r => r.url === expectedRequestUrl && r.params.get('tickers') === 'MOEX:SBER,MOEX:GAZP'
       );
       expect(request.request.method).toBe('GET');
       request.flush(response);
@@ -90,15 +96,32 @@ describe('AiSignalsService', () => {
       await expect(resultPromise).resolves.toEqual(response);
     });
 
+    it('should keep instruments with the same ticker on different exchanges distinct', async () => {
+      const resultPromise = firstValueFrom(service.getLatestSignals([
+        {ticker: 'SBER', exchange: 'MOEX'},
+        {ticker: 'SBER', exchange: 'ITS'}
+      ]));
+
+      const request = httpTestingController.expectOne(
+        r => r.url === expectedRequestUrl && r.params.get('tickers') === 'MOEX:SBER,ITS:SBER'
+      );
+      request.flush({signals: []});
+
+      await expect(resultPromise).resolves.toEqual({signals: []});
+    });
+
     it('should emit null without an HTTP call for an empty tickers list', async () => {
-      const result = await firstValueFrom(service.getLatestSignals([' ', '']));
+      const result = await firstValueFrom(service.getLatestSignals([
+        {ticker: ' ', exchange: 'MOEX'},
+        {ticker: 'SBER', exchange: ' '}
+      ]));
 
       expect(result).toBeNull();
       httpTestingController.expectNone(() => true);
     });
 
     it('should emit null and report the error to the error handler on HTTP failure', async () => {
-      const resultPromise = firstValueFrom(service.getLatestSignals(['SBER']));
+      const resultPromise = firstValueFrom(service.getLatestSignals([{ticker: 'SBER', exchange: 'MOEX'}]));
 
       const request = httpTestingController.expectOne(r => r.url === expectedRequestUrl);
       request.flush({detail: 'db read failed'}, {status: 500, statusText: 'Internal Server Error'});

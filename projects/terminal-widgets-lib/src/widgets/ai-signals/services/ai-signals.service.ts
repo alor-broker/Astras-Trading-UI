@@ -14,7 +14,11 @@ import {
 } from '@terminal-core-lib/config/api-url-providers';
 import {ErrorHandlerService} from '@terminal-core-lib/features/errors-handler/error-handler.service';
 import {catchHttpError} from '@terminal-core-lib/common/utils/observable/catch-http-error';
-import {SignalBatchResult, SignalInstrumentsResult} from './ai-signals-service.types';
+import {
+  SignalBatchResult,
+  SignalInstrumentKey,
+  SignalInstrumentsResult
+} from './ai-signals-service.types';
 
 @Injectable({providedIn: 'root'})
 export class AiSignalsService {
@@ -34,14 +38,14 @@ export class AiSignalsService {
   }
 
   // null means either an empty request or a suppressed HTTP error already passed to the error handler
-  getLatestSignals(tickers: string[]): Observable<SignalBatchResult | null> {
-    const normalizedTickers = Array.from(new Set(
-      tickers
-        .map(ticker => ticker.trim().toUpperCase())
-        .filter(ticker => ticker.length > 0)
+  getLatestSignals(instruments: readonly SignalInstrumentKey[]): Observable<SignalBatchResult | null> {
+    const qualifiedTickers = Array.from(new Set(
+      instruments
+        .map(instrument => this.toQualifiedTicker(instrument))
+        .filter((ticker): ticker is string => ticker != null)
     ));
 
-    if (normalizedTickers.length === 0) {
+    if (qualifiedTickers.length === 0) {
       return of(null);
     }
 
@@ -49,12 +53,23 @@ export class AiSignalsService {
       `${this.baseUrl}/signals/latest`,
       {
         params: {
-          tickers: normalizedTickers.join(',')
+          tickers: qualifiedTickers.join(',')
         }
       }
     ).pipe(
       catchHttpError<SignalBatchResult | null>(null, this.errorHandlerService),
       take(1)
     );
+  }
+
+  private toQualifiedTicker(instrument: SignalInstrumentKey): string | null {
+    const exchange = instrument.exchange.trim().toUpperCase();
+    const ticker = instrument.ticker.trim().toUpperCase();
+
+    if (exchange.length === 0 || ticker.length === 0 || exchange.includes(':') || ticker.includes(':')) {
+      return null;
+    }
+
+    return `${exchange}:${ticker}`;
   }
 }

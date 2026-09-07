@@ -19,12 +19,12 @@
     @let state = instrumentsState();
     @if (state.loading) {
       <div class="text-center p-10"><nz-spin nzSimple/></div>
-    } @else if (state.tickers == null) {
+    } @else if (state.instruments == null) {
       <div class="d-flex flex-column align-items-center flex-gap-10">
         <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiSignalsTickerListManager.loadFailed')"/>
         <button (click)="retry()" nz-button type="button">{{ t('aiSignalsTickerListManager.retry') }}</button>
       </div>
-    } @else if (state.tickers.length === 0) {
+    } @else if (state.instruments.length === 0) {
       <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiSignalsTickerListManager.noInstruments')"/>
     } @else {
       <div class="selection-toolbar d-flex flex-row flex-wrap align-items-center justify-content-between flex-gap-10">
@@ -33,17 +33,17 @@
           {{ t('aiSignalsTickerListManager.selectAll') }}
         </label>
         <span class="selection-hint" aria-live="polite">
-          {{ t('aiSignalsTickerListManager.selectionCount', {count: selectedTickers().length, total: state.tickers.length}) }}
+          {{ t('aiSignalsTickerListManager.selectionCount', {count: selectedInstruments().length, total: state.instruments.length}) }}
         </span>
       </div>
       <div class="instruments-list d-flex flex-column" role="group" [attr.aria-label]="t('aiSignalsTickerListManager.dialogTitle')">
-        @for (ticker of state.tickers; track ticker) {
+        @for (instrument of state.instruments; track instrument.exchange + ':' + instrument.ticker) {
           <label nz-checkbox class="instrument-option"
-                 [nzChecked]="draftTickers().has(ticker)"
-                 (nzCheckedChange)="toggleTicker(ticker, $event)">
+                 [nzChecked]="isSelected(instrument)"
+                 (nzCheckedChange)="toggleTicker(instrument, $event)">
             <span class="d-flex flex-row align-items-center flex-gap-10">
-              <ats-instrument-icon [symbol]="ticker" [size]="24" aria-hidden="true"/>
-              <span>{{ ticker }}</span>
+              <ats-instrument-icon [symbol]="instrument.ticker" [size]="24" aria-hidden="true"/>
+              <span>{{ instrument.ticker }}</span>
             </span>
           </label>
         }

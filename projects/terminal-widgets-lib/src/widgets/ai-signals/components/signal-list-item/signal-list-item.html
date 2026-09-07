@@ -37,6 +37,24 @@
           <span class="fs-9">{{ t('aiSignals.rowStatuses.notAnalyzed') }}</span>
         </span>
       }
+      @case (rowStatuses.NotReady) {
+        <span class="text-color status-message d-flex flex-row align-items-center flex-gap-5"
+              nz-tooltip #notReadyStatusHint="nzTooltip" tabindex="0"
+              [nzTooltipTitle]="r.statusNote"
+              (focus)="notReadyStatusHint.show()" (blur)="notReadyStatusHint.hide()">
+          <span nz-icon nzType="info-circle"></span>
+          <span class="fs-9">{{ t('aiSignals.rowStatuses.notReady') }}</span>
+        </span>
+      }
+      @case (rowStatuses.Expired) {
+        <span class="warning-color status-message d-flex flex-row align-items-center flex-gap-5"
+              nz-tooltip #expiredStatusHint="nzTooltip" tabindex="0"
+              [nzTooltipTitle]="r.statusNote"
+              (focus)="expiredStatusHint.show()" (blur)="expiredStatusHint.hide()">
+          <span nz-icon nzType="clock-circle"></span>
+          <span class="fs-9">{{ t('aiSignals.rowStatuses.expired') }}</span>
+        </span>
+      }
       @case (rowStatuses.Error) {
         <span class="sell-color status-message d-flex flex-row align-items-center flex-gap-5">
           <span nz-icon nzType="close-circle"></span>
