@@ -3,6 +3,22 @@
   "warningsTitle": "Warnings",
   "analysisDetailsButton": "Analysis details",
   "participateButton": "Trade",
+  "disclaimer": {
+    "title": "Legal information",
+    "showFullText": "Learn more",
+    "paragraphs": {
+      "recommendation": "This information does not constitute a personalized investment recommendation. The financial instruments and transactions mentioned herein may not be suitable for your financial circumstances, investment objectives, risk tolerance, or expected return. ALOR + LLC shall not be liable for losses arising from investment decisions made on the basis of the information contained herein.",
+      "information": "The information presented herein is for informational purposes only and does not constitute, and should not be regarded as, an offer or advice to buy or sell securities, contracts, currencies, or other investment products offered by ALOR + LLC. Although the information has been obtained from sources that ALOR + LLC considers reliable, ALOR + LLC, its governing bodies, and employees do not guarantee its accuracy, completeness, or timeliness. Information, estimates, forecasts, and other opinions may be changed without prior notice.",
+      "investmentRisks": "Investments in financial instruments, foreign currencies, and derivative financial instruments involve risk. The value of financial instruments may rise or fall. Returns are not guaranteed. Past investment performance does not determine or guarantee future results.",
+      "clientResponsibility": "When submitting instructions, the client should independently assess the appropriateness, economic rationale, legal and other consequences, risks, and benefits of a transaction or other operation involving securities, contracts, currencies, or other investment products offered by ALOR + LLC.",
+      "insurance": "Financial instruments are not bank deposits. Funds and financial instruments transferred to a broker as part of brokerage services are not insured under Federal Law No. 177-FZ of December 23, 2003, On Insurance of Deposits in Banks of the Russian Federation.",
+      "clarification": "If the contents of this material, the features of a financial instrument, or the possible legal, tax, or financial consequences of a transaction are unclear to you, you are advised to obtain the necessary additional information before entering into the transaction.",
+      "contacts": "For any questions or additional information, please contact the Company’s employees: 8 800 775 11 99, +7 495 980-24-98.",
+      "copyrightRestriction": "Unauthorized copying, reproduction, or distribution of this material, in whole or in part, without the copyright holder’s written permission is prohibited.",
+      "copyright": "© 2026 ALOR + LLC.",
+      "company": "Limited Liability Company ALOR +. Taxpayer Identification Number 7709221010, Primary State Registration Number 1027700075941. Brokerage services are provided by ALOR + LLC under professional securities market participant license No. 077-04827-100000 for brokerage activities, dated March 13, 2001, with no expiration date. Official website: alorbroker.ru."
+    }
+  },
   "riskSection": "Risks",
   "analystsSection": "AI analyst opinions",
   "newsSection": "News summary",

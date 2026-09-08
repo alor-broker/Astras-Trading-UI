@@ -7,7 +7,7 @@
               ? 'ats-ai-signal-details-dialog full-screen'
               : 'ats-ai-signal-details-dialog'"
             [nzContent]="content"
-            [nzFooter]="canTrade() ? footer : null"
+            [nzFooter]="null"
             [nzMaskClosable]="true"
             [nzTitle]="title"
             [nzVisible]="displaySignal() !== null"
@@ -48,12 +48,15 @@
           </button>
         }
       </div>
-    }
-  </ng-template>
 
-  <ng-template #footer>
-    <button (click)="submitOrder()" nz-button nzType="primary" type="button">
-      {{ td('aiSignalsDetails.participateButton') }}
-    </button>
+      <div class="dialog-actions d-flex">
+        <ats-signal-disclaimer/>
+        @if (canTrade()) {
+          <button (click)="submitOrder()" nz-button nzType="primary" type="button">
+            {{ td('aiSignalsDetails.participateButton') }}
+          </button>
+        }
+      </div>
+    }
   </ng-template>
 </ng-container>

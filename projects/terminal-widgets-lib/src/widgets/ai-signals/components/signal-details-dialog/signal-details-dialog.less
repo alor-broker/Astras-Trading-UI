@@ -4,12 +4,41 @@
   max-width: calc(100vw - 16px);
 
   .ant-modal-content .ant-modal-body {
-    // Nested analysis tabs must not take over scrolling from the dialog body.
-    .scrollable(var(--ats-scrollbar-color));
-    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 6px;
+
+    .dialog-content {
+      // Nested analysis tabs must not take over scrolling from the dialog body.
+      .scrollable(var(--ats-scrollbar-color));
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+    }
 
     .ant-tabs-content-holder {
       overflow: visible;
+    }
+
+    .dialog-actions {
+      flex-direction: column;
+      align-items: stretch;
+      flex: 0 0 auto;
+      gap: 10px;
+      min-width: 0;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--ats-border-color-split);
+
+      ats-signal-disclaimer {
+        min-width: 0;
+      }
+
+      > button {
+        align-self: center;
+        width: 50%;
+      }
     }
   }
 
@@ -42,6 +71,17 @@
     &:focus-visible {
       color: var(--ats-warning-color);
       background-color: color-mix(in srgb, var(--ats-primary-color) 10%, transparent);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .ats-ai-signal-details-dialog .ant-modal-content .ant-modal-body .dialog-actions {
+    gap: 20px;
+
+    > button {
+      align-self: stretch;
+      width: 100%;
     }
   }
 }

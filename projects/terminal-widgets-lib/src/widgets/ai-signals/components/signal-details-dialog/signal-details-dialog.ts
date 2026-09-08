@@ -23,6 +23,7 @@ import {SignalDetailsService} from '../../services/signal-details.service';
 import {signalDetailsProviders} from '../../services/signal-details.providers';
 import {SignalAnalysisDetails} from '../signal-analysis-details/signal-analysis-details';
 import {SignalSummary} from '../signal-summary/signal-summary';
+import {SignalDisclaimer} from '../signal-disclaimer/signal-disclaimer';
 
 @Component({
   selector: 'ats-signal-details-dialog',
@@ -34,6 +35,7 @@ import {SignalSummary} from '../signal-summary/signal-summary';
     NzIconDirective,
     NzModalComponent,
     SignalAnalysisDetails,
+    SignalDisclaimer,
     SignalSummary
   ],
   templateUrl: './signal-details-dialog.html',
