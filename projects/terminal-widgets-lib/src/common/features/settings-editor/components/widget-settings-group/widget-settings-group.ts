@@ -48,9 +48,6 @@ export class WidgetSettingsGroup {
   /** Device restriction; combined with `isVisible` into `effectiveVisible`. */
   readonly device = input<SettingsDeviceVisibility>(SettingsDeviceVisibility.All);
 
-  /** Optional nz-icon type for the navigation item. */
-  readonly icon = input<string | null>(null);
-
   private readonly isMobile = toSignal(
     inject(DeviceService).deviceInfo$.pipe(map(info => info.isMobile)),
     {initialValue: false}

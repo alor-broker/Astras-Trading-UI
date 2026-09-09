@@ -5,52 +5,12 @@ ats-widget-settings-layout-desktop {
 
   .layout {
     .widget-settings-layout();
-
-    .header {
-      flex: 0 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-      border-bottom: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-split);
-      .title {
-        flex: 1 1 auto;
-        min-width: 0;
-        margin: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .close {
-        flex: 0 0 auto;
-      }
-    }
+    min-height: min(392px, calc(80vh - 48px));
+    max-height: calc(80vh - 48px);
 
     .body {
       flex-direction: row;
       gap: 12px;
     }
   }
-}
-
-.ats-widget-settings-dialog-panel {
-  ats-widget-settings-layout-desktop {
-    .layout {
-      width: 640px;
-      max-width: 90vw;
-      min-height: min(440px, 80vh);
-      max-height: 80vh;
-      padding: 12px 16px;
-      background: var(--ats-component-background);
-      border: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-split);
-      border-radius: var(--ats-border-radius-base);
-      box-shadow: 0 4px 12px var(--ats-shadow-color-inverse);
-    }
-  }
-}
-
-.ats-widget-settings-dialog-backdrop {
-  background-color: var(--ats-modal-mask-bg);
 }

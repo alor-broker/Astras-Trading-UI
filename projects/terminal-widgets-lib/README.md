@@ -58,7 +58,7 @@
 
 Пример виджета для ориентира: `projects/terminal-widgets-lib/src/widgets/orders-basket`.
 
-Для новых и мигрированных виджетов содержимое `WidgetSkeleton` передавай через именованные projection-slot'ы: `atsWidgetHeader`, `atsWidgetContent` и, для нового редактора настроек, `atsWidgetSettingsEditor`. Инпуты `[header]`, `[content]`, `[settings]` и `[showSettings]`, принимающие `TemplateRef`, являются deprecated fallback для legacy-виджетов.
+Шапку, основное содержимое и новый редактор настроек `WidgetSkeleton` передавай явно через TemplateRef-инпуты `[header]`, `[content]` и `[settingsEditorContent]`. Skeleton управляет состоянием открытия и lifecycle: создаёт settings-компонент только при открытых настройках и при необходимости уничтожает основной content.
 
 ## Структура папки виджета
 

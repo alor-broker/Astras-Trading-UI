@@ -1,16 +1,60 @@
 @import 'scrollable';
 
 ats-widget-skeleton {
+  position: relative;
+  isolation: isolate;
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
   border: 2px solid transparent;
   border-radius: var(--ats-border-radius-base);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    background:
+      radial-gradient(
+        circle at 15% 0%,
+        color-mix(in srgb, var(--ats-primary-color) 28%, transparent),
+        transparent 48%
+      ),
+      radial-gradient(
+        circle at 100% 100%,
+        color-mix(in srgb, var(--ats-purple-color) 20%, transparent),
+        transparent 55%
+      ),
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--ats-primary-color) 18%, transparent) 0%,
+        color-mix(in srgb, var(--ats-purple-color) 8%, transparent) 100%
+      );
+    box-shadow: inset 0 0 32px color-mix(in srgb, var(--ats-primary-color) 16%, transparent);
+    transition: opacity 160ms ease;
+  }
 
   // Highlight the widget while its settings dialog is open (desktop).
   &.ats-widget-settings-active {
-    border-color: var(--ats-border-color-active);
+    border-color: color-mix(
+      in srgb,
+      var(--ats-primary-color) 55%,
+      var(--ats-border-color-base)
+    );
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--ats-primary-color) 18%, transparent),
+      0 0 12px color-mix(in srgb, var(--ats-primary-color) 12%, transparent);
+
+    &::after {
+      opacity: 0.5;
+    }
   }
 
   .blocked-widget-overlay {

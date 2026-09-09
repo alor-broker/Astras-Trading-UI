@@ -2,35 +2,42 @@
   <ng-content/>
 </ng-template>
 
-@if (isOpen()) {
-  @if (isMobile()) {
-    <ats-widget-settings-layout-mobile
-      (auxToggleSelect)="selectAuxToggle($event)"
-      (saveClick)="saveClick.emit()"
-      [activeAuxToggle]="activeAuxToggle()"
-      [auxToggles]="auxToggles()"
-      [canSave]="canSave()"
-      [defaultContent]="defaultContentTpl"
-      [groups]="visibleGroups()"
-    />
-  } @else if (showPlaceholder()) {
-    <ats-widget-settings-placeholder/>
-  }
+@if (isMobile()) {
+  <ats-widget-settings-layout-mobile
+    (saveClick)="saveClick.emit()"
+    [canSave]="canSave()"
+    [defaultContent]="defaultContentTpl"
+    [groups]="visibleGroups()"
+  />
 }
 
 <ng-template #desktopContentTpl>
   <ats-widget-settings-layout-desktop
-    (auxToggleSelect)="selectAuxToggle($event)"
     (cancelClick)="cancelClick.emit()"
     (copyClick)="copyClick.emit()"
     (saveClick)="saveClick.emit()"
-    [activeAuxToggle]="activeAuxToggle()"
-    [auxToggles]="auxToggles()"
     [canCopy]="canCopy()"
     [canSave]="canSave()"
     [defaultContent]="defaultContentTpl"
     [groups]="visibleGroups()"
     [showCopy]="showCopy()"
-    [widgetInstance]="widgetInstance()"
   />
 </ng-template>
+
+<ng-template #desktopTitleTpl>
+  <ng-container *transloco="let t; scope: 'shared/widget-settings'">
+    {{ t('sharedWidgetSettings.dialogTitle', { widgetName: widgetName() }) }}
+  </ng-container>
+</ng-template>
+
+<nz-modal
+  (nzOnCancel)="cancelClick.emit()"
+  [nzContent]="desktopContentTpl"
+  [nzDraggable]="true"
+  [nzFooter]="null"
+  [nzMaskClosable]="false"
+  [nzTitle]="desktopTitleTpl"
+  [nzVisible]="!isMobile()"
+  [nzWidth]="640"
+  nzWrapClassName="ats-widget-settings-dialog"
+/>

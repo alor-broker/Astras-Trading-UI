@@ -1,31 +1,6 @@
 <ng-container *transloco="let t; scope: 'shared/widget-settings'">
   <div class="layout">
-    <header class="header">
-      <h3 class="title">
-        {{ t('sharedWidgetSettings.dialogTitle', { widgetName: widgetName() }) }}
-      </h3>
-      <button
-        (click)="cancelClick.emit()"
-        [attr.aria-label]="t('cancelBtnText')"
-        class="close"
-        nz-button
-        nzSize="small"
-        nzType="text"
-      >
-        <span nz-icon nzTheme="outline" nzType="close"></span>
-      </button>
-    </header>
-
     <div class="body">
-      @if (auxToggles().length > 0) {
-        <ats-widget-settings-aux-panel
-          (toggleSelect)="auxToggleSelect.emit($event)"
-          [activeToggle]="activeAuxToggle()"
-          [orientation]="AuxPanelOrientation.Vertical"
-          [toggles]="auxToggles()"
-        />
-      }
-
       @if (hasGroups()) {
         <ats-widget-settings-group-selector [groups]="groups()"/>
       } @else {

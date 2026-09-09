@@ -1,9 +1,5 @@
 <div class="widget-header">
-  @if (projectedHeader()) {
-    <ng-content select="[atsWidgetHeader]"/>
-  } @else if (header(); as headerTpl) {
-    <ng-container *ngTemplateOutlet="headerTpl"/>
-  }
+  <ng-container *ngTemplateOutlet="header()"/>
 </div>
 @if (isBlockWidget()) {
   <div class="blocked-widget-overlay"></div>
@@ -14,25 +10,27 @@
     <ng-container *ngTemplateOutlet="settingsEl"/>
   </div>
 } @else {
-  <div
-    (mousedown)="$event.stopPropagation()"
-    [class.hidden]="shouldHideWidgetContent()"
-    [class.hide-scroll]="!showContentScroll()"
-    [class.show-scroll]="showContentScroll()"
-    class="widget-content widget-main-content"
-  >
-    @if (projectedContent()) {
-      <ng-content select="[atsWidgetContent]"/>
-    } @else if (content(); as contentTpl) {
-      <ng-container *ngTemplateOutlet="contentTpl"/>
-    }
-  </div>
+  @if (!shouldHideWidgetContent()) {
+    <div
+      (mousedown)="$event.stopPropagation()"
+      [class.hide-scroll]="!showContentScroll()"
+      [class.show-scroll]="showContentScroll()"
+      class="widget-content"
+    >
+      <ng-container *ngTemplateOutlet="content()"/>
+    </div>
+  }
 
-  <div
-    (mousedown)="$event.stopPropagation()"
-    [class.hidden]="!shouldHideWidgetContent()"
-    class="widget-content show-scroll widget-settings-editor-content"
-  >
-    <ng-content select="[atsWidgetSettingsEditor]"/>
-  </div>
+  @if (showSettings() && settingsEditorContent(); as settingsEditorTpl) {
+    <div
+      (mousedown)="$event.stopPropagation()"
+      [class.hidden]="!shouldHideWidgetContent()"
+      class="widget-content show-scroll"
+    >
+      @if (!isMobile() && showPlaceholder()) {
+        <ats-widget-settings-placeholder/>
+      }
+      <ng-container *ngTemplateOutlet="settingsEditorTpl"/>
+    </div>
+  }
 }

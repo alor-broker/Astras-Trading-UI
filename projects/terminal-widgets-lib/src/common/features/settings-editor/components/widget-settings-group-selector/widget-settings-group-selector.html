@@ -14,9 +14,6 @@
         nzTooltipPlacement="right"
         type="button"
       >
-        @if (group.icon(); as icon) {
-          <span [nzType]="icon" class="nav-icon" nz-icon nzTheme="outline"></span>
-        }
         <span class="nav-title">{{ group.title() }}</span>
         @if (!group.isValid()) {
           <span

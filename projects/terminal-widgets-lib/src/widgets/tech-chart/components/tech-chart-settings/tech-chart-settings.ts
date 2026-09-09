@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import {
   FormBuilder,
-  FormsModule,
   ReactiveFormsModule,
   Validators
 } from "@angular/forms";
@@ -22,18 +21,10 @@ import {
 } from "ng-zorro-antd/slider";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from 'ng-zorro-antd/form';
-import {NzSwitchComponent} from 'ng-zorro-antd/switch';
-import {
   NzOptionComponent,
   NzSelectComponent
 } from 'ng-zorro-antd/select';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzColorPickerComponent} from 'ng-zorro-antd/color-picker';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {AsyncPipe} from '@angular/common';
 import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.base';
@@ -54,6 +45,10 @@ import {SyntheticInstrumentsHelper} from '@terminal-widgets-lib/widgets/tech-cha
 import {InstrumentEqualityComparer} from '@terminal-core-lib/common/utils/instrument-key.helper';
 import {InstrumentBoardSelect} from '@terminal-core-lib/features/instruments/components/instrument-board-select/instrument-board-select';
 import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/components/inline-instrument-search/inline-instrument-search';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
+import {WidgetSettingsSwitch} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-switch/widget-settings-switch';
+import {WidgetSettingsColorPicker} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-color-picker/widget-settings-color-picker';
 
 @Component({
   selector: 'ats-tech-chart-settings',
@@ -61,21 +56,18 @@ import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/co
   imports: [
     WidgetSettingsEditor,
     WidgetSettingsGroup,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem,
+    WidgetSettingsSwitch,
+    WidgetSettingsColorPicker,
     SettingsDeviceVisible,
     TranslocoDirective,
-    FormsModule,
-    NzFormDirective,
     ReactiveFormsModule,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    NzFormControlComponent,
     NzInputDirective,
-    NzSwitchComponent,
     NzSelectComponent,
     NzOptionComponent,
     NzIconDirective,
     NzSliderComponent,
-    NzColorPickerComponent,
     NzTypographyComponent,
     AsyncPipe,
     InstrumentBoardSelect,

@@ -2,56 +2,81 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  contentChild,
+  inject,
   input,
+  model,
   TemplateRef,
   ViewEncapsulation
 } from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
-import {WidgetSettingsEditorRef} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-editor-ref.types';
-import {
-  WidgetSkeletonContentSlot,
-  WidgetSkeletonHeaderSlot
-} from '@terminal-widgets-lib/common/components/widget-skeleton/widget-skeleton-slots.directive';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {map} from 'rxjs';
+import {DeviceService} from '@terminal-core-lib/common/services/device.service';
+import {WidgetSettingsPlaceholder} from './widget-settings-placeholder/widget-settings-placeholder';
 
 @Component({
   selector: 'ats-widget-skeleton',
-  imports: [NgTemplateOutlet],
+  imports: [
+    NgTemplateOutlet,
+    WidgetSettingsPlaceholder
+  ],
   templateUrl: './widget-skeleton.html',
   styleUrl: './widget-skeleton.less',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.ats-widget-settings-active]': 'isSettingsActive()'
+  }
 })
 export class WidgetSkeleton {
-  /** @deprecated Use the `atsWidgetHeader` named slot. */
-  readonly header = input<TemplateRef<unknown> | null>(null);
+  readonly header = input.required<TemplateRef<unknown>>();
 
-  /** @deprecated Use the `atsWidgetContent` named slot. */
-  readonly content = input<TemplateRef<unknown> | null>(null);
+  readonly content = input.required<TemplateRef<unknown>>();
+
+  /** Settings editor template instantiated while settings are open. */
+  readonly settingsEditorContent = input<TemplateRef<unknown> | null>(null);
 
   /** @deprecated Legacy inline settings fallback for widgets not yet migrated to the editor. */
   readonly settings = input<TemplateRef<unknown> | null>();
 
-  /** @deprecated Legacy inline settings visibility. */
-  readonly showSettings = input(false);
+  readonly showSettings = model(false);
+
+  /** Replace regular desktop content with a placeholder while settings are open. */
+  readonly showPlaceholder = input(false);
 
   readonly isBlockWidget = input.required<boolean>();
 
   readonly showContentScroll = input(false);
 
-  /** Editor-based widgets: a ref that controls regular-content visibility. */
-  readonly settingsEditor = input<WidgetSettingsEditorRef | null>(null);
-
-  protected readonly projectedHeader = contentChild(WidgetSkeletonHeaderSlot);
-
-  protected readonly projectedContent = contentChild(WidgetSkeletonContentSlot);
+  protected readonly isMobile = toSignal(
+    inject(DeviceService).deviceInfo$.pipe(map(info => info.isMobile)),
+    {initialValue: false}
+  );
 
   protected readonly shouldHideWidgetContent = computed(() =>
-    this.settingsEditor()?.shouldHideWidgetContent() ?? false
+    this.settingsEditorContent() != null
+    && this.showSettings()
+    && (this.isMobile() || this.showPlaceholder())
+  );
+
+  protected readonly isSettingsActive = computed(() =>
+    this.settingsEditorContent() != null
+    && this.showSettings()
+    && !this.isMobile()
   );
 
   /** Legacy settings template rendered instead of the regular widget content. */
   protected readonly inlineSettings = computed<TemplateRef<unknown> | null>(() =>
-    this.showSettings() ? (this.settings() ?? null) : null
+    this.settingsEditorContent() == null && this.showSettings()
+      ? (this.settings() ?? null)
+      : null
   );
+
+  toggleSettings(): void {
+    this.showSettings.update(value => !value);
+  }
+
+  closeSettings(): void {
+    this.showSettings.set(false);
+  }
 }

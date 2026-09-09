@@ -1,15 +1,6 @@
 <ng-container *transloco="let t; scope: 'shared/widget-settings'">
   <div class="layout">
     <div class="body">
-      @if (auxToggles().length > 0) {
-        <ats-widget-settings-aux-panel
-          (toggleSelect)="auxToggleSelect.emit($event)"
-          [activeToggle]="activeAuxToggle()"
-          [orientation]="AuxPanelOrientation.Horizontal"
-          [toggles]="auxToggles()"
-        />
-      }
-
       @if (hasGroups()) {
         <div class="sections">
           @for (group of groups(); track group.groupId()) {

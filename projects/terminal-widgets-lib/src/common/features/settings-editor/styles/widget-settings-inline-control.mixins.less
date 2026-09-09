@@ -1,0 +1,44 @@
+.widget-settings-inline-control() {
+  > nz-form-item {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+
+    .ant-form-item-row {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 4px;
+    }
+
+    > nz-form-control,
+    .ant-form-item-control {
+      flex: none;
+      max-width: none;
+      min-width: 0;
+      width: auto;
+    }
+
+    > nz-form-control.ant-form-item-control:first-child {
+      width: auto;
+    }
+
+    > nz-form-label,
+    .ant-form-item-label {
+      flex: 1 1 auto;
+      max-width: 100%;
+      min-width: 0;
+      width: auto;
+      padding: 4px 0 0;
+      text-align: left;
+
+      > label {
+        height: auto;
+        white-space: normal;
+      }
+    }
+  }
+}

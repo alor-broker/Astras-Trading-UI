@@ -1,13 +1,11 @@
 import {
   Component,
-  computed,
   DestroyRef,
   inject,
   input,
   InputSignal,
   OnInit,
   output,
-  viewChild,
   ChangeDetectionStrategy
 } from '@angular/core';
 import {WidgetSettings} from '@terminal-core-lib/features/widget-settings/widget-settings.types';
@@ -19,8 +17,6 @@ import {
 import {WidgetSettingsService} from '@terminal-core-lib/features/widget-settings/services/widget-settings.service';
 import {DesktopManageDashboardsService} from '@terminal-core-lib/features/dashboard/desktop/services/desktop-manage-dashboards.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
-import {WidgetSettingsEditorRef} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-editor-ref.types';
 
 export interface WidgetSettingsForm {
   guid: InputSignal<string>;
@@ -37,8 +33,10 @@ export interface WidgetSettingsForm {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
-export abstract class WidgetSettingsBase<T extends WidgetSettings> implements WidgetSettingsForm, OnInit, WidgetSettingsEditorRef {
+export abstract class WidgetSettingsBase<T extends WidgetSettings> implements WidgetSettingsForm, OnInit {
   readonly settingsChange = output();
+
+  readonly closeRequested = output();
 
   readonly guid = input.required<string>();
 
@@ -49,13 +47,6 @@ export abstract class WidgetSettingsBase<T extends WidgetSettings> implements Wi
   protected readonly manageDashboardsService = inject(DesktopManageDashboardsService, {optional: true});
 
   protected readonly destroyRef = inject(DestroyRef);
-
-  protected readonly settingsEditor = viewChild(WidgetSettingsEditor);
-
-  /** Whether the skeleton must hide the widget's regular content. */
-  readonly shouldHideWidgetContent = computed(() =>
-    this.settingsEditor()?.shouldHideWidgetContent() ?? false
-  );
 
   get showCopy(): boolean {
     return this.manageDashboardsService != null;
@@ -79,41 +70,18 @@ export abstract class WidgetSettingsBase<T extends WidgetSettings> implements Wi
     });
   }
 
-  /**
-   * Single entry point the widget calls (gear click) to open the editor; the
-   * editor decides the container. On mobile the gear stays visible, so a second
-   * click toggles the editor closed.
-   */
-  openSettings(trigger: HTMLElement): void {
-    const editor = this.settingsEditor();
-
-    if (editor != null && editor.isOpen()) {
-      editor.close();
-      return;
-    }
-
-    // Re-read the current saved settings into the form on every open, so any
-    // unsaved edits from a previous (cancelled) session are discarded.
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.setCurrentFormValues(settings);
-      this.settingsEditor()?.open(trigger);
-    });
-  }
-
   updateSettings(): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
       this.settingsService.updateSettings(initialSettings.guid, this.getUpdatedSettings(initialSettings));
       this.settingsChange.emit();
-      this.settingsEditor()?.close();
+      this.closeRequested.emit();
     });
   }
 
   requestClose(): void {
-    this.settingsEditor()?.close();
+    this.closeRequested.emit();
   }
 
   createWidgetCopy(): void {

@@ -17,7 +17,7 @@ import {SettingsDeviceVisibilityHelper} from '@terminal-widgets-lib/common/featu
  * provided visibility rule. Unifies device-based hiding of individual settings
  * fields with the group-level `device` input, replacing ad-hoc `@if (isMobile)`.
  *
- * Usage: `<nz-form-item *atsSettingsDeviceVisible="SettingsDeviceVisibility.DesktopOnly">`
+ * Usage: `<ats-widget-settings-switch *atsSettingsDeviceVisible="SettingsDeviceVisibility.DesktopOnly">`
  */
 @Directive({
   selector: '[atsSettingsDeviceVisible]'

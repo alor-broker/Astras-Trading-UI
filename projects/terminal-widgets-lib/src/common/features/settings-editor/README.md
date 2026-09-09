@@ -1,8 +1,8 @@
 # Settings editor
 
-Общий, адаптивный под устройство редактор настроек виджета. Один и тот же редактор на desktop открывается как модальный диалог рядом с кнопкой-шестерёнкой, а на mobile отображается inline внутри виджета. Логика работы с настройками (форма, сохранение, копирование, валидность) не дублируется между устройствами — различается только представление.
+Общий, адаптивный под устройство редактор настроек виджета. Один и тот же редактор на desktop отображает настройки в стандартном перетаскиваемом `nz-modal`, а на mobile — inline внутри виджета. `WidgetSkeleton` владеет состоянием открытия, переключением шаблонов, placeholder и подсветкой активного виджета; `WidgetSettingsEditor` отвечает только за представление формы. Логика работы с настройками (форма, сохранение, копирование, валидность) не дублируется между устройствами.
 
-Структура папки: `components/`, `services/`, `directives/`, `types/` (модели в файлах `*.types.ts`), `utils/` (хелперы в файлах `*.helper.ts`) и `styles/` (общие миксины и стили редактора, не принадлежащие отдельному компоненту).
+Структура папки: `components/`, `directives/`, `types/` (модели в файлах `*.types.ts`), `utils/` (хелперы в файлах `*.helper.ts`) и `styles/` (общие миксины и стили редактора, не принадлежащие отдельному компоненту).
 
 ## Когда использовать
 
@@ -17,20 +17,20 @@
 
 | Элемент | Что это | Когда трогать |
 | --- | --- | --- |
-| `WidgetSettingsBase<T>` (`common/widget-settings.base.ts`) | Базовый класс `*-settings` компонента: форма, `settings$`, save/copy, валидность, открытие/закрытие редактора | Наследуй в каждом settings-компоненте |
-| `<ats-widget-settings-editor>` (`WidgetSettingsEditor`) | Точка входа в шаблоне settings-компонента; управляет открытием desktop-диалога/mobile-редактора и связывает их с публичным API | Используй в шаблоне |
+| `WidgetSettingsBase<T>` (`common/widget-settings.base.ts`) | Базовый класс `*-settings` компонента: форма, `settings$`, save/copy, валидность и запрос закрытия | Наследуй в каждом settings-компоненте |
+| `<ats-widget-settings-editor>` (`WidgetSettingsEditor`) | Представление формы настроек: выбирает desktop-диалог или mobile-layout и эмитит действия пользователя | Используй в шаблоне |
 | `<ats-widget-settings-group>` (`WidgetSettingsGroup`) | Объявление одной логической группы настроек (заголовок + поля) | По одной на каждую группу |
-| `atsWidgetHeader` / `atsWidgetContent` | Именованные projection-slot'ы шапки и основного содержимого `WidgetSkeleton` | Используй в новых и мигрированных виджетах |
-| `atsWidgetSettingsEditor` (`WidgetSettingsEditorSlot`) | Маркер projection-slot для settings-компонента внутри skeleton | Добавляй на settings-компонент в шаблоне виджета |
+| `<ats-widget-settings-form>` (`WidgetSettingsForm`) | Стандартная vertical-форма с фиксированной ng-zorro конфигурацией | Оборачивай поля каждой группы вместе с `[formGroup]` |
+| `<ats-widget-settings-form-item>` (`WidgetSettingsFormItem`) | Стандартные `form-item`, label и validation control для произвольного проецируемого контрола | Используй для input, select, slider и составных контролов |
+| `<ats-widget-settings-switch>` (`WidgetSettingsSwitch`) | Самостоятельный boolean form control с компактной подписью | Используй напрямую с `formControlName` вместо `nz-switch` |
+| `<ats-widget-settings-color-picker>` (`WidgetSettingsColorPicker`) | Самостоятельный string form control выбора цвета с компактной подписью | Используй напрямую с `formControlName` вместо `nz-color-picker` |
+| `[header]` / `[content]` | Явные TemplateRef-инпуты шапки и основного содержимого `WidgetSkeleton` | Skeleton управляет созданием и уничтожением этих областей |
+| `[settingsEditorContent]` | TemplateRef-инпут settings-компонента внутри skeleton | Skeleton создаёт редактор только на время открытых настроек |
 | `WidgetSettingsGroupSelector` | Desktop-навигация: выбирает активную группу, проверяет возможность перехода и показывает её поля | Внутренняя деталь desktop-layout |
-| `WidgetSettingsAuxPanel` | Отображает стандартные aux-переключатели в ориентации текущей раскладки | Внутренняя деталь layout-компонентов |
-| `WidgetSettingsPlaceholder` | Заглушка основного содержимого во время desktop-редактирования | Внутренняя деталь редактора |
+| `WidgetSettingsPlaceholder` | Заглушка основного содержимого во время desktop-редактирования | Внутренняя деталь `WidgetSkeleton` |
 | `*atsSettingsDeviceVisible` (`SettingsDeviceVisible`) | Структурная директива видимости отдельного поля по устройству | Для скрытия конкретного поля на desktop/mobile |
 | `SettingsDeviceVisibility` (enum) | `All` / `DesktopOnly` / `MobileOnly` | Для `[device]` группы и для директивы |
-| `WidgetSettingsAuxToggle` (тип) | Стандартизированный переключатель aux-панели (`{ id, icon, tooltip }`) | Если у виджета есть aux-панель |
 | `WidgetSettingsLayout{Desktop,Mobile}` | Компонуют элементы соответствующей раскладки; каждый владеет только своей разметкой и стилями | Не трогай напрямую — подключаются редактором |
-| `WidgetSettingsDialogService` | CDK-overlay диалога на desktop | Внутренняя деталь, вызывается редактором |
-| `WidgetSettingsEditorRef` (тип) | Минимальный контракт интеграции: skeleton получает сигнал скрытия основного содержимого | Реализован редактором; `WidgetSettingsBase` проксирует его в skeleton |
 
 ## Как мигрировать виджет (пошагово)
 
@@ -58,7 +58,7 @@ export class XSettings extends WidgetSettingsBase<XWidgetSettings> {
 }
 ```
 
-`WidgetSettingsBase` уже даёт: `guid`, `settings$`, `openSettings(trigger)`, `updateSettings()`, `requestClose()`, `createWidgetCopy()`, геттеры `showCopy`/`canSave`/`canCopy`, а также реализацию `WidgetSettingsEditorRef`. Реализуй только абстрактные `getUpdatedSettings()` и `setCurrentFormValues()`.
+`WidgetSettingsBase` уже даёт: `guid`, `settings$`, `updateSettings()`, `requestClose()`, `createWidgetCopy()`, output `closeRequested` и геттеры `showCopy`/`canSave`/`canCopy`. Реализуй только абстрактные `getUpdatedSettings()` и `setCurrentFormValues()`.
 
 ### 2. Организуй reactive form по группам UI
 
@@ -83,7 +83,6 @@ readonly form = this.formBuilder.group({
   (saveClick)="updateSettings()"
   [canCopy]="canCopy"
   [canSave]="canSave"
-  [showPlaceholder]="true"
   [showCopy]="showCopy"
   [widgetInstance]="widgetInstance()"
 >
@@ -92,9 +91,20 @@ readonly form = this.formBuilder.group({
     [title]="t('xSettings.instrumentGroupLabel')"
     groupId="instrument"
   >
-    <div [formGroup]="form.controls.instrument" nz-form>
-      <!-- поля группы -->
-    </div>
+    <ats-widget-settings-form [formGroup]="form.controls.instrument">
+      <ats-widget-settings-form-item
+        [errorTip]="t('xSettings.instrumentError')"
+        [label]="t('xSettings.instrumentLabel')"
+        [required]="true"
+      >
+        <ats-inline-instrument-search formControlName="instrumentKey"/>
+      </ats-widget-settings-form-item>
+
+      <ats-widget-settings-switch
+        [label]="t('xSettings.showDetailsLabel')"
+        formControlName="showDetails"
+      />
+    </ats-widget-settings-form>
   </ats-widget-settings-group>
 
   <!-- остальные группы -->
@@ -103,8 +113,11 @@ readonly form = this.formBuilder.group({
 
 Правила:
 
-- Каждая группа оборачивает свой `[formGroup]` (корневой `form` или подгруппу) — так DI формы работает через `ngTemplateOutlet`.
-- `<ats-widget-settings-group>` содержит **только** настройки. Кнопки/переключатели режима — это aux-панель (см. ниже), не группа.
+- Каждая группа оборачивает свой `[formGroup]` (корневой `form` или подгруппу) в `<ats-widget-settings-form>` — так DI формы работает через `ngTemplateOutlet`, а layout остаётся единым.
+- Не используй напрямую `nz-form`, `nz-form-item`, `nz-form-label` и `nz-form-control`: их структура и настройки принадлежат общим компонентам.
+- Для input, select, slider и составных контролов используй `<ats-widget-settings-form-item>`; `controlId` определяется из проецируемого `FormControlName`, а для контрола без него передаётся явно.
+- Switch и выбор цвета не требуют `form-item`-враппера: используй `<ats-widget-settings-switch>` и `<ats-widget-settings-color-picker>` как самостоятельные Reactive Forms controls.
+- `<ats-widget-settings-group>` содержит только поля одной логической группы настроек.
 - Заголовок группы (`[title]`) передавай уже переведённым.
 - Если настройки простые и групп нет — проецируй поля напрямую в `<ats-widget-settings-editor>` без `<ats-widget-settings-group>`.
 
@@ -119,69 +132,64 @@ readonly form = this.formBuilder.group({
 ```html
 <ats-widget-settings-group [device]="DeviceVisibility.DesktopOnly" ...>...</ats-widget-settings-group>
 
-<nz-form-item *atsSettingsDeviceVisible="DeviceVisibility.DesktopOnly" class="one-row">...</nz-form-item>
+<ats-widget-settings-switch
+  *atsSettingsDeviceVisible="DeviceVisibility.DesktopOnly"
+  [label]="t('xSettings.desktopOptionLabel')"
+  formControlName="desktopOption"
+/>
 ```
 
-### 5. Aux-панель (опционально)
+### 5. Шаблон виджета
 
-Если у виджета есть взаимоисключающие режимы-переключатели, опиши их как `WidgetSettingsAuxToggle[]` и реагируй на активный id:
-
-```html
-<ats-widget-settings-editor
-  [(activeAuxToggle)]="activeMode"
-  [auxToggles]="auxToggles"
-  ...
->
-```
-
-Первый переключатель активен по умолчанию. На desktop панель вертикальная (сверху), на mobile — горизонтальная (закреплена сверху). У `tech-chart` aux-панели нет — его тумблер `allowCustomTimeframes` вынесен в обычную группу «Прочее».
-
-### 6. Шаблон виджета
-
-Шапка, основное содержимое и settings-компонент проецируются в именованные slot'ы skeleton. Settings-компонент также передаётся в него ссылкой:
+Шапка, основное содержимое и settings-компонент передаются в skeleton явными TemplateRef-инпутами. Состоянием открытия, placeholder и lifecycle основного содержимого владеет skeleton:
 
 ```html
 <ats-widget-skeleton
+  #widgetSkeleton
+  [content]="contentRef"
+  [header]="headerRef"
   [isBlockWidget]="isBlockWidget()"
-  [settingsEditor]="settingsCmp"
+  [settingsEditorContent]="settingsEditorRef"
+  [showPlaceholder]="true"
 >
-  <ng-container atsWidgetHeader>
-    <ats-widget-header (switchSettings)="settingsCmp.openSettings($event)" [hasSettings]="true" .../>
-  </ng-container>
-  <ng-container atsWidgetContent>
+  <ng-template #headerRef>
+    <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()" [hasSettings]="true" .../>
+  </ng-template>
+  <ng-template #contentRef>
     <!-- контент виджета -->
-  </ng-container>
+  </ng-template>
 
-  <ats-x-settings
-    #settingsCmp
-    [guid]="guid"
-    [widgetInstance]="widgetInstance()"
-    atsWidgetSettingsEditor
-  />
+  <ng-template #settingsEditorRef>
+    <ats-x-settings
+      (closeRequested)="widgetSkeleton.closeSettings()"
+      [guid]="guid"
+      [widgetInstance]="widgetInstance()"
+    />
+  </ng-template>
 </ats-widget-skeleton>
 ```
 
-- `(switchSettings)="settingsCmp.openSettings($event)"` — единый триггер (клик по шестерёнке) для desktop и mobile. Метод сам решает: overlay или inline. Повторный клик на mobile закрывает редактор.
-- `atsWidgetHeader`, `atsWidgetContent` и `atsWidgetSettingsEditor` образуют единый projection API skeleton. Инпуты `[header]`, `[content]`, `[settings]` и `[showSettings]` с `TemplateRef` оставлены только как deprecated fallback для legacy-виджетов; не используй их в новом коде.
-- `atsWidgetSettingsEditor` помещает settings-компонент в предназначенный для редактора projection-slot skeleton.
-- `[settingsEditor]="settingsCmp"` передаёт ссылку (`WidgetSettingsEditorRef`); skeleton использует только сигнал скрытия основного содержимого. Выбор mobile-layout/placeholder и их отображение остаются внутри редактора.
-- `[showPlaceholder]="true"` на `<ats-widget-settings-editor>` — **опционально**. Включи для виджетов, которые не применяют настройки «на лету»: пока открыт desktop-диалог, редактор показывает в виджете собственную заглушку «Редактирование настроек». На mobile редактор всегда показывает inline-layout вместо основного содержимого.
-- Убери из skeleton legacy-инпуты `[header]` / `[content]` / `[settings]` / `[showSettings]`.
+- `WidgetSkeleton.toggleSettings()` — единый триггер открытия/закрытия. На каждом открытии skeleton создаёт новый settings-компонент, поэтому форма получает актуальные сохранённые значения.
+- `[header]` и `[content]` явно передают skeleton шаблоны обычных областей. Skeleton уничтожает основной content на mobile и при desktop-placeholder.
+- `[settingsEditorContent]` передаёт шаблон settings-компонента. Он существует только пока настройки открыты; `closeRequested` возвращает управление skeleton.
+- `[showPlaceholder]="true"` на `<ats-widget-skeleton>` — **опционально**. Включи для виджетов, основной content которых нужно уничтожать во время desktop-редактирования. На mobile основной content уничтожается всегда.
+- `WidgetSettingsEditor` отвечает только за представление формы: выбирает desktop modal или mobile layout и эмитит действия пользователя. Он не управляет переключением между content и настройками.
+- Не проецируй содержимое внутрь skeleton: передавай `header`, `content` и новый редактор через соответствующие TemplateRef-инпуты. `[settings]` / `[showSettings]` оставлены только для legacy-редакторов.
 
-### 7. Переводы (i18n)
+### 6. Переводы (i18n)
 
-- Общие подписи самого редактора (заголовок диалога, тултипы, placeholder) — в scope `shared/widget-settings`.
+- Общие подписи инфраструктуры настроек (заголовок диалога, тултипы и placeholder скелетона) — в scope `shared/widget-settings`.
 - Заголовки групп и подписи полей — в собственном scope виджета.
 - Для каждой новой/изменённой метки добавляй переводы во все три локали: `ru.json`, `en.json`, `hy.json`.
 
 ## Поведение desktop vs mobile
 
-Редактор device-agnostic: desktop и mobile представлены отдельными шаблонами. Desktop-шаблон передаётся в overlay, mobile-шаблон — в content slot скелетона. Различия:
+Редактор device-agnostic: desktop и mobile представлены отдельными шаблонами. Desktop-шаблон передаётся в `nz-modal`, mobile-шаблон отображается внутри созданного skeleton settings-компонента. Различия:
 
 | | Desktop | Mobile |
 | --- | --- | --- |
-| Контейнер | Модальный диалог (CDK overlay) у шестерёнки | Inline в слоте редактора виджета (шапка виджета видна) |
-| Раскладка | Колонки: aux \| навигация групп \| поля | Стек секций; aux горизонтально сверху |
+| Контейнер | Стандартный перетаскиваемый `nz-modal`; активный виджет подсвечен рамкой | Inline вместо основного содержимого виджета (шапка видна) |
+| Раскладка | Навигация групп и поля | Стек секций |
 | Заголовок | Есть (`Настройки: {имя}`) + кнопка закрытия | Нет (закрытие через шестерёнку/Сохранить) |
 | Футер | Копировать (слева), Отменить, Сохранить | Только Сохранить |
 | Навигация | Невалидную активную группу нельзя покинуть, пока не исправлена | Все секции видны сразу |
@@ -191,7 +199,8 @@ readonly form = this.formBuilder.group({
 
 - [ ] Settings-компонент наследует `WidgetSettingsBase`, форма разбита на подгруппы под UI, `[isValid]` биндится на `form.controls.<group>.valid`.
 - [ ] Нет ad-hoc `@if (isMobile)` вокруг полей/групп — только `SettingsDeviceVisibility` + директива/`[device]`.
-- [ ] В шаблоне виджета: header/content/settings помечены named slots, settings-компонент передан через ref; `(switchSettings)` → `openSettings($event)`; legacy TemplateRef-инпуты убраны.
+- [ ] В шаблоне виджета: `header`, `content` и `settingsEditorContent` переданы через TemplateRef-инпуты; `(switchSettings)` → `widgetSkeleton.toggleSettings()`; `closeRequested` → `widgetSkeleton.closeSettings()`.
 - [ ] Модели — в `*.types.ts`, без `export function` (используй классы-хелперы).
 - [ ] Переводы новых меток добавлены в `ru`/`en`/`hy`.
-- [ ] Стили компонента не нужны для общих `.one-row` рядов — они уже в `styles/widget-settings-controls.less`.
+- [ ] Поля используют `WidgetSettingsForm` и общие form controls; прямых `nz-form*` и локальной настройки `nzLayout` нет.
+- [ ] Компактная разметка switch/color-picker задаётся их собственными стилями; служебные layout-классы в шаблонах settings-компонента не используются.

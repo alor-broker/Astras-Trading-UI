@@ -1,12 +1,16 @@
 <ng-container *transloco="let t;">
   @if (settings$ | async; as settings) {
     <ats-widget-skeleton
+      #widgetSkeleton
+      [content]="contentRef"
+      [header]="headerRef"
       [isBlockWidget]="isBlockWidget()"
-      [settingsEditor]="settingsEditor"
+      [settingsEditorContent]="settingsEditorRef"
+      [showPlaceholder]="true"
       [showContentScroll]="false"
     >
-      <ng-container atsWidgetHeader>
-        <ats-widget-header (switchSettings)="settingsEditor.openSettings($event)"
+      <ng-template #headerRef>
+        <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                            [guid]="guid"
                            [hasSettings]="true"
                            [linkToActive]="settings.linkToActive ?? null"
@@ -20,17 +24,18 @@
                                                [widgetGuid]="widgetInstance().instance.guid"
           />
         </ng-template>
-      </ng-container>
-      <ng-container atsWidgetContent>
+      </ng-template>
+      <ng-template #contentRef>
         <ats-tech-chart [guid]="guid"/>
-      </ng-container>
+      </ng-template>
 
-      <ats-tech-chart-settings
-        #settingsEditor
-        [guid]="guid"
-        [widgetInstance]="widgetInstance()"
-        atsWidgetSettingsEditor
-      />
+      <ng-template #settingsEditorRef>
+        <ats-tech-chart-settings
+          (closeRequested)="widgetSkeleton.closeSettings()"
+          [guid]="guid"
+          [widgetInstance]="widgetInstance()"
+        />
+      </ng-template>
     </ats-widget-skeleton>
   }
 
