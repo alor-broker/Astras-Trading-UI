@@ -3,6 +3,7 @@
   (ngModelChange)="changeWidgetType($event)"
   (nzOnClear)="clear()"
   [ngModel]="item()?.widgetType ?? null"
+  [ngModelOptions]="{standalone: true}"
   [nzAllowClear]="!isReadonly"
   [nzDisabled]="isReadonly"
   class="w-100"

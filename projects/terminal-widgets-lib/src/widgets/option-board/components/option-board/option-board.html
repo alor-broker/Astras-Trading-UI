@@ -6,7 +6,8 @@
              class="d-flex flex-row justify-content-start flex-gap-5">
           <div>
             <nz-select (ngModelChange)="dataContext.selectedParameter$.next($event)"
-                       [ngModel]="dataContext.selectedParameter$ | async">
+                       [ngModel]="dataContext.selectedParameter$ | async"
+                       [ngModelOptions]="{standalone: true}">
               @for (parameter of parameters; track parameter) {
                 <nz-option [nzLabel]="t('optionBoard.parameterOptions.' + parameter, { fallback: parameter})"
                            [nzValue]="parameter"/>
@@ -16,7 +17,8 @@
 
           <div>
             <nz-select (ngModelChange)="dataContext.selectedSide$.next($event)"
-                       [ngModel]="dataContext.selectedSide$ | async">
+                       [ngModel]="dataContext.selectedSide$ | async"
+                       [ngModelOptions]="{standalone: true}">
               @for (side of optionSides; track side) {
                 <nz-option [nzLabel]="t('optionBoard.sideOptions.' + side, { fallback: side})" [nzValue]="side"/>
               }

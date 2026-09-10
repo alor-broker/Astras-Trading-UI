@@ -1,0 +1,57 @@
+<ng-container *transloco="let t; scope: 'ai-signals'">
+  <ng-container *transloco="let td; scope: 'ai-signals/details'">
+    @let vm = details();
+    <div class="analysis-details d-flex flex-column flex-gap-10">
+      @if (vm.errors.length > 0) {
+        <nz-alert [nzDescription]="errorsList"
+                  [nzMessage]="td('aiSignalsDetails.errorsTitle')"
+                  nzShowIcon
+                  nzType="error"
+        />
+        <ng-template #errorsList>
+          <ul class="issues-list">
+            @for (error of vm.errors; track $index) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        </ng-template>
+      } @else if (vm.status === rowStatuses.Error) {
+        <nz-alert [nzMessage]="t('aiSignals.rowStatuses.error')"
+                  nzShowIcon
+                  nzType="error"
+        />
+      }
+
+      @if (vm.warnings.length > 0) {
+        <nz-alert [nzDescription]="warningsList"
+                  [nzMessage]="td('aiSignalsDetails.warningsTitle')"
+                  nzShowIcon
+                  nzType="warning"
+        />
+        <ng-template #warningsList>
+          <ul class="issues-list">
+            @for (warning of vm.warnings; track $index) {
+              <li>{{ warning }}</li>
+            }
+          </ul>
+        </ng-template>
+      }
+
+      @if (vm.newsSummary != null) {
+        <ats-signal-news-summary [periodDays]="vm.newsPeriodDays" [summary]="vm.newsSummary"/>
+      }
+
+      @if (vm.fundamental != null) {
+        <ats-signal-fundamental [fundamental]="vm.fundamental"/>
+      }
+
+      @if (vm.technicalAnalysis != null) {
+        <ats-signal-technical-analysis [analysis]="vm.technicalAnalysis"/>
+      }
+
+      @if (vm.analysts.length > 0) {
+        <ats-signal-analysts [analysts]="vm.analysts" [consensus]="vm"/>
+      }
+    </div>
+  </ng-container>
+</ng-container>

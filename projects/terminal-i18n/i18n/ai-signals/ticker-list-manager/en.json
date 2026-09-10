@@ -1,0 +1,11 @@
+{
+  "editList": "Edit list",
+  "dialogTitle": "Instruments for AI signals",
+  "apply": "Apply",
+  "cancel": "Cancel",
+  "selectAll": "Select all",
+  "selectionCount": "Selected {{count}} of {{total}}",
+  "loadFailed": "Failed to load instruments",
+  "retry": "Retry",
+  "noInstruments": "No instruments with a forecast date"
+}

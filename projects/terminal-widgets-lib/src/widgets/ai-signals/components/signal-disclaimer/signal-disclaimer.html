@@ -1,0 +1,41 @@
+<ng-container *transloco="let td; scope: 'ai-signals/details'">
+  <div class="disclaimer-preview d-flex flex-row align-items-center">
+    <span class="disclaimer-preview-text">*
+      {{ td('aiSignalsDetails.disclaimer.paragraphs.recommendation') }}
+    </span>
+    <button (click)="openDialog()"
+            class="disclaimer-link"
+            nz-button
+            nzType="link"
+            type="button"
+    >
+      {{ td('aiSignalsDetails.disclaimer.showFullText') }}
+    </button>
+  </div>
+
+  <nz-modal (nzOnCancel)="closeDialog()"
+            [nzAutofocus]="null"
+            nzClassName="ats-ai-signals-disclaimer-dialog"
+            [nzContent]="content"
+            [nzFooter]="null"
+            [nzMaskClosable]="true"
+            [nzTitle]="td('aiSignalsDetails.disclaimer.title')"
+            [nzVisible]="isDialogVisible()"
+            [nzWidth]="700"
+  />
+
+  <ng-template #content>
+    <div class="disclaimer-content">
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.recommendation') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.information') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.investmentRisks') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.clientResponsibility') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.insurance') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.clarification') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.contacts') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.copyrightRestriction') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.copyright') }}</p>
+      <p>{{ td('aiSignalsDetails.disclaimer.paragraphs.company') }}</p>
+    </div>
+  </ng-template>
+</ng-container>

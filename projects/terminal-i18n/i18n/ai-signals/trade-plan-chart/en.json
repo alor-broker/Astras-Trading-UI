@@ -1,0 +1,11 @@
+{
+  "entryPrice": "Entry",
+  "stopLoss": "Stop loss",
+  "takeProfit1": "Cons. target",
+  "takeProfit2": "Opt. target",
+  "takeProfit1Tooltip": "Target 1 — conservative target",
+  "takeProfit2Tooltip": "Target 2 — optimistic target",
+  "currentPrice": "Current price",
+  "priceRange": "Price range: {{min}} to {{max}}",
+  "noPrices": "Price levels not provided"
+}

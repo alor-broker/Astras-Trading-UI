@@ -1,0 +1,48 @@
+<ng-container *transloco="let t; scope: 'ai-signals/details'">
+  <ats-signal-section [title]="t('aiSignalsDetails.riskSection')">
+    <div class="risk-panel d-flex flex-column flex-gap-10">
+      @if (riskItems().length > 0) {
+        <dl class="risk-metrics d-flex flex-row flex-wrap">
+          @for (item of riskItems(); track item.labelKey) {
+            <div class="risk-item d-flex flex-column flex-gap-10">
+              <dt>
+                <span [nzTooltipTitle]="t('aiSignalsDetails.' + item.labelKey + 'Tooltip')"
+                      class="risk-label"
+                      nz-tooltip
+                      tabindex="0"
+                >{{ t('aiSignalsDetails.' + item.labelKey) }}</span>
+              </dt>
+              <dd [class.negative-color]="item.level === riskLevels.High"
+                  [class.positive-color]="item.level === riskLevels.Low"
+                  [class.warning-color]="item.level === riskLevels.Medium"
+                  class="risk-value d-flex flex-row flex-wrap align-items-center flex-gap-10"
+              >
+                <nz-tag class="risk-level fw-bold">
+                  {{ t('aiSignalsDetails.riskLevels.' + item.level) }}
+                </nz-tag>
+                <span aria-hidden="true" class="risk-scale d-flex flex-row">
+                  @for (step of scaleSteps; track step) {
+                    <span [class.active]="step <= item.score" class="risk-step"></span>
+                  }
+                </span>
+              </dd>
+            </div>
+          }
+        </dl>
+      }
+
+      @if (avoidReasons().length > 0) {
+        <div [class.with-divider]="riskItems().length > 0"
+             class="avoid-reasons d-flex flex-column flex-gap-5"
+        >
+          <h4 class="reasons-title fs-9">{{ t('aiSignalsDetails.avoidReasons') }}</h4>
+          <ul class="reasons-list">
+            @for (reason of avoidReasons(); track $index) {
+              <li>{{ reason }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </ats-signal-section>
+</ng-container>

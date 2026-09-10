@@ -1,0 +1,34 @@
+<ng-container *transloco="let t; scope: 'ai-signals/technical-analysis'">
+  @let bounds = thresholds();
+  @let current = validValue();
+  <div class="indicator-card d-flex flex-column flex-gap-10" [class.strength]="isStrength()">
+    <div class="d-flex justify-content-between align-items-center flex-gap-5">
+      <span nz-tooltip #hint="nzTooltip" tabindex="0" class="hint heading-color fw-bold"
+            [nzTooltipTitle]="t('aiSignalsTechnicalAnalysis.hints.' + kind(), bounds)"
+            (focus)="hint.show()" (blur)="hint.hide()">
+        {{ t('aiSignalsTechnicalAnalysis.fields.' + kind()) }}
+      </span>
+      <strong class="indicator-value text-max-contrast-color">{{ current == null ? '—' : (current | number:'1.0-1') }}</strong>
+    </div>
+    <div class="scale" [attr.role]="current == null ? null : 'meter'"
+         [attr.aria-label]="t('aiSignalsTechnicalAnalysis.fields.' + kind())"
+         [attr.aria-valuenow]="current" aria-valuemin="0" aria-valuemax="100"
+         [attr.aria-valuetext]="t('aiSignalsTechnicalAnalysis.gaugeStatuses.' + status())">
+      <span class="zone low" [style.width.%]="bounds.low"></span>
+      <span class="zone middle" [style.width.%]="bounds.high - bounds.low"></span>
+      <span class="zone high" [style.width.%]="100 - bounds.high"></span>
+      @if (current != null) {
+        <span class="needle" [style.left.%]="current"></span>
+      }
+    </div>
+    <div class="ticks" aria-hidden="true">
+      <span class="start">0</span>
+      @if (!isStrength()) {
+        <span [style.left.%]="bounds.low">{{ bounds.low }}</span>
+      }
+      <span [style.left.%]="bounds.high">{{ bounds.high }}</span>
+      <span class="end">100</span>
+    </div>
+    <span class="indicator-status">{{ t('aiSignalsTechnicalAnalysis.gaugeStatuses.' + status()) }}</span>
+  </div>
+</ng-container>

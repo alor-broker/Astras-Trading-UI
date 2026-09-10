@@ -1,0 +1,25 @@
+<ng-container *transloco="let t; scope: 'ai-signals'">
+  <ng-container *transloco="let td; scope: 'ai-signals/details'">
+    <ng-container *transloco="let ta; scope: 'ai-signals/analysts'">
+      @if (opinions().length > 0) {
+        <ats-signal-section [title]="td('aiSignalsDetails.analystsSection')" [panel]="false">
+
+          @for (opinion of opinions(); track opinion.analyst.index) {
+            @let analyst = opinion.analyst;
+            <article class="analyst-card d-flex flex-column flex-gap-10 p-10"
+                     [attr.aria-label]="t('aiSignals.analystLabel', {number: analyst.index})">
+              <h4 class="analyst-title fs-8">{{ t('aiSignals.analystLabel', {number: analyst.index}) }}</h4>
+              @if (opinion.hasSummary) {
+                <ats-signal-summary [details]="analyst" [compactTradePlan]="true"/>
+              } @else {
+                <p class="empty-opinion">{{ ta('aiSignalsAnalysts.noOpinion') }}</p>
+              }
+            </article>
+          }
+
+          <ats-trade-plan-comparison [analysts]="analysts()" [consensus]="consensus()"/>
+        </ats-signal-section>
+      }
+    </ng-container>
+  </ng-container>
+</ng-container>

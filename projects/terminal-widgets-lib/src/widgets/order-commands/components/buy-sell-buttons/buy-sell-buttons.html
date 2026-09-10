@@ -1,23 +1,26 @@
 <ng-container *transloco="let t; scope: 'order-commands/buy-sell-buttons'">
   <div class="buttons-wrapper">
-    <button
-      (click)="btnClick.emit(sides.Buy)"
-      [disabled]="buyBtnDisabled()"
-      [nzLoading]="buyBtnLoading()"
-      class='buy-button'
-      nz-button
-      nzSize="large">
-      {{ t('orderCommandsBuySellButtons.buyBtnText') }}
-    </button>
-    <button
-      (click)="btnClick.emit(sides.Sell)"
-      [disabled]="sellBtnDisabled()"
-      [nzLoading]="sellBtnLoading()"
-      class='sell-button'
-      nz-button
-      nzSize="large">
-      {{ t('orderCommandsBuySellButtons.sellBtnText') }}
-    </button>
+    @if (side() == null || side() === sides.Buy) {
+      <button
+        (click)="btnClick.emit(sides.Buy)"
+        [disabled]="buyBtnDisabled()"
+        [nzLoading]="buyBtnLoading()"
+        class='buy-button'
+        nz-button
+        nzSize="large">
+        {{ t('orderCommandsBuySellButtons.buyBtnText') }}
+      </button>
+    }
+    @if (side() == null || side() === sides.Sell) {
+      <button
+        (click)="btnClick.emit(sides.Sell)"
+        [disabled]="sellBtnDisabled()"
+        [nzLoading]="sellBtnLoading()"
+        class='sell-button'
+        nz-button
+        nzSize="large">
+        {{ t('orderCommandsBuySellButtons.sellBtnText') }}
+      </button>
+    }
   </div>
 </ng-container>
-

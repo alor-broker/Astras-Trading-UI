@@ -1,0 +1,62 @@
+<ng-container *transloco="let td; scope: 'ai-signals/details'">
+  @let vm = details();
+  @let isMobile = (isMobile$ | async) === true;
+  <nz-modal (nzOnCancel)="close()"
+            [nzAutofocus]="null"
+            [nzClassName]="isMobile
+              ? 'ats-ai-signal-details-dialog full-screen'
+              : 'ats-ai-signal-details-dialog'"
+            [nzContent]="content"
+            [nzFooter]="null"
+            [nzMaskClosable]="true"
+            [nzTitle]="title"
+            [nzVisible]="displaySignal() !== null"
+            [nzWidth]="isMobile ? '100vw' : '700px'"
+  />
+
+  <ng-template #title>
+    @if (vm != null) {
+      <div class="d-flex flex-row align-items-center flex-gap-10">
+        <span>{{ vm.ticker }}</span>
+        @if (vm.forecastDateDisplay != null) {
+          <span class="fs-9 title-date">{{ vm.forecastDateDisplay }}</span>
+        }
+      </div>
+    }
+  </ng-template>
+
+  <ng-template #content>
+    @if (vm != null) {
+      <div class="dialog-content d-flex flex-column flex-gap-10">
+        @if (hasSummary()) {
+          <ats-signal-summary [details]="vm"/>
+        }
+
+        @if (analysisDetailsVisible()) {
+          <ats-signal-analysis-details [details]="vm"/>
+        } @else {
+          <button (click)="showAnalysisDetails()"
+                  class="analysis-details-button align-self-center"
+                  nz-button
+                  nzType="link"
+                  type="button"
+          >
+            <span class="analysis-details-button-label">
+              {{ td('aiSignalsDetails.analysisDetailsButton') }}
+            </span>
+            <span nz-icon nzTheme="outline" nzType="audit"></span>
+          </button>
+        }
+      </div>
+
+      <div class="dialog-actions d-flex">
+        <ats-signal-disclaimer/>
+        @if (canTrade()) {
+          <button (click)="submitOrder()" nz-button nzType="primary" type="button">
+            {{ td('aiSignalsDetails.participateButton') }}
+          </button>
+        }
+      </div>
+    }
+  </ng-template>
+</ng-container>

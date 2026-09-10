@@ -1,0 +1,32 @@
+<ng-container *transloco="let ts; scope: 'ai-signals/signal-summary'">
+  @let vm = details();
+  <div class="signal-summary d-flex flex-column flex-gap-10">
+    @if (hasOverview()) {
+      <div [class.bearish]="vm.direction === directions.Bearish"
+           [class.bullish]="vm.direction === directions.Bullish"
+           class="summary d-flex flex-row flex-gap-10 p-10"
+      >
+        <ats-signal-overview [details]="vm"/>
+      </div>
+    }
+
+    @if (vm.reasoning != null) {
+      <ats-signal-section [title]="ts('aiSignalsSignalSummary.reasoningSection')">
+        <p class="reasoning heading-color fw-bold">{{ vm.reasoning }}</p>
+      </ats-signal-section>
+    }
+
+    @if (vm.tradePlan != null) {
+      <ats-signal-section [title]="ts('aiSignalsSignalSummary.tradePlanSection')" [panel]="false">
+        <ats-trade-plan-chart [currentPrice]="vm.currentPrice" [plan]="vm.tradePlan" [compact]="compactTradePlan()"/>
+      </ats-signal-section>
+    }
+
+    @if (hasRiskInfo()) {
+      <ats-signal-risk-notes [avoidReasons]="vm.avoidReasons"
+                            [gapRisk]="vm.gapRisk"
+                            [newsRisk]="vm.newsRisk"
+      />
+    }
+  </div>
+</ng-container>

@@ -1,0 +1,36 @@
+ats-ai-signals-content {
+  display: block;
+  height: 100%;
+
+  .container {
+    .toolbar {
+      flex-shrink: 0;
+
+      ats-ticker-list-manager,
+      .status-line {
+        flex: 0 0 auto;
+      }
+    }
+
+    .status-line {
+      white-space: nowrap;
+
+      .last-updated {
+        color: var(--ats-text-color-secondary);
+
+        .live-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: var(--ats-buy-color);
+          flex: 0 0 auto;
+        }
+      }
+    }
+
+    .content-area {
+      overflow-y: auto;
+      min-height: 0;
+    }
+  }
+}

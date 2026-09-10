@@ -1,0 +1,25 @@
+@import '../../styles/analysis-shared';
+
+ats-signal-summary {
+  display: block;
+
+  .signal-summary {
+    .reasoning {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+  }
+
+  .summary {
+    .analysis-panel();
+    border-left: 3px solid var(--ats-mix-color);
+
+    &.bullish {
+      border-left-color: var(--ats-buy-color);
+    }
+
+    &.bearish {
+      border-left-color: var(--ats-sell-color);
+    }
+  }
+}

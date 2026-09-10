@@ -52,6 +52,7 @@
         <nz-radio-group
           (ngModelChange)="selectedTimeRange$.next($event)"
           [ngModel]="vm.selectedTimeRange"
+          [ngModelOptions]="{standalone: true}"
         >
           @for (item of availableTimeRanges; track item) {
             <label [nzValue]="item" nz-radio-button>

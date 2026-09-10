@@ -1,7 +1,7 @@
 <div class="d-flex flex-row flex-nowrap justify-content-between flex-gap-10">
   <div class="flex-equal">
     <ng-container *transloco="let t; scope: 'order-commands/buy-sell-buttons'">
-      <nz-radio-group [(ngModel)]="side" class="buy-sell-switch">
+      <nz-radio-group [(ngModel)]="side" [ngModelOptions]="{standalone: true}" class="buy-sell-switch">
         <label [nzValue]="Sides.Buy" class="buy"
                nz-radio-button>{{ t('orderCommandsBuySellButtons.buyBtnText') }}</label>
         <label [nzValue]="Sides.Sell" class="sell"
@@ -11,7 +11,7 @@
   </div>
   <div class="flex-equal">
     <ng-container *transloco="let toc; scope: 'order-commands'">
-      <nz-select [(ngModel)]="formType" class="w-100">
+      <nz-select [(ngModel)]="formType" [ngModelOptions]="{standalone: true}" class="w-100">
         <nz-option [nzLabel]="toc('orderCommands.limitOrderTabTitle')" nzValue="limit"/>
         <nz-option [nzLabel]="toc('orderCommands.marketOrderTabTitle')" nzValue="market"/>
       </nz-select>

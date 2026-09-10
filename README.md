@@ -28,3 +28,12 @@
 - [Styling library](projects/terminal-styling-lib/README.md)
 - [I18n library](projects/terminal-i18n/README.md)
 - [Testing library](projects/testing-lib/README.md)
+
+## Локальный запуск и ngx-markdown
+
+`marked-katex-extension` указан в зависимостях явно: `ngx-markdown` 22.0.2 содержит его динамический
+импорт, который Vite 8.1.5 проверяет при локальном запуске, даже если отображление формул отключено.
+Без пакета возникает ошибка `Failed to resolve import "marked-katex-extension"`.
+
+После обновления зависимостей выполни `pnpm install --frozen-lockfile` и перезапусти
+`pnpm start:desktop`, `pnpm start:mobile` или `pnpm start:admin`.

@@ -62,7 +62,7 @@
     </div>
     <div class="mt-8">
       @if (requestProcessing$ | async; as requestProcessing) {
-        <ats-buy-sell-buttons (btnClick)="submitOrder($event)"
+        <ats-buy-sell-buttons (btnClick)="submitOrder($event)" [side]="side()"
                               [buyBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
                               [buyBtnLoading]="requestProcessing.orderSide === sides.Buy"
                               [sellBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"

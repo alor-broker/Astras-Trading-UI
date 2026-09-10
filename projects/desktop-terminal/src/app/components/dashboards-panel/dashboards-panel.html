@@ -8,6 +8,7 @@
     <nz-segmented
       (nzValueChange)="selectDashboard($event)"
       [ngModel]="selectedValue$ | async"
+      [ngModelOptions]="{standalone: true}"
       class="max-w-100 min-w-0"
     >
       @for (option of options; track option.value) {

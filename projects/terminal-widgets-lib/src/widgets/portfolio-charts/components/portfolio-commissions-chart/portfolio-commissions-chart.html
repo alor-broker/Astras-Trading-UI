@@ -27,6 +27,7 @@
         <nz-radio-group
           (ngModelChange)="selectedPeriod$.next($event)"
           [ngModel]="vm.selectedPeriod"
+          [ngModelOptions]="{standalone: true}"
         >
           @for (item of availablePeriods; track item) {
             <label [nzValue]="item" nz-radio-button>

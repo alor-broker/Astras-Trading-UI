@@ -34,6 +34,16 @@
 
 Если виджету нужна информация о текущем дашборде, выбранном портфеле или инструментах, используй интерфейс `DashboardContextService` через injection token `DASHBOARD_CONTEXT_SERVICE` из `@terminal-core-lib/features/dashboard/services/dashboard-context-service.types`.
 
+## Открытие формы заявки
+
+Для запуска формы заявки из `ai-signals` используется `SUBMIT_ORDER_CONTEXT` из core feature `orders`,
+а не прямой вызов `OrdersDialogService`. `SignalOrderHelper` формирует параметры по консенсусу:
+ключ инструмента, сторона, лимитная цена входа, 1 лот и два противоположных выхода (цель 1 и стоп-лосс).
+Кнопка торговли скрыта при отсутствии биржи, действия или полного корректного плана, включая `NO_TRADE`.
+Текущая рыночная цена и цель 2 не подменяют цену входа и цель 1.
+Контекст пока предоставляется только desktop; без provider кнопка торговли не отображается.
+Диалог деталей закрывается перед переходом к форме заявки. Реальная отправка остаётся действием пользователя.
+
 ## Состояние виджета
 
 Правила выбора между widget settings, widget local state, RxJS service, signal, ComponentStore и events bus вынесены в [STATE_MANAGEMENT.md](../../STATE_MANAGEMENT.md).

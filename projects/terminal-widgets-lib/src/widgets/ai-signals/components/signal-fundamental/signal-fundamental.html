@@ -1,0 +1,159 @@
+<ng-container *transloco="let tc; scope: 'ai-signals'">
+  <ng-container *transloco="let t; scope: 'ai-signals/fundamental'">
+    @if (viewModel(); as vm) {
+      @let unit = vm.currency == null ? t('aiSignalsFundamental.millionsUnknownCurrency') : t('aiSignalsFundamental.millions', {currency: vm.currency});
+      <ats-signal-section [title]="t('aiSignalsFundamental.title')">
+        <div class="fundamental-panel d-flex flex-column flex-gap-15">
+          <div class="report-meta d-flex flex-row flex-wrap align-items-center flex-gap-10">
+            @if (vm.statement != null) {
+              <nz-tag #statementTooltip="nzTooltip"
+                      [nzTooltipTitle]="vm.statementLabelKey == null ? t('aiSignalsFundamental.statementTooltip', {statement: vm.statement}) : t('aiSignalsFundamental.statementTooltips.' + vm.statement)"
+                      (blur)="statementTooltip.hide()"
+                      (focus)="statementTooltip.show()"
+                      class="statement-badge hint heading-color fw-bold"
+                      nz-tooltip
+                      tabindex="0"
+              >{{ vm.statementLabelKey == null ? vm.statement : t('aiSignalsFundamental.' + vm.statementLabelKey) }}</nz-tag>
+            }
+            @if (vm.reportPeriod != null) {
+              @let quarter = reportQuarter();
+              <span #periodTooltip="nzTooltip"
+                    [nzTooltipTitle]="quarter == null ? t('aiSignalsFundamental.reportPeriodTooltip', {period: vm.reportPeriod}) : t('aiSignalsFundamental.reportQuarterTooltip', quarter)"
+                    (blur)="periodTooltip.hide()"
+                    (focus)="periodTooltip.show()"
+                    class="hint heading-color fw-bold"
+                    nz-tooltip
+                    tabindex="0"
+              >{{ vm.reportPeriod }}</span>
+            }
+            @if (vm.isBank) {
+              <span>{{ t('aiSignalsFundamental.bank') }}</span>
+            }
+          </div>
+
+          @if (vm.disclosed != null || vm.decisionDate != null) {
+            <div class="report-dates d-flex flex-row flex-wrap flex-gap-10 fs-9">
+              @if (vm.disclosed != null) {
+                <span>{{ t('aiSignalsFundamental.disclosed') }}: {{ vm.disclosed | date: 'dd.MM.yyyy' }}</span>
+              }
+              @if (vm.decisionDate != null) {
+                <span>{{ t('aiSignalsFundamental.decisionDate') }}: {{ vm.decisionDate | date: 'dd.MM.yyyy' }}</span>
+              }
+            </div>
+          }
+
+          @if (trends().length > 0) {
+            <div class="d-flex flex-column flex-gap-10">
+              <h4 class="subsection-title fs-9">{{ t('aiSignalsFundamental.trends') }}</h4>
+              <div class="trend-cards d-flex flex-row flex-wrap flex-gap-10">
+                @for (trend of trends(); track trend.key) {
+                  @let title = trend.labelKey == null ? trend.key : t('aiSignalsFundamental.' + trend.labelKey);
+                  <div class="trend-card d-flex flex-column flex-gap-5">
+                    <div class="d-flex flex-row flex-wrap justify-content-between align-items-center flex-gap-5">
+                      <span class="fw-bold heading-color">{{ title }}</span>
+                      <span class="muted fs-9">{{ unit }}</span>
+                    </div>
+                    @if (trend.hasHistory) {
+                      <ats-fundamental-trend-chart [points]="trend.points" [title]="title" [unit]="unit"/>
+                    } @else {
+                      <p class="muted fs-9">{{ t('aiSignalsFundamental.insufficientHistory') }}</p>
+                      @for (point of trend.points; track point.period) {
+                        <div class="d-flex flex-row justify-content-between flex-gap-10">
+                          <span>{{ point.period }}</span>
+                          <span class="numeric">{{ point.value == null ? t('aiSignalsFundamental.noValue') : (point.value | number: '1.0-2') }}</span>
+                        </div>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (vm.groups.length > 0) {
+            <nz-table [nzShowPagination]="false" class="metrics-table" nzSize="small" nzTableLayout="fixed" nzTemplateMode>
+              <thead>
+                <tr>
+                  <th scope="col">{{ tc('aiSignals.indicator') }}</th>
+                  <th class="numeric" nzWidth="27%" scope="col">{{ tc('aiSignals.value') }}<span class="column-unit">{{ unit }}</span></th>
+                  <th class="numeric" nzWidth="25%" scope="col">
+                    <span [nzTooltipTitle]="t('aiSignalsFundamental.yoyTooltip')" class="hint" nz-tooltip tabindex="0">{{ t('aiSignalsFundamental.yoy') }}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (group of vm.groups; track group.key) {
+                  <tr class="group-row">
+                    <th colspan="3">{{ t('aiSignalsFundamental.groups.' + group.key) }}</th>
+                  </tr>
+                  @for (row of group.rows; track row.key) {
+                    <tr>
+                      <th class="metric-name" scope="row">{{ row.labelKey == null ? row.key : t('aiSignalsFundamental.' + row.labelKey) }}</th>
+                      <td class="numeric text-max-contrast-color">{{ row.value == null ? t('aiSignalsFundamental.noValue') : (row.value | number: '1.0-2') }}</td>
+                      <td class="numeric text-max-contrast-color">
+                        @if (row.yoyPercent != null) {
+                          <span>{{ row.yoyPercent > 0 ? '+' : '' }}{{ row.yoyPercent | number: '1.0-2' }}%</span>
+                        } @else {
+                          <span class="muted">{{ t('aiSignalsFundamental.noValue') }}</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </nz-table>
+          }
+
+          @if (vm.valuation != null || vm.dividend != null) {
+            <div class="additional-metrics d-flex flex-row flex-wrap flex-gap-15">
+              @if (vm.valuation != null) {
+                <div class="additional-metric d-flex flex-column flex-gap-5">
+                  <span class="muted">{{ t('aiSignalsFundamental.evEbitda') }}</span>
+                  <span class="metric-value heading-color fw-bold">{{ vm.valuation.evEbitda | number: '1.0-3' }}×</span>
+                  @if (vm.valuation.asOf != null) {
+                    <span class="muted fs-9">{{ t('aiSignalsFundamental.asOf') }} {{ vm.valuation.asOf | date: 'dd.MM.yyyy' }}</span>
+                  }
+                </div>
+              }
+              @if (vm.dividend != null) {
+                <div class="additional-metric d-flex flex-column flex-gap-5">
+                  <span class="muted">{{ t('aiSignalsFundamental.dividendReported') }}</span>
+                  <span class="metric-value heading-color fw-bold">{{ vm.dividend.value | number: '1.0-2' }} <span class="fs-9">{{ unit }}</span></span>
+                  @if (vm.dividend.period != null) {
+                    <span class="muted fs-9">{{ vm.dividend.period }}</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (vm.notes.length > 0 || vm.absent.length > 0) {
+            <div class="fundamental-notes d-flex flex-column flex-gap-5 fs-9">
+              @for (note of vm.notes; track $index) {
+                <p>{{ note }}</p>
+              }
+              @if (vm.absent.length > 0) {
+                <nz-tag #absentTooltip="nzTooltip"
+                        [nzTooltipTitle]="absentMetrics"
+                        (blur)="absentTooltip.hide()"
+                        (focus)="absentTooltip.show()"
+                        class="missing-metrics hint align-self-start d-flex align-items-center flex-gap-5"
+                        nz-tooltip
+                        tabindex="0"
+                >
+                  <span aria-hidden="true" class="primary-color" nz-icon nzType="info-circle"></span>
+                  <span class="heading-color fw-bold">{{ t('aiSignalsFundamental.absentCount', {count: vm.absent.length}) }}</span>
+                </nz-tag>
+                <ng-template #absentMetrics>
+                  @for (metric of vm.absent; track metric.key) {
+                    <div>{{ metric.labelKey == null ? metric.key : t('aiSignalsFundamental.' + metric.labelKey) }}</div>
+                  }
+                </ng-template>
+              }
+            </div>
+          }
+        </div>
+      </ats-signal-section>
+    }
+  </ng-container>
+</ng-container>

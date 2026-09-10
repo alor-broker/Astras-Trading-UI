@@ -1,0 +1,124 @@
+<ng-container *transloco="let tc; scope: 'ai-signals'">
+  <ng-container *transloco="let t; scope: 'ai-signals/technical-analysis'">
+    @if (selected(); as vm) {
+      <ats-signal-section [title]="t('aiSignalsTechnicalAnalysis.title')">
+        <div class="technical-panel d-flex flex-column flex-gap-15">
+          <div class="d-flex flex-row flex-wrap flex-gap-5" role="group" [attr.aria-label]="t('aiSignalsTechnicalAnalysis.timeframe')">
+            @for (timeframe of timeframes(); track timeframe.key) {
+              <button nz-button type="button" [nzType]="vm.key === timeframe.key ? 'primary' : 'default'"
+                      [attr.aria-pressed]="vm.key === timeframe.key" (click)="selectedKey.set(timeframe.key)">
+                {{ label(timeframe.key) }}
+              </button>
+            }
+          </div>
+
+          <div class="snapshot d-flex flex-row flex-wrap align-items-center flex-gap-10">
+            <span>{{ t('aiSignalsTechnicalAnalysis.snapshotPrice') }}</span>
+            <strong class="snapshot-price text-max-contrast-color">{{ vm.price == null ? '—' : number(vm.price) }}</strong>
+            @if (vm.changePercent != null) {
+              <span nz-tooltip #changeHint="nzTooltip" tabindex="0" class="hint"
+                    [class.positive-color]="vm.changePercent > 0" [class.negative-color]="vm.changePercent < 0"
+                    [nzTooltipTitle]="t('aiSignalsTechnicalAnalysis.changeHint')"
+                    (focus)="changeHint.show()" (blur)="changeHint.hide()">{{ percent(vm.changePercent) }}</span>
+            }
+          </div>
+
+          <nz-tabs nzSize="small" [nzAnimated]="false">
+            <nz-tab [nzTitle]="t('aiSignalsTechnicalAnalysis.overview')">
+              <div class="d-flex flex-column flex-gap-15">
+                @if (summary().length > 0) {
+                  <dl class="summary-list d-flex flex-row flex-wrap">
+                    @for (metric of summary(); track metric.id) {
+                      <div class="summary-item d-flex flex-column flex-gap-5">
+                        <dt>{{ metric.label }}</dt>
+                        <dd class="text-max-contrast-color">{{ metric.displayValue }}</dd>
+                      </div>
+                    }
+                  </dl>
+                }
+
+                @if (vm.gauges.length > 0) {
+                  <div class="d-flex flex-row flex-wrap flex-gap-10">
+                    @for (gauge of vm.gauges; track gauge.kind) {
+                      <ats-technical-indicator-gauge [kind]="gauge.kind" [value]="gauge.value"/>
+                    }
+                  </div>
+                }
+
+                @if (vm.price != null) {
+                  @if (vm.levels.length > 0) {
+                    <div class="d-flex flex-column flex-gap-10">
+                      <h4 class="subsection-title">{{ t('aiSignalsTechnicalAnalysis.priceLevels') }}</h4>
+                      <ats-technical-price-levels [levels]="vm.levels" [currentPrice]="vm.price"/>
+                    </div>
+                  }
+                  @if (vm.averages.length > 0) {
+                    <div class="d-flex flex-column flex-gap-10">
+                      <h4 class="subsection-title">{{ t('aiSignalsTechnicalAnalysis.movingAverages') }}</h4>
+                      <ats-technical-price-levels [levels]="vm.averages" [currentPrice]="vm.price"/>
+                    </div>
+                  }
+                } @else {
+                  <p class="muted">{{ t('aiSignalsTechnicalAnalysis.priceUnavailable') }}</p>
+                }
+              </div>
+            </nz-tab>
+            <nz-tab [nzTitle]="t('aiSignalsTechnicalAnalysis.allIndicators')">
+              <nz-table class="technical-table" nzTemplateMode nzSize="small" nzTableLayout="fixed" [nzShowPagination]="false">
+                <thead>
+                  <tr>
+                    <th scope="col">{{ tc('aiSignals.indicator') }}</th>
+                    <th scope="col" class="numeric" nzWidth="38%">{{ tc('aiSignals.value') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (group of tableGroups(); track group.key) {
+                    <tr class="group-row"><th colspan="2" scope="rowgroup">{{ group.label }}</th></tr>
+                    @for (metric of group.metrics; track metric.id) {
+                      <tr>
+                        <th scope="row" class="metric-name">{{ metric.label }}</th>
+                        <td class="numeric text-max-contrast-color">
+                          @if (metric.value == null) {
+                            <span [attr.aria-label]="t('aiSignalsTechnicalAnalysis.unavailable')">—</span>
+                          } @else {
+                            {{ metric.displayValue }}
+                          }
+                        </td>
+                      </tr>
+                    }
+                  }
+                </tbody>
+              </nz-table>
+            </nz-tab>
+            <nz-tab [nzTitle]="t('aiSignalsTechnicalAnalysis.patternsTab', {count: vm.detectedPatternCount})">
+              <div class="d-flex flex-column flex-gap-15">
+                <label class="show-inactive d-flex align-items-center flex-gap-10">
+                  <input type="checkbox" [checked]="showInactivePatterns()" (change)="showInactivePatterns.set(!showInactivePatterns())"/>
+                  {{ t('aiSignalsTechnicalAnalysis.showInactive') }}
+                </label>
+                @for (group of patternGroups(); track group.key) {
+                  <div class="d-flex flex-column flex-gap-10">
+                    <h4 class="subsection-title">{{ group.label }}</h4>
+                    <div class="d-flex flex-row flex-wrap flex-gap-5">
+                      @for (metric of group.metrics; track metric.id) {
+                        <nz-tag class="pattern-tag" [class.detected]="metric.value === true">
+                          <span class="pattern-state" aria-hidden="true">{{ metric.value === true ? '✓' : metric.value === false ? '−' : '—' }}</span>
+                          {{ metric.label }}
+                          <span class="pattern-description">
+                            {{ t('aiSignalsTechnicalAnalysis.' + (metric.value === true ? 'detected' : metric.value === false ? 'notDetected' : 'unavailable')) }}
+                          </span>
+                        </nz-tag>
+                      }
+                    </div>
+                  </div>
+                } @empty {
+                  <p class="muted">{{ t('aiSignalsTechnicalAnalysis.' + (vm.hasPatternResults ? 'noPatterns' : 'patternsUnavailable')) }}</p>
+                }
+              </div>
+            </nz-tab>
+          </nz-tabs>
+        </div>
+      </ats-signal-section>
+    }
+  </ng-container>
+</ng-container>

@@ -4,6 +4,7 @@ import {provideTerminalNetworkIndicator} from '@terminal-core-lib/terminal-provi
 import {provideTerminalNotifications} from '@terminal-core-lib/terminal-providers/terminal-dashboard-notifications.providers';
 import {provideDesktopSettingsMigrations} from '@terminal-core-lib/features/settings-sync/migrations/settings-migrations.providers';
 import {provideClientOrders} from '@terminal-core-lib/features/orders/orders.providers';
+import {provideDesktopSubmitOrderContext} from './services/desktop-submit-order-context.providers';
 import {EXPORT_SETTINGS_SERVICE_TOKEN} from '@terminal-core-lib/features/export-settings/export-settings.types';
 import {PUSH_NOTIFICATIONS_CONNECTOR} from '@terminal-core-lib/features/push-notifications/types/push-notifications-connector.types';
 import {provideScalperOrderBookSharedServices} from '@terminal-widgets-lib/widgets/scalper-order-book/scalper-order-book.providers';
@@ -20,6 +21,7 @@ export const dashboardProviders: Provider[] = new TerminalDashboardProvidersBuil
     provideTerminalNetworkIndicator(),
     provideDesktopSettingsMigrations(),
     provideClientOrders(),
+    provideDesktopSubmitOrderContext(),
     [
       {
         provide: EXPORT_SETTINGS_SERVICE_TOKEN,

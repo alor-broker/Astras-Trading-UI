@@ -1,0 +1,7 @@
+{
+  "lastUpdatedLabel": "Updated",
+  "refreshTooltip": "Refresh",
+  "noTickersHint": "Choose instruments using Edit list to track AI signals",
+  "loadFailed": "Failed to load signals",
+  "retry": "Retry"
+}

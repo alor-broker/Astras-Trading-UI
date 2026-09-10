@@ -43,6 +43,7 @@
         (blur)="handleInputConfirm()"
         (keydown.enter)="handleInputConfirm()"
         [(ngModel)]="inputValue"
+        [ngModelOptions]="{standalone: true}"
         [maxlength]="50"
         [placeholder]="t('ordersBasketPresets.titlePlaceholder')"
         id="new-preset-title-input"
@@ -53,4 +54,3 @@
     }
   </div>
 </ng-container>
-

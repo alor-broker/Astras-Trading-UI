@@ -1,0 +1,32 @@
+<ng-container>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget()"
+      [settings]="settingsRef"
+      [showContentScroll]="false"
+      [showSettings]="showSettings()"
+    >
+      <ng-template #headerRef>
+        <ats-widget-header (switchSettings)="toggleSettings()"
+                           [badgeShape]="'square'"
+                           [guid]="guid"
+                           [hasSettings]="true"
+                           [selectedBadgeColor]="settings.badgeColor"
+                           [showBadgesMenu]="(showBadge$ | async) ?? false"
+                           [widgetMeta]="widgetInstance().widgetMeta"
+        />
+      </ng-template>
+      <ng-template #contentRef>
+        <ats-ai-signals-content
+          (instrumentSelected)="selectInstrument($event)"
+          [guid]="guid"
+        />
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-ai-signals-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
+</ng-container>

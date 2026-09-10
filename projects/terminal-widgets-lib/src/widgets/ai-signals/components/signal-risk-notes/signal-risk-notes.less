@@ -1,0 +1,74 @@
+@import '../../styles/analysis-shared';
+
+ats-signal-risk-notes {
+  display: block;
+  .reasons-title {
+    .analysis-heading();
+  }
+
+  .risk-metrics {
+    margin: 0;
+    gap: 16px 24px;
+  }
+
+  .risk-item {
+    flex: 1 1 220px;
+    min-width: 0;
+
+    dt {
+      color: var(--ats-text-color-secondary);
+      font-weight: normal;
+    }
+  }
+
+  .risk-label {
+    .analysis-hint();
+  }
+
+  .risk-value {
+    margin: 0;
+  }
+
+  .risk-level {
+    margin: 0;
+    padding: 2px 10px;
+    border-color: color-mix(in srgb, currentColor 25%, transparent);
+    border-radius: 12px;
+    color: inherit;
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+    font-size: var(--ats-font-size-base);
+  }
+
+  .risk-scale {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .risk-step {
+    width: 18px;
+    height: 5px;
+    border-radius: 2px;
+    background-color: var(--ats-border-color-base);
+
+    &.active {
+      background-color: currentColor;
+    }
+  }
+
+  .avoid-reasons {
+    &.with-divider {
+      padding-top: 10px;
+      border-top: var(--ats-border-width-base) solid var(--ats-border-color-split);
+    }
+  }
+
+  .reasons-list {
+    margin: 0;
+    padding-left: 20px;
+    overflow-wrap: anywhere;
+
+    li + li {
+      margin-top: 5px;
+    }
+  }
+}

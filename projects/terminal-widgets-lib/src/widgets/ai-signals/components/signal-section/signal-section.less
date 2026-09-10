@@ -1,0 +1,22 @@
+@import '../../styles/analysis-shared';
+
+ats-signal-section {
+  display: block;
+  min-width: 0;
+
+  > section > .section-title {
+    .analysis-heading();
+  }
+
+  > section > .section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+
+    &.section-panel {
+      .analysis-panel();
+      padding: 10px;
+    }
+  }
+}

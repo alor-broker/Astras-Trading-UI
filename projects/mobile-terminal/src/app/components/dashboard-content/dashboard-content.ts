@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
+  DestroyRef, forwardRef,
   inject,
   OnInit,
   signal,
@@ -51,6 +51,12 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {WidgetWrapper} from '../widget-wrapper/widget-wrapper';
+import {
+  SUBMIT_ORDER_CONTEXT,
+  SubmitOrderContext, SubmitOrderEventKey,
+  SubmitOrderParams
+} from '@terminal-core-lib/features/orders/types/submit-order-context.types';
+import {DefaultBadge} from '@terminal-core-lib/features/instruments/constants/badges.constants';
 
 interface QuickAccessPanelWidget extends WidgetInstance {
   isSelectedByDefault: boolean;
@@ -74,8 +80,14 @@ interface SelectedWidget extends WidgetInstance {
   styleUrl: './dashboard-content.less',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: SUBMIT_ORDER_CONTEXT,
+      useExisting: forwardRef(() => DashboardContent)
+    }
+  ]
 })
-export class DashboardContent implements OnInit {
+export class DashboardContent implements OnInit, SubmitOrderContext {
   quickAccessPanelWidgets$!: Observable<QuickAccessPanelWidget[]>;
 
   protected readonly galleryVisible = signal(false);
@@ -253,6 +265,15 @@ export class DashboardContent implements OnInit {
           });
         }
       });
+  }
+
+  submitOrder(params: SubmitOrderParams): void {
+    this.dashboardContextService.selectDashboardInstrument(params.instrumentKey, DefaultBadge);
+    this.openExtendedOrderWidget();
+    this.eventsBusService.publish({
+      key: SubmitOrderEventKey,
+      payload: params
+    });
   }
 
   protected openPreferredOrderWidget(skipNavigationStackUpdate = true): void {

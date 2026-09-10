@@ -28,6 +28,7 @@ import {AllInstrumentsWidget} from '@terminal-widgets-lib/widgets/all-instrument
 import {OptionBoardWidget} from '@terminal-widgets-lib/widgets/option-board/option-board-widget/option-board-widget';
 import {ArbitrageSpreadWidget} from '@terminal-widgets-lib/widgets/arbitrage-spread/arbitrage-spread-widget/arbitrage-spread-widget';
 import {PortfolioRiskGaugeWidget} from '@terminal-widgets-lib/widgets/portfolio-risk-gauge/portfolio-risk-gauge-widget/portfolio-risk-gauge-widget';
+import {AiSignalsWidget} from '@terminal-widgets-lib/widgets/ai-signals/ai-signals-widget/ai-signals-widget';
 
 /**
  * Registry of all widget components available in the desktop terminal.
@@ -60,7 +61,8 @@ const DESKTOP_WIDGET_REGISTRY: Map<string, Type<unknown>> = new Map<string, Type
   ['all-instruments', AllInstrumentsWidget],
   ['option-board', OptionBoardWidget],
   ['arbitrage-spread', ArbitrageSpreadWidget],
-  ['portfolio-risk-gauge', PortfolioRiskGaugeWidget]
+  ['portfolio-risk-gauge', PortfolioRiskGaugeWidget],
+  ['ai-signals', AiSignalsWidget]
   // Add new desktop widgets here
 ]);
 

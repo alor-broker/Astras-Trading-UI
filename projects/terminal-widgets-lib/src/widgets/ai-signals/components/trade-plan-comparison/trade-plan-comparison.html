@@ -1,0 +1,79 @@
+<ng-container *transloco="let t; scope: 'ai-signals'">
+  <ng-container *transloco="let ta; scope: 'ai-signals/analysts'">
+    <ng-container *transloco="let tp; scope: 'ai-signals/trade-plan-chart'">
+      <ats-signal-section [title]="ta('aiSignalsAnalysts.comparisonTitle')">
+        <div class="comparison-panel d-flex flex-column flex-gap-15">
+          @if (priceRange(); as range) {
+            <div class="chart-legend d-flex flex-row flex-wrap flex-gap-10 fs-9">
+              @for (item of legend; track item.level) {
+                @if (item.level !== levelKeys.CurrentPrice || consensus().currentPrice != null) {
+                  <span nz-tooltip #legendHint="nzTooltip" tabindex="0"
+                        [nzTooltipTitle]="tp('aiSignalsTradePlanChart.' + item.tooltipKey)"
+                        (focus)="legendHint.show()" (blur)="legendHint.hide()">
+                    <ats-trade-plan-marker [level]="item.level" [legend]="true"/>
+                    {{ tp('aiSignalsTradePlanChart.' + item.level) }}
+                    @if (item.level === levelKeys.CurrentPrice) {
+                      : {{ consensus().currentPrice | atsPrice }}
+                    }
+                  </span>
+                }
+              }
+            </div>
+
+            <div class="comparison-chart d-flex flex-column" role="group" [attr.aria-label]="ta('aiSignalsAnalysts.sharedScale')">
+              @for (row of rows(); track row.index) {
+                <div class="comparison-row d-flex flex-row align-items-center flex-gap-10" [class.consensus-row]="row.index == null"
+                     role="group" [attr.aria-label]="row.index == null ? ta('aiSignalsAnalysts.consensus') : t('aiSignals.analystLabel', {number: row.index})">
+                  <span class="source-label fs-9">{{ row.index == null ? ta('aiSignalsAnalysts.consensus') : t('aiSignals.analystLabel', {number: row.index}) }}</span>
+                  @if (row.plan != null && row.hasPrices) {
+                    <ats-trade-plan-chart [plan]="row.plan" [currentPrice]="consensus().currentPrice"
+                                         [priceRange]="range" [compact]="true" [showPriceRange]="false"/>
+                  } @else {
+                    <span class="empty-plan fs-9">{{ row.noTrade ? t('aiSignals.actions.NO_TRADE') : tp('aiSignalsTradePlanChart.noPrices') }}</span>
+                  }
+                </div>
+              }
+              <div class="axis-row d-flex flex-row flex-gap-10 fs-9" aria-hidden="true">
+                <span class="source-label"></span>
+                <div class="price-axis d-flex flex-row justify-content-between">
+                  <span>{{ range.min | atsPrice }}</span>
+                  <span>{{ range.max | atsPrice }}</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <nz-table class="comparison-table" [nzData]="rows()" [nzFrontPagination]="false"
+                    [nzShowPagination]="false" nzSize="small" [nzScroll]="{x: '580px'}">
+            <thead>
+              <tr>
+                <th scope="col" nzWidth="100px">{{ ta('aiSignalsAnalysts.source') }}</th>
+                <th scope="col" nzAlign="right">{{ tp('aiSignalsTradePlanChart.entryPrice') }}</th>
+                <th scope="col" nzAlign="right">{{ tp('aiSignalsTradePlanChart.stopLoss') }}</th>
+                <th scope="col" nzAlign="right"><span nz-tooltip tabindex="0" [nzTooltipTitle]="tp('aiSignalsTradePlanChart.takeProfit1Tooltip')">{{ tp('aiSignalsTradePlanChart.takeProfit1') }}</span></th>
+                <th scope="col" nzAlign="right"><span nz-tooltip tabindex="0" [nzTooltipTitle]="tp('aiSignalsTradePlanChart.takeProfit2Tooltip')">{{ tp('aiSignalsTradePlanChart.takeProfit2') }}</span></th>
+                <th scope="col" nzAlign="right"><span nz-tooltip tabindex="0" [nzTooltipTitle]="ta('aiSignalsAnalysts.riskRewardHint')">{{ ta('aiSignalsAnalysts.riskReward') }}</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track row.index) {
+                <tr [class.consensus-row]="row.index == null">
+                  <th scope="row">{{ row.index == null ? ta('aiSignalsAnalysts.consensus') : t('aiSignals.analystLabel', {number: row.index}) }}</th>
+                  @if (row.plan; as plan) {
+                    <td nzAlign="right">{{ plan.entryPrice == null ? '—' : (plan.entryPrice | atsPrice) }}</td>
+                    <td nzAlign="right">{{ plan.stopLoss == null ? '—' : (plan.stopLoss | atsPrice) }}</td>
+                    <td nzAlign="right">{{ plan.takeProfit1 == null ? '—' : (plan.takeProfit1 | atsPrice) }}</td>
+                    <td nzAlign="right">{{ plan.takeProfit2 == null ? '—' : (plan.takeProfit2 | atsPrice) }}</td>
+                    <td nzAlign="right">{{ plan.riskRewardRatio == null ? '—' : (plan.riskRewardRatio | number: '1.0-2') }}</td>
+                  } @else {
+                    <td colspan="5" class="empty-plan">{{ row.noTrade ? t('aiSignals.actions.NO_TRADE') : tp('aiSignalsTradePlanChart.noPrices') }}</td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </nz-table>
+        </div>
+      </ats-signal-section>
+    </ng-container>
+  </ng-container>
+</ng-container>

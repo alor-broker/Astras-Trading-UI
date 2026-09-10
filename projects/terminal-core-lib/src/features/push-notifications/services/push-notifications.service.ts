@@ -1,20 +1,34 @@
 ﻿import {
+  DestroyRef,
   inject,
   Injectable,
-  OnDestroy
+  signal
 } from '@angular/core';
 import {
+  takeUntilDestroyed,
+  toObservable
+} from '@angular/core/rxjs-interop';
+import {DOCUMENT} from '@angular/common';
+import {
+  asyncScheduler,
   catchError,
+  debounceTime,
+  defaultIfEmpty,
+  defer,
+  distinctUntilChanged,
+  EMPTY,
   forkJoin,
+  fromEvent,
   map,
-  NEVER,
+  merge,
   Observable,
   of,
   shareReplay,
-  Subject,
+  startWith,
   switchMap,
   take,
   tap,
+  throttleTime,
   throwError
 } from 'rxjs';
 import {BaseCommandResponse} from '@terminal-core-lib/common/types/http-request-response.types';
@@ -34,12 +48,20 @@ import {TranslatorService} from '@terminal-core-lib/features/translations/servic
 import {catchHttpError} from '@terminal-core-lib/common/utils/observable/catch-http-error';
 import {ErrorHandlerService} from '@terminal-core-lib/features/errors-handler/error-handler.service';
 import {PortfolioKeyEqualityComparer} from '@terminal-core-lib/common/utils/portfolio-key.helper';
+import {createRefresh} from '@terminal-core-lib/common/utils/observable/create-refresh';
 
 export type MessagingStatus = NotificationPermission | 'not-supported';
 
+const subscriptionsUpdateInitialValue = Symbol('subscriptionsUpdateInitialValue');
+
 @Injectable()
-export class PushNotificationsService implements OnDestroy {
-  readonly subscriptionsUpdated$ = NEVER;
+export class PushNotificationsService {
+  private readonly subscriptionsUpdated = signal<PushSubscriptionType | null | typeof subscriptionsUpdateInitialValue>(
+    subscriptionsUpdateInitialValue,
+    {equal: () => false}
+  );
+
+  private readonly subscriptionsUpdated$ = toObservable(this.subscriptionsUpdated);
 
   private messages$?: Observable<PushMessage>;
 
@@ -53,11 +75,27 @@ export class PushNotificationsService implements OnDestroy {
 
   private readonly errorHandlerService = inject(ErrorHandlerService);
 
+  private readonly document = inject(DOCUMENT);
+
+  private readonly documentVisibility$ = defer(() => fromEvent(this.document, 'visibilitychange').pipe(
+    map(() => !this.document.hidden),
+    startWith(!this.document.hidden),
+    distinctUntilChanged()
+  ));
+
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly baseUrl = this.coreApiUrlProvider.apiUrl + '/commandapi/observatory/subscriptions';
+
+  private readonly subscriptionsRefreshPeriodMs = 60_000;
+
+  private readonly subscriptionsLoadMinIntervalMs = 1_000;
+
+  private readonly messageSubscriptionsRefreshDelayMs = 5_000;
 
   private token$?: Observable<string | null>;
 
-  private readonly subscriptionsUpdatedSub = new Subject<PushSubscriptionType | null>();
+  private currentSubscriptions$?: Observable<SubscriptionBase[] | null>;
 
   cancelSubscription(id: string): Observable<BaseCommandResponse | null> {
     return this.initFCM()
@@ -67,7 +105,7 @@ export class PushNotificationsService implements OnDestroy {
         take(1),
         tap(r => {
           if (r) {
-            this.subscriptionsUpdatedSub.next(null);
+            this.notifySubscriptionsUpdated(null);
           }
         })
       );
@@ -106,7 +144,7 @@ export class PushNotificationsService implements OnDestroy {
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         tap(r => {
           if (r) {
-            this.subscriptionsUpdatedSub.next(PushSubscriptionType.OrderExecute);
+            this.notifySubscriptionsUpdated(PushSubscriptionType.OrderExecute);
           }
         })
       );
@@ -127,29 +165,37 @@ export class PushNotificationsService implements OnDestroy {
         take(1),
         tap(r => {
           if (r) {
-            this.subscriptionsUpdatedSub.next(PushSubscriptionType.PriceSpark);
+            this.notifySubscriptionsUpdated(PushSubscriptionType.PriceSpark);
           }
         })
       );
   }
 
   getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {
-    return this.initFCM().pipe(
-      filter(x => x != null && x.length > 0),
-      switchMap(() => this.httpClient.get<SubscriptionBase[]>(this.baseUrl)),
-      catchHttpError<SubscriptionBase[] | null>(null, this.errorHandlerService),
-      map(s => {
-        if (!s) {
-          return s;
-        }
-
-        return s.map(x => ({
-          ...x,
-          createdAt: new Date(x.createdAt)
-        }));
-      }),
-      take(1)
+    this.currentSubscriptions$ ??= merge(
+      createRefresh(
+        this.subscriptionsRefreshPeriodMs,
+        this.documentVisibility$
+      ),
+      this.subscriptionsUpdated$.pipe(
+        filter(update => update !== subscriptionsUpdateInitialValue)
+      ),
+      this.getMessages().pipe(
+        debounceTime(this.messageSubscriptionsRefreshDelayMs),
+        catchError(() => EMPTY)
+      )
+    ).pipe(
+      throttleTime(
+        this.subscriptionsLoadMinIntervalMs,
+        asyncScheduler,
+        {leading: true, trailing: true}
+      ),
+      switchMap(() => this.loadCurrentSubscriptions()),
+      takeUntilDestroyed(this.destroyRef),
+      shareReplay(1)
     );
+
+    return this.currentSubscriptions$;
   }
 
   getBrowserNotificationsStatus(): Observable<MessagingStatus> {
@@ -158,14 +204,14 @@ export class PushNotificationsService implements OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-    this.subscriptionsUpdatedSub.complete();
+  private notifySubscriptionsUpdated(subscriptionType: PushSubscriptionType | null): void {
+    this.subscriptionsUpdated.set(subscriptionType);
   }
 
   private cancelOrderExecuteSubscriptions(portfolios: { portfolio: string, exchange: string }[]): Observable<boolean> {
     return this.initFCM()
       .pipe(
-        switchMap(() => this.getCurrentSubscriptions()),
+        switchMap(() => this.loadCurrentSubscriptions()),
         map(subs => (subs ?? []).filter((s): s is OrderExecuteSubscription => s.subscriptionType === PushSubscriptionType.OrderExecute)),
         switchMap((subs: OrderExecuteSubscription[]) => {
           const isNeedResubscribe = subs.length !== portfolios.length || subs.reduce((acc, curr) => {
@@ -222,5 +268,19 @@ export class PushNotificationsService implements OnDestroy {
     );
 
     return this.token$;
+  }
+
+  private loadCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {
+    return this.initFCM().pipe(
+      filter(x => x != null && x.length > 0),
+      switchMap(() => this.httpClient.get<SubscriptionBase[]>(this.baseUrl)),
+      catchHttpError<SubscriptionBase[] | null>(null, this.errorHandlerService),
+      map(subscriptions => subscriptions?.map(subscription => ({
+        ...subscription,
+        createdAt: new Date(subscription.createdAt)
+      })) ?? null),
+      take(1),
+      defaultIfEmpty(null)
+    );
   }
 }

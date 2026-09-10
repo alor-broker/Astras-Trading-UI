@@ -9,7 +9,6 @@ import {
   combineLatest,
   defer,
   distinctUntilChanged,
-  fromEvent,
   Observable,
   of,
   shareReplay,
@@ -20,7 +19,6 @@ import {
   catchError,
   filter,
   map,
-  startWith,
   switchMap
 } from "rxjs/operators";
 import {BlotterService} from "../../services/blotter.service";
@@ -190,7 +188,11 @@ export class BlotterPushNotifications extends BlotterBaseTable<DisplayNotificati
     this.isLoading$.next(true);
     this.pushNotificationsService.cancelSubscription(id).pipe(
       take(1)
-    ).subscribe();
+    ).subscribe(result => {
+      if (!result) {
+        this.isLoading$.next(false);
+      }
+    });
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayNotification>> {
@@ -266,18 +268,10 @@ export class BlotterPushNotifications extends BlotterBaseTable<DisplayNotificati
       )
     );
 
-    const currentSubscriptions$ = combineLatest([
-      this.pushNotificationsService.subscriptionsUpdated$.pipe(startWith({})),
-      this.pushNotificationsService.getMessages().pipe(startWith({})),
-      fromEvent(document, 'visibilitychange')
-        .pipe(
-          filter(() => document.visibilityState === 'visible'),
-          startWith(null)
-        )
-    ]).pipe(
-      tap(() => this.isLoading$.next(true)),
-      switchMap(() => this.pushNotificationsService.getCurrentSubscriptions())
-    );
+    const currentSubscriptions$ = defer(() => {
+      this.isLoading$.next(true);
+      return this.pushNotificationsService.getCurrentSubscriptions();
+    });
 
     const displayNotifications$ = combineLatest([
       this.settings$,

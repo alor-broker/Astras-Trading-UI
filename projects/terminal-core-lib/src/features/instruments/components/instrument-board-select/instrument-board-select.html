@@ -1,6 +1,7 @@
 <nz-select
   (ngModelChange)="selectBoard($event)"
   [ngModel]="currentValue"
+  [ngModelOptions]="{standalone: true}"
   [nzPlaceHolder]="placeholder() ?? ''"
   nzAllowClear
   nzShowSearch

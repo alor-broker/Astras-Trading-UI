@@ -14,6 +14,7 @@
             <textarea
               (keydown.enter)="inputString = inputString + ';'; parseInput();"
               [(ngModel)]="inputString"
+              [ngModelOptions]="{standalone: true}"
               [placeholder]="t('instrumentsImportWatchlistDialog.inputStringPlaceholder')"
               nz-input
               rows="3"

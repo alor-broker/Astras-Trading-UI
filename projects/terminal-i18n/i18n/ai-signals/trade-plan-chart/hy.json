@@ -1,0 +1,11 @@
+{
+  "entryPrice": "Մուտք",
+  "stopLoss": "Ստոպ-լոս",
+  "takeProfit1": "Պահպ. թիրախ",
+  "takeProfit2": "Լավատ. թիրախ",
+  "takeProfit1Tooltip": "Թիրախ 1 — պահպանողական թիրախ",
+  "takeProfit2Tooltip": "Թիրախ 2 — լավատեսական թիրախ",
+  "currentPrice": "Ընթացիկ գին",
+  "priceRange": "Գնային միջակայք՝ {{min}}-ից {{max}}",
+  "noPrices": "Գնային մակարդակները տրամադրված չեն"
+}

@@ -8,6 +8,7 @@
     (ngModelChange)="onModelChange($event)"
     (wheel)="processWheel($event)"
     [ngModel]="displayValue"
+    [ngModelOptions]="{standalone: true}"
     [placeholder]="placeholder()"
     [readOnly]="readonly()"
     autocomplete="off"

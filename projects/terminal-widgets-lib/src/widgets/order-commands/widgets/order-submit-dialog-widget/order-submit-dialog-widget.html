@@ -32,6 +32,7 @@
                           #limitOrderTab
                           [nzTitle]="t('orderCommands.limitOrderTabTitle')">
                           <ats-limit-order-form (submitted)="closeDialog()"
+                                                [side]="dialogParams.side ?? null"
                                                 [activated]="limitOrderTab.isActive"
                                                 [initialValues]="dialogParams.initialValues"
                                                 [instrument]="currentInstrument"
@@ -45,6 +46,7 @@
                           #marketOrderTab
                           [nzTitle]="t('orderCommands.marketOrderTabTitle')">
                           <ats-market-order-form (submitted)="closeDialog()"
+                                                 [side]="dialogParams.side ?? null"
                                                  [activated]="marketOrderTab.isActive"
                                                  [initialValues]="dialogParams.initialValues"
                                                  [instrument]="currentInstrument"
@@ -58,6 +60,7 @@
                           #stopOrderTab
                           [nzTitle]="t('orderCommands.stopOrderTabTitle')">
                           <ats-stop-order-form (submitted)="closeDialog()"
+                                               [side]="dialogParams.side ?? null"
                                                [activated]="stopOrderTab.isActive"
                                                [initialValues]="dialogParams.initialValues"
                                                [instrument]="currentInstrument"

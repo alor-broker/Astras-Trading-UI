@@ -1,0 +1,11 @@
+@if (chartSettings(); as settings) {
+  <div class="chart-container">
+    <canvas [attr.aria-label]="settings.description"
+            [data]="settings.data"
+            [options]="settings.options"
+            baseChart
+            role="img"
+            type="bar"
+    ></canvas>
+  </div>
+}

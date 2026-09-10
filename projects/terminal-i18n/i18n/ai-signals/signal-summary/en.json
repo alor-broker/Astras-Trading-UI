@@ -1,0 +1,20 @@
+{
+  "directionTooltips": {
+    "BULLISH": "The price is expected to rise",
+    "BEARISH": "The price is expected to fall",
+    "NEUTRAL": "No significant price movement is expected"
+  },
+  "actionTooltips": {
+    "BUY_PULLBACK": "Buy after a short-term price decline",
+    "BUY_BREAKOUT": "Buy after the price moves above resistance",
+    "SELL_RALLY": "Sell after a short-term price rise",
+    "SELL_BREAKDOWN": "Sell after the price moves below support",
+    "NO_TRADE": "Avoid opening a trade"
+  },
+  "confidenceTooltip": "AI analyst confidence",
+  "confidenceAria": "AI analyst confidence: {{value}} out of 10",
+  "holdingDays": "in {{days}} days",
+  "reasoningSection": "Reasoning",
+  "tradePlanSection": "Trade plan",
+  "noTradePlan": "No trade is recommended"
+}

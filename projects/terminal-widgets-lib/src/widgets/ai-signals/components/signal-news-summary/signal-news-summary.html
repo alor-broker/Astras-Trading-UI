@@ -1,0 +1,6 @@
+<ng-container *transloco="let t; scope: 'ai-signals/details'">
+  @let days = periodDays();
+  <ats-signal-section [title]="days != null ? t('aiSignalsDetails.newsSectionWithPeriod', {days}) : t('aiSignalsDetails.newsSection')">
+    <markdown [data]="summary()" class="news-content"/>
+  </ats-signal-section>
+</ng-container>
