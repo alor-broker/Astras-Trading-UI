@@ -1,8 +1,11 @@
 {
   "entryPrice": "Вход",
   "stopLoss": "Стоп-лосс",
-  "takeProfit1": "Цель 1",
-  "takeProfit2": "Цель 2",
+  "takeProfit1": "Конс. цель",
+  "takeProfit2": "Опт. цель",
+  "takeProfit1Tooltip": "Цель 1 — консервативная цель",
+  "takeProfit2Tooltip": "Цель 2 — оптимистичная цель",
   "currentPrice": "Текущая цена",
-  "riskReward": "Прибыль/риск"
+  "priceRange": "Диапазон цен: от {{min}} до {{max}}",
+  "noPrices": "Ценовые уровни не предоставлены"
 }

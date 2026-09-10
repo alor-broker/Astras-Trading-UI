@@ -7,7 +7,7 @@
   ZodRawShape,
   ZodType
 } from "zod/v3";
-import Fields from "gql-query-builder/build/Fields";
+import {Fields} from 'gql-query-builder';
 
 export class GqlFieldsExtractor {
   static getOperation(schema: ZodObject<ZodRawShape>): string {

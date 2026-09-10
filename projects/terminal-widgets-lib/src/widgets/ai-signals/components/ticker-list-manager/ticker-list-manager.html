@@ -1,32 +1,53 @@
 <ng-container *transloco="let t; scope: 'ai-signals/ticker-list-manager'">
-  <div class="d-flex flex-column flex-gap-5">
-    <div class="d-flex flex-row flex-wrap align-items-center flex-gap-5">
-      @for (ticker of tickers(); track ticker) {
-        <nz-tag (nzOnClose)="removeTicker(ticker)" nzMode="closeable">{{ ticker }}</nz-tag>
-      }
+  <button (click)="open()" nz-button nzSize="small" type="button">
+    <span nz-icon nzType="edit"></span>
+    {{ t('aiSignalsTickerListManager.editList') }}
+  </button>
 
-      @if (showSearch()) {
-        <div class="search-box">
-          <ats-inline-instrument-search
-            (instrumentSelected)="onInstrumentSelected($event)"
-            [exchange]="searchExchange"
-            [showHelpTooltip]="false"
-          />
-        </div>
-      } @else {
-        @if (canAddMore()) {
-          <nz-tag (click)="openSearch()" class="add-tag">
-            <span nz-icon nzType="plus"></span>
-            <span>{{ t('aiSignalsTickerListManager.addTicker') }}</span>
-          </nz-tag>
-        } @else {
-          <span class="fs-9 hint">{{ t('aiSignalsTickerListManager.maxTickersHint', {max: maxTickersCount()}) }}</span>
+  <nz-modal [nzVisible]="isOpen()"
+            [nzTitle]="t('aiSignalsTickerListManager.dialogTitle')"
+            [nzContent]="content"
+            [nzOkText]="t('aiSignalsTickerListManager.apply')"
+            [nzCancelText]="t('aiSignalsTickerListManager.cancel')"
+            [nzOkDisabled]="!canApply()"
+            [nzWidth]="480"
+            nzClassName="ats-ai-signals-instruments-dialog"
+            (nzOnCancel)="close()"
+            (nzOnOk)="apply()"/>
+
+  <ng-template #content>
+    @let state = instrumentsState();
+    @if (state.loading) {
+      <div class="text-center p-10"><nz-spin nzSimple/></div>
+    } @else if (state.instruments == null) {
+      <div class="d-flex flex-column align-items-center flex-gap-10">
+        <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiSignalsTickerListManager.loadFailed')"/>
+        <button (click)="retry()" nz-button type="button">{{ t('aiSignalsTickerListManager.retry') }}</button>
+      </div>
+    } @else if (state.instruments.length === 0) {
+      <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiSignalsTickerListManager.noInstruments')"/>
+    } @else {
+      <div class="selection-toolbar d-flex flex-row flex-wrap align-items-center justify-content-between flex-gap-10">
+        <label nz-checkbox [nzChecked]="allSelected()" [nzIndeterminate]="partiallySelected()"
+               (nzCheckedChange)="toggleAll($event)">
+          {{ t('aiSignalsTickerListManager.selectAll') }}
+        </label>
+        <span class="selection-hint" aria-live="polite">
+          {{ t('aiSignalsTickerListManager.selectionCount', {count: selectedInstruments().length, total: state.instruments.length}) }}
+        </span>
+      </div>
+      <div class="instruments-list d-flex flex-column" role="group" [attr.aria-label]="t('aiSignalsTickerListManager.dialogTitle')">
+        @for (instrument of state.instruments; track instrument.exchange + ':' + instrument.ticker) {
+          <label nz-checkbox class="instrument-option"
+                 [nzChecked]="isSelected(instrument)"
+                 (nzCheckedChange)="toggleTicker(instrument, $event)">
+            <span class="d-flex flex-row align-items-center flex-gap-10">
+              <ats-instrument-icon [symbol]="instrument.ticker" [size]="24" aria-hidden="true"/>
+              <span>{{ instrument.ticker }}</span>
+            </span>
+          </label>
         }
-      }
-    </div>
-
-    @if (showDuplicateHint()) {
-      <span class="fs-9 warning-color">{{ t('aiSignalsTickerListManager.duplicateTickerHint') }}</span>
+      </div>
     }
-  </div>
+  </ng-template>
 </ng-container>

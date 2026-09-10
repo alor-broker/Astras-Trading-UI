@@ -3,92 +3,140 @@ import {
   Component,
   computed,
   inject,
-  Injector,
   input,
   output,
   signal,
-  viewChild,
-  ViewEncapsulation,
-  afterNextRender
+  ViewEncapsulation
 } from '@angular/core';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {TranslocoDirective} from '@jsverse/transloco';
-import {NzTagComponent} from 'ng-zorro-antd/tag';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzCheckboxComponent} from 'ng-zorro-antd/checkbox';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/components/inline-instrument-search/inline-instrument-search';
-import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
-import {aiSignalsDefaultExchange} from '../../types/ai-signals-view.types';
-import {AiSignalsViewModelHelper} from '../../utils/ai-signals-view-model.helper';
+import {NzModalComponent} from 'ng-zorro-antd/modal';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {concat, map, of, switchMap} from 'rxjs';
+import {InstrumentIcon} from '@terminal-core-lib/common/components/instrument-icon/instrument-icon';
+import {AiSignalsService} from '../../services/ai-signals.service';
+import {
+  SignalInstrumentOption,
+  SignalInstrumentsHelper
+} from '../../utils/signal-instruments.helper';
+import {SignalInstrumentKey} from '../../services/ai-signals-service.types';
+
+interface InstrumentsState {
+  loading: boolean;
+  instruments: SignalInstrumentOption[] | null;
+}
 
 @Component({
   selector: 'ats-ticker-list-manager',
   imports: [
+    InstrumentIcon,
     TranslocoDirective,
-    NzTagComponent,
+    NzButtonComponent,
+    NzCheckboxComponent,
+    NzEmptyComponent,
     NzIconDirective,
-    InlineInstrumentSearch
+    NzModalComponent,
+    NzSpinComponent
   ],
   templateUrl: './ticker-list-manager.html',
   styleUrl: './ticker-list-manager.less',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TickerListManager {
-  readonly tickers = input.required<string[]>();
+  readonly instruments = input.required<SignalInstrumentKey[]>();
 
-  readonly maxTickersCount = input.required<number>();
+  readonly instrumentsChanged = output<SignalInstrumentKey[]>();
 
-  readonly tickerAdded = output<string>();
+  protected readonly isOpen = signal(false);
 
-  readonly tickerRemoved = output<string>();
+  protected readonly draftInstrumentKeys = signal<ReadonlySet<string>>(new Set());
 
-  protected readonly searchExchange = aiSignalsDefaultExchange;
+  private readonly refreshVersion = signal(0);
 
-  protected readonly showSearch = signal(false);
+  private readonly aiSignalsService = inject(AiSignalsService);
 
-  protected readonly showDuplicateHint = signal(false);
+  private readonly loadRequest = computed(() => this.isOpen() ? this.refreshVersion() : null);
 
-  protected readonly canAddMore = computed(() => this.tickers().length < this.maxTickersCount());
+  // Closing the dialog or destroying the component cancels an in-flight request.
+  protected readonly instrumentsState = toSignal(toObservable(this.loadRequest).pipe(
+    switchMap(request => request == null
+      ? of<InstrumentsState>({loading: true, instruments: null})
+      : concat(
+        of<InstrumentsState>({loading: true, instruments: null}),
+        this.aiSignalsService.getInstruments().pipe(
+          map(response => ({
+            loading: false,
+            instruments: response == null ? null : SignalInstrumentsHelper.availableInstruments(response.instruments)
+          }))
+        )
+      ))
+  ), {initialValue: {loading: true, instruments: null} as InstrumentsState});
 
-  private readonly searchComponent = viewChild(InlineInstrumentSearch);
+  protected readonly selectedInstruments = computed(() => {
+    const availableInstruments = this.instrumentsState().instruments ?? [];
+    const selectedKeys = this.draftInstrumentKeys();
 
-  private readonly injector = inject(Injector);
-
-  protected openSearch(): void {
-    this.showDuplicateHint.set(false);
-    this.showSearch.set(true);
-
-    afterNextRender(
-      () => this.searchComponent()?.setFocus(),
-      {injector: this.injector}
+    return SignalInstrumentsHelper.resolveAvailableInstruments(
+      availableInstruments.filter(instrument => selectedKeys.has(SignalInstrumentsHelper.toKey(instrument))),
+      availableInstruments
     );
+  });
+
+  protected readonly allSelected = computed(() => this.selectedInstruments().length > 0
+    && this.selectedInstruments().length === this.instrumentsState().instruments?.length);
+
+  protected readonly partiallySelected = computed(() => this.selectedInstruments().length > 0 && !this.allSelected());
+
+  protected readonly canApply = computed(() => !this.instrumentsState().loading
+    && this.instrumentsState().instruments != null);
+
+  protected open(): void {
+    this.draftInstrumentKeys.set(new Set(this.instruments().map(instrument => SignalInstrumentsHelper.toKey(instrument))));
+    this.isOpen.set(true);
   }
 
-  protected closeSearch(): void {
-    this.showSearch.set(false);
-    this.showDuplicateHint.set(false);
+  protected close(): void {
+    this.isOpen.set(false);
   }
 
-  protected onInstrumentSelected(instrumentKey: InstrumentKey | null): void {
-    if (instrumentKey == null) {
-      this.closeSearch();
+  protected retry(): void {
+    this.refreshVersion.update(version => version + 1);
+  }
+
+  protected toggleAll(checked: boolean): void {
+    this.draftInstrumentKeys.set(new Set(checked
+      ? (this.instrumentsState().instruments ?? []).map(instrument => SignalInstrumentsHelper.toKey(instrument))
+      : []));
+  }
+
+  protected toggleTicker(instrument: SignalInstrumentOption, checked: boolean): void {
+    this.draftInstrumentKeys.update(instrumentKeys => {
+      const next = new Set(instrumentKeys);
+      const key = SignalInstrumentsHelper.toKey(instrument);
+      if (checked) {
+        next.add(key);
+      } else {
+        next.delete(key);
+      }
+      return next;
+    });
+  }
+
+  protected isSelected(instrument: SignalInstrumentOption): boolean {
+    return this.draftInstrumentKeys().has(SignalInstrumentsHelper.toKey(instrument));
+  }
+
+  protected apply(): void {
+    if (!this.canApply()) {
       return;
     }
 
-    const ticker = AiSignalsViewModelHelper.normalizeTicker(instrumentKey.symbol);
-    if (ticker.length === 0) {
-      return;
-    }
-
-    if (this.tickers().includes(ticker)) {
-      this.showDuplicateHint.set(true);
-      return;
-    }
-
-    this.closeSearch();
-    this.tickerAdded.emit(ticker);
-  }
-
-  protected removeTicker(ticker: string): void {
-    this.tickerRemoved.emit(ticker);
+    this.instrumentsChanged.emit(this.selectedInstruments());
+    this.close();
   }
 }

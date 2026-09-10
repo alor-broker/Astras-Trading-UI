@@ -11,17 +11,17 @@ import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {InstrumentIcon} from '@terminal-core-lib/common/components/instrument-icon/instrument-icon';
-import {AtsPrice} from '@terminal-core-lib/common/pipes/price';
+import {InstrumentKeyHelper} from '@terminal-core-lib/common/utils/instrument-key.helper';
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
 import {
-  SignalAction,
   SignalDirection
 } from '../../services/ai-signals-service.types';
 import {
   SignalRowStatus,
   SignalRowViewModel
 } from '../../types/ai-signals-view.types';
-import {ConfidenceMeter} from '../confidence-meter/confidence-meter';
+import {SignalOverview} from '../signal-overview/signal-overview';
+import {AiSignalsViewModelHelper} from '../../utils/ai-signals-view-model.helper';
 
 type SignalAccent = 'bullish' | 'bearish' | 'neutral' | 'inactive';
 
@@ -33,8 +33,7 @@ type SignalAccent = 'bullish' | 'bearish' | 'neutral' | 'inactive';
     NzIconDirective,
     NzTooltipDirective,
     InstrumentIcon,
-    AtsPrice,
-    ConfidenceMeter
+    SignalOverview
   ],
   templateUrl: './signal-list-item.html',
   styleUrl: './signal-list-item.less',
@@ -50,16 +49,16 @@ export class SignalListItem {
 
   protected readonly rowStatuses = SignalRowStatus;
 
-  protected readonly actions = SignalAction;
-
-  protected readonly directions = SignalDirection;
-
-  protected readonly isClickable = computed(() => this.row().raw != null);
+  protected readonly isClickable = computed(() => AiSignalsViewModelHelper.canOpenDetails(this.row()));
 
   protected readonly accent = computed<SignalAccent>(() => {
     const row = this.row();
 
-    if (row.status === SignalRowStatus.NoData || row.status === SignalRowStatus.Error) {
+    if (row.status === SignalRowStatus.NoData
+      || row.status === SignalRowStatus.Error
+      || row.status === SignalRowStatus.Expired
+      || row.status === SignalRowStatus.NotReady
+      || row.status === SignalRowStatus.NotAnalyzed) {
       return 'inactive';
     }
 
@@ -73,29 +72,30 @@ export class SignalListItem {
     }
   });
 
-  protected readonly directionIcon = computed(() => {
-    switch (this.row().direction) {
-      case SignalDirection.Bullish:
-        return 'rise';
-      case SignalDirection.Bearish:
-        return 'fall';
-      default:
-        return 'minus';
-    }
-  });
-
   protected onRowClick(): void {
     if (this.isClickable()) {
       this.openDetails.emit();
     }
   }
 
+  protected onRowKeydown(event: Event): void {
+    if (event.target === event.currentTarget) {
+      event.preventDefault();
+      this.onRowClick();
+    }
+  }
+
   protected onIconClick(event: MouseEvent): void {
     event.stopPropagation();
 
-    this.instrumentSelected.emit({
-      symbol: this.row().ticker,
-      exchange: this.row().exchange
-    });
+    const row = this.row();
+    if (row.exchange == null) {
+      return;
+    }
+
+    this.instrumentSelected.emit(InstrumentKeyHelper.toInstrumentKey({
+      symbol: row.ticker,
+      exchange: row.exchange
+    }));
   }
 }

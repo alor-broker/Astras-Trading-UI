@@ -4,7 +4,8 @@
   input,
   InputSignal,
   OnInit,
-  signal
+  signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {WidgetSettingsService} from '@terminal-core-lib/features/widget-settings/services/widget-settings.service';
 import {WidgetSettings} from '@terminal-core-lib/features/widget-settings/widget-settings.types';
@@ -20,6 +21,7 @@ export interface Widget {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class WidgetBase<T extends WidgetSettings> implements Widget, OnInit {

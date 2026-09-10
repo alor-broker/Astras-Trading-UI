@@ -1,0 +1,9 @@
+{
+  "comparisonTitle": "Trade plan comparison",
+  "consensus": "Consensus",
+  "source": "Source",
+  "riskReward": "Reward/risk",
+  "riskRewardHint": "Potential reward relative to risk, as reported in the respective AI analyst's or consensus trade plan.",
+  "sharedScale": "AI analyst and consensus trade plans on a shared price scale",
+  "noOpinion": "AI analyst opinion data not provided"
+}

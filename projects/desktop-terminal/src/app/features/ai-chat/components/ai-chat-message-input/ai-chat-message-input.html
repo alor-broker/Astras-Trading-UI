@@ -7,6 +7,7 @@
       [disabled]="atsDisabled()"
       [maxlength]="messageMaxLength()"
       [ngModel]="text()"
+      [ngModelOptions]="{standalone: true}"
       [placeholder]="messagePlaceholder()"
       nz-input
       rows="1"

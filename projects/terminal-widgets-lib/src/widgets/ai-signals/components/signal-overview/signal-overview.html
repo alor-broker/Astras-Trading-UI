@@ -1,0 +1,73 @@
+<ng-container *transloco="let t; scope: 'ai-signals'">
+  <ng-container *transloco="let ts; scope: 'ai-signals/signal-summary'">
+    @let vm = details();
+    <div class="overview d-flex flex-row flex-gap-10">
+      <div class="summary-content d-flex flex-column flex-gap-10" [style.min-height.px]="confidenceSize()">
+        <div class="summary-header d-flex flex-row align-items-center flex-gap-10">
+          <div class="signal-kind d-flex flex-row flex-wrap flex-gap-10">
+            @if (vm.direction != null) {
+              <span [class.buy-color]="vm.direction === directions.Bullish"
+                    [class.sell-color]="vm.direction === directions.Bearish"
+                    [nzTooltipTitle]="ts('aiSignalsSignalSummary.directionTooltips.' + vm.direction)"
+                    [class.fs-5]="!compact()"
+                    [class.fs-8]="compact()"
+                    class="direction fw-bold text-nowrap"
+                    nz-tooltip
+              >
+                <span [nzType]="directionIcon()" class="direction-icon" nz-icon></span>
+                <span>{{ t('aiSignals.directions.' + vm.direction) }}</span>
+              </span>
+            }
+
+            @if (showAction() && vm.action != null && actionTooltipKey() != null) {
+              <span [nzTooltipTitle]="ts('aiSignalsSignalSummary.' + actionTooltipKey())"
+                    class="action fs-9"
+                    nz-tooltip
+              >
+                {{ t('aiSignals.actions.' + vm.action) }}
+              </span>
+            }
+            <ng-content/>
+          </div>
+        </div>
+
+        @if (vm.expectedProfitPercent != null) {
+          <div class="outlook d-flex flex-row flex-wrap flex-gap-10">
+            <span [class.positive-color]="vm.expectedProfitPercent > 0"
+                  class="expected-profit fw-bold heading-color"
+            >
+              +{{ vm.expectedProfitPercent | number: '1.0-2' }}%
+            </span>
+
+            @if (vm.expectedHoldingDays != null) {
+              <span class="holding-days fs-9">
+                {{ ts('aiSignalsSignalSummary.holdingDays', {days: vm.expectedHoldingDays}) }}
+              </span>
+            }
+          </div>
+        }
+
+        @if (showAction() && vm.action === actions.NoTrade) {
+          <span class="fs-9 no-trade-hint">{{ ts('aiSignalsSignalSummary.noTradePlan') }}</span>
+        }
+      </div>
+
+      @if (vm.confidence != null) {
+        <span [attr.aria-label]="ts('aiSignalsSignalSummary.confidenceAria', {value: vm.confidence})"
+              [nzTooltipTitle]="ts('aiSignalsSignalSummary.confidenceTooltip')"
+              [style.--confidence-color]="confidenceColor()"
+              class="confidence"
+              nz-tooltip
+        >
+          <nz-progress [nzFormat]="confidenceFormat"
+                       [nzPercent]="confidencePercent()"
+                       [nzStrokeColor]="confidenceColor()"
+                       [nzStrokeWidth]="8"
+                       [nzWidth]="confidenceSize()"
+                       nzType="circle"
+          />
+        </span>
+      }
+    </div>
+  </ng-container>
+</ng-container>

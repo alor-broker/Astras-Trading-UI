@@ -18,15 +18,13 @@ export enum RiskLevel {
   High = 'HIGH'
 }
 
-// Checklist keys known from the endpoint contract; the server may add new ones at any time.
-// Each key here must have a label in the `checklist` section of i18n/ai-signals/details/{ru,en,hy}.json;
-// unknown keys are rendered as is.
-export const knownShortChecklistKeys = [
-  'F1_daily_bearish_regime',
-  'F2_structure_supports_downside_and_entry_not_bottom_fishing',
-  'F3_not_oversold_at_entry',
-  'F4_rr_at_least_2'
-];
+// Status values confirmed by the current /investai/signals/latest contract and response.
+export enum SignalAnalysisStatus {
+  Ok = 'ok',
+  NotReady = 'not_ready',
+  Expired = 'expired',
+  NotAnalyzed = 'not_analyzed'
+}
 
 // API serializes with exclude_none, so every optional field may be absent
 export interface TradePlan {
@@ -50,38 +48,32 @@ export interface ConsensusForecast {
   expected_holding_days?: number | null;
   trade_plan?: TradePlan | null;
   risk_notes?: RiskNotes | null;
-  short_checklist?: Record<string, boolean> | null;
   reasoning?: string | null;
-  consensus_type?: string | null;
-  consensus_confidence?: number | null;
-  models_used?: string | null;
 }
 
 export interface AnalystReasoning {
-  model_name?: string | null;
   direction?: SignalDirection | null;
   action?: SignalAction | null;
   confidence?: number | null;
   expected_holding_days?: number | null;
   trade_plan?: TradePlan | null;
   risk_notes?: RiskNotes | null;
-  short_checklist?: Record<string, boolean> | null;
   reasoning?: string | null;
 }
 
 export interface SignalNews {
   summary?: string | null;
   period_days?: number | null;
-  request_datetime?: string | null;
 }
 
 export interface SignalForecast {
   ticker: string;
-  full_ticker?: string | null;
-  request_datetime?: string | null;
+  status?: SignalAnalysisStatus | null;
+  status_note?: string | null;
+  exchange?: string | null;
   forecast_date?: string | null;
   current_price?: number | null;
-  // null/absent means signal generation failed, see errors
+  // May be absent for not_analyzed; otherwise inspect errors and warnings.
   consensus?: ConsensusForecast | null;
   analysts?: AnalystReasoning[] | null;
   // structure is not guaranteed by the contract
@@ -93,20 +85,22 @@ export interface SignalForecast {
   warnings?: string[] | null;
 }
 
-export interface SignalBatchMeta {
-  n_requests?: number | null;
-  n_with_consensus?: number | null;
-  n_no_consensus?: number | null;
-  n_degraded?: number | null;
-  notes?: string[] | null;
+export interface SignalBatchResult {
+  // signal-2 includes a row for every requested instrument, including placeholders.
+  signals?: SignalForecast[] | null;
 }
 
-export interface SignalBatchResult {
-  schema_version?: string | null;
-  generated_at?: string | null;
-  decision_datetime?: string | null;
-  market?: string | null;
-  // contains only tickers found on the server side
-  signals?: SignalForecast[] | null;
-  meta?: SignalBatchMeta | null;
+export interface SignalInstrument {
+  ticker: string;
+  exchange: string;
+  last_forecast_date?: string | null;
+}
+
+export interface SignalInstrumentKey {
+  ticker: string;
+  exchange: string;
+}
+
+export interface SignalInstrumentsResult {
+  instruments?: SignalInstrument[];
 }

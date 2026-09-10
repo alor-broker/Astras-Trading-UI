@@ -13,7 +13,8 @@ import {
   inject,
   input,
   OnDestroy,
-  output
+  output,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import {
   filter,
@@ -48,6 +49,7 @@ import {InputNumberValidation} from '@terminal-core-lib/common/constants/validat
 import {priceStepMultiplicity} from '@terminal-core-lib/features/forms/validators/price-step-multiplicity';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class BaseOrderForm implements OnDestroy {
@@ -60,6 +62,8 @@ export abstract class BaseOrderForm implements OnDestroy {
   readonly instrument = input.required<Instrument>();
 
   readonly activated = input.required<boolean>();
+
+  readonly side = input<Side | null>(null);
 
   protected readonly portfolioKeyChanges$ = toObservable(this.portfolioKey).pipe(
     startWith(null),
@@ -87,7 +91,7 @@ export abstract class BaseOrderForm implements OnDestroy {
   }
 
   submitOrder(side: Side): void {
-    if (!this.canSubmit) {
+    if (!this.canSubmit || (this.side() != null && side !== this.side())) {
       return;
     }
     this.requestProcessing$.next({orderSide: side});

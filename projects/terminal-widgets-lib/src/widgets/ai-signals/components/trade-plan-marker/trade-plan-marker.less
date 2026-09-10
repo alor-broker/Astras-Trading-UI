@@ -1,0 +1,43 @@
+ats-trade-plan-marker {
+  --marker-color: var(--ats-mix-color);
+
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+
+  &[data-level='currentPrice'] { --marker-color: var(--ats-text-color); }
+  &[data-level='entryPrice'] { --marker-color: var(--ats-primary-color); }
+  &[data-level='stopLoss'] { --marker-color: var(--ats-sell-color); }
+  &[data-level='takeProfit1'] { --marker-color: var(--ats-buy-color-accent); }
+  &[data-level='takeProfit2'] { --marker-color: var(--ats-processing-color); }
+
+  &.outlined {
+    border: 2px solid var(--marker-color);
+    background-color: var(--ats-component-background);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--marker-color) 22%, transparent);
+
+    &[data-level='takeProfit2'] {
+      box-shadow: none;
+    }
+  }
+
+  &.legend {
+    width: 10px;
+    height: 10px;
+    flex-basis: 10px;
+  }
+
+  .marker-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--marker-color);
+    transform: translate(-50%, -50%);
+  }
+}

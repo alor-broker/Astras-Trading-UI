@@ -1,6 +1,6 @@
 {
   "directions": {
-    "BULLISH": "Рост",
+    "BULLISH": "Рост цены",
     "BEARISH": "Падение",
     "NEUTRAL": "Нейтрально"
   },
@@ -12,10 +12,14 @@
     "NO_TRADE": "Без сделки"
   },
   "rowStatuses": {
+    "notAnalyzed": "Не анализировался",
+    "notReady": "Решение не готово",
+    "expired": "Сигнал устарел",
     "noData": "Нет сигнала",
     "error": "Сигнал не сформирован",
     "degraded": "Сигнал сформирован с ограничениями"
   },
-  "confidenceLabel": "Уверенность",
-  "analystLabel": "Аналитик {{number}}"
+  "analystLabel": "ИИ-аналитик {{number}}",
+  "indicator": "Показатель",
+  "value": "Значение"
 }

@@ -24,7 +24,7 @@
                   <nz-form-label nzFor="exchange" nzRequired>{{ t('scalperOrderBookSettings.exchangeLabel') }}
                   </nz-form-label>
                   <nz-form-control>
-                    <input [value]="form.value.instrument?.exchange" nz-input readonly type="text"/>
+                    <input [value]="form.value.instrument?.exchange ?? ''" nz-input readonly type="text"/>
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
@@ -443,7 +443,7 @@
                 }
               </nz-collapse-panel>
               <nz-collapse-panel
-                [nzDisabled]="form.controls.workingVolumes.enabled && !form.controls.workingVolumes.valid"
+                [nzCollapsible]="form.controls.workingVolumes.enabled && !form.controls.workingVolumes.valid ? 'disabled' : 'header'"
                 [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')"
                 class="working-volumes">
                 <div class="mb-5">{{ t('scalperOrderBookSettings.workingVolumesHint') }}</div>
@@ -532,7 +532,7 @@
                     <nz-collapse [nzBordered]="false" nzGhost>
                       <nz-collapse-panel
                         [nzActive]="true"
-                        [nzDisabled]="hasVolumeHighlightOptionsErrors()"
+                        [nzCollapsible]="hasVolumeHighlightOptionsErrors() ? 'disabled' : 'header'"
                         [nzHeader]="t('scalperOrderBookSettings.volumeHighlightSettingsLabel')"
                       >
                         @if (form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue) {

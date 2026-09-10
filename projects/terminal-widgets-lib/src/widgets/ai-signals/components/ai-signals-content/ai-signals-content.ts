@@ -28,8 +28,7 @@ import {
   of,
   shareReplay,
   Subject,
-  switchMap,
-  take
+  switchMap
 } from 'rxjs';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
@@ -50,15 +49,15 @@ import {
   defaultAiSignalsWidgetSettings
 } from '../../widget-settings.types';
 import {
-  aiSignalsTickersRecordKey,
+  aiSignalsInstrumentsRecordKey,
   ContentDisplayStatus,
-  maxTickersCount,
-  SignalRowViewModel,
-  TickersStateRecord
+  InstrumentsStateRecord,
+  SignalRowViewModel
 } from '../../types/ai-signals-view.types';
 import {TickerListManager} from '../ticker-list-manager/ticker-list-manager';
 import {SignalListItem} from '../signal-list-item/signal-list-item';
 import {SignalDetailsDialog} from '../signal-details-dialog/signal-details-dialog';
+import {SignalInstrumentKey} from '../../services/ai-signals-service.types';
 
 interface ContentState {
   status: ContentDisplayStatus;
@@ -92,8 +91,6 @@ export class AiSignalsContent implements OnInit {
 
   protected readonly displayStatuses = ContentDisplayStatus;
 
-  protected readonly maxTickersCount = maxTickersCount;
-
   // Loading until the tickers record is restored from the widget local state
   protected readonly displayStatus = signal<ContentDisplayStatus>(ContentDisplayStatus.Loading);
 
@@ -116,13 +113,17 @@ export class AiSignalsContent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   // the saved watch-list is owned by WidgetLocalStateService; this stream is the single source of truth
-  protected readonly savedTickers$ = toObservable(this.guid).pipe(
-    switchMap(guid => this.widgetLocalStateService.getStateRecord<TickersStateRecord>(
+  protected readonly savedInstruments$ = toObservable(this.guid).pipe(
+    switchMap(guid => this.widgetLocalStateService.getStateRecord<InstrumentsStateRecord>(
       guid,
-      aiSignalsTickersRecordKey
+      aiSignalsInstrumentsRecordKey
     )),
-    map(record => record?.tickers ?? []),
-    distinctUntilChanged((previous, current) => ArrayHelper.isArrayEqual(previous, current, (a, b) => a === b)),
+    map(record => record?.instruments ?? []),
+    distinctUntilChanged((previous, current) => ArrayHelper.isArrayEqual(
+      previous,
+      current,
+      (a, b) => a.exchange === b.exchange && a.ticker === b.ticker
+    )),
     shareReplay({bufferSize: 1, refCount: true})
   );
 
@@ -142,10 +143,10 @@ export class AiSignalsContent implements OnInit {
     this.destroyRef.onDestroy(() => this.manualRefresh$.complete());
 
     combineLatest({
-      tickers: this.savedTickers$,
+      instruments: this.savedInstruments$,
       intervalSec: this.getRefreshIntervalSecStream()
     }).pipe(
-      switchMap(source => this.getContentStateStream(source.tickers, source.intervalSec)),
+      switchMap(source => this.getContentStateStream(source.instruments, source.intervalSec)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(state => {
       this.displayStatus.set(state.status);
@@ -161,36 +162,8 @@ export class AiSignalsContent implements OnInit {
     this.manualRefresh$.next();
   }
 
-  protected addTicker(ticker: string): void {
-    const normalizedTicker = AiSignalsViewModelHelper.normalizeTicker(ticker);
-    if (normalizedTicker.length === 0) {
-      return;
-    }
-
-    this.savedTickers$.pipe(
-      take(1)
-    ).subscribe(currentTickers => {
-      if (
-        currentTickers.includes(normalizedTicker)
-        || currentTickers.length >= maxTickersCount
-      ) {
-        return;
-      }
-
-      this.saveTickers([...currentTickers, normalizedTicker]);
-    });
-  }
-
-  protected removeTicker(ticker: string): void {
-    this.savedTickers$.pipe(
-      take(1)
-    ).subscribe(currentTickers => {
-      this.saveTickers(currentTickers.filter(currentTicker => currentTicker !== ticker));
-    });
-  }
-
   protected openDetails(row: SignalRowViewModel): void {
-    if (row.raw != null) {
+    if (AiSignalsViewModelHelper.canOpenDetails(row)) {
       this.selectedSignal.set(row);
     }
   }
@@ -202,8 +175,8 @@ export class AiSignalsContent implements OnInit {
     );
   }
 
-  private getContentStateStream(tickers: string[], intervalSec: number): Observable<ContentState> {
-    if (tickers.length === 0) {
+  private getContentStateStream(instruments: SignalInstrumentKey[], intervalSec: number): Observable<ContentState> {
+    if (instruments.length === 0) {
       return of({
         status: ContentDisplayStatus.NoTickers,
         rows: null
@@ -222,7 +195,7 @@ export class AiSignalsContent implements OnInit {
         const showLoading = isManualRefresh || isInitialLoad;
         isInitialLoad = false;
 
-        const request$ = this.aiSignalsService.getLatestSignals(tickers).pipe(
+        const request$ = this.aiSignalsService.getLatestSignals(instruments).pipe(
           map(response => {
             if (response == null) {
               return {
@@ -233,7 +206,7 @@ export class AiSignalsContent implements OnInit {
 
             return {
               status: ContentDisplayStatus.Loaded,
-              rows: AiSignalsViewModelHelper.toRowViewModels(tickers, response)
+              rows: AiSignalsViewModelHelper.toRowViewModels(instruments, response)
             };
           })
         );
@@ -253,11 +226,11 @@ export class AiSignalsContent implements OnInit {
     );
   }
 
-  private saveTickers(tickers: string[]): void {
-    this.widgetLocalStateService.setStateRecord<TickersStateRecord>(
+  protected saveInstruments(instruments: SignalInstrumentKey[]): void {
+    this.widgetLocalStateService.setStateRecord<InstrumentsStateRecord>(
       this.guid(),
-      aiSignalsTickersRecordKey,
-      {tickers},
+      aiSignalsInstrumentsRecordKey,
+      {instruments},
       true
     );
   }

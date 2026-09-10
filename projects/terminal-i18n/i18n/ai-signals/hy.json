@@ -1,6 +1,6 @@
 {
   "directions": {
-    "BULLISH": "Աճ",
+    "BULLISH": "Գնի աճ",
     "BEARISH": "Անկում",
     "NEUTRAL": "Չեզոք"
   },
@@ -12,10 +12,14 @@
     "NO_TRADE": "Առանց գործարքի"
   },
   "rowStatuses": {
+    "notAnalyzed": "Չի վերլուծվել",
+    "notReady": "Որոշումը պատրաստ չէ",
+    "expired": "Ազդանշանը հնացել է",
     "noData": "Ազդանշան չկա",
     "error": "Ազդանշանը չի ձևավորվել",
     "degraded": "Ազդանշանը ձևավորվել է սահմանափակումներով"
   },
-  "confidenceLabel": "Վստահություն",
-  "analystLabel": "Վերլուծաբան {{number}}"
+  "analystLabel": "ԱԲ վերլուծաբան {{number}}",
+  "indicator": "Ցուցիչ",
+  "value": "Արժեք"
 }

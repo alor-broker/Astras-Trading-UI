@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClient, withXhr} from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting
@@ -108,7 +108,7 @@ describe('ClientOrderCommandService', () => {
         {provide: EventsBusService, useValue: eventBus},
         {provide: CORE_API_URL_PROVIDER, useValue: {apiUrl: 'https://api.test'}},
         {provide: ErrorHandlerService, useValue: {handleError: vi.fn()}},
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting()
       ]
     });

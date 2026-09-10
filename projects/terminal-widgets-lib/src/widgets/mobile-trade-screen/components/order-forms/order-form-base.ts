@@ -2,7 +2,8 @@
   Component,
   input,
   model,
-  output
+  output,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import {toObservable} from "@angular/core/rxjs-interop";
 import {shareReplay} from "rxjs";
@@ -23,6 +24,7 @@ export interface OrderTarget {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class OrderFormBase {

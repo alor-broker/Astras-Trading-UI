@@ -3,6 +3,7 @@ import {
   inject,
   input,
   OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   asyncScheduler,
@@ -44,6 +45,7 @@ export interface NzTableFilterListItem {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export abstract class BlotterBaseTable<T extends { id: string }, F extends object>

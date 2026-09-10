@@ -1,10 +1,10 @@
 import {TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClient, withXhr} from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting
 } from '@angular/common/http/testing';
-import formatISO from 'date-fns/formatISO';
+import {formatISO} from 'date-fns/formatISO';
 import {CORE_API_URL_PROVIDER} from '@terminal-core-lib/config/api-url-providers';
 import {ErrorHandlerService} from '@terminal-core-lib/features/errors-handler/error-handler.service';
 import {
@@ -30,7 +30,7 @@ describe('PortfolioCommissionsService', () => {
     TestBed.configureTestingModule({
       providers: [
         PortfolioCommissionsService,
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
         {provide: CORE_API_URL_PROVIDER, useValue: {apiUrl}},
         {provide: ErrorHandlerService, useValue: errorHandler}

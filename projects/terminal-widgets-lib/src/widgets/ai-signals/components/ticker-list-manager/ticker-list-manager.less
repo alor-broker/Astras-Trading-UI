@@ -1,19 +1,38 @@
 ats-ticker-list-manager {
   display: block;
+}
 
-  .add-tag {
-    cursor: pointer;
-    background: transparent;
-    border-style: dashed;
+.ats-ai-signals-instruments-dialog {
+  max-width: calc(100vw - 24px);
+
+  .ant-modal-body {
+    max-height: 60dvh;
+    overflow-y: auto;
   }
 
-  .hint {
+  .selection-toolbar {
+    margin-bottom: 12px;
+    padding-inline: 10px;
+  }
+
+  .selection-hint {
     color: var(--ats-text-color-secondary);
   }
 
-  .search-box {
-    min-width: 150px;
-    max-width: 250px;
-    flex: 1 1 auto;
+  .instrument-option {
+    align-items: center;
+    min-height: 44px;
+    margin: 0;
+    padding: 10px;
+    border-bottom: var(--ats-border-width-base) solid var(--ats-border-color-split);
+
+    ats-instrument-icon {
+      display: inline-flex;
+      flex: 0 0 24px;
+    }
+
+    &:hover {
+      background-color: var(--ats-item-hover-bg);
+    }
   }
 }

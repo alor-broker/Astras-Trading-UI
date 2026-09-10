@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClient, withXhr} from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting
@@ -21,7 +21,7 @@ describe('ContourSwitchApiService', () => {
     TestBed.configureTestingModule({
       providers: [
         {provide: CORE_API_URL_PROVIDER, useValue: {apiUrl: 'https://api.test'}},
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting()
       ]
     });

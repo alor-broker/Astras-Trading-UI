@@ -43,7 +43,9 @@ import {
 } from "rxjs/operators";
 import {
   add,
-  format
+  Duration,
+  format,
+  Locale
 } from "date-fns";
 import {color} from "d3-color";
 import {

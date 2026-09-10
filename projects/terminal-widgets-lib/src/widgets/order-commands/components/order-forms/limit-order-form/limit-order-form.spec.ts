@@ -109,6 +109,22 @@ describe('LimitOrderForm', () => {
     expect(submittedSpy).not.toHaveBeenCalled();
   });
 
+  it.each([Side.Buy, Side.Sell])('should reject the opposite side and accept the requested side %s', side => {
+    const fixture = createComponent();
+    fixture.componentRef.setInput('side', side);
+    fixture.detectChanges();
+    fixture.componentInstance.form.controls.price.setValue(100);
+
+    fixture.componentInstance.submitOrder(side === Side.Buy ? Side.Sell : Side.Buy);
+
+    expect(orderCommandServiceMock.submitLimitOrder).not.toHaveBeenCalled();
+    expect(orderCommandServiceMock.submitOrdersGroup).not.toHaveBeenCalled();
+
+    fixture.componentInstance.submitOrder(side);
+
+    expect(orderCommandServiceMock.submitLimitOrder).toHaveBeenCalledWith(expect.objectContaining({side}), portfolioKey);
+  });
+
   it('should not emit submitted when the order command fails', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
