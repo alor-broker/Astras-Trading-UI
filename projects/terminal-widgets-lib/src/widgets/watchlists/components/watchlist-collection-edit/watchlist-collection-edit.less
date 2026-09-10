@@ -1,6 +1,123 @@
+@import 'scrollable';
+
 ats-watchlist-collection-edit {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+  .section-title {
+    flex: 0 0 auto;
+    margin: 0 0 12px;
+    color: var(--ats-text-color);
+    font-size: var(--ats-font-size-lg);
+    font-weight: var(--ats-font-weight-bold);
+  }
+
+  .creation-section {
+    flex: 0 0 auto;
+    padding-bottom: 16px;
+    border-bottom: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-split);
+
+    nz-segmented {
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+
+    .creation-controls {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+
+      input, nz-select {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 0;
+      }
+
+      button {
+        flex: 0 0 auto;
+      }
+    }
+
+    .empty-presets {
+      margin: 8px 0 0;
+      color: var(--ats-text-color-secondary);
+    }
+  }
+
+  .current-section {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-top: 16px;
+  }
+
+  .current-lists {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    .scrollable(var(--ats-scrollbar-color));
+  }
+
   .ant-list-item {
     flex-wrap: nowrap;
+
+    .list-title {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow-wrap: anywhere;
+
+      &.ant-typography {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        nz-text-edit {
+          flex: 0 0 auto;
+          margin-left: auto;
+        }
+      }
+    }
+
+    .ant-typography-edit,
+    .ant-list-item-action button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+    }
+
+    .ant-typography-edit {
+      margin: 0;
+      color: var(--ats-text-color-secondary);
+
+      &:hover {
+        color: var(--ats-primary-color);
+      }
+    }
+
+    .ant-list-item-action {
+      display: flex;
+      align-items: center;
+      margin-left: 4px;
+      gap: 4px;
+
+      > li {
+        padding: 0;
+      }
+
+      .ant-list-item-action-split {
+        display: none;
+      }
+    }
 
     input, .ant-select-selector {
       padding-left: 0;

@@ -2,11 +2,19 @@ ats-widget-settings-editor {
   display: contents;
 }
 
-.ats-widget-settings-dialog .ant-modal-content {
-  border: var(--ats-border-width-base) var(--ats-border-style-base)
-    color-mix(
-      in srgb,
-      var(--ats-border-color-base) 65%,
-      var(--ats-text-color-secondary)
-    );
+.ats-widget-settings-dialog {
+  .ant-modal-content {
+    border: var(--ats-border-width-base) var(--ats-border-style-base)
+      color-mix(
+        in srgb,
+        var(--ats-border-color-base) 65%,
+        var(--ats-text-color-secondary)
+      );
+
+    .ant-modal-body {
+      // The settings layout owns scrolling and keeps its footer outside it.
+      max-height: none;
+      overflow: hidden;
+    }
+  }
 }

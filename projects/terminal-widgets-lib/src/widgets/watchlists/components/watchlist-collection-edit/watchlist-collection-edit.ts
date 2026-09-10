@@ -8,13 +8,11 @@ import {
 } from '@angular/core';
 import {
   FormBuilder,
-  FormsModule,
   ReactiveFormsModule,
   Validators
 } from "@angular/forms";
 import {WatchlistCollectionService} from '@terminal-core-lib/features/watchlist/services/watchlist-collection.service';
 import {
-  filter,
   map,
   Observable,
   shareReplay,
@@ -30,20 +28,16 @@ import {
 } from "../import-watchlist-dialog/import-watchlist-dialog";
 import {
   PresetWatchlist,
-  PresetWatchlistCollection,
   PresetWatchlistItem,
   Watchlist,
   WatchlistType
 } from "@terminal-core-lib/features/watchlist/types/watchlist.types";
 import {WatchListTitleHelper} from '@terminal-core-lib/features/watchlist/utils/watchlist-title.hepler';
-import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {AsyncPipe} from '@angular/common';
 import {NzListModule} from 'ng-zorro-antd/list';
-import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzInputDirective} from 'ng-zorro-antd/input';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {
   NzOptionComponent,
@@ -59,6 +53,13 @@ import {
   NzMenuDirective,
   NzMenuItemComponent
 } from 'ng-zorro-antd/menu';
+import {
+  NzSegmentedComponent,
+  NzSegmentedItemComponent
+} from 'ng-zorro-antd/segmented';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
+import {WatchlistCreationMode} from './watchlist-collection-edit.types';
 
 @Component({
   selector: 'ats-watchlist-collection-edit',
@@ -66,13 +67,14 @@ import {
     TranslocoDirective,
     AsyncPipe,
     ReactiveFormsModule,
-    NzFormModule,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem,
+    NzSegmentedComponent,
+    NzSegmentedItemComponent,
     NzInputDirective,
     NzButtonComponent,
-    NzTooltipDirective,
     NzIconDirective,
     NzSelectComponent,
-    FormsModule,
     NzOptionComponent,
     NzTypographyComponent,
     NzPopconfirmDirective,
@@ -98,7 +100,11 @@ export class WatchlistCollectionEdit implements OnInit {
 
   presetCollection$?: Observable<PresetWatchlist[]>;
 
-  selectedPresetWatchlist?: PresetWatchlist | null = null;
+  readonly WatchlistCreationMode = WatchlistCreationMode;
+
+  readonly validationOptions = {
+    titleMaxLength: 100
+  };
 
   getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
 
@@ -108,12 +114,18 @@ export class WatchlistCollectionEdit implements OnInit {
 
   private readonly formBuilder = inject(FormBuilder);
 
+  readonly creationMode = this.formBuilder.nonNullable.control(WatchlistCreationMode.Empty);
+
+  readonly presetListForm = this.formBuilder.group({
+    list: this.formBuilder.control<PresetWatchlist | null>(null, Validators.required)
+  });
+
   readonly newListForm = this.formBuilder.group({
     title: this.formBuilder.nonNullable.control<string>(
       '',
       [
         Validators.required,
-        Validators.maxLength(100)
+        Validators.maxLength(this.validationOptions.titleMaxLength)
       ]
     )
   });
@@ -132,11 +144,9 @@ export class WatchlistCollectionEdit implements OnInit {
 
     this.presetCollection$ = this.watchlistCollectionService.getPresetCollection()
       .pipe(
-        filter((x): x is PresetWatchlistCollection => !!x),
-        filter(x => x.list.length > 0),
-        map(x => x.list),
+        map(x => x?.list ?? []),
         map(x => x.filter(list => (list.papers as PresetWatchlistItem[] | undefined ?? []).length > 0)),
-        shareReplay()
+        shareReplay({bufferSize: 1, refCount: true})
       );
   }
 
@@ -151,22 +161,23 @@ export class WatchlistCollectionEdit implements OnInit {
       return;
     }
 
-    this.watchlistCollectionService.createNewList(this.newListForm.value.title!, []);
+    this.watchlistCollectionService.createNewList(this.newListForm.controls.title.value, []);
     this.newListForm.reset();
   }
 
   addPresetList(): void {
-    if (this.selectedPresetWatchlist != null) {
+    const selectedList = this.presetListForm.controls.list.value;
+    if (selectedList != null && selectedList.papers.length > 0) {
       this.watchlistCollectionService.createNewList(
-        this.selectedPresetWatchlist.name,
-        this.selectedPresetWatchlist.papers.map(x => ({
+        selectedList.name,
+        selectedList.papers.map(x => ({
           symbol: x.symbol,
           exchange: x.exchange,
           instrumentGroup: x.board
-        } as InstrumentKey))
+        }))
       );
 
-      this.selectedPresetWatchlist = null;
+      this.presetListForm.reset();
     }
   }
 

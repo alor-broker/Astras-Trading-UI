@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from '@angular/core';
 import {WidgetSettingsBase} from '../../../../common/widget-settings.base';
@@ -22,43 +22,44 @@ import {
 } from '@terminal-core-lib/features/tables/types/table-display-settings.types';
 import {Observable} from 'rxjs';
 import {TableSettingHelper} from '@terminal-core-lib/features/tables/utils/table-settings.helper';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsGroup} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-group/widget-settings-group';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
+import {WidgetSettingsSwitch} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-switch/widget-settings-switch';
 import {TranslocoDirective} from '@jsverse/transloco';
-import {
-  NzTabComponent,
-  NzTabsComponent
-} from 'ng-zorro-antd/tabs';
-import {NzFormModule} from 'ng-zorro-antd/form';
 import {
   NzOptionComponent,
   NzSelectComponent
 } from 'ng-zorro-antd/select';
 import {RemoveSelectTitles} from '@terminal-core-lib/common/directives/remove-select-titles';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
-import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 import {WatchlistCollectionEdit} from '@terminal-widgets-lib/widgets/watchlists/components/watchlist-collection-edit/watchlist-collection-edit';
 
 @Component({
   selector: 'ats-watchlist-settings',
   imports: [
-    WidgetSettings,
+    WidgetSettingsEditor,
+    WidgetSettingsGroup,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem,
+    WidgetSettingsSwitch,
     TranslocoDirective,
-    NzTabsComponent,
-    NzTabComponent,
     ReactiveFormsModule,
-    NzFormModule,
     NzSelectComponent,
     RemoveSelectTitles,
     NzOptionComponent,
     NzTooltipDirective,
-    NzSwitchComponent,
     WatchlistCollectionEdit
   ],
   templateUrl: './watchlist-settings.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WatchlistSettings extends WidgetSettingsBase<WatchlistsWidgetSettings> implements OnInit {
+export class WatchlistSettings extends WidgetSettingsBase<WatchlistsWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   allInstrumentColumns: BaseColumnId[] = watchlistColumns;
 
   readonly priceChangeTimeFrames = [
@@ -80,9 +81,11 @@ export class WatchlistSettings extends WidgetSettingsBase<WatchlistsWidgetSettin
   private readonly formBuilder = inject(FormBuilder);
 
   readonly settingsForm = this.formBuilder.group({
-    instrumentColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
-    showFavorites: this.formBuilder.nonNullable.control(false),
-    priceChangeTimeframe: this.formBuilder.nonNullable.control(TimeframeValue.Day)
+    display: this.formBuilder.group({
+      instrumentColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
+      showFavorites: this.formBuilder.nonNullable.control(false),
+      priceChangeTimeframe: this.formBuilder.nonNullable.control(TimeframeValue.Day)
+    })
   });
 
   override get canSave(): boolean {
@@ -90,28 +93,25 @@ export class WatchlistSettings extends WidgetSettingsBase<WatchlistsWidgetSettin
   }
 
   protected getUpdatedSettings(initialSetting: WatchlistsWidgetSettings): Partial<WatchlistsWidgetSettings> {
-    const newSettings = {
-      ...this.settingsForm!.value
-    } as Partial<WatchlistsWidgetSettings>;
+    const {instrumentColumns, ...displaySettings} = this.settingsForm.controls.display.getRawValue();
 
-    newSettings.instrumentTable = this.updateTableSettings(newSettings.instrumentColumns ?? [], initialSetting.instrumentTable);
-    delete newSettings.instrumentColumns;
-
-    return newSettings;
+    return {
+      ...displaySettings,
+      instrumentTable: this.updateTableSettings(instrumentColumns, initialSetting.instrumentTable)
+    };
   }
 
   protected setCurrentFormValues(settings: WatchlistsWidgetSettings): void {
-    this.settingsForm.reset();
-
-    this.settingsForm.controls.instrumentColumns.setValue(
-      TableSettingHelper.toTableDisplaySettings(
-        settings.instrumentTable,
-        settings.instrumentColumns ?? []
-      )?.columns.map(c => c.columnId) ?? []
-    );
-
-    this.settingsForm.controls.showFavorites.setValue(settings.showFavorites ?? false);
-    this.settingsForm.controls.priceChangeTimeframe.setValue(settings.priceChangeTimeframe ?? TimeframeValue.Day);
+    this.settingsForm.reset({
+      display: {
+        instrumentColumns: TableSettingHelper.toTableDisplaySettings(
+          settings.instrumentTable,
+          settings.instrumentColumns ?? []
+        )?.columns.map(c => c.columnId) ?? [],
+        showFavorites: settings.showFavorites ?? false,
+        priceChangeTimeframe: settings.priceChangeTimeframe ?? TimeframeValue.Day
+      }
+    });
   }
 
   private updateTableSettings(columnIds: string[], currentSettings?: TableDisplaySettings): TableDisplaySettings {

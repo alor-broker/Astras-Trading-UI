@@ -1,14 +1,15 @@
 <ng-container *transloco="let t;">
   @if (settings$ | async; as settings) {
     <ats-widget-skeleton
+      #widgetSkeleton
       [content]="contentRef"
       [header]="headerRef"
       [isBlockWidget]="isBlockWidget()"
-      [settings]="settingsRef"
-      [showSettings]="showSettings()"
+      [settingsEditorContent]="settingsEditorRef"
+      [showPlaceholder]="true"
     >
       <ng-template #headerRef>
-        <ats-widget-header (switchSettings)="toggleSettings()"
+        <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                            [guid]="guid"
                            [hasSettings]="true"
                            [selectedBadgeColor]="settings.badgeColor"
@@ -20,8 +21,12 @@
       <ng-template #contentRef>
         <ats-watchlist-view [guid]="guid"/>
       </ng-template>
-      <ng-template #settingsRef>
-        <ats-watchlist-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+      <ng-template #settingsEditorRef>
+        <ats-watchlist-settings
+          (closeRequested)="widgetSkeleton.closeSettings()"
+          [guid]="guid"
+          [widgetInstance]="widgetInstance()"
+        />
       </ng-template>
     </ats-widget-skeleton>
   }
