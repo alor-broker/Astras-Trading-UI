@@ -1,16 +1,17 @@
 <ng-container *transloco="let t;">
   @if (settings$ | async; as settings) {
     <ats-widget-skeleton
+      #widgetSkeleton
       [content]="contentRef"
       [header]="headerRef"
       [isBlockWidget]="isBlockWidget()"
-      [settings]="settingsRef"
+      [settingsEditorContent]="settingsEditorRef"
+      [showEditPlaceholder]="true"
       [showContentScroll]="false"
-      [showSettings]="showSettings()"
     >
       <ng-template #headerRef>
         @if (deviceInfo$ | async; as deviceInfo) {
-          <ats-widget-header (switchSettings)="toggleSettings()"
+          <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                              [guid]="guid"
                              [hasSettings]="!deviceInfo.isMobile"
                              [linkToActive]="settings.linkToActive!"
@@ -27,8 +28,12 @@
       <ng-template #contentRef>
         <ats-option-board [guid]="guid"/>
       </ng-template>
-      <ng-template #settingsRef>
-        <ats-option-board-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+      <ng-template #settingsEditorRef>
+        <ats-option-board-settings
+          (closeRequested)="widgetSkeleton.closeSettings()"
+          [guid]="guid"
+          [widgetInstance]="widgetInstance()"
+        />
       </ng-template>
     </ats-widget-skeleton>
   }
