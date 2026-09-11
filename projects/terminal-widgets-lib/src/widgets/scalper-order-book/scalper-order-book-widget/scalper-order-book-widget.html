@@ -1,15 +1,16 @@
 <ng-container *transloco="let t;">
   @if (settings$ | async; as settings) {
     <ats-widget-skeleton
+      #widgetSkeleton
       [content]="contentRef"
       [header]="headerRef"
       [isBlockWidget]="isBlockWidget()"
-      [settings]="settingsRef"
+      [settingsEditorContent]="settingsRef"
+      [showEditPlaceholder]="true"
       [showContentScroll]="false"
-      [showSettings]="showSettings()"
     >
       <ng-template #headerRef>
-        <ats-widget-header (switchSettings)="toggleSettings()"
+        <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                            [guid]="guid"
                            [hasSettings]="true"
                            [linkToActive]="settings.linkToActive ?? null"
@@ -26,7 +27,7 @@
         <ats-scalper-order-book [guid]="guid" [isActive]="isActive()"/>
       </ng-template>
       <ng-template #settingsRef>
-        <ats-scalper-order-book-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+        <ats-scalper-order-book-settings (closeRequested)="widgetSkeleton.closeSettings()" [widgetInstance]="widgetInstance()" [guid]="guid"/>
       </ng-template>
     </ats-widget-skeleton>
   }

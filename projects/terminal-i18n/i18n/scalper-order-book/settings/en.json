@@ -87,5 +87,9 @@
     "buySellDominance": "Buy/Sell dominance",
     "targetVolume": "Filling relative to volume",
     "buyVsSell": "Byu | Sell"
-  }
+  },
+  "addWorkingVolume": "Add working volume",
+  "removeWorkingVolume": "Remove working volume",
+  "addVolumeHighlight": "Add highlight threshold",
+  "removeVolumeHighlight": "Remove highlight threshold"
 }

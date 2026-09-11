@@ -1,11 +1,16 @@
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsGroup} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-group/widget-settings-group';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
+import {WidgetSettingsSwitch} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-switch/widget-settings-switch';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {ScalperWorkingVolumesEditor} from '../scalper-working-volumes-editor/scalper-working-volumes-editor';
+import {ScalperVolumeHighlightEditor} from '../scalper-volume-highlight-editor/scalper-volume-highlight-editor';
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   inject,
   input,
-  OnInit,
-  output,
   ViewEncapsulation
 } from '@angular/core';
 import {
@@ -18,7 +23,6 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators
 } from "@angular/forms";
@@ -33,22 +37,7 @@ import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order
 import {map} from "rxjs/operators";
 import {TradesClusterPanelSettingsDefaults} from "./constants/settings-defaults";
 import {TranslocoDirective} from '@jsverse/transloco';
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from 'ng-zorro-antd/form';
-import {
-  NzColDirective,
-  NzRowDirective
-} from 'ng-zorro-antd/grid';
-import {
-  NzCollapseComponent,
-  NzCollapsePanelComponent
-} from 'ng-zorro-antd/collapse';
 import {NzInputDirective} from 'ng-zorro-antd/input';
-import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 import {
   NzOptionComponent,
   NzSelectComponent
@@ -57,14 +46,8 @@ import {
   NzRadioComponent,
   NzRadioGroupComponent
 } from 'ng-zorro-antd/radio';
-import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
-import {NzColorPickerComponent} from 'ng-zorro-antd/color-picker';
-import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
-import {WidgetSettingsForm} from '@terminal-widgets-lib/common/widget-settings.base';
-import {WidgetSettings} from "@terminal-widgets-lib/common/components/widget-settings/widget-settings";
-import {DesktopManageDashboardsService} from '@terminal-core-lib/features/dashboard/desktop/services/desktop-manage-dashboards.service';
+import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.base';
 import {
   InstrumentLinkedSettings,
   PanelSlots,
@@ -77,7 +60,7 @@ import {
 import {InputNumberValidation} from "@terminal-core-lib/common/constants/validation.constants";
 import {NumberDisplayFormat} from "@terminal-core-lib/common/types/number-display-format.types";
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
-import {InstrumentEqualityComparer} from '@terminal-core-lib/common/utils/instrument-key.helper';
+import {InstrumentEqualityComparer, InstrumentKeyHelper} from '@terminal-core-lib/common/utils/instrument-key.helper';
 import {InstrumentBoardSelect} from '@terminal-core-lib/features/instruments/components/instrument-board-select/instrument-board-select';
 import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/components/inline-instrument-search/inline-instrument-search';
 import {InputNumber} from '@terminal-core-lib/common/components/input-number/input-number';
@@ -87,30 +70,22 @@ import {InputNumber} from '@terminal-core-lib/common/components/input-number/inp
   templateUrl: './scalper-order-book-settings.html',
   styleUrls: ['./scalper-order-book-settings.less'],
   imports: [
-    WidgetSettings,
+    WidgetSettingsEditor,
+    WidgetSettingsGroup,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem,
+    WidgetSettingsSwitch,
+    ScalperWorkingVolumesEditor,
+    ScalperVolumeHighlightEditor,
     TranslocoDirective,
-    FormsModule,
-    NzFormDirective,
     ReactiveFormsModule,
-    NzRowDirective,
-    NzFormItemComponent,
-    NzCollapseComponent,
-    NzCollapsePanelComponent,
-    NzColDirective,
-    NzFormLabelComponent,
-    NzFormControlComponent,
     NzInputDirective,
     NzSliderComponent,
-    NzSwitchComponent,
     NzSelectComponent,
     NzOptionComponent,
     NzRadioGroupComponent,
     NzRadioComponent,
-    NzButtonComponent,
-    NzIconDirective,
     NzTypographyComponent,
-    NzColorPickerComponent,
-    NzTooltipDirective,
     InstrumentBoardSelect,
     InlineInstrumentSearch,
     InputNumber
@@ -118,10 +93,8 @@ import {InputNumber} from '@terminal-core-lib/common/components/input-number/inp
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class ScalperOrderBookSettings implements WidgetSettingsForm, OnInit {
-  readonly guid = input.required<string>();
-
-  readonly settingsChange = output();
+export class ScalperOrderBookSettings extends WidgetSettingsBase<ScalperOrderBookWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly volumeHighlightModes = VolumeHighlightMode;
 
@@ -220,285 +193,256 @@ export class ScalperOrderBookSettings implements WidgetSettingsForm, OnInit {
     VolumeHighlightMode.VolumeBoundsWithFixedValue,
   ];
 
-  protected readonly manageDashboardsService = inject(DesktopManageDashboardsService, {optional: true});
-
   protected settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   private readonly settingsReadService = inject(ScalperOrderBookSettingsReadService);
 
   private readonly settingsWriteService = inject(ScalperOrderBookSettingsWriteService);
 
-  private readonly destroyRef = inject(DestroyRef);
-
   private readonly formBuilder = inject(FormBuilder);
 
   readonly form = this.formBuilder.group({
-    // instrument
-    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
-    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
-    // view
-    depth: this.formBuilder.nonNullable.control(
-      10,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.depth.min),
-        Validators.max(this.validationOptions.depth.max)
-      ]
-    ),
-    showZeroVolumeItems: this.formBuilder.nonNullable.control(true),
-    showSpreadItems: this.formBuilder.nonNullable.control(true),
-    showInstrumentPriceDayChange: this.formBuilder.nonNullable.control(true),
-    showShortLongIndicators: this.formBuilder.nonNullable.control(true),
-    shortLongIndicatorsPanelSlot: this.formBuilder.nonNullable.control(PanelSlots.BottomFloatingPanel),
-    shortLongIndicatorsUpdateIntervalSec: this.formBuilder.nonNullable.control(
-      60,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.shortLongIndicators.min),
-        Validators.max(this.validationOptions.shortLongIndicators.max)
-      ]
-    ),
-    showLimitOrdersVolumeIndicators: this.formBuilder.nonNullable.control(true),
-    volumeDisplayFormat: this.formBuilder.nonNullable.control(NumberDisplayFormat.Default),
-    showRuler: this.formBuilder.nonNullable.control(true),
-    rulerSettings: this.formBuilder.nonNullable.group(
-      {
-        markerDisplayFormat: this.formBuilder.nonNullable.control(PriceUnits.Points)
-      },
-      {
-        validators: Validators.required
-      }
-    ),
-    enableAutoAlign: this.formBuilder.nonNullable.control(true),
-    autoAlignIntervalSec: this.formBuilder.nonNullable.control(
-      5,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.autoAlignIntervalSec.min),
-        Validators.max(this.validationOptions.autoAlignIntervalSec.max)
-      ]
-    ),
-    showPriceWithZeroPadding: this.formBuilder.nonNullable.control(false),
-    hideTooltips: this.formBuilder.nonNullable.control(false),
-    fontSize: this.formBuilder.nonNullable.control(
-      12,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.fontSize.min),
-        Validators.max(this.validationOptions.fontSize.max)
-      ]
-    ),
-    rowHeight: this.formBuilder.nonNullable.control(
-      18,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.rowHeight.min),
-        Validators.max(this.validationOptions.rowHeight.max)
-      ]
-    ),
-    minorLinesStep: this.formBuilder.nonNullable.control(
-      5,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.minorLinesStep.min),
-        Validators.max(this.validationOptions.minorLinesStep.max)
-      ]
-    ),
-    majorLinesStep: this.formBuilder.nonNullable.control(
-      10,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.majorLinesStep.min),
-        Validators.max(this.validationOptions.majorLinesStep.max)
-      ]
-    ),
-    // orders
-    disableHotkeys: this.formBuilder.nonNullable.control(true),
-    enableMouseClickSilentOrders: this.formBuilder.nonNullable.control(false),
-    stopLimitOrdersDistance: this.formBuilder.nonNullable.control(
-      0,
-      [
-        Validators.min(this.validationOptions.stopLimitOrdersDistance.min),
-        Validators.max(this.validationOptions.stopLimitOrdersDistance.max)
-      ]
-    ),
-    allowMargin: this.formBuilder.nonNullable.control<boolean | null>(null),
-    // additional panels
-    showTradesClustersPanel: this.formBuilder.nonNullable.control(false),
-    tradesClusterPanelSettings: this.formBuilder.group(
-      {
-        highlightMode: this.formBuilder.nonNullable.control(TradesClusterHighlightMode.Off),
-        targetVolume: this.formBuilder.nonNullable.control(
-          10000,
-          [
-            Validators.required,
-            Validators.min(this.validationOptions.tradesClusterPanelSettings.targetVolume.min),
-            Validators.max(this.validationOptions.tradesClusterPanelSettings.targetVolume.max)
-          ]
-        ),
-      }
-    ),
-    showTradesPanel: this.formBuilder.nonNullable.control(false),
-    tradesPanelSettings: this.formBuilder.nonNullable.group(
-      {
-        minTradeVolumeFilter: this.formBuilder.nonNullable.control(
-          0,
-          [
-            Validators.required,
-            Validators.min(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.min),
-            Validators.max(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.max)
-          ]
-        ),
-        hideFilteredTrades: this.formBuilder.nonNullable.control(false),
-        tradesAggregationPeriodMs: this.formBuilder.nonNullable.control(
-          0,
-          [
-            Validators.required,
-            Validators.min(this.validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.min),
-            Validators.max(this.validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.max)
-          ]
-        ),
-        showOwnTrades: this.formBuilder.nonNullable.control(false),
-      },
-      {validators: Validators.required}
-    ),
-    // working volumes
-    showWorkingVolumesPanel: this.formBuilder.nonNullable.control(true),
-    workingVolumesPanelSlot: this.formBuilder.nonNullable.control(PanelSlots.BottomFloatingPanel),
-    workingVolumes: this.formBuilder.nonNullable.array(
-      [this.createWorkingVolumeControl(1)],
-      Validators.minLength(1)
-    ),
-    // volume highlight
-    volumeHighlightMode: this.formBuilder.nonNullable.control(VolumeHighlightMode.Off),
-    volumeHighlightFullness: this.formBuilder.nonNullable.control(
-      10000,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.min),
-        Validators.max(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.max)
-      ]
-    ),
-    volumeHighlightOptions: this.formBuilder.nonNullable.array(
-      [this.createVolumeHighlightOptionsControl({boundary: 1, color: 'red'})],
-      Validators.minLength(1)
-    ),
-    // automation
-    bracketsSettings: this.formBuilder.group({
-        orderPriceUnits: this.formBuilder.nonNullable.control(PriceUnits.Points),
-        topOrderPriceRatio: this.formBuilder.control<number | null>(
-          null,
-          [
-            Validators.min(this.validationOptions.bracket.triggerPrice.min),
-            Validators.max(this.validationOptions.bracket.triggerPrice.max)
-          ]
-        ),
-        topOrderPriceGapRatio: this.formBuilder.control<number>(
-          0,
-          [
-            Validators.min(this.validationOptions.bracket.limitPrice.min),
-            Validators.max(this.validationOptions.bracket.limitPrice.max)
-          ]
-        ),
-        bottomOrderPriceRatio: this.formBuilder.control<number | null>(
-          null,
-          [
-            Validators.min(this.validationOptions.bracket.triggerPrice.min),
-            Validators.max(this.validationOptions.bracket.triggerPrice.max)
-          ]
-        ),
-        bottomOrderPriceGapRatio: this.formBuilder.control<number>(
-          0,
-          [
-            Validators.min(this.validationOptions.bracket.limitPrice.min),
-            Validators.max(this.validationOptions.bracket.limitPrice.max)
-          ]
-        ),
-        useBracketsWhenClosingPosition: this.formBuilder.nonNullable.control(false),
-      },
-      {
-        validators: [
+    instrument: this.formBuilder.group({
+      instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+      instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null)
+    }),
+    display: this.formBuilder.group({
+      depth: this.formBuilder.nonNullable.control(
+        10,
+        [
           Validators.required,
+          Validators.min(this.validationOptions.depth.min),
+          Validators.max(this.validationOptions.depth.max)
         ]
-      }
-    )
+      ),
+      showZeroVolumeItems: this.formBuilder.nonNullable.control(true),
+      showSpreadItems: this.formBuilder.nonNullable.control(true),
+      showLimitOrdersVolumeIndicators: this.formBuilder.nonNullable.control(true),
+      volumeDisplayFormat: this.formBuilder.nonNullable.control(NumberDisplayFormat.Default),
+      showRuler: this.formBuilder.nonNullable.control(true),
+      rulerSettings: this.formBuilder.nonNullable.group(
+        {
+          markerDisplayFormat: this.formBuilder.nonNullable.control(PriceUnits.Points)
+        },
+        {
+          validators: Validators.required
+        }
+      ),
+      enableAutoAlign: this.formBuilder.nonNullable.control(true),
+      autoAlignIntervalSec: this.formBuilder.nonNullable.control(
+        5,
+        [
+          Validators.required,
+          Validators.min(this.validationOptions.autoAlignIntervalSec.min),
+          Validators.max(this.validationOptions.autoAlignIntervalSec.max)
+        ]
+      ),
+      showPriceWithZeroPadding: this.formBuilder.nonNullable.control(false),
+      hideTooltips: this.formBuilder.nonNullable.control(false)
+    }),
+    table: this.formBuilder.group({
+      fontSize: this.formBuilder.nonNullable.control(
+        12,
+        [
+          Validators.required,
+          Validators.min(this.validationOptions.fontSize.min),
+          Validators.max(this.validationOptions.fontSize.max)
+        ]
+      ),
+      rowHeight: this.formBuilder.nonNullable.control(
+        18,
+        [
+          Validators.required,
+          Validators.min(this.validationOptions.rowHeight.min),
+          Validators.max(this.validationOptions.rowHeight.max)
+        ]
+      ),
+      minorLinesStep: this.formBuilder.nonNullable.control(
+        5,
+        [
+          Validators.required,
+          Validators.min(this.validationOptions.minorLinesStep.min),
+          Validators.max(this.validationOptions.minorLinesStep.max)
+        ]
+      ),
+      majorLinesStep: this.formBuilder.nonNullable.control(
+        10,
+        [
+          Validators.required,
+          Validators.min(this.validationOptions.majorLinesStep.min),
+          Validators.max(this.validationOptions.majorLinesStep.max)
+        ]
+      )
+    }),
+    orders: this.formBuilder.group({
+      disableHotkeys: this.formBuilder.nonNullable.control(true),
+      enableMouseClickSilentOrders: this.formBuilder.nonNullable.control(false),
+      allowMargin: this.formBuilder.nonNullable.control<boolean | null>(null),
+      stopLimitOrdersDistance: this.formBuilder.nonNullable.control(
+        0,
+        [
+          Validators.min(this.validationOptions.stopLimitOrdersDistance.min),
+          Validators.max(this.validationOptions.stopLimitOrdersDistance.max)
+        ]
+      )
+    }),
+    panels: this.formBuilder.group({
+      showShortLongIndicators: this.formBuilder.nonNullable.control(true),
+      shortLongIndicatorsPanelSlot: this.formBuilder.nonNullable.control(PanelSlots.BottomFloatingPanel),
+      shortLongIndicatorsUpdateIntervalSec: this.formBuilder.nonNullable.control(
+        60,
+        [
+          Validators.required,
+          Validators.min(this.validationOptions.shortLongIndicators.min),
+          Validators.max(this.validationOptions.shortLongIndicators.max)
+        ]
+      ),
+      showInstrumentPriceDayChange: this.formBuilder.nonNullable.control(true),
+      showTradesPanel: this.formBuilder.nonNullable.control(false),
+      tradesPanelSettings: this.formBuilder.nonNullable.group(
+        {
+          minTradeVolumeFilter: this.formBuilder.nonNullable.control(
+            0,
+            [
+              Validators.required,
+              Validators.min(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.min),
+              Validators.max(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.max)
+            ]
+          ),
+          hideFilteredTrades: this.formBuilder.nonNullable.control(false),
+          tradesAggregationPeriodMs: this.formBuilder.nonNullable.control(
+            0,
+            [
+              Validators.required,
+              Validators.min(this.validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.min),
+              Validators.max(this.validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.max)
+            ]
+          ),
+          showOwnTrades: this.formBuilder.nonNullable.control(false),
+        },
+        {validators: Validators.required}
+      ),
+      showTradesClustersPanel: this.formBuilder.nonNullable.control(false),
+      tradesClusterPanelSettings: this.formBuilder.group(
+        {
+          highlightMode: this.formBuilder.nonNullable.control(TradesClusterHighlightMode.Off),
+          targetVolume: this.formBuilder.nonNullable.control(
+            10000,
+            [
+              Validators.required,
+              Validators.min(this.validationOptions.tradesClusterPanelSettings.targetVolume.min),
+              Validators.max(this.validationOptions.tradesClusterPanelSettings.targetVolume.max)
+            ]
+          ),
+        }
+      )
+    }),
+    volumes: this.formBuilder.group({
+      showWorkingVolumesPanel: this.formBuilder.nonNullable.control(true),
+      workingVolumesPanelSlot: this.formBuilder.nonNullable.control(PanelSlots.BottomFloatingPanel),
+      workingVolumes: this.formBuilder.nonNullable.array(
+        [this.createWorkingVolumeControl(1)],
+        Validators.minLength(1)
+      )
+    }),
+    highlight: this.formBuilder.group({
+      volumeHighlightMode: this.formBuilder.nonNullable.control(VolumeHighlightMode.Off),
+      volumeHighlightFullness: this.formBuilder.nonNullable.control(
+        10000,
+        [
+          Validators.required,
+          Validators.min(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.min),
+          Validators.max(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.max)
+        ]
+      ),
+      volumeHighlightOptions: this.formBuilder.nonNullable.array(
+        [this.createVolumeHighlightOptionsControl({boundary: 1, color: 'red'})],
+        Validators.minLength(1)
+      )
+    }),
+    automation: this.formBuilder.group({
+      bracketsSettings: this.formBuilder.group({
+          orderPriceUnits: this.formBuilder.nonNullable.control(PriceUnits.Points),
+          topOrderPriceRatio: this.formBuilder.control<number | null>(
+            null,
+            [
+              Validators.min(this.validationOptions.bracket.triggerPrice.min),
+              Validators.max(this.validationOptions.bracket.triggerPrice.max)
+            ]
+          ),
+          topOrderPriceGapRatio: this.formBuilder.control<number>(
+            0,
+            [
+              Validators.min(this.validationOptions.bracket.limitPrice.min),
+              Validators.max(this.validationOptions.bracket.limitPrice.max)
+            ]
+          ),
+          bottomOrderPriceRatio: this.formBuilder.control<number | null>(
+            null,
+            [
+              Validators.min(this.validationOptions.bracket.triggerPrice.min),
+              Validators.max(this.validationOptions.bracket.triggerPrice.max)
+            ]
+          ),
+          bottomOrderPriceGapRatio: this.formBuilder.control<number>(
+            0,
+            [
+              Validators.min(this.validationOptions.bracket.limitPrice.min),
+              Validators.max(this.validationOptions.bracket.limitPrice.max)
+            ]
+          ),
+          useBracketsWhenClosingPosition: this.formBuilder.nonNullable.control(false),
+        },
+        {
+          validators: [
+            Validators.required,
+          ]
+        }
+      )
+    })
   });
 
-  get canCopy(): boolean {
-    return this.canSave;
-  }
-
-  get showCopy(): boolean {
-    return this.manageDashboardsService != null;
-  }
-
-  get canSave(): boolean {
+  override get canSave(): boolean {
     return this.form?.valid ?? false;
   }
 
-  get canRemoveVolumeHighlightOption(): boolean {
-    return (this.form.value.volumeHighlightOptions?.length ?? 0) > 1;
-  }
-
-  ngOnInit(): void {
-    this.initSettingsStream();
+  override ngOnInit(): void {
+    super.ngOnInit();
     this.initCheckFieldsAvailability();
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(settings => {
-      this.setCurrentFormValues(settings);
-    });
   }
 
-  addVolumeHighlightOption($event: MouseEvent): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
+  addVolumeHighlightOption(): void {
     const defaultValue = {
       boundary: 1,
       color: 'red',
-      ...this.form.value.volumeHighlightOptions![this.form.value.volumeHighlightOptions!.length - 1],
+      ...this.form.controls.highlight.value.volumeHighlightOptions![this.form.controls.highlight.value.volumeHighlightOptions!.length - 1],
     };
 
-    this.form.controls.volumeHighlightOptions.push(this.createVolumeHighlightOptionsControl(defaultValue));
+    this.form.controls.highlight.controls.volumeHighlightOptions.push(this.createVolumeHighlightOptionsControl(defaultValue));
   }
 
-  removeVolumeHighlightOption($event: MouseEvent, index: number): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    this.form.controls.volumeHighlightOptions.removeAt(index);
+  removeVolumeHighlightOption(index: number): void {
+    this.form.controls.highlight.controls.volumeHighlightOptions.removeAt(index);
   }
 
   showVolumeHighlightOptions(): boolean {
-    return this.form?.value!.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue;
+    return this.form.controls.highlight.value.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue;
   }
 
   showRulerOptions(): boolean {
-    return this.form?.value!.showRuler === true;
-  }
-
-  hasVolumeHighlightOptionsErrors(): boolean {
-    return !(this.form?.controls.volumeHighlightOptions?.valid ?? false) || !(this.form?.controls.volumeHighlightFullness?.valid ?? false);
+    return this.form.controls.display.value.showRuler === true;
   }
 
   instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+    this.form.controls.instrument.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  removeWorkingVolume($event: MouseEvent, index: number): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    this.form.controls.workingVolumes.removeAt(index);
+  removeWorkingVolume(index: number): void {
+    this.form.controls.volumes.controls.workingVolumes.removeAt(index);
   }
 
-  addWorkingVolume($event: MouseEvent): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    const workingVolumeControl = this.form.controls.workingVolumes;
+  addWorkingVolume(): void {
+    const workingVolumeControl = this.form.controls.volumes.controls.workingVolumes;
     const defaultValue = workingVolumeControl.controls[workingVolumeControl.length - 1]?.value as number | undefined;
     workingVolumeControl.push(this.createWorkingVolumeControl((defaultValue ?? 0) ? defaultValue! * 10 : 1));
   }
@@ -510,37 +454,43 @@ export class ScalperOrderBookSettings implements WidgetSettingsForm, OnInit {
     };
   }
 
-  createWidgetCopy(): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(initialSettings => {
-      this.manageDashboardsService?.copyWidget(this.getSettingsToCopy(initialSettings));
-    });
-  }
+  override updateSettings(): void {
+    if (!this.canSave) {
+      return;
+    }
 
-  updateSettings(): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
-      const updatedSettings = this.getUpdatedSettings(initialSettings);
-      const instrumentKey: InstrumentKey = {
+      const updatedSettings = this.getSettingsUpdates(initialSettings);
+      const instrumentKey = InstrumentKeyHelper.toInstrumentKey({
         symbol: updatedSettings.widgetSettings.symbol!,
         exchange: updatedSettings.widgetSettings.exchange!,
-        instrumentGroup: updatedSettings.widgetSettings.instrumentGroup!
-      };
+        instrumentGroup: updatedSettings.widgetSettings.instrumentGroup
+      });
 
       this.settingsWriteService.updateInstrumentLinkedSettings(updatedSettings.instrumentLinkedSettings, instrumentKey);
       this.settingsWriteService.updateWidgetSettings(updatedSettings.widgetSettings, this.guid());
 
       this.settingsChange.emit();
+      this.closeRequested.emit();
     });
   }
 
-  protected getUpdatedSettings(initialSettings: ScalperOrderBookWidgetSettings): {
+  private getSettingsUpdates(initialSettings: ScalperOrderBookWidgetSettings): {
     instrumentLinkedSettings: Partial<InstrumentLinkedSettings>;
     widgetSettings: Partial<ScalperOrderBookWidgetSettings>;
   } {
-    const formValue = this.form.value!;
+    const formValue = {
+      ...this.form.controls.instrument.value,
+      ...this.form.controls.display.value,
+      ...this.form.controls.table.value,
+      ...this.form.controls.orders.value,
+      ...this.form.controls.panels.value,
+      ...this.form.controls.volumes.value,
+      ...this.form.controls.highlight.value,
+      ...this.form.controls.automation.value
+    };
 
     const newSettings = {
       ...formValue,
@@ -625,58 +575,58 @@ export class ScalperOrderBookSettings implements WidgetSettingsForm, OnInit {
     };
   }
 
-  private initSettingsStream(): void {
+  protected override initSettingsStream(): void {
     this.settings$ = this.settingsReadService.readSettings(this.guid()).pipe(
       map(x => x.widgetSettings),
-      shareReplay(1)
+      shareReplay({bufferSize: 1, refCount: true})
     );
   }
 
-  private setCurrentFormValues(settings: ScalperOrderBookWidgetSettings): void {
+  protected override setCurrentFormValues(settings: ScalperOrderBookWidgetSettings): void {
     this.form.reset();
 
-    this.form.controls.instrument.setValue({
+    this.form.controls.instrument.controls.instrument.setValue({
       symbol: settings.symbol,
       exchange: settings.exchange,
       instrumentGroup: settings.instrumentGroup ?? null
     });
-    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
+    this.form.controls.instrument.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
 
-    this.form.controls.depth.setValue(settings.depth ?? 10);
-    this.form.controls.showZeroVolumeItems.setValue(settings.showZeroVolumeItems);
-    this.form.controls.showSpreadItems.setValue(settings.showSpreadItems);
-    this.form.controls.showInstrumentPriceDayChange.setValue(settings.showInstrumentPriceDayChange ?? false);
-    this.form.controls.showShortLongIndicators.setValue(settings.showShortLongIndicators ?? false);
-    this.form.controls.shortLongIndicatorsPanelSlot.setValue(settings.shortLongIndicatorsPanelSlot ?? PanelSlots.BottomFloatingPanel);
-    this.form.controls.shortLongIndicatorsUpdateIntervalSec.setValue(settings.shortLongIndicatorsUpdateIntervalSec ?? 60);
-    this.form.controls.showLimitOrdersVolumeIndicators.setValue(settings.showLimitOrdersVolumeIndicators ?? false);
-    this.form.controls.hideTooltips.setValue(settings.hideTooltips ?? false);
+    this.form.controls.display.controls.depth.setValue(settings.depth ?? 10);
+    this.form.controls.display.controls.showZeroVolumeItems.setValue(settings.showZeroVolumeItems);
+    this.form.controls.display.controls.showSpreadItems.setValue(settings.showSpreadItems);
+    this.form.controls.panels.controls.showInstrumentPriceDayChange.setValue(settings.showInstrumentPriceDayChange ?? false);
+    this.form.controls.panels.controls.showShortLongIndicators.setValue(settings.showShortLongIndicators ?? false);
+    this.form.controls.panels.controls.shortLongIndicatorsPanelSlot.setValue(settings.shortLongIndicatorsPanelSlot ?? PanelSlots.BottomFloatingPanel);
+    this.form.controls.panels.controls.shortLongIndicatorsUpdateIntervalSec.setValue(settings.shortLongIndicatorsUpdateIntervalSec ?? 60);
+    this.form.controls.display.controls.showLimitOrdersVolumeIndicators.setValue(settings.showLimitOrdersVolumeIndicators ?? false);
+    this.form.controls.display.controls.hideTooltips.setValue(settings.hideTooltips ?? false);
 
-    this.form.controls.volumeDisplayFormat.setValue(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default);
+    this.form.controls.display.controls.volumeDisplayFormat.setValue(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default);
 
-    this.form.controls.showRuler.setValue(settings.showRuler ?? false);
-    this.form.controls.rulerSettings.setValue({
+    this.form.controls.display.controls.showRuler.setValue(settings.showRuler ?? false);
+    this.form.controls.display.controls.rulerSettings.setValue({
       markerDisplayFormat: settings.rulerSettings?.markerDisplayFormat ?? PriceUnits.Points
     });
 
-    this.form.controls.enableAutoAlign.setValue(settings.enableAutoAlign ?? false);
-    this.form.controls.autoAlignIntervalSec.setValue(settings.autoAlignIntervalSec ?? 5);
+    this.form.controls.display.controls.enableAutoAlign.setValue(settings.enableAutoAlign ?? false);
+    this.form.controls.display.controls.autoAlignIntervalSec.setValue(settings.autoAlignIntervalSec ?? 5);
 
-    this.form.controls.showPriceWithZeroPadding.setValue(settings.showPriceWithZeroPadding ?? false);
+    this.form.controls.display.controls.showPriceWithZeroPadding.setValue(settings.showPriceWithZeroPadding ?? false);
 
-    this.form.controls.fontSize.setValue(settings.fontSize ?? 12);
-    this.form.controls.rowHeight.setValue(settings.rowHeight ?? 18);
-    this.form.controls.minorLinesStep.setValue(settings.minorLinesStep ?? ScalperOrderBookConstants.defaultMinorLinesStep);
-    this.form.controls.majorLinesStep.setValue(settings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep);
+    this.form.controls.table.controls.fontSize.setValue(settings.fontSize ?? 12);
+    this.form.controls.table.controls.rowHeight.setValue(settings.rowHeight ?? 18);
+    this.form.controls.table.controls.minorLinesStep.setValue(settings.minorLinesStep ?? ScalperOrderBookConstants.defaultMinorLinesStep);
+    this.form.controls.table.controls.majorLinesStep.setValue(settings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep);
 
-    this.form.controls.disableHotkeys.setValue(settings.disableHotkeys);
-    this.form.controls.enableMouseClickSilentOrders.setValue(settings.enableMouseClickSilentOrders);
-    this.form.controls.stopLimitOrdersDistance.setValue(settings.stopLimitOrdersDistance ?? 0);
-    this.form.controls.allowMargin.setValue(settings.allowMargin ?? null);
+    this.form.controls.orders.controls.disableHotkeys.setValue(settings.disableHotkeys);
+    this.form.controls.orders.controls.enableMouseClickSilentOrders.setValue(settings.enableMouseClickSilentOrders);
+    this.form.controls.orders.controls.stopLimitOrdersDistance.setValue(settings.stopLimitOrdersDistance ?? 0);
+    this.form.controls.orders.controls.allowMargin.setValue(settings.allowMargin ?? null);
 
-    this.form.controls.showTradesPanel.setValue(settings.showTradesPanel ?? false);
+    this.form.controls.panels.controls.showTradesPanel.setValue(settings.showTradesPanel ?? false);
     if (settings.tradesPanelSettings) {
-      this.form.controls.tradesPanelSettings.setValue({
+      this.form.controls.panels.controls.tradesPanelSettings.setValue({
         minTradeVolumeFilter: settings.tradesPanelSettings.minTradeVolumeFilter,
         hideFilteredTrades: settings.tradesPanelSettings.hideFilteredTrades,
         tradesAggregationPeriodMs: settings.tradesPanelSettings.tradesAggregationPeriodMs,
@@ -684,36 +634,36 @@ export class ScalperOrderBookSettings implements WidgetSettingsForm, OnInit {
       });
     }
 
-    this.form.controls.showTradesClustersPanel.setValue(settings.showTradesClustersPanel ?? false);
-    this.form.controls.tradesClusterPanelSettings.setValue({
+    this.form.controls.panels.controls.showTradesClustersPanel.setValue(settings.showTradesClustersPanel ?? false);
+    this.form.controls.panels.controls.tradesClusterPanelSettings.setValue({
       highlightMode: settings.tradesClusterPanelSettings?.highlightMode ?? TradesClusterHighlightMode.Off,
       targetVolume: settings.tradesClusterPanelSettings?.targetVolume ?? 10000,
     });
 
-    this.form.controls.showWorkingVolumesPanel.setValue(settings.showWorkingVolumesPanel ?? true);
-    this.form.controls.workingVolumesPanelSlot.setValue(settings.workingVolumesPanelSlot ?? PanelSlots.BottomFloatingPanel);
+    this.form.controls.volumes.controls.showWorkingVolumesPanel.setValue(settings.showWorkingVolumesPanel ?? true);
+    this.form.controls.volumes.controls.workingVolumesPanelSlot.setValue(settings.workingVolumesPanelSlot ?? PanelSlots.BottomFloatingPanel);
     if (settings.workingVolumes.length > 0) {
-      this.form.controls.workingVolumes.clear();
+      this.form.controls.volumes.controls.workingVolumes.clear();
       settings.workingVolumes.forEach(volume => {
-        this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(volume));
+        this.form.controls.volumes.controls.workingVolumes.push(this.createWorkingVolumeControl(volume));
       });
     }
 
-    this.form.controls.volumeHighlightMode.setValue(settings.volumeHighlightMode ?? VolumeHighlightMode.Off);
-    this.form.controls.volumeHighlightFullness.setValue(settings.volumeHighlightFullness ?? 10000);
+    this.form.controls.highlight.controls.volumeHighlightMode.setValue(settings.volumeHighlightMode ?? VolumeHighlightMode.Off);
+    this.form.controls.highlight.controls.volumeHighlightFullness.setValue(settings.volumeHighlightFullness ?? 10000);
 
     if (settings.volumeHighlightOptions.length > 0) {
-      this.form.controls.volumeHighlightOptions.clear();
+      this.form.controls.highlight.controls.volumeHighlightOptions.clear();
 
       [...settings.volumeHighlightOptions]
         .sort((a, b) => a.boundary - b.boundary)
         .forEach(option => {
-          this.form.controls.volumeHighlightOptions.push(this.createVolumeHighlightOptionsControl(option));
+          this.form.controls.highlight.controls.volumeHighlightOptions.push(this.createVolumeHighlightOptionsControl(option));
         });
     }
 
     if (settings.bracketsSettings) {
-      this.form.controls.bracketsSettings.setValue({
+      this.form.controls.automation.controls.bracketsSettings.setValue({
         orderPriceUnits: settings.bracketsSettings.orderPriceUnits ?? PriceUnits.Points,
         topOrderPriceRatio: settings.bracketsSettings.topOrderPriceRatio ?? null,
         topOrderPriceGapRatio: settings.bracketsSettings.topOrderPriceGapRatio ?? 0,
@@ -736,56 +686,56 @@ export class ScalperOrderBookSettings implements WidgetSettingsForm, OnInit {
   }
 
   private checkFieldsAvailability(): void {
-    if ((this.form.value?.showShortLongIndicators) ?? false) {
-      this.form.controls.shortLongIndicatorsUpdateIntervalSec.enable();
+    if ((this.form.controls.panels.value?.showShortLongIndicators) ?? false) {
+      this.form.controls.panels.controls.shortLongIndicatorsUpdateIntervalSec.enable({emitEvent: false});
     } else {
-      this.form.controls.shortLongIndicatorsUpdateIntervalSec.disable();
+      this.form.controls.panels.controls.shortLongIndicatorsUpdateIntervalSec.disable({emitEvent: false});
     }
 
-    if ((this.form.value?.showRuler) ?? false) {
-      this.form.controls.rulerSettings.enable();
+    if ((this.form.controls.display.value?.showRuler) ?? false) {
+      this.form.controls.display.controls.rulerSettings.enable({emitEvent: false});
     } else {
-      this.form.controls.rulerSettings.disable();
+      this.form.controls.display.controls.rulerSettings.disable({emitEvent: false});
     }
 
-    if ((this.form.value?.enableAutoAlign) ?? false) {
-      this.form.controls.autoAlignIntervalSec.enable();
+    if ((this.form.controls.display.value?.enableAutoAlign) ?? false) {
+      this.form.controls.display.controls.autoAlignIntervalSec.enable({emitEvent: false});
     } else {
-      this.form.controls.autoAlignIntervalSec.disable();
+      this.form.controls.display.controls.autoAlignIntervalSec.disable({emitEvent: false});
     }
 
-    if (this.form.value?.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue) {
-      this.form.controls.volumeHighlightFullness.enable();
-      this.form.controls.volumeHighlightOptions.enable();
+    if (this.form.controls.highlight.value?.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue) {
+      this.form.controls.highlight.controls.volumeHighlightFullness.enable({emitEvent: false});
+      this.form.controls.highlight.controls.volumeHighlightOptions.enable({emitEvent: false});
     } else {
-      this.form.controls.volumeHighlightFullness.disable();
-      this.form.controls.volumeHighlightOptions.disable();
+      this.form.controls.highlight.controls.volumeHighlightFullness.disable({emitEvent: false});
+      this.form.controls.highlight.controls.volumeHighlightOptions.disable({emitEvent: false});
     }
 
-    if ((this.form.value?.showTradesPanel) ?? false) {
-      this.form.controls.tradesPanelSettings.enable();
+    if ((this.form.controls.panels.value?.showTradesPanel) ?? false) {
+      this.form.controls.panels.controls.tradesPanelSettings.enable({emitEvent: false});
     } else {
-      this.form.controls.tradesPanelSettings.disable();
+      this.form.controls.panels.controls.tradesPanelSettings.disable({emitEvent: false});
     }
 
-    if ((this.form.value?.showTradesClustersPanel) ?? false) {
-      this.form.controls.tradesClusterPanelSettings.enable();
+    if ((this.form.controls.panels.value?.showTradesClustersPanel) ?? false) {
+      this.form.controls.panels.controls.tradesClusterPanelSettings.enable({emitEvent: false});
     } else {
-      this.form.controls.tradesClusterPanelSettings.disable();
+      this.form.controls.panels.controls.tradesClusterPanelSettings.disable({emitEvent: false});
     }
 
-    if (this.form.controls.tradesClusterPanelSettings.enabled) {
-      if (this.form.value?.tradesClusterPanelSettings?.highlightMode === TradesClusterHighlightMode.TargetVolume) {
-        this.form.controls.tradesClusterPanelSettings.controls.targetVolume.enable();
+    if (this.form.controls.panels.controls.tradesClusterPanelSettings.enabled) {
+      if (this.form.controls.panels.value?.tradesClusterPanelSettings?.highlightMode === TradesClusterHighlightMode.TargetVolume) {
+        this.form.controls.panels.controls.tradesClusterPanelSettings.controls.targetVolume.enable({emitEvent: false});
       } else {
-        this.form.controls.tradesClusterPanelSettings.controls.targetVolume.disable({onlySelf: true});
+        this.form.controls.panels.controls.tradesClusterPanelSettings.controls.targetVolume.disable({emitEvent: false});
       }
     }
 
-    if ((this.form.value?.showWorkingVolumesPanel) ?? false) {
-      this.form.controls.workingVolumes.enable();
+    if ((this.form.controls.volumes.value?.showWorkingVolumesPanel) ?? false) {
+      this.form.controls.volumes.controls.workingVolumes.enable({emitEvent: false});
     } else {
-      this.form.controls.workingVolumes.disable();
+      this.form.controls.volumes.controls.workingVolumes.disable({emitEvent: false});
     }
   }
 
@@ -821,10 +771,7 @@ export class ScalperOrderBookSettings implements WidgetSettingsForm, OnInit {
     );
   }
 
-  private getSettingsToCopy(initialSettings: ScalperOrderBookWidgetSettings): ScalperOrderBookWidgetSettings {
-    return {
-      ...initialSettings,
-      ...this.getUpdatedSettings(initialSettings).widgetSettings
-    };
+  protected override getUpdatedSettings(initialSettings: ScalperOrderBookWidgetSettings): Partial<ScalperOrderBookWidgetSettings> {
+    return this.getSettingsUpdates(initialSettings).widgetSettings;
   }
 }
