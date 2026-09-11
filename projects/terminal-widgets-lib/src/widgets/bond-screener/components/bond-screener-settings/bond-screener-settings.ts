@@ -2,32 +2,20 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from '@angular/core';
 import {
   FormBuilder,
-  FormsModule,
   ReactiveFormsModule,
   Validators
 } from "@angular/forms";
 import {Observable} from "rxjs";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from 'ng-zorro-antd/form';
-import {
-  NzColDirective,
-  NzRowDirective
-} from 'ng-zorro-antd/grid';
-import {
   NzOptionComponent,
   NzSelectComponent
 } from 'ng-zorro-antd/select';
-import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 import {
   bondScreenerColumns,
   BondScreenerWidgetSettings
@@ -38,30 +26,31 @@ import {
   TableDisplaySettings
 } from '@terminal-core-lib/features/tables/types/table-display-settings.types';
 import {TableSettingHelper} from '@terminal-core-lib/features/tables/utils/table-settings.helper';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
+import {WidgetSettingsSwitch} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-switch/widget-settings-switch';
 
 @Component({
   selector: 'ats-bond-screener-settings',
   templateUrl: './bond-screener-settings.html',
   imports: [
     TranslocoDirective,
-    FormsModule,
-    NzFormDirective,
     ReactiveFormsModule,
-    NzRowDirective,
-    NzFormItemComponent,
-    NzColDirective,
-    NzFormControlComponent,
-    NzFormLabelComponent,
     NzSelectComponent,
     NzOptionComponent,
-    NzSwitchComponent,
-    WidgetSettings
+    WidgetSettingsEditor,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem,
+    WidgetSettingsSwitch
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class BondScreenerSettings extends WidgetSettingsBase<BondScreenerWidgetSettings> implements OnInit {
+export class BondScreenerSettings extends WidgetSettingsBase<BondScreenerWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   readonly bondScreenerColumns: BaseColumnId[] = bondScreenerColumns;
 
   protected override settings$!: Observable<BondScreenerWidgetSettings>;
@@ -78,14 +67,12 @@ export class BondScreenerSettings extends WidgetSettingsBase<BondScreenerWidgetS
   }
 
   protected getUpdatedSettings(initialSettings: BondScreenerWidgetSettings): Partial<BondScreenerWidgetSettings> {
-    const newSettings = {
-      ...this.form!.value,
-    } as Partial<BondScreenerWidgetSettings & { bondScreenerColumns: string[] }>;
+    const {bondScreenerColumns, hideExpired} = this.form.getRawValue();
 
-    newSettings.bondScreenerTable = this.updateTableSettings(newSettings.bondScreenerColumns ?? [], initialSettings.bondScreenerTable);
-    delete newSettings.bondScreenerColumns;
-
-    return newSettings;
+    return {
+      bondScreenerTable: this.updateTableSettings(bondScreenerColumns, initialSettings.bondScreenerTable),
+      hideExpired
+    };
   }
 
   protected setCurrentFormValues(settings: BondScreenerWidgetSettings): void {
