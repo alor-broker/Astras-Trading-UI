@@ -34,8 +34,6 @@ export interface WidgetSettingsForm {
   template: ''
 })
 export abstract class WidgetSettingsBase<T extends WidgetSettings> implements WidgetSettingsForm, OnInit {
-  readonly settingsChange = output();
-
   readonly closeRequested = output();
 
   readonly guid = input.required<string>();
@@ -75,7 +73,6 @@ export abstract class WidgetSettingsBase<T extends WidgetSettings> implements Wi
       take(1)
     ).subscribe(initialSettings => {
       this.settingsService.updateSettings(initialSettings.guid, this.getUpdatedSettings(initialSettings));
-      this.settingsChange.emit();
       this.closeRequested.emit();
     });
   }

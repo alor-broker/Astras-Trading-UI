@@ -51,7 +51,6 @@ class LifecycleProbe implements OnDestroy {
       [header]="headerRef"
       [isBlockWidget]="false"
       [settingsEditorContent]="settingsEditorRef"
-      [showEditPlaceholder]="true"
     >
       <ng-template #headerRef><span class="header">Header</span></ng-template>
       <ng-template #contentRef>
@@ -100,6 +99,10 @@ describe('WidgetSkeleton', () => {
     });
   });
 
+  afterEach(() => {
+    deviceInfo$.complete();
+  });
+
   it('should own the lifecycle of regular content while keeping the header rendered', () => {
     const fixture = TestBed.createComponent(TestHost);
     fixture.detectChanges();
@@ -114,6 +117,7 @@ describe('WidgetSkeleton', () => {
     expect(fixture.componentInstance.destroyCount).toBe(1);
     expect(fixture.nativeElement.querySelector('.header')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.settings')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('ats-widget-settings-placeholder')).toBeNull();
 
     fixture.componentInstance.widgetSkeleton().closeSettings();
     fixture.detectChanges();
@@ -135,5 +139,15 @@ describe('WidgetSkeleton', () => {
 
     expect(fixture.debugElement.query(By.directive(LifecycleProbe))).toBeNull();
     expect(fixture.nativeElement.querySelector('ats-widget-settings-placeholder')).not.toBeNull();
+    expect(fixture.componentInstance.destroyCount).toBe(1);
+    expect(fixture.nativeElement.querySelector('.header')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.settings')).not.toBeNull();
+
+    fixture.componentInstance.widgetSkeleton().closeSettings();
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.query(By.directive(LifecycleProbe))).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('ats-widget-settings-placeholder')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.settings')).toBeNull();
   });
 });

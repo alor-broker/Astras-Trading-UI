@@ -3,9 +3,7 @@
     [content]="contentRef"
     [header]="headerRef"
     [isBlockWidget]="isBlockWidget()"
-    [settings]="settingsRef"
     [showContentScroll]="false"
-    [showSettings]="false"
   >
     <ng-template #headerRef>
       <ats-widget-header [customTitle]="title$ | async"
@@ -43,6 +41,5 @@
         </div>
       }
     </ng-template>
-    <ng-template #settingsRef/>
   </ats-widget-skeleton>
 </ng-container>

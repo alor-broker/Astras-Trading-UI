@@ -472,7 +472,6 @@ export class ScalperOrderBookSettings extends WidgetSettingsBase<ScalperOrderBoo
       this.settingsWriteService.updateInstrumentLinkedSettings(updatedSettings.instrumentLinkedSettings, instrumentKey);
       this.settingsWriteService.updateWidgetSettings(updatedSettings.widgetSettings, this.guid());
 
-      this.settingsChange.emit();
       this.closeRequested.emit();
     });
   }

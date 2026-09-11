@@ -4,7 +4,7 @@ import {
   computed,
   inject,
   input,
-  model,
+  signal,
   TemplateRef,
   ViewEncapsulation
 } from '@angular/core';
@@ -36,13 +36,7 @@ export class WidgetSkeleton {
   /** Settings editor template instantiated while settings are open. */
   readonly settingsEditorContent = input<TemplateRef<unknown> | null>(null);
 
-  /** @deprecated Legacy inline settings fallback for widgets not yet migrated to the editor. */
-  readonly settings = input<TemplateRef<unknown> | null>();
-
-  readonly showSettings = model(false);
-
-  /** Replace regular desktop content with a placeholder while settings are open. */
-  readonly showEditPlaceholder = input(false);
+  protected readonly showSettings = signal(false);
 
   readonly isBlockWidget = input.required<boolean>();
 
@@ -56,20 +50,12 @@ export class WidgetSkeleton {
   protected readonly shouldHideWidgetContent = computed(() =>
     this.settingsEditorContent() != null
     && this.showSettings()
-    && (this.isMobile() || this.showEditPlaceholder())
   );
 
   protected readonly isSettingsActive = computed(() =>
     this.settingsEditorContent() != null
     && this.showSettings()
     && !this.isMobile()
-  );
-
-  /** Legacy settings template rendered instead of the regular widget content. */
-  protected readonly inlineSettings = computed<TemplateRef<unknown> | null>(() =>
-    this.settingsEditorContent() == null && this.showSettings()
-      ? (this.settings() ?? null)
-      : null
   );
 
   toggleSettings(): void {

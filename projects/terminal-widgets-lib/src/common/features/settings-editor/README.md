@@ -7,11 +7,9 @@
 ## Когда использовать
 
 - **Для нового виджета с настройками** — используй этот редактор, не пиши собственный.
-- **При миграции существующего виджета** — переводи `*-settings` компонент на `WidgetSettingsBase` + `<ats-widget-settings-editor>` вместо старого `WidgetSettings` / `nz-collapse`.
+- **Для компонента настроек** — используй `WidgetSettingsBase` + `<ats-widget-settings-editor>`.
 
-Эталон миграции — `tech-chart` (`src/widgets/tech-chart`).
-
-> Немигрированные виджеты продолжают работать по legacy-пути (`ats-widget-skeleton [settings] [showSettings]` + `WidgetBase.toggleSettings()`). Не смешивай два подхода в одном виджете: либо редактор, либо legacy.
+Пример подключения — `tech-chart` (`src/widgets/tech-chart`).
 
 ## Из чего состоит
 
@@ -32,7 +30,7 @@
 | `SettingsDeviceVisibility` (enum) | `All` / `DesktopOnly` / `MobileOnly` | Для `[device]` группы и для директивы |
 | `WidgetSettingsLayout{Desktop,Mobile}` | Компонуют элементы соответствующей раскладки; каждый владеет только своей разметкой и стилями | Не трогай напрямую — подключаются редактором |
 
-## Как мигрировать виджет (пошагово)
+## Как подключить редактор к виджету (пошагово)
 
 ### 1. Settings-компонент наследует `WidgetSettingsBase`
 
@@ -150,7 +148,6 @@ readonly form = this.formBuilder.group({
   [header]="headerRef"
   [isBlockWidget]="isBlockWidget()"
   [settingsEditorContent]="settingsEditorRef"
-  [showEditPlaceholder]="true"
 >
   <ng-template #headerRef>
     <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()" [hasSettings]="true" .../>
@@ -170,11 +167,11 @@ readonly form = this.formBuilder.group({
 ```
 
 - `WidgetSkeleton.toggleSettings()` — единый триггер открытия/закрытия. На каждом открытии skeleton создаёт новый settings-компонент, поэтому форма получает актуальные сохранённые значения.
-- `[header]` и `[content]` явно передают skeleton шаблоны обычных областей. Skeleton уничтожает основной content на mobile и при desktop-placeholder.
+- `[header]` и `[content]` явно передают skeleton шаблоны обычных областей. Skeleton всегда уничтожает основной content при открытии редактора настроек и восстанавливает его после закрытия.
 - `[settingsEditorContent]` передаёт шаблон settings-компонента. Он существует только пока настройки открыты; `closeRequested` возвращает управление skeleton.
-- `[showEditPlaceholder]="true"` на `<ats-widget-skeleton>` — **опционально**. Включи для виджетов, основной content которых нужно уничтожать во время desktop-редактирования. На mobile основной content уничтожается всегда.
+- На desktop во время редактирования вместо основного content всегда отображается placeholder. На mobile отображается inline-редактор без placeholder.
 - `WidgetSettingsEditor` отвечает только за представление формы: выбирает desktop modal или mobile layout и эмитит действия пользователя. Он не управляет переключением между content и настройками.
-- Не проецируй содержимое внутрь skeleton: передавай `header`, `content` и новый редактор через соответствующие TemplateRef-инпуты. `[settings]` / `[showSettings]` оставлены только для legacy-редакторов.
+- Не проецируй содержимое внутрь skeleton: передавай `header`, `content` и редактор через соответствующие TemplateRef-инпуты. Состояние открытия настроек — внутренний signal skeleton; управляй им через `toggleSettings()` и `closeSettings()`.
 
 ### 6. Переводы (i18n)
 
