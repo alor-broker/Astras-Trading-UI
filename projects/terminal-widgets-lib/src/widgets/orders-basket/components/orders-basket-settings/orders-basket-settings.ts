@@ -2,57 +2,44 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from '@angular/core';
 import {Observable} from "rxjs";
 import {
   FormBuilder,
-  FormsModule,
   ReactiveFormsModule
 } from "@angular/forms";
 import {TranslocoDirective} from '@jsverse/transloco';
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from 'ng-zorro-antd/form';
-import {
-  NzColDirective,
-  NzRowDirective
-} from 'ng-zorro-antd/grid';
-import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 import {OrdersBasketWidgetSettings} from '@terminal-widgets-lib/widgets/orders-basket/widget-settings.types';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsSwitch} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-switch/widget-settings-switch';
 import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.base';
 
 @Component({
   selector: 'ats-orders-basket-settings',
   templateUrl: './orders-basket-settings.html',
   imports: [
-    WidgetSettings,
+    WidgetSettingsEditor,
+    WidgetSettingsForm,
+    WidgetSettingsSwitch,
     TranslocoDirective,
-    FormsModule,
-    NzFormDirective,
-    ReactiveFormsModule,
-    NzRowDirective,
-    NzFormItemComponent,
-    NzColDirective,
-    NzFormLabelComponent,
-    NzFormControlComponent,
-    NzSwitchComponent
+    ReactiveFormsModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class OrdersBasketSettings extends WidgetSettingsBase<OrdersBasketWidgetSettings> implements OnInit {
+export class OrdersBasketSettings extends WidgetSettingsBase<OrdersBasketWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   protected settings$!: Observable<OrdersBasketWidgetSettings>;
 
   private readonly formBuilder = inject(FormBuilder);
 
   readonly form = this.formBuilder.group({
-    showPresetsPanel: this.formBuilder.nonNullable.control<boolean | null>(false)
+    showPresetsPanel: this.formBuilder.nonNullable.control(false)
   });
 
   override get canSave(): boolean {

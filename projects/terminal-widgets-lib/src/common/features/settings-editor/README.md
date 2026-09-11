@@ -150,7 +150,7 @@ readonly form = this.formBuilder.group({
   [header]="headerRef"
   [isBlockWidget]="isBlockWidget()"
   [settingsEditorContent]="settingsEditorRef"
-  [showPlaceholder]="true"
+  [showEditPlaceholder]="true"
 >
   <ng-template #headerRef>
     <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()" [hasSettings]="true" .../>
@@ -172,7 +172,7 @@ readonly form = this.formBuilder.group({
 - `WidgetSkeleton.toggleSettings()` — единый триггер открытия/закрытия. На каждом открытии skeleton создаёт новый settings-компонент, поэтому форма получает актуальные сохранённые значения.
 - `[header]` и `[content]` явно передают skeleton шаблоны обычных областей. Skeleton уничтожает основной content на mobile и при desktop-placeholder.
 - `[settingsEditorContent]` передаёт шаблон settings-компонента. Он существует только пока настройки открыты; `closeRequested` возвращает управление skeleton.
-- `[showPlaceholder]="true"` на `<ats-widget-skeleton>` — **опционально**. Включи для виджетов, основной content которых нужно уничтожать во время desktop-редактирования. На mobile основной content уничтожается всегда.
+- `[showEditPlaceholder]="true"` на `<ats-widget-skeleton>` — **опционально**. Включи для виджетов, основной content которых нужно уничтожать во время desktop-редактирования. На mobile основной content уничтожается всегда.
 - `WidgetSettingsEditor` отвечает только за представление формы: выбирает desktop modal или mobile layout и эмитит действия пользователя. Он не управляет переключением между content и настройками.
 - Не проецируй содержимое внутрь skeleton: передавай `header`, `content` и новый редактор через соответствующие TemplateRef-инпуты. `[settings]` / `[showSettings]` оставлены только для legacy-редакторов.
 

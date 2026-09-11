@@ -51,7 +51,7 @@ class LifecycleProbe implements OnDestroy {
       [header]="headerRef"
       [isBlockWidget]="false"
       [settingsEditorContent]="settingsEditorRef"
-      [showPlaceholder]="true"
+      [showEditPlaceholder]="true"
     >
       <ng-template #headerRef><span class="header">Header</span></ng-template>
       <ng-template #contentRef>

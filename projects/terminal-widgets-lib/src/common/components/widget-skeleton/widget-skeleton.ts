@@ -42,7 +42,7 @@ export class WidgetSkeleton {
   readonly showSettings = model(false);
 
   /** Replace regular desktop content with a placeholder while settings are open. */
-  readonly showPlaceholder = input(false);
+  readonly showEditPlaceholder = input(false);
 
   readonly isBlockWidget = input.required<boolean>();
 
@@ -56,7 +56,7 @@ export class WidgetSkeleton {
   protected readonly shouldHideWidgetContent = computed(() =>
     this.settingsEditorContent() != null
     && this.showSettings()
-    && (this.isMobile() || this.showPlaceholder())
+    && (this.isMobile() || this.showEditPlaceholder())
   );
 
   protected readonly isSettingsActive = computed(() =>

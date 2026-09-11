@@ -27,7 +27,7 @@
       [class.hidden]="!shouldHideWidgetContent()"
       class="widget-content show-scroll"
     >
-      @if (!isMobile() && showPlaceholder()) {
+      @if (!isMobile() && showEditPlaceholder()) {
         <ats-widget-settings-placeholder/>
       }
       <ng-container *ngTemplateOutlet="settingsEditorTpl"/>
