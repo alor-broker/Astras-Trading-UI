@@ -1,15 +1,16 @@
 <ng-container>
   @if (settings$ | async; as settings) {
     <ats-widget-skeleton
+      #widgetSkeleton
       [content]="contentRef"
       [header]="headerRef"
       [isBlockWidget]="isBlockWidget()"
-      [settings]="settingsRef"
+      [settingsEditorContent]="settingsEditorRef"
       [showContentScroll]="true"
-      [showSettings]="showSettings()"
+      [showEditPlaceholder]="true"
     >
       <ng-template #headerRef>
-        <ats-widget-header (switchSettings)="toggleSettings()"
+        <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                            [badgeShape]="'square'"
                            [guid]="guid"
                            [hasSettings]="true"
@@ -34,8 +35,12 @@
                            [showMoreButton]="false"
         />
       </ng-template>
-      <ng-template #settingsRef>
-        <ats-market-trends-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+      <ng-template #settingsEditorRef>
+        <ats-market-trends-settings
+          (closeRequested)="widgetSkeleton.closeSettings()"
+          [guid]="guid"
+          [widgetInstance]="widgetInstance()"
+        />
       </ng-template>
     </ats-widget-skeleton>
   }
