@@ -15,20 +15,24 @@ ats-widget-settings-layout-mobile {
         min-height: 0;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 16px;
         .scrollable(var(--ats-scrollbar-color));
 
         .section {
           display: flex;
+          flex: 0 0 auto;
           flex-direction: column;
-
-          & + & {
-            padding-top: 8px;
-            border-top: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-split);
-          }
+          min-width: 0;
+          padding: 12px;
+          border: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-base);
+          border-radius: var(--ats-border-radius-base);
 
           .section-title {
-            margin: 0 0 8px;
+            margin: -12px -12px 12px;
+            padding: 10px 12px;
+            background: var(--ats-background-color-light);
+            border-bottom: var(--ats-border-width-base) var(--ats-border-style-base) var(--ats-border-color-split);
+            border-radius: var(--ats-border-radius-base) var(--ats-border-radius-base) 0 0;
             font-size: var(--ats-font-size-lg);
             font-weight: var(--ats-font-weight-bold);
             color: var(--ats-text-color);

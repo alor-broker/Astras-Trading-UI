@@ -22,5 +22,10 @@
   "showTradesLabel": "Показывать сделки",
   "showRepoTradesLabel": "Показывать сделки РЕПО",
   "showHistoryTradesLabel": "Показывать историю сделок",
-  "showNotificationsLabel": "Показывать уведомления"
+  "showNotificationsLabel": "Показывать уведомления",
+  "generalGroupLabel": "Общие",
+  "ordersGroupLabel": "Заявки",
+  "positionsGroupLabel": "Позиции",
+  "tradesGroupLabel": "Сделки",
+  "notificationsGroupLabel": "Уведомления"
 }

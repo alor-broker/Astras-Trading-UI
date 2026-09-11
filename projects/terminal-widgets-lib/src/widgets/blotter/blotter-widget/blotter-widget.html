@@ -1,15 +1,15 @@
 <ng-container *transloco="let t;">
   @let settings = settings$ | async;
   <ats-widget-skeleton
+    #widgetSkeleton
     [content]="contentRef"
     [header]="headerRef"
     [isBlockWidget]="isBlockWidget()"
-    [settings]="settingsRef"
+    [settingsEditorContent]="settingsEditorRef"
     [showContentScroll]="false"
-    [showSettings]="shouldShowSettings"
   >
     <ng-template #headerRef>
-      <ats-widget-header (switchSettings)="onSettingsChange()"
+      <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                          [customTitle]="title$ | async"
                          [guid]="guid"
                          [hasSettings]="settings != null"
@@ -39,7 +39,7 @@
                   @if (marketType$ | async; as marketType) {
                     <div class="h-100 show-scroll">
                       @if (!marketType || marketType !== marketTypes.Forward) {
-                        <ats-blotter-common-summary [(shouldShowSettings)]="shouldShowSettings"
+                        <ats-blotter-common-summary
                                                     [guid]="guid"/>
                       }
                       @if (marketType === marketTypes.Forward) {
@@ -112,9 +112,12 @@
         </div>
       }
     </ng-template>
+    <ng-template #settingsEditorRef>
+      <ats-blotter-settings
+        (closeRequested)="widgetSkeleton.closeSettings()"
+        [guid]="guid"
+        [widgetInstance]="widgetInstance()"
+      />
+    </ng-template>
   </ats-widget-skeleton>
 </ng-container>
-
-<ng-template #settingsRef>
-  <ats-blotter-settings (settingsChange)="onSettingsChange()" [guid]='guid'/>
-</ng-template>
