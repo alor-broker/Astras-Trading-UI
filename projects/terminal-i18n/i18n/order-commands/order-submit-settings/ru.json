@@ -14,5 +14,12 @@
   "advancedHeader": "Продвинутые",
   "instrumentGroupLabel": "Режим торгов",
   "instrumentGroupError": "Выберите режим торгов",
-  "skipMarginOrderConfirmationLabel": "Разрешить сделки, которые могут привести к открытию непокрытой позиции (только для клиентов низкого уровня риска)"
+  "skipMarginOrderConfirmationLabel": "Разрешить сделки, которые могут привести к открытию непокрытой позиции (только для клиентов низкого уровня риска)",
+  "instrumentSettings": "Инструмент",
+  "fastEditingSettings": "Быстрое редактирование заявок",
+  "workingVolumesSettings": "Рабочие объёмы",
+  "addDenomination": "Добавить номинал",
+  "removeDenomination": "Удалить номинал {{index}}",
+  "addVolume": "Добавить объём",
+  "removeVolume": "Удалить объём {{index}}"
 }

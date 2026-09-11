@@ -2,85 +2,66 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
-  FormsModule,
   ReactiveFormsModule,
   Validators
 } from "@angular/forms";
-import {
-  Observable,
-  take
-} from "rxjs";
+import {Observable} from "rxjs";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from "ng-zorro-antd/form";
-import {
-  NzColDirective,
-  NzRowDirective
-} from "ng-zorro-antd/grid";
 import {NzInputDirective} from "ng-zorro-antd/input";
-import {NzSwitchComponent} from "ng-zorro-antd/switch";
-import {
-  NzCollapseComponent,
-  NzCollapsePanelComponent
-} from "ng-zorro-antd/collapse";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {AsyncPipe} from "@angular/common";
 import {NzInputNumberComponent} from "ng-zorro-antd/input-number";
 import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/components/inline-instrument-search/inline-instrument-search';
 import {InstrumentBoardSelect} from '@terminal-core-lib/features/instruments/components/instrument-board-select/instrument-board-select';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
 import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.base';
 import {InputNumberValidation} from '@terminal-core-lib/common/constants/validation.constants';
 import {OrderSubmitWidgetSettings} from '@terminal-widgets-lib/widgets/order-commands/widget-settings.types';
-import {DeviceService} from '@terminal-core-lib/common/services/device.service';
-import {DeviceInfo} from '@terminal-core-lib/common/services/device-service-types';
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
-import {InstrumentEqualityComparer} from '@terminal-core-lib/common/utils/instrument-key.helper';
+import {
+  InstrumentEqualityComparer,
+  InstrumentKeyHelper
+} from '@terminal-core-lib/common/utils/instrument-key.helper';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsGroup} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-group/widget-settings-group';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
+import {WidgetSettingsSwitch} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-switch/widget-settings-switch';
+import {SettingsDeviceVisibility} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-visibility.types';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
 
 @Component({
   selector: 'ats-order-submit-settings',
   templateUrl: './order-submit-settings.html',
-  styleUrls: ['./order-submit-settings.less'],
   imports: [
     TranslocoDirective,
-    FormsModule,
-    NzFormDirective,
     ReactiveFormsModule,
-    NzRowDirective,
-    NzFormItemComponent,
-    NzColDirective,
-    NzFormLabelComponent,
-    NzFormControlComponent,
     NzInputDirective,
-    NzSwitchComponent,
-    NzCollapseComponent,
-    NzCollapsePanelComponent,
     NzTypographyComponent,
     NzButtonComponent,
     NzIconDirective,
-    AsyncPipe,
     NzInputNumberComponent,
     InlineInstrumentSearch,
     InstrumentBoardSelect,
-    WidgetSettings
+    WidgetSettingsEditor,
+    WidgetSettingsGroup,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem,
+    WidgetSettingsSwitch
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class OrderSubmitSettings extends WidgetSettingsBase<OrderSubmitWidgetSettings> implements OnInit {
-  deviceInfo$!: Observable<DeviceInfo>;
+export class OrderSubmitSettings extends WidgetSettingsBase<OrderSubmitWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
+  readonly DeviceVisibility = SettingsDeviceVisibility;
 
   readonly validationOptions = {
     limitOrderPriceMoveStep: {
@@ -95,112 +76,102 @@ export class OrderSubmitSettings extends WidgetSettingsBase<OrderSubmitWidgetSet
 
   protected settings$!: Observable<OrderSubmitWidgetSettings>;
 
-  private readonly deviceService = inject(DeviceService);
-
   private readonly formBuilder = inject(FormBuilder);
 
   readonly form = this.formBuilder.group({
-    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
-    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
-    enableLimitOrdersFastEditing: this.formBuilder.nonNullable.control(false),
-    limitOrderPriceMoveSteps: this.formBuilder.nonNullable.array([]),
-    skipMarginOrderConfirmation: this.formBuilder.nonNullable.control(false),
-    showVolumePanel: this.formBuilder.nonNullable.control(false),
-    workingVolumes: this.formBuilder.nonNullable.array([]),
+    instrument: this.formBuilder.group({
+      instrumentKey: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+      instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null)
+    }),
+    fastEditing: this.formBuilder.group({
+      enableLimitOrdersFastEditing: this.formBuilder.nonNullable.control(false),
+      limitOrderPriceMoveSteps: this.formBuilder.array<FormControl<number | null>>([]),
+      skipMarginOrderConfirmation: this.formBuilder.nonNullable.control(false)
+    }),
+    volumes: this.formBuilder.group({
+      showVolumePanel: this.formBuilder.nonNullable.control(false),
+      workingVolumes: this.formBuilder.array<FormControl<number | null>>([])
+    })
   });
 
   override get canSave(): boolean {
     return this.form.valid;
   }
 
-  override ngOnInit(): void {
-    super.ngOnInit();
-
-    this.deviceInfo$ = this.deviceService.deviceInfo$
-      .pipe(
-        take(1)
-      );
-  }
-
   instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+    this.form.controls.instrument.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   removeLimitOrderPriceMoveStep($event: MouseEvent, index: number): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    this.form.controls.limitOrderPriceMoveSteps.removeAt(index);
+    this.form.controls.fastEditing.controls.limitOrderPriceMoveSteps.removeAt(index);
   }
 
   addLimitOrderPriceMoveStep($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    const stepsControl = this.form.controls.limitOrderPriceMoveSteps;
-    const defaultValue = stepsControl.controls[stepsControl.length - 1].value as number;
+    const stepsControl = this.form.controls.fastEditing.controls.limitOrderPriceMoveSteps;
+    const defaultValue = stepsControl.controls[stepsControl.length - 1]?.value ?? this.validationOptions.limitOrderPriceMoveStep.min;
     stepsControl.push(this.createLimitOrderPriceMoveStepControl(defaultValue));
   }
 
   removeWorkingVolume($event: MouseEvent, index: number): void {
     $event.preventDefault();
     $event.stopPropagation();
-    this.form.controls.workingVolumes.removeAt(index);
+    this.form.controls.volumes.controls.workingVolumes.removeAt(index);
   }
 
   addWorkingVolume($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    const workingVolumeControl = this.form.controls.workingVolumes;
-    const defaultValue = workingVolumeControl.controls[workingVolumeControl.length - 1]?.value as number | undefined;
+    const workingVolumeControl = this.form.controls.volumes.controls.workingVolumes;
+    const defaultValue = workingVolumeControl.controls[workingVolumeControl.length - 1]?.value;
     workingVolumeControl.push(this.createWorkingVolumeControl(defaultValue ?? 1));
   }
 
   protected getUpdatedSettings(initialSettings: OrderSubmitWidgetSettings): Partial<OrderSubmitWidgetSettings> {
-    const formValue = this.form.value as Partial<OrderSubmitWidgetSettings & {
-      instrument: InstrumentKey;
-      workingVolumes: number[];
-      limitOrderPriceMoveSteps: number[];
-    }>;
-
+    const {instrument, fastEditing, volumes} = this.form.getRawValue();
     const newSettings = {
-      ...formValue,
+      symbol: instrument.instrumentKey?.symbol ?? '',
+      exchange: instrument.instrumentKey?.exchange ?? '',
+      isin: instrument.instrumentKey?.isin,
+      instrumentGroup: instrument.instrumentGroup,
       defaultOrderType: initialSettings.defaultOrderType,
-      symbol: formValue.instrument?.symbol ?? '',
-      exchange: formValue.instrument?.exchange ?? '',
-      skipMarginOrderConfirmation: (formValue.enableLimitOrdersFastEditing ?? false) && (formValue.skipMarginOrderConfirmation ?? false),
-      limitOrderPriceMoveSteps: formValue.limitOrderPriceMoveSteps?.map((x: number) => Number(x)),
-      workingVolumes: formValue.workingVolumes?.map((x: number) => Number(x)),
+      enableLimitOrdersFastEditing: fastEditing.enableLimitOrdersFastEditing,
+      skipMarginOrderConfirmation: fastEditing.enableLimitOrdersFastEditing && fastEditing.skipMarginOrderConfirmation,
+      limitOrderPriceMoveSteps: fastEditing.limitOrderPriceMoveSteps.map(value => Number(value)),
+      showVolumePanel: volumes.showVolumePanel,
+      workingVolumes: volumes.workingVolumes.map(value => Number(value)),
+      linkToActive: false
     };
 
-    delete newSettings.instrument;
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && InstrumentEqualityComparer.equals(initialSettings, newSettings);
-
-    return newSettings as Partial<OrderSubmitWidgetSettings>;
+    return newSettings;
   }
 
   protected setCurrentFormValues(settings: OrderSubmitWidgetSettings): void {
+    this.form.controls.fastEditing.controls.limitOrderPriceMoveSteps.clear();
+    this.form.controls.volumes.controls.workingVolumes.clear();
     this.form.reset();
 
-    this.form.controls.instrument.setValue({
-      symbol: settings.symbol,
-      exchange: settings.exchange,
-      instrumentGroup: settings.instrumentGroup ?? null
-    });
-    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
+    this.form.controls.instrument.controls.instrumentKey.setValue(InstrumentKeyHelper.toInstrumentKey(settings));
+    this.form.controls.instrument.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
 
-    this.form.controls.enableLimitOrdersFastEditing.setValue(settings.enableLimitOrdersFastEditing ?? false);
-    this.form.controls.skipMarginOrderConfirmation.setValue(settings.skipMarginOrderConfirmation ?? false);
-    const sortedSteps = [...settings.limitOrderPriceMoveSteps].sort((a, b) => a - b);
+    this.form.controls.fastEditing.controls.enableLimitOrdersFastEditing.setValue(settings.enableLimitOrdersFastEditing ?? false);
+    this.form.controls.fastEditing.controls.skipMarginOrderConfirmation.setValue(settings.skipMarginOrderConfirmation ?? false);
+    const sortedSteps = [...(settings.limitOrderPriceMoveSteps ?? [1, 2, 5, 10])].sort((a, b) => a - b);
     for (const step of sortedSteps) {
-      this.form.controls.limitOrderPriceMoveSteps.push(this.createLimitOrderPriceMoveStepControl(step));
+      this.form.controls.fastEditing.controls.limitOrderPriceMoveSteps.push(this.createLimitOrderPriceMoveStepControl(step));
     }
 
-    this.form.controls.showVolumePanel.setValue(settings.showVolumePanel ?? false);
-    const sortedVolumes = [...settings.workingVolumes].sort((a, b) => a - b);
+    this.form.controls.volumes.controls.showVolumePanel.setValue(settings.showVolumePanel ?? false);
+    const sortedVolumes = [...(settings.workingVolumes ?? [1, 5, 10, 20, 30, 40, 50, 100, 200])].sort((a, b) => a - b);
     for (const step of sortedVolumes) {
-      this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(step));
+      this.form.controls.volumes.controls.workingVolumes.push(this.createWorkingVolumeControl(step));
     }
   }
 
