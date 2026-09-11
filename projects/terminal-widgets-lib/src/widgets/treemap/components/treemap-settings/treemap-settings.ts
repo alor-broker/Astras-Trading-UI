@@ -2,10 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from '@angular/core';
-import {WidgetSettingsBase,} from '@terminal-widgets-lib/common/widget-settings.base';
+import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.base';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -18,24 +18,29 @@ import {
 import {Observable} from 'rxjs';
 import {TreemapWidgetSettings} from '../../widget-settings.types';
 import {TranslocoDirective} from '@jsverse/transloco';
-import {NzFormModule} from 'ng-zorro-antd/form';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
 
 @Component({
   selector: 'ats-treemap-settings',
   imports: [
     TranslocoDirective,
     ReactiveFormsModule,
-    NzFormModule,
     NzSliderComponent,
-    WidgetSettings
+    WidgetSettingsEditor,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem
   ],
   templateUrl: './treemap-settings.html',
   styleUrl: './treemap-settings.less',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TreemapSettings extends WidgetSettingsBase<TreemapWidgetSettings> implements OnInit {
+export class TreemapSettings extends WidgetSettingsBase<TreemapWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   readonly validation = {
     refreshIntervalSec: {
       min: 30,
@@ -52,7 +57,7 @@ export class TreemapSettings extends WidgetSettingsBase<TreemapWidgetSettings> i
 
   private readonly formBuilder = inject(FormBuilder);
 
-  form = this.formBuilder.group({
+  readonly form = this.formBuilder.group({
     refreshIntervalSec: this.formBuilder.nonNullable.control(
       60,
       {
@@ -77,7 +82,7 @@ export class TreemapSettings extends WidgetSettingsBase<TreemapWidgetSettings> i
 
   protected getUpdatedSettings(): Partial<TreemapWidgetSettings> {
     return {
-      refreshIntervalSec: this.form.value.refreshIntervalSec!
+      refreshIntervalSec: this.form.controls.refreshIntervalSec.value
     };
   }
 }
