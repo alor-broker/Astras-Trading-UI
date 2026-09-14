@@ -26,6 +26,7 @@
 
 <ng-template #desktopTitleTpl>
   <ng-container *transloco="let t; scope: 'shared/widget-settings'">
+    <span nz-icon nzType="setting" nzTheme="outline" class="mr-5" aria-hidden="true"></span>
     {{ t('sharedWidgetSettings.dialogTitle', { widgetName: widgetName() }) }}
   </ng-container>
 </ng-template>

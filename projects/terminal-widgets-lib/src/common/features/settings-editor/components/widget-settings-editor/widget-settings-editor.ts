@@ -12,6 +12,7 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzModalModule} from 'ng-zorro-antd/modal';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
 import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
 import {TranslatorService} from '@terminal-core-lib/features/translations/services/translator.service';
@@ -35,6 +36,7 @@ import {WidgetsHelper} from '@terminal-widgets-lib/common/utils/widget-name.help
   imports: [
     TranslocoDirective,
     NzModalModule,
+    NzIconDirective,
     WidgetSettingsLayoutDesktop,
     WidgetSettingsLayoutMobile
   ],
