@@ -2,93 +2,74 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from '@angular/core';
 import {
   FormBuilder,
-  FormsModule,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import {
-  Observable,
-  take
-} from "rxjs";
-
+import {Observable} from 'rxjs';
 import {
   NzMarks,
   NzSliderComponent
-} from "ng-zorro-antd/slider";
+} from 'ng-zorro-antd/slider';
 import {TranslocoDirective} from '@jsverse/transloco';
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from 'ng-zorro-antd/form';
-import {
-  NzColDirective,
-  NzRowDirective
-} from 'ng-zorro-antd/grid';
-import {
-  NzCollapseComponent,
-  NzCollapsePanelComponent
-} from 'ng-zorro-antd/collapse';
 import {NzInputDirective} from 'ng-zorro-antd/input';
 import {
   NzOptionComponent,
   NzSelectComponent
 } from 'ng-zorro-antd/select';
-import {NzSwitchComponent} from 'ng-zorro-antd/switch';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzPopoverDirective} from 'ng-zorro-antd/popover';
-import {AsyncPipe} from '@angular/common';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.base';
-import {DeviceService} from '@terminal-core-lib/common/services/device.service';
 import {
   ColumnsOrder,
   OrderbookWidgetSettings
 } from '@terminal-widgets-lib/widgets/orderbook/widget-settings.types';
 import {NumberDisplayFormat} from '@terminal-core-lib/common/types/number-display-format.types';
 import {InstrumentKey} from '@terminal-core-lib/common/types/instrument.types';
-import {InstrumentEqualityComparer} from '@terminal-core-lib/common/utils/instrument-key.helper';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {
+  InstrumentEqualityComparer,
+  InstrumentKeyHelper
+} from '@terminal-core-lib/common/utils/instrument-key.helper';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsGroup} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-group/widget-settings-group';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
+import {WidgetSettingsSwitch} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-switch/widget-settings-switch';
+import {SettingsDeviceVisibility} from '@terminal-widgets-lib/common/features/settings-editor/types/widget-settings-visibility.types';
 import {InlineInstrumentSearch} from '@terminal-core-lib/features/instruments/components/inline-instrument-search/inline-instrument-search';
 import {InstrumentBoardSelect} from '@terminal-core-lib/features/instruments/components/instrument-board-select/instrument-board-select';
 
 @Component({
   selector: 'ats-orderbook-settings',
   templateUrl: './orderbook-settings.html',
-  styleUrls: ['./orderbook-settings.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   imports: [
     TranslocoDirective,
-    FormsModule,
-    NzFormDirective,
     ReactiveFormsModule,
-    NzRowDirective,
-    NzFormItemComponent,
-    NzCollapseComponent,
-    NzCollapsePanelComponent,
-    NzColDirective,
-    NzFormLabelComponent,
-    NzFormControlComponent,
     NzInputDirective,
     NzSliderComponent,
     NzSelectComponent,
     NzOptionComponent,
-    NzSwitchComponent,
-    NzIconDirective,
-    NzPopoverDirective,
-    AsyncPipe,
-    WidgetSettings,
+    NzTypographyComponent,
+    WidgetSettingsEditor,
+    WidgetSettingsGroup,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem,
+    WidgetSettingsSwitch,
     InlineInstrumentSearch,
     InstrumentBoardSelect
   ]
 })
-export class OrderbookSettings extends WidgetSettingsBase<OrderbookWidgetSettings> implements OnInit {
+export class OrderbookSettings extends WidgetSettingsBase<OrderbookWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
+  readonly DeviceVisibility = SettingsDeviceVisibility;
+
   readonly validationOptions = {
     depth: {
       min: 1,
@@ -96,87 +77,92 @@ export class OrderbookSettings extends WidgetSettingsBase<OrderbookWidgetSetting
     }
   };
 
-  columnsOrderEnum = ColumnsOrder;
+  readonly depthMarks: NzMarks = {
+    [this.validationOptions.depth.min]: this.validationOptions.depth.min.toString(),
+    [this.validationOptions.depth.max]: this.validationOptions.depth.max.toString()
+  };
+
+  readonly columnsOrderEnum = ColumnsOrder;
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
   protected settings$!: Observable<OrderbookWidgetSettings>;
 
-  private readonly deviceService = inject(DeviceService);
-
-  protected readonly deviceInfo$ = this.deviceService.deviceInfo$.pipe(take(1));
-
   private readonly formBuilder = inject(FormBuilder);
 
   readonly form = this.formBuilder.group({
-    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
-    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
-    depth: this.formBuilder.nonNullable.control(
-      17,
-      [
-        Validators.required,
-        Validators.min(this.validationOptions.depth.min),
-        Validators.max(this.validationOptions.depth.max)
-      ]
-    ),
-    showChart: this.formBuilder.nonNullable.control(true),
-    showTable: this.formBuilder.nonNullable.control(true),
-    showYieldForBonds: this.formBuilder.nonNullable.control(false),
-    useOrderWidget: this.formBuilder.nonNullable.control(false),
-    showVolume: this.formBuilder.nonNullable.control(false),
-    columnsOrder: this.formBuilder.nonNullable.control(ColumnsOrder.VolumesAtTheEdges),
-    volumeDisplayFormat: this.formBuilder.nonNullable.control(NumberDisplayFormat.Default),
-    showPriceWithZeroPadding: this.formBuilder.nonNullable.control(false),
+    instrument: this.formBuilder.group({
+      instrumentKey: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+      instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null)
+    }),
+    view: this.formBuilder.group({
+      depth: this.formBuilder.nonNullable.control(
+        17,
+        [
+          Validators.required,
+          Validators.min(this.validationOptions.depth.min),
+          Validators.max(this.validationOptions.depth.max)
+        ]
+      ),
+      showChart: this.formBuilder.nonNullable.control(true),
+      showTable: this.formBuilder.nonNullable.control(true),
+      showYieldForBonds: this.formBuilder.nonNullable.control(false),
+      showVolume: this.formBuilder.nonNullable.control(false),
+      columnsOrder: this.formBuilder.nonNullable.control(ColumnsOrder.VolumesAtTheEdges),
+      volumeDisplayFormat: this.formBuilder.nonNullable.control(NumberDisplayFormat.Default),
+      showPriceWithZeroPadding: this.formBuilder.nonNullable.control(false)
+    }),
+    orders: this.formBuilder.group({
+      useOrderWidget: this.formBuilder.nonNullable.control(false)
+    })
   });
 
   override get canSave(): boolean {
     return this.form.valid;
   }
 
-  instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  protected get instrument(): InstrumentKey | null {
+    return this.form.controls.instrument.controls.instrumentKey.value;
   }
 
-  getSliderMarks(minValue: number, maxValue: number): NzMarks {
-    return {
-      [minValue]: minValue.toString(),
-      [maxValue]: maxValue.toString(),
-    };
+  instrumentSelected(instrument: InstrumentKey | null): void {
+    this.form.controls.instrument.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   protected getUpdatedSettings(initialSettings: OrderbookWidgetSettings): Partial<OrderbookWidgetSettings> {
-    const formValue = this.form.getRawValue() as Partial<OrderbookWidgetSettings & { instrument: InstrumentKey }>;
+    const value = this.form.getRawValue();
+    const instrument = InstrumentKeyHelper.toInstrumentKey({
+      ...value.instrument.instrumentKey ?? initialSettings,
+      instrumentGroup: value.instrument.instrumentGroup
+    });
 
-    const newSettings = {
-      ...formValue,
-      depth: Number(this.form.value.depth!),
-      symbol: formValue.instrument?.symbol,
-      exchange: formValue.instrument?.exchange
-    } as OrderbookWidgetSettings;
-
-    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && InstrumentEqualityComparer.equals(initialSettings, newSettings);
-
-    return newSettings;
+    return {
+      ...instrument,
+      ...value.view,
+      ...value.orders,
+      linkToActive: (initialSettings.linkToActive ?? false) && InstrumentEqualityComparer.equals(initialSettings, instrument)
+    };
   }
 
   protected setCurrentFormValues(settings: OrderbookWidgetSettings): void {
-    this.form.reset();
-
-    this.form.controls.instrument.setValue({
-      symbol: settings.symbol,
-      exchange: settings.exchange,
-      instrumentGroup: settings.instrumentGroup ?? null
+    this.form.reset({
+      instrument: {
+        instrumentKey: InstrumentKeyHelper.toInstrumentKey(settings),
+        instrumentGroup: settings.instrumentGroup ?? null
+      },
+      view: {
+        depth: settings.depth ?? 17,
+        showChart: settings.showChart ?? true,
+        showTable: settings.showTable ?? true,
+        showYieldForBonds: settings.showYieldForBonds ?? false,
+        showVolume: settings.showVolume ?? false,
+        columnsOrder: settings.columnsOrder ?? ColumnsOrder.VolumesAtTheEdges,
+        volumeDisplayFormat: settings.volumeDisplayFormat ?? NumberDisplayFormat.Default,
+        showPriceWithZeroPadding: settings.showPriceWithZeroPadding ?? false
+      },
+      orders: {
+        useOrderWidget: settings.useOrderWidget ?? false
+      }
     });
-    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
-
-    this.form.controls.depth.setValue(settings.depth ?? 17);
-    this.form.controls.showChart.setValue(settings.showChart);
-    this.form.controls.showTable.setValue(settings.showTable);
-    this.form.controls.showYieldForBonds.setValue(settings.showYieldForBonds);
-    this.form.controls.useOrderWidget.setValue(settings.useOrderWidget ?? false);
-    this.form.controls.showVolume.setValue(settings.showVolume ?? false);
-    this.form.controls.columnsOrder.setValue(settings.columnsOrder ?? ColumnsOrder.VolumesAtTheEdges);
-    this.form.controls.volumeDisplayFormat.setValue(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default);
-    this.form.controls.showPriceWithZeroPadding.setValue(settings.showPriceWithZeroPadding ?? false);
   }
 }

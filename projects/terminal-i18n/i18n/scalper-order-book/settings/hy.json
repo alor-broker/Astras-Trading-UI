@@ -87,5 +87,9 @@
     "buySellDominance": "Գնորդների/վաճառողների գերակայություն",
     "targetVolume": "Լրացում ըստ ծավալի",
     "buyVsSell": "Գնորդներ | Վաճառողներ"
-  }
+  },
+  "addWorkingVolume": "Ավելացնել աշխատանքային ծավալ",
+  "removeWorkingVolume": "Հեռացնել աշխատանքային ծավալը",
+  "addVolumeHighlight": "Ավելացնել գունավորման շեմ",
+  "removeVolumeHighlight": "Հեռացնել գունավորման շեմը"
 }

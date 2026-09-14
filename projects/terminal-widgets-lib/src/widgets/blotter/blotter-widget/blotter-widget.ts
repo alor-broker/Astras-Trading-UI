@@ -110,8 +110,6 @@ export class BlotterWidget implements Widget, OnInit, OnDestroy {
 
   readonly marketTypes = MarketType;
 
-  shouldShowSettings = false;
-
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
@@ -224,10 +222,6 @@ export class BlotterWidget implements Widget, OnInit, OnDestroy {
         this.onIndexChange(0);
       }
     });
-  }
-
-  onSettingsChange(): void {
-    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   onIndexChange(index?: number): void {

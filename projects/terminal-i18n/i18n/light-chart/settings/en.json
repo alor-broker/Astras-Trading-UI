@@ -1,4 +1,6 @@
 {
+  "instrumentSelectionHeader": "Instrument",
+  "timeframesGroupLabel": "Timeframes",
   "tickerError": "Select ticker",
   "tickerLabel": "Ticker",
   "exchangeLabel": "Exchange",

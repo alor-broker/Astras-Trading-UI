@@ -87,5 +87,9 @@
     "buySellDominance": "Доминирование покупатели/продавцы",
     "targetVolume": "Заполнение относительно объема",
     "buyVsSell": "Покупатели | Продавцы"
-  }
+  },
+  "addWorkingVolume": "Добавить рабочий объём",
+  "removeWorkingVolume": "Удалить рабочий объём",
+  "addVolumeHighlight": "Добавить порог подсветки",
+  "removeVolumeHighlight": "Удалить порог подсветки"
 }

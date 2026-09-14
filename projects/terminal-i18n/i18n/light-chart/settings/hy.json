@@ -1,4 +1,6 @@
 {
+  "instrumentSelectionHeader": "Գործիք",
+  "timeframesGroupLabel": "Ժամանակային միջակայքեր",
   "tickerError": "Ընտրեք թիքերը",
   "tickerLabel": "Թիքեր",
   "exchangeLabel": "Բորսա",

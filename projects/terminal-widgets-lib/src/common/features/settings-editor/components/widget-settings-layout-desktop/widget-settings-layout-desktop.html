@@ -1,0 +1,40 @@
+<ng-container *transloco="let t; scope: 'shared/widget-settings'">
+  <div class="layout">
+    <div class="body">
+      @if (hasGroups()) {
+        <ats-widget-settings-group-selector [groups]="groups()"/>
+      } @else {
+        <div class="simple">
+          <ng-container *ngTemplateOutlet="defaultContent()"/>
+        </div>
+      }
+    </div>
+
+    <footer class="footer">
+      @if (showCopy()) {
+        <button
+          (click)="copyClick.emit()"
+          [disabled]="!canCopy()"
+          [nzTooltipMouseEnterDelay]="0.5"
+          [nzTooltipTitle]="t('sharedWidgetSettings.copyTooltip')"
+          class="copy"
+          nz-button
+          nz-tooltip
+          nzType="link"
+        >
+          <span nz-icon nzTheme="outline" nzType="copy"></span>
+          <span>{{ t('copyBtnText') }}</span>
+        </button>
+      }
+
+      <span class="spacer"></span>
+
+      <button (click)="cancelClick.emit()" nz-button nzType="default">
+        {{ t('cancelBtnText') }}
+      </button>
+      <button (click)="saveClick.emit()" [disabled]="!canSave()" nz-button nzType="primary">
+        {{ t('saveBtnText') }}
+      </button>
+    </footer>
+  </div>
+</ng-container>

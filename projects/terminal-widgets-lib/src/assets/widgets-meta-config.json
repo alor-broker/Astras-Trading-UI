@@ -491,6 +491,7 @@
     "desktopMeta": {
       "headerIcon": "stock",
       "galleryIcon": "stock",
+      "hasZeroPaddings": true,
       "addOptions": {
         "initialPosition": "top",
         "isFullWidth": true,

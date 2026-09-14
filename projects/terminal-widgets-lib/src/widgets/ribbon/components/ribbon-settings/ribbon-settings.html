@@ -1,0 +1,124 @@
+<ats-widget-settings-editor
+  (cancelClick)="requestClose()"
+  (copyClick)="createWidgetCopy()"
+  (saveClick)="updateSettings()"
+  [canCopy]="canCopy"
+  [canSave]="canSave"
+  [showCopy]="showCopy"
+  [widgetInstance]="widgetInstance()"
+>
+  <ng-container *transloco="let t; scope: 'ribbon/settings'">
+    <ats-widget-settings-group groupId="instruments" [title]="t('ribbonSettings.instrumentsGroup')">
+    <div class="ats-ribbon-settings">
+      <div class="add-instrument d-flex flex-column flex-gap-10">
+        <h4 class="section-title">{{ t('ribbonSettings.addInstrument') }}</h4>
+        <label nz-checkbox [formControl]="isFuturesControl">{{ t('ribbonSettings.futures') }}</label>
+        @if (!isFutures()) {
+          <ats-inline-instrument-search [formControl]="searchControl" (instrumentSelected)="addInstrument($event)"/>
+        } @else {
+          <label [for]="guid() + '-exchange'">{{ t('ribbonSettings.exchange') }}</label>
+          @if (exchanges().length === 1) {
+            <input nz-input [id]="guid() + '-exchange'" [formControl]="exchangeControl" readonly/>
+          } @else {
+            <nz-select [nzId]="guid() + '-exchange'" [formControl]="exchangeControl"
+                       [nzPlaceHolder]="t('ribbonSettings.selectExchange')">
+              @for (exchange of exchanges(); track exchange) {
+                <nz-option [nzValue]="exchange" [nzLabel]="exchange"/>
+              }
+            </nz-select>
+          }
+          <label [for]="guid() + '-futures'">{{ t('ribbonSettings.futuresCode') }}</label>
+          <div class="d-flex flex-gap-10">
+            <input nz-input [id]="guid() + '-futures'" [formControl]="futuresCode"
+                   [placeholder]="t('ribbonSettings.futuresPlaceholder')"
+                   [attr.aria-describedby]="guid() + '-futures-help'" (keydown.enter)="addFutures()"/>
+            <button nz-button type="button" [disabled]="exchangeControl.invalid" (click)="addFutures()">{{ t('ribbonSettings.add') }}</button>
+          </div>
+          @if (futuresCode.touched && futuresCode.invalid) {
+            <span class="negative-color" role="alert">{{ t('ribbonSettings.invalidCode') }}</span>
+          }
+          <span class="hint" [id]="guid() + '-futures-help'">{{ t('ribbonSettings.futuresHelp') }}</span>
+        }
+        @if (duplicate()) {
+          <span class="negative-color" role="alert">{{ t('ribbonSettings.duplicate') }}</span>
+        }
+      </div>
+      <div class="list-header d-flex justify-content-between align-items-center flex-wrap flex-gap-10">
+        <h4 class="section-title">{{ t('ribbonSettings.tracked') }} · {{ items().length }}</h4>
+        <button nz-button nzType="link" type="button" (click)="restoreDefaults()">{{ t('ribbonSettings.restore') }}</button>
+      </div>
+      <div class="instrument-list">
+        <nz-list [nzBordered]="true">
+          @for (item of items(); track item; let index = $index) {
+            <nz-list-item [class.moved-item]="movedItem() === item"
+                          [class.moved-up]="movedItem() === item && moveDirection() < 0"
+                          [class.moved-down]="movedItem() === item && moveDirection() > 0"
+                          (animationend)="moveDirection.set(0)">
+              <div class="instrument-info">
+                @if (nameEdit()?.item === item) {
+                  <input #nameInput nz-input class="display-name"
+                       [formControl]="item.displayName"
+                       [placeholder]="item.instrument.symbol"
+                       [attr.aria-label]="t('ribbonSettings.displayNameFor', {symbol: item.instrument.symbol})"
+                       (blur)="finishNameEdit()" (keydown.enter)="finishNameEdit()"
+                       (keydown.escape)="finishNameEdit(true)"/>
+                } @else {
+                  <span class="display-name">{{ item.displayName.value || item.instrument.symbol }}</span>
+                }
+                <div class="instrument-key hint">
+                  <span>{{ item.instrument.symbol }}</span>
+                  <span class="hint">{{ item.instrument.exchange }} {{ item.instrument.instrumentGroup }}</span>
+                  @if (item.instrument.isFutures) {
+                    <span class="hint">· {{ t('ribbonSettings.futures') }}</span>
+                  }
+                </div>
+
+              </div>
+              <ul nz-list-item-actions>
+                <nz-list-item-action>
+                  <button nz-button nzType="text" nzSize="small" type="button"
+                          (click)="startNameEdit(item)"
+                          [attr.aria-label]="t('ribbonSettings.displayNameFor', {symbol: item.instrument.symbol})"><nz-icon nzType="edit"/></button>
+                </nz-list-item-action>
+                <nz-list-item-action>
+                  <button nz-button nzType="text" nzSize="small" type="button" (click)="moveItem(index, -1)" [disabled]="$first"
+                          [attr.aria-label]="t('ribbonSettings.moveUp', {symbol: item.instrument.symbol})"><nz-icon nzType="up"/></button>
+                </nz-list-item-action>
+                <nz-list-item-action>
+                  <button nz-button nzType="text" nzSize="small" type="button" (click)="moveItem(index, 1)" [disabled]="$last"
+                          [attr.aria-label]="t('ribbonSettings.moveDown', {symbol: item.instrument.symbol})"><nz-icon nzType="down"/></button>
+                </nz-list-item-action>
+                <nz-list-item-action>
+                  <button nz-button nzType="text" nzDanger nzSize="small" type="button" (click)="removeItem(index)"
+                          [attr.aria-label]="t('ribbonSettings.remove', {symbol: item.instrument.symbol})"><nz-icon nzType="delete"/></button>
+                </nz-list-item-action>
+              </ul>
+            </nz-list-item>
+          } @empty {
+            <nz-list-item class="hint">{{ t('ribbonSettings.empty') }}</nz-list-item>
+          }
+        </nz-list>
+      </div>
+    </div>
+    </ats-widget-settings-group>
+    <ats-widget-settings-group groupId="general" [title]="t('ribbonSettings.generalGroup')" [isValid]="canSave">
+      <ats-widget-settings-form [formGroup]="appearanceForm">
+        <ats-widget-settings-form-item [label]="t('ribbonSettings.layout')" [required]="true">
+          <nz-select formControlName="layout">
+            <nz-option [nzValue]="layouts.SingleRow" [nzLabel]="t('ribbonSettings.layouts.singleRow')"/>
+            <nz-option [nzValue]="layouts.TwoRows" [nzLabel]="t('ribbonSettings.layouts.2row')"/>
+          </nz-select>
+        </ats-widget-settings-form-item>
+      </ats-widget-settings-form>
+      <ats-widget-settings-form [formGroup]="refreshForm">
+        <ats-widget-settings-form-item
+          [label]="t('ribbonSettings.refreshInterval', {value: refreshForm.controls.refreshIntervalSec.value})"
+          [errorTip]="t('ribbonSettings.refreshIntervalError', {min: validationOptions.min, max: validationOptions.max})"
+          [required]="true">
+          <nz-slider formControlName="refreshIntervalSec" [nzMin]="validationOptions.min"
+                     [nzMax]="validationOptions.max" [nzStep]="1" [nzMarks]="refreshMarks"/>
+        </ats-widget-settings-form-item>
+      </ats-widget-settings-form>
+    </ats-widget-settings-group>
+  </ng-container>
+</ats-widget-settings-editor>

@@ -1,0 +1,43 @@
+<ng-template #defaultContentTpl>
+  <ng-content/>
+</ng-template>
+
+@if (isMobile()) {
+  <ats-widget-settings-layout-mobile
+    (saveClick)="saveClick.emit()"
+    [canSave]="canSave()"
+    [defaultContent]="defaultContentTpl"
+    [groups]="visibleGroups()"
+  />
+}
+
+<ng-template #desktopContentTpl>
+  <ats-widget-settings-layout-desktop
+    (cancelClick)="cancelClick.emit()"
+    (copyClick)="copyClick.emit()"
+    (saveClick)="saveClick.emit()"
+    [canCopy]="canCopy()"
+    [canSave]="canSave()"
+    [defaultContent]="defaultContentTpl"
+    [groups]="visibleGroups()"
+    [showCopy]="showCopy()"
+  />
+</ng-template>
+
+<ng-template #desktopTitleTpl>
+  <ng-container *transloco="let t; scope: 'shared/widget-settings'">
+    {{ t('sharedWidgetSettings.dialogTitle', { widgetName: widgetName() }) }}
+  </ng-container>
+</ng-template>
+
+<nz-modal
+  (nzOnCancel)="cancelClick.emit()"
+  [nzContent]="desktopContentTpl"
+  [nzDraggable]="true"
+  [nzFooter]="null"
+  [nzMaskClosable]="false"
+  [nzTitle]="desktopTitleTpl"
+  [nzVisible]="!isMobile()"
+  [nzWidth]="640"
+  nzWrapClassName="ats-widget-settings-dialog"
+/>

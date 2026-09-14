@@ -1,20 +1,18 @@
-<ats-widget-settings
+<ats-widget-settings-editor
+  (cancelClick)="requestClose()"
   (copyClick)="createWidgetCopy()"
   (saveClick)="updateSettings()"
   [canCopy]="canCopy"
   [canSave]="canSave"
   [showCopy]="showCopy"
+  [widgetInstance]="widgetInstance()"
 >
   <ng-container *transloco="let t; scope: 'orders-basket/settings'">
-    <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
-      <nz-form-item class="one-row">
-        <nz-form-label nzFor="showPresetsPanel">
-          {{ t('ordersBasketSettings.showPresetsPanelLabel') }}
-        </nz-form-label>
-        <nz-form-control>
-          <nz-switch formControlName='showPresetsPanel'/>
-        </nz-form-control>
-      </nz-form-item>
-    </form>
+    <ats-widget-settings-form [formGroup]="form">
+      <ats-widget-settings-switch
+        [label]="t('ordersBasketSettings.showPresetsPanelLabel')"
+        formControlName="showPresetsPanel"
+      />
+    </ats-widget-settings-form>
   </ng-container>
-</ats-widget-settings>
+</ats-widget-settings-editor>

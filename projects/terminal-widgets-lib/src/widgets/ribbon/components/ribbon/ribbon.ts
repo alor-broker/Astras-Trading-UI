@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   input,
@@ -22,7 +23,7 @@ import {
   NgTemplateOutlet
 } from "@angular/common";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {ApplicationStatusService} from '@terminal-core-lib/common/services/application-status.service';
 import {CandlesService} from '@terminal-core-lib/features/instruments/services/candles.service';
 import {IndexDisplay} from '@terminal-widgets-lib/widgets/ribbon/types/ribbon.types';
@@ -32,12 +33,7 @@ import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
 import {ScrollableRow} from '@terminal-core-lib/features/scrollable-row/components/scrollable-row/scrollable-row';
 import {ScrollableItem} from '@terminal-core-lib/features/scrollable-row/directives/scrollable-item';
 
-export interface RibbonItem {
-  displayName?: string;
-  symbol: string;
-  exchange: string;
-  isFutures?: boolean;
-}
+import {DEFAULT_RIBBON_ITEMS, RIBBON_REFRESH_INTERVAL, RibbonItem} from '../../widget-settings.types';
 
 @Component({
   selector: 'ats-ribbon',
@@ -69,45 +65,24 @@ export class Ribbon implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly defaultIndices: RibbonItem[] = [
-    {
-      symbol: 'IMOEX',
-      exchange: 'MOEX'
-    },
-    {
-      symbol: 'RTSI',
-      exchange: 'MOEX'
-    },
-    {
-      displayName: 'USD/РУБ',
-      symbol: 'USD000UTSTOM',
-      exchange: 'MOEX'
-    },
-    {
-      displayName: 'CNY/РУБ',
-      symbol: 'CNYRUB_TOM',
-      exchange: 'MOEX'
-    },
-    {
-      displayName: 'Oil (Brent)',
-      symbol: 'BR',
-      exchange: 'MOEX',
-      isFutures: true
-    },
-    {
-      displayName: 'Gold',
-      symbol: 'GOLD',
-      isFutures: true,
-      exchange: 'MOEX'
-    }
-  ];
+  readonly refreshIntervalSec = input<number>(RIBBON_REFRESH_INTERVAL.defaultValue);
+
+  private readonly refreshConfig$ = toObservable(computed(() => {
+    const interval = this.refreshIntervalSec();
+    return {
+      items: this.displayItems() ?? DEFAULT_RIBBON_ITEMS,
+      intervalMs: (Number.isFinite(interval)
+        ? Math.min(RIBBON_REFRESH_INTERVAL.max, Math.max(RIBBON_REFRESH_INTERVAL.min, interval))
+        : RIBBON_REFRESH_INTERVAL.defaultValue) * 1000
+    };
+  }));
 
   ngOnInit(): void {
-    const displayItems = this.displayItems() ?? this.defaultIndices;
-    this.indices$ = of(null).pipe(
-      withRefresh(60000, this.applicationStatusService.isActive$),
-      switchMap(() => {
+    this.indices$ = this.refreshConfig$.pipe(
+      switchMap(config => of(config.items).pipe(withRefresh(config.intervalMs, this.applicationStatusService.isActive$))),
+      switchMap(displayItems => {
         const indices = displayItems.map(i => {
+          const displayName = i.displayName?.trim() ?? '';
           return this.getQuoteInfo(
             {
               symbol: (i.isFutures ?? false) ? this.getNextFuturesContract(i.symbol) : i.symbol,
@@ -115,14 +90,14 @@ export class Ribbon implements OnInit {
             }
           ).pipe(
             map(x => ({
-              name: i.displayName ?? i.symbol,
+              name: displayName.length > 0 ? displayName : i.symbol,
               value: x?.value ?? 0,
               changePercent: x?.percentChange ?? 0
             } as IndexDisplay))
           );
         });
 
-        return forkJoin(indices);
+        return indices.length > 0 ? forkJoin(indices) : of([]);
       }),
       takeUntilDestroyed(this.destroyRef)
     );

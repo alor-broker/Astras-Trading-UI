@@ -1,35 +1,41 @@
-<ats-widget-settings
+<ats-widget-settings-editor
+  (cancelClick)="requestClose()"
   (copyClick)="createWidgetCopy()"
   (saveClick)="updateSettings()"
   [canCopy]="canCopy"
   [canSave]="canSave"
   [showCopy]="showCopy"
+  [widgetInstance]="widgetInstance()"
 >
   <ng-container *transloco="let t">
-    <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
-      <nz-form-item>
-        <nz-form-label nzFor="instrument" nzRequired>{{ t('form.ticker.label') }}</nz-form-label>
-        <nz-form-control [nzErrorTip]="t('form.ticker.commonError')">
-          <ats-inline-instrument-search (instrumentSelected)="instrumentSelected($event)"
-                                        formControlName="instrument"/>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="exchange" nzRequired>{{ t('form.exchange.label') }}</nz-form-label>
-        <nz-form-control>
-          <input [value]="form.value.instrument?.exchange ?? ''" disabled nz-input type="text"/>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-collapse [nzBordered]="false" nzGhost>
-        <nz-collapse-panel [nzHeader]="t('advancedHeader')">
-          <nz-form-label nzFor="instrumentGroup">{{ t('form.instrumentGroup.label') }}</nz-form-label>
-          <nz-form-control [nzErrorTip]="t('form.instrumentGroup.commonError')">
-            <ats-instrument-board-select [instrument]="form.value.instrument ?? null"
-                                         [placeholder]="t('form.ticker.label')"
-                                         formControlName="instrumentGroup"/>
-          </nz-form-control>
-        </nz-collapse-panel>
-      </nz-collapse>
-    </form>
+    <ats-widget-settings-form [formGroup]="form">
+      <ats-widget-settings-form-item
+        [errorTip]="t('form.ticker.commonError')"
+        [label]="t('form.ticker.label')"
+        [required]="true"
+      >
+        <ats-inline-instrument-search
+          (instrumentSelected)="instrumentSelected($event)"
+          formControlName="instrument"
+        />
+      </ats-widget-settings-form-item>
+      <ats-widget-settings-form-item
+        [label]="t('form.exchange.label')"
+        [required]="true"
+        controlId="exchange"
+      >
+        <input [value]="form.controls.instrument.value?.exchange ?? ''" disabled id="exchange" nz-input type="text"/>
+      </ats-widget-settings-form-item>
+      <ats-widget-settings-form-item
+        [errorTip]="t('form.instrumentGroup.commonError')"
+        [label]="t('form.instrumentGroup.label')"
+      >
+        <ats-instrument-board-select
+          [instrument]="form.controls.instrument.value"
+          [placeholder]="t('form.ticker.label')"
+          formControlName="instrumentGroup"
+        />
+      </ats-widget-settings-form-item>
+    </ats-widget-settings-form>
   </ng-container>
-</ats-widget-settings>
+</ats-widget-settings-editor>

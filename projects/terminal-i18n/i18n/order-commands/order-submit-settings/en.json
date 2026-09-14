@@ -14,5 +14,12 @@
   "advancedHeader": "Advanced",
   "instrumentGroupLabel": "Trading mode",
   "instrumentGroupError": "Select trading mode",
-  "skipMarginOrderConfirmationLabel": "Allow trades that may result in an uncovered position (for low risk clients only)"
+  "skipMarginOrderConfirmationLabel": "Allow trades that may result in an uncovered position (for low risk clients only)",
+  "instrumentSettings": "Instrument",
+  "fastEditingSettings": "Quick order editing",
+  "workingVolumesSettings": "Working volumes",
+  "addDenomination": "Add denomination",
+  "removeDenomination": "Remove denomination {{index}}",
+  "addVolume": "Add volume",
+  "removeVolume": "Remove volume {{index}}"
 }

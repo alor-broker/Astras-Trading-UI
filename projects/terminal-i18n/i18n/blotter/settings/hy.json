@@ -22,5 +22,10 @@
   "showTradesLabel": "Ցույց տալ գործարքները",
   "showRepoTradesLabel": "Ցույց տալ ՌԵՊՈ գործարքները",
   "showHistoryTradesLabel": "Ցույց տալ գործարքների պատմությունը",
-  "showNotificationsLabel": "Ցույց տալ ծանուցումները"
+  "showNotificationsLabel": "Ցույց տալ ծանուցումները",
+  "generalGroupLabel": "Ընդհանուր",
+  "ordersGroupLabel": "Հայտեր",
+  "positionsGroupLabel": "Դիրքեր",
+  "tradesGroupLabel": "Գործարքներ",
+  "notificationsGroupLabel": "Ծանուցումներ"
 }
