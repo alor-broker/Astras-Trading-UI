@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  input,
   OnInit,
   ViewEncapsulation
 } from '@angular/core';
@@ -15,16 +16,6 @@ import {
   NzMarks,
   NzSliderComponent
 } from "ng-zorro-antd/slider";
-import {
-  NzColDirective,
-  NzRowDirective
-} from "ng-zorro-antd/grid";
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from "ng-zorro-antd/form";
 import {
   NzOptionComponent,
   NzSelectComponent
@@ -40,23 +31,22 @@ import {
   ColumnDisplaySettings,
   TableDisplaySettings
 } from '@terminal-core-lib/features/tables/types/table-display-settings.types';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
 
 @Component({
   selector: 'ats-admin-clients-settings',
   imports: [
-    NzColDirective,
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
     NzOptionComponent,
-    NzRowDirective,
     NzSelectComponent,
     ReactiveFormsModule,
     TranslocoDirective,
     NzSliderComponent,
-    WidgetSettings
+    WidgetSettingsEditor,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem
   ],
   templateUrl: './admin-clients-settings.html',
   styleUrl: './admin-clients-settings.less',
@@ -64,6 +54,8 @@ import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-set
   encapsulation: ViewEncapsulation.None
 })
 export class AdminClientsSettings extends WidgetSettingsBase<AdminClientsWidgetSettings> implements OnInit {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   readonly validation = {
     refreshIntervalSec: {
       min: 30,

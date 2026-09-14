@@ -62,11 +62,13 @@
 
 - `WidgetSkeleton` — общий скелет компонента виджета;
 - `WidgetHeader` и `WidgetHeaderInstrumentSwitch` — заголовок виджета и переключение инструмента;
-- `WidgetSettings` — оболочка компонента настроек виджета;
+- `WidgetSettingsEditor` — адаптивный редактор настроек виджета;
 - `WidgetBase` — базовый класс компонента виджета;
 - `WidgetSettingsBase` — базовый класс компонента настроек виджета.
 
 Пример виджета для ориентира: `projects/terminal-widgets-lib/src/widgets/orders-basket`.
+
+Шапку, основное содержимое и новый редактор настроек `WidgetSkeleton` передавай явно через TemplateRef-инпуты `[header]`, `[content]` и `[settingsEditorContent]`. Skeleton управляет состоянием открытия и lifecycle: создаёт settings-компонент только при открытых настройках и всегда уничтожает основной content на время редактирования. На desktop вместо content отображается placeholder, на mobile — inline-редактор.
 
 ## Структура папки виджета
 

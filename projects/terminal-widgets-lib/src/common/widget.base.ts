@@ -4,7 +4,6 @@
   input,
   InputSignal,
   OnInit,
-  signal,
   ChangeDetectionStrategy
 } from '@angular/core';
 import {WidgetSettingsService} from '@terminal-core-lib/features/widget-settings/services/widget-settings.service';
@@ -35,8 +34,6 @@ export abstract class WidgetBase<T extends WidgetSettings> implements Widget, On
 
   protected settings$!: Observable<T>;
 
-  protected readonly showSettings = signal(false);
-
   protected showBadge$!: Observable<boolean>;
 
   private readonly terminalSettingsService = inject(TerminalSettingsService);
@@ -52,8 +49,4 @@ export abstract class WidgetBase<T extends WidgetSettings> implements Widget, On
   }
 
   protected abstract createSettingsIfMissing(): void;
-
-  protected toggleSettings(): void {
-    this.showSettings.set(!this.showSettings());
-  }
 }

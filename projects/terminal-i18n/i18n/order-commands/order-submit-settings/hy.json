@@ -14,5 +14,12 @@
   "advancedHeader": "Ընդլայնված",
   "instrumentGroupLabel": "Առևտրի ռեժիմ",
   "instrumentGroupError": "Ընտրեք առևտրի ռեժիմ",
-  "skipMarginOrderConfirmationLabel": "Թույլատրել գործարքներ, որոնք կարող են հանգեցնել չապահովված դիրքի բացմանը (միայն ցածր ռիսկայնության հաճախորդների համար)"
+  "skipMarginOrderConfirmationLabel": "Թույլատրել գործարքներ, որոնք կարող են հանգեցնել չապահովված դիրքի բացմանը (միայն ցածր ռիսկայնության հաճախորդների համար)",
+  "instrumentSettings": "Գործիք",
+  "fastEditingSettings": "Հայտերի արագ խմբագրում",
+  "workingVolumesSettings": "Աշխատանքային ծավալներ",
+  "addDenomination": "Ավելացնել անվանական արժեք",
+  "removeDenomination": "Հեռացնել անվանական արժեքը {{index}}",
+  "addVolume": "Ավելացնել ծավալ",
+  "removeVolume": "Հեռացնել ծավալը {{index}}"
 }

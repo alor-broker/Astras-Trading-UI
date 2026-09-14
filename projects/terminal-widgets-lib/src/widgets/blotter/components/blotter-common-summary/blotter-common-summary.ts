@@ -4,7 +4,6 @@ import {
   inject,
   input,
   OnInit,
-  output,
   signal,
   ViewEncapsulation
 } from '@angular/core';
@@ -43,11 +42,7 @@ import {CommonSummaryView} from '@terminal-core-lib/features/portfolios/services
   encapsulation: ViewEncapsulation.None
 })
 export class BlotterCommonSummary implements OnInit {
-  readonly shouldShowSettings = input.required<boolean>();
-
   readonly guid = input.required<string>();
-
-  readonly shouldShowSettingsChange = output<boolean>();
 
   summary$: Observable<CommonSummaryView> = of();
 

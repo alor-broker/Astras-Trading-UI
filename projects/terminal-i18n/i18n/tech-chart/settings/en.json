@@ -33,6 +33,7 @@
   "allowCustomTimeframesWarning": "This option is implemented on the TradingView chart side. Some frames may not be supported or the data displayed may be obtained by combining data from smaller frames",
   "chartOrdersGroupLabel": "Orders management",
   "editWithoutConfirmationLabel": "Allow price edit without confirmation",
+  "otherGroupLabel": "Other",
   "lineMarkerPositionOptions": {
     "right": "Right",
     "middle": "Middle",

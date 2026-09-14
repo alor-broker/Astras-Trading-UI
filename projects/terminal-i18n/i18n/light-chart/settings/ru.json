@@ -1,4 +1,6 @@
 {
+  "instrumentSelectionHeader": "Инструмент",
+  "timeframesGroupLabel": "Таймфреймы",
   "tickerError": "Выберите тикер",
   "tickerLabel": "Тикер",
   "exchangeLabel": "Биржа",

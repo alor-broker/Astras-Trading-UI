@@ -1,0 +1,43 @@
+<ng-container *transloco="let t; scope: 'scalper-order-book/settings'">
+  @for (option of options().controls; track option; let i = $index) {
+    <div [formGroup]="option">
+      <ats-widget-settings-form-item
+        [label]="t('scalperOrderBookSettings.volumeLabel') + ' ' + (i + 1)"
+        [required]="true"
+        [controlId]="'volume-boundary-' + i"
+        [errorTip]="t('scalperOrderBookSettings.intervalError', validationOptions())"
+      >
+        <div class="d-flex align-items-center flex-gap-8">
+          <ats-input-number class="highlight-value" [allowDecimal]="false" formControlName="boundary" />
+          <button
+            type="button"
+            class="flex-shrink-0"
+            nz-button
+            nzType="dashed"
+            [attr.aria-label]="t('scalperOrderBookSettings.removeVolumeHighlight') + ' ' + (i + 1)"
+            [disabled]="options().disabled || options().length < 2"
+            (click)="removeClick.emit(i)"
+          >
+            <i nz-icon nzType="minus"></i>
+          </button>
+        </div>
+      </ats-widget-settings-form-item>
+      <ats-widget-settings-color-picker
+        [label]="t('scalperOrderBookSettings.colorLabel')"
+        [controlId]="'volume-color-' + i"
+        formControlName="color"
+      />
+    </div>
+  }
+  <button
+    type="button"
+    nz-button
+    nzType="dashed"
+    class="w-100"
+    [disabled]="!options().valid"
+    (click)="addClick.emit()"
+  >
+    <i nz-icon nzType="plus"></i>
+    {{ t('scalperOrderBookSettings.addVolumeHighlight') }}
+  </button>
+</ng-container>
