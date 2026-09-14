@@ -1,3 +1,32 @@
-﻿{
-  "dialogTitle": "Ribbon settings"
+{
+  "addInstrument": "Add instrument",
+  "instrumentsGroup": "Instruments",
+  "generalGroup": "General",
+  "layout": "Data layout",
+  "layouts": {
+    "singleRow": "Single row",
+    "2row": "Two rows"
+  },
+  "refreshInterval": "Refresh interval: {{value}} sec.",
+  "refreshIntervalError": "Enter an interval from {{min}} to {{max}} seconds.",
+  "instrument": "Instrument",
+  "futures": "Futures",
+  "futuresCode": "Futures base code",
+  "exchange": "Exchange",
+  "selectExchange": "Select an exchange",
+  "futuresPlaceholder": "For example, BR or GOLD",
+  "futuresHelp": "Enter the base code without expiry, preserving letter case. A quarterly contract is selected by calendar; this mode does not support monthly series.",
+  "invalidCode": "Enter a base code starting with a Latin letter, followed by Latin letters or digits, without spaces or expiry.",
+  "add": "Add",
+  "duplicate": "This instrument has already been added.",
+  "tracked": "Tracked instruments",
+  "restore": "Restore defaults",
+  "displayName": "Display name (defaults to ticker)",
+  "displayNameFor": "Display name for {{symbol}}",
+  "moveUp": "Move {{symbol}} up",
+  "moveDown": "Move {{symbol}} down",
+  "remove": "Remove {{symbol}}",
+  "empty": "Add an instrument to track.",
+  "dialogTitle": "Ribbon settings",
+  "removeWidget": "Remove ribbon"
 }

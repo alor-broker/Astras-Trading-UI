@@ -42,6 +42,9 @@ export class WidgetSkeleton {
 
   readonly showContentScroll = input(false);
 
+  /** Allow the dashboard to start dragging from regular content, never from settings. */
+  readonly allowContentDrag = input(false);
+
   protected readonly isMobile = toSignal(
     inject(DeviceService).deviceInfo$.pipe(map(info => info.isMobile)),
     {initialValue: false}

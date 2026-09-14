@@ -1,32 +1,62 @@
 ats-ribbon-widget {
+  display: block;
+  // hasZeroPaddings reserves a bottom resize handle; include it when centering the row.
+  height: calc(100% + var(--ats-gridster-item-resizable-handler-width));
+
+  ats-widget-skeleton {
+    // The single-line ribbon must fit its 25px dashboard slot.
+    border-width: 0;
+
+    > .widget-header {
+      padding: 0;
+    }
+
+    > .widget-content.hide-scroll {
+      display: flex;
+      align-items: center;
+      min-height: 0;
+    }
+  }
+
   .widget-body {
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding-top: 10px;
 
     .content {
       flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
       overflow: hidden;
+
+      ats-ribbon {
+        display: block;
+        width: 100%;
+      }
     }
 
     .manage-block {
-      margin-right: 5px;
+      margin-right: 12px;
       display: flex;
       flex-wrap: nowrap;
+      align-items: center;
+      flex-shrink: 0;
+      gap: 4px;
 
       button {
-        line-height: normal;
-        height: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        line-height: 1;
         border: none;
         // value should be greater then value of .gridster-item-resizable-handler (2)
         z-index: 10;
 
-        &:first-child {
-          margin-left: -5px;
-        }
       }
     }
   }
