@@ -1,23 +1,24 @@
-import {AsyncPipe} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
-  model,
-  signal,
+  linkedSignal,
+  TemplateRef,
+  viewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzModalComponent} from 'ng-zorro-antd/modal';
 import {map} from 'rxjs';
 import {DeviceService} from '@terminal-core-lib/common/services/device.service';
-import {SUBMIT_ORDER_CONTEXT} from '@terminal-core-lib/features/orders/types/submit-order-context.types';
+import {injectFloatingWindowRef} from '@terminal-core-lib/features/floating-window/services/floating-window-ref';
+import {FloatingWindowTemplateContext} from '@terminal-core-lib/features/floating-window/types/floating-window.types';
+import {SignalDetailsWindowData} from '../../types/signal-details-window.types';
 import {SignalOrderHelper} from '../../utils/signal-order.helper';
-import {SignalRowViewModel} from '../../types/ai-signals-view.types';
 import {SignalSummaryViewHelper} from '../../utils/signal-summary-view.helper';
 import {SignalDetailsService} from '../../services/signal-details.service';
 import {signalDetailsProviders} from '../../services/signal-details.providers';
@@ -29,11 +30,9 @@ import {SignalDisclaimer} from '../signal-disclaimer/signal-disclaimer';
   selector: 'ats-signal-details-dialog',
   providers: signalDetailsProviders,
   imports: [
-    AsyncPipe,
     TranslocoDirective,
     NzButtonComponent,
     NzIconDirective,
-    NzModalComponent,
     SignalAnalysisDetails,
     SignalDisclaimer,
     SignalSummary
@@ -44,19 +43,31 @@ import {SignalDisclaimer} from '../signal-disclaimer/signal-disclaimer';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignalDetailsDialog {
-  readonly displaySignal = model<SignalRowViewModel | null>(null);
+  private readonly windowRef = injectFloatingWindowRef<SignalDetailsWindowData>();
+  readonly displaySignal = computed(() => this.windowRef.closed() ? null : this.windowRef.data().signal);
 
-  private readonly expandedSignal = signal<SignalRowViewModel | null>(null);
+  private readonly title = viewChild<TemplateRef<FloatingWindowTemplateContext<SignalDetailsWindowData>>>('title');
+  private readonly footer = viewChild<TemplateRef<FloatingWindowTemplateContext<SignalDetailsWindowData>>>('footer');
 
-  private readonly submitOrderContext = inject(SUBMIT_ORDER_CONTEXT, {optional: true});
+  private readonly analysisExpanded = linkedSignal({source: this.displaySignal, computation: () => false});
+
+  private readonly submitOrderContext = computed(() => this.windowRef.data().submitOrderContext);
 
   private readonly orderParams = computed(() => SignalOrderHelper.toSubmitOrderParams(this.displaySignal()));
 
-  protected readonly canTrade = computed(() => this.submitOrderContext != null && this.orderParams() != null);
+  protected readonly canTrade = computed(() => this.submitOrderContext() != null && this.orderParams() != null);
 
-  protected readonly isMobile$ = inject(DeviceService).deviceInfo$.pipe(
+  private readonly isMobile = toSignal(inject(DeviceService).deviceInfo$.pipe(
     map(deviceInfo => deviceInfo.isMobile)
-  );
+  ), {initialValue: false});
+
+  constructor() {
+    effect(() => {
+      const title = this.title();
+      const footer = this.footer();
+      this.windowRef.update({title, footer: footer ?? null, fullScreen: this.isMobile()});
+    });
+  }
 
   protected readonly details = toSignal(
     inject(SignalDetailsService).getDetails(toObservable(this.displaySignal)),
@@ -68,25 +79,26 @@ export class SignalDetailsDialog {
   protected readonly analysisDetailsVisible = computed(() => {
     const displaySignal = this.displaySignal();
 
-    return displaySignal != null && this.expandedSignal() === displaySignal;
+    return displaySignal != null && this.analysisExpanded();
   });
 
   protected showAnalysisDetails(): void {
-    this.expandedSignal.set(this.displaySignal());
+    this.analysisExpanded.set(true);
   }
 
   protected submitOrder(): void {
     const params = this.orderParams();
-    if (params == null || this.submitOrderContext == null) {
+    const context = this.submitOrderContext();
+    if (params == null || context == null) {
       return;
     }
 
     this.close();
-    this.submitOrderContext.submitOrder(params);
+    context.submitOrder(params);
   }
 
   protected close(): void {
-    this.expandedSignal.set(null);
-    this.displaySignal.set(null);
+    this.analysisExpanded.set(false);
+    this.windowRef.close();
   }
 }

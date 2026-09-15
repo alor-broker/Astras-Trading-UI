@@ -1,18 +1,5 @@
 <ng-container *transloco="let td; scope: 'ai-signals/details'">
   @let vm = details();
-  @let isMobile = (isMobile$ | async) === true;
-  <nz-modal (nzOnCancel)="close()"
-            [nzAutofocus]="null"
-            [nzClassName]="isMobile
-              ? 'ats-ai-signal-details-dialog full-screen'
-              : 'ats-ai-signal-details-dialog'"
-            [nzContent]="content"
-            [nzFooter]="null"
-            [nzMaskClosable]="true"
-            [nzTitle]="title"
-            [nzVisible]="displaySignal() !== null"
-            [nzWidth]="isMobile ? '100vw' : '700px'"
-  />
 
   <ng-template #title>
     @if (vm != null) {
@@ -25,7 +12,6 @@
     }
   </ng-template>
 
-  <ng-template #content>
     @if (vm != null) {
       <div class="dialog-content d-flex flex-column flex-gap-10">
         @if (hasSummary()) {
@@ -49,6 +35,10 @@
         }
       </div>
 
+    }
+
+  <ng-template #footer>
+    @if (vm != null) {
       <div class="dialog-actions d-flex">
         <ats-signal-disclaimer/>
         @if (canTrade()) {

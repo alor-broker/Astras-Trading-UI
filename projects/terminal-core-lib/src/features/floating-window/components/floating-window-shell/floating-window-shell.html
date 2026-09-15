@@ -1,0 +1,48 @@
+<ng-container *transloco="let t; scope: 'floating-window'">
+  <header #header class="window-header"
+          [class.movable]="options().draggable !== false && options().fullScreen !== true"
+          [attr.tabindex]="options().draggable !== false && options().fullScreen !== true ? 0 : null"
+          [attr.aria-label]="t('floatingWindow.move')"
+          (pointerdown)="startMove($event)" (keydown)="onGeometryKey($event)">
+    <div class="window-title" [id]="titleId">
+      @if (titleTemplate(); as title) {
+        <ng-container [ngTemplateOutlet]="title" [ngTemplateOutletContext]="context()"/>
+      } @else {
+        {{ titleText() || t('floatingWindow.title') }}
+      }
+    </div>
+    @if (options().closable !== false) {
+      <button class="window-close" type="button" [attr.aria-label]="t('floatingWindow.close')"
+              [disabled]="ref.pending() !== null || options().cancelDisabled === true || options().cancelLoading === true"
+              (click)="ref.requestAction(actions.Cancel)">×</button>
+    }
+  </header>
+  <div class="window-body">
+    @if (contentTemplate; as template) {
+      <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context()"/>
+    } @else if (contentComponent; as component) {
+      <ng-container [ngComponentOutlet]="component" [ngComponentOutletInjector]="injector"/>
+    }
+  </div>
+  @if (options().footer !== null) {
+    <footer class="window-footer">
+      @if (options().footer; as footer) {
+        <ng-container [ngTemplateOutlet]="footer" [ngTemplateOutletContext]="context()"/>
+      } @else {
+        <button nz-button type="button" [disabled]="ref.pending() !== null || options().cancelDisabled === true"
+                [nzLoading]="options().cancelLoading === true || ref.pending() === actions.Cancel"
+                (click)="ref.requestAction(actions.Cancel)">{{ options().cancelText ?? t('floatingWindow.cancel') }}</button>
+        <button nz-button nzType="primary" type="button" [disabled]="ref.pending() !== null || options().okDisabled === true"
+                [nzLoading]="options().okLoading === true || ref.pending() === actions.Ok"
+                (click)="ref.requestAction(actions.Ok)">{{ options().okText ?? t('floatingWindow.ok') }}</button>
+      }
+    </footer>
+  }
+  @if (options().resizable === true && options().fullScreen !== true) {
+    @for (edge of edges; track edge) {
+      <div class="resize-handle" [class]="'resize-handle resize-' + edge" tabindex="0" role="button"
+           [attr.aria-label]="t('floatingWindow.resize.' + edge)"
+           (pointerdown)="startResize($event, edge)" (keydown)="onGeometryKey($event, edge)"></div>
+    }
+  }
+</ng-container>

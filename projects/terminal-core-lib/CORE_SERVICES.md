@@ -11,6 +11,8 @@
 
 ## Приложение и инфраструктура
 
+`FloatingWindowService` (`features/floating-window/services/floating-window.service.ts`) — общий реестр открытых немодальных окон, ограничения групп, активация и очистка. Состояние каждого окна принадлежит `FloatingWindowRef`; параметры и примеры описаны в [README](src/features/floating-window/README.md). Используйте его для плавающих окон вместо нового глобального UI state service.
+
 | Сервис | Путь | Назначение | Когда использовать |
 | --- | --- | --- | --- |
 | `ApplicationStatusService` | `projects/terminal-core-lib/src/common/services/application-status.service.ts` | Определяет, активно ли приложение | Для периодических обновлений, особенно на мобильных устройствах, когда приложение может быть свернуто |

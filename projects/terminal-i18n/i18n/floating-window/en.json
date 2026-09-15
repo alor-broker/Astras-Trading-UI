@@ -1,0 +1,17 @@
+{
+  "title": "Window",
+  "close": "Close",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "move": "Move window with arrow keys; Shift uses a 1 pixel step",
+  "resize": {
+    "n": "Resize top edge with arrow keys",
+    "s": "Resize bottom edge with arrow keys",
+    "e": "Resize right edge with arrow keys",
+    "w": "Resize left edge with arrow keys",
+    "ne": "Resize top right corner with arrow keys",
+    "nw": "Resize top left corner with arrow keys",
+    "se": "Resize bottom right corner with arrow keys",
+    "sw": "Resize bottom left corner with arrow keys"
+  }
+}
