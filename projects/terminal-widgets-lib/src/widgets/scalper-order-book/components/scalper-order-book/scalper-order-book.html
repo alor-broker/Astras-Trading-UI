@@ -8,6 +8,13 @@
     </div>
     <div>
       <ats-current-position-panel [guid]="guid()" [hideTooltips]="(hideTooltips$ | async) ?? false"/>
+      @if (showMarginWarning$ | async) {
+        <ng-container *transloco="let t; scope: 'order-commands'">
+          <div class="warning-color p-2" [style.font-size.em]="0.85" role="status">
+            {{ t('orderCommands.marginOrderWarning') }}
+          </div>
+        </ng-container>
+      }
     </div>
   </div>
 </ng-container>

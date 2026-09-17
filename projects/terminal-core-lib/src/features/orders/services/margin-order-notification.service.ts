@@ -106,7 +106,7 @@ export class MarginOrderConfirmationService {
     return of(null);
   }
 
-  private shouldShowNotification(targetPortfolio: TargetPortfolio): Observable<boolean | null> {
+  shouldShowNotification(targetPortfolio: TargetPortfolio): Observable<boolean | null> {
     return this.httpClient.get<PortfolioRisk>(
       `${this.baseUrl}/${targetPortfolio.exchange}/${targetPortfolio.portfolio}/risk`,
       {

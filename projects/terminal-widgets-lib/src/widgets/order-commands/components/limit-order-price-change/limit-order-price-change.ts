@@ -10,6 +10,7 @@ import {
   combineLatest,
   Observable,
   shareReplay,
+  switchMap,
   take,
   withLatestFrom
 } from "rxjs";
@@ -81,6 +82,13 @@ export class LimitOrderPriceChange implements OnInit {
   private readonly orderCommandService = inject(ORDER_COMMAND_SERVICE_TOKEN);
 
   private readonly marginOrderConfirmationService = inject(MarginOrderConfirmationService);
+
+  protected readonly showMarginWarning$ = toObservable(this.currentPortfolio).pipe(
+    switchMap(portfolio => this.marginOrderConfirmationService.shouldShowNotification(portfolio).pipe(
+      map(shouldShowNotification => shouldShowNotification === true),
+      startWith(false)
+    ))
+  );
 
   get sortedSteps(): number[] {
     return [...this.steps()].sort((a, b) => a - b);

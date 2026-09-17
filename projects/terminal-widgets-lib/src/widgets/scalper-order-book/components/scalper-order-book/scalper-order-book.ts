@@ -12,12 +12,17 @@ import {
   BehaviorSubject,
   distinctUntilChanged,
   Observable,
-  shareReplay
+  of,
+  shareReplay,
+  startWith,
+  switchMap
 } from 'rxjs';
 import {map} from "rxjs/operators";
 import {ScalperOrderBookDataProvider} from "../../services/scalper-order-book-data-provider.service";
 import {LetDirective} from '@ngrx/component';
 import {AsyncPipe} from '@angular/common';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {MarginOrderConfirmationService} from '@terminal-core-lib/features/orders/services/margin-order-notification.service';
 import {ScalperCommandProcessorService} from "../../services/scalper-command-processor.service";
 import {CancelOrdersCommand} from "../../commands/cancel-orders-command";
 import {ClosePositionByMarketCommand} from "../../commands/close-position-by-market-command";
@@ -69,6 +74,7 @@ export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderB
     LetDirective,
     ScalperOrderBookBody,
     CurrentPositionPanel,
+    TranslocoDirective,
     AsyncPipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -87,7 +93,11 @@ export class ScalperOrderBook implements ScalperOrderBookSharedContext, OnInit, 
 
   hideTooltips$!: Observable<boolean>;
 
+  protected showMarginWarning$!: Observable<boolean>;
+
   private readonly dataContextService = inject(ScalperOrderBookDataProvider);
+
+  private readonly marginOrderConfirmationService = inject(MarginOrderConfirmationService);
 
   setScaleFactor(value: number): void {
     this.scaleFactor$.next(value);
@@ -113,6 +123,21 @@ export class ScalperOrderBook implements ScalperOrderBookSharedContext, OnInit, 
       .pipe(
         map(s => s.hideTooltips ?? false)
       );
+
+    this.showMarginWarning$ = settings$.pipe(
+      map(settings => settings.enableMouseClickSilentOrders && settings.allowMargin === true),
+      distinctUntilChanged(),
+      switchMap(enabled => enabled
+        ? this.dataContextService.getOrderBookPortfolio().pipe(
+          distinctUntilChanged((previous, current) => previous.portfolio === current.portfolio && previous.exchange === current.exchange),
+          switchMap(portfolio => this.marginOrderConfirmationService.shouldShowNotification(portfolio).pipe(
+            map(shouldShowNotification => shouldShowNotification === true),
+            startWith(false)
+          ))
+        )
+        : of(false)
+      )
+    );
   }
 
   setWorkingVolume(value: number): void {
