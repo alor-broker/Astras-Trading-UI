@@ -97,7 +97,8 @@ export class FloatingWindowService {
   }
 
   closeAll(): void {
-    for (const ref of [...this.windows.keys()]) {
+    // Restore focus through the window stack while its previous targets still exist.
+    for (const ref of [...this.windows.keys()].reverse()) {
       ref.close();
     }
   }

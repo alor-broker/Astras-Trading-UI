@@ -19,7 +19,7 @@ import {FloatingWindowAction, FloatingWindowEdge, FloatingWindowRect} from '../.
   host: {
     '[class]': 'options().panelClass ?? ""',
     '[class.full-screen]': 'options().fullScreen === true',
-    '[class.highlighted]': 'highlighted()',
+    '[class.highlighted]': 'highlighted() && options().highlightOnActivate !== false',
     '[style.left.px]': 'rect()?.x ?? 0',
     '[style.top.px]': 'rect()?.y ?? 0',
     '[style.width]': 'width()',
@@ -111,6 +111,9 @@ export class FloatingWindowShell {
     });
     this.ref.activated$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.element.focus({preventScroll: true});
+      if (this.options().highlightOnActivate === false) {
+        return;
+      }
       this.highlighted.set(true);
       for (const animation of this.element.getAnimations()) {
         if (animation instanceof CSSAnimation && animation.animationName === 'ats-floating-window-highlight') {

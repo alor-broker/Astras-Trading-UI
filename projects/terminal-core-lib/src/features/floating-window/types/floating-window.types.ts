@@ -58,6 +58,8 @@ export interface FloatingWindowOptions<D = unknown, R = unknown> {
   fullScreen?: boolean;
   closable?: boolean;
   keyboard?: boolean;
+  /** Highlight the border on activation. Enabled by default. */
+  highlightOnActivate?: boolean;
   okText?: string;
   cancelText?: string;
   okDisabled?: boolean;

@@ -205,4 +205,27 @@ describe('FloatingWindowService', () => {
     opener.remove();
     outside.remove();
   });
+
+  it('should restore the original opener focus through multiple windows when closing all', () => {
+    const opener = document.createElement('button');
+    document.body.appendChild(opener);
+    try {
+      opener.focus();
+      service.open(WindowTestContent, config);
+      const firstInput = document.createElement('input');
+      overlay.created[0].host.appendChild(firstInput);
+      firstInput.focus();
+      service.open(WindowTestContent, config);
+      const secondInput = document.createElement('input');
+      overlay.created[1].host.appendChild(secondInput);
+      secondInput.focus();
+
+      service.closeAll();
+
+      expect(document.activeElement).toBe(opener);
+      expect(overlay.created.every(window => !window.host.isConnected)).toBe(true);
+    } finally {
+      opener.remove();
+    }
+  });
 });

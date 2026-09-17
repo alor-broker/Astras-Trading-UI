@@ -37,6 +37,7 @@ export class SignalDetailsWindowService {
       id: 'ai-signal-details', groupId: 'ai-signal-details', policy: FloatingWindowPolicy.OnePerGroup,
       data: {signal: row, submitOrderContext: this.submitOrderContext},
       title: row.ticker, footer: null, width: 700, draggable: true, resizable: true,
+      highlightOnActivate: false,
       panelClass: 'ats-ai-signal-details-dialog', injector: this.injector, owner: this.owner
     }));
   }
