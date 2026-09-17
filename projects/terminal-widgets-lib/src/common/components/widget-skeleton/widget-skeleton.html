@@ -7,7 +7,7 @@
 
 @if (!shouldHideWidgetContent()) {
   <div
-    (mousedown)="$event.stopPropagation()"
+    (mousedown)="allowContentDrag() ? null : $event.stopPropagation()"
     [class.hide-scroll]="!showContentScroll()"
     [class.show-scroll]="showContentScroll()"
     class="widget-content"

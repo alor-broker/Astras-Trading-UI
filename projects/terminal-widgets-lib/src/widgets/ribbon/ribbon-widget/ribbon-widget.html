@@ -1,19 +1,34 @@
-@if (settings$ | async; as settings) {
-  @if (isBlockWidget()) {
-    <div class="blocked-widget-overlay"></div>
+<ng-container *transloco="let t; scope: 'ribbon/settings'">
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton #skeleton [header]="headerRef" [content]="contentRef"
+                         [allowContentDrag]="true"
+                         [isBlockWidget]="isBlockWidget()" [settingsEditorContent]="settingsRef">
+      <ng-template #headerRef/>
+      <ng-template #contentRef>
+        <div class="widget-body">
+          @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
+          @if (!isDashboardLocked) {
+            <div (mousedown)="$event.stopPropagation()" class="manage-block">
+              <button (click)="removeWidget($event)" nz-button nzSize="small" type="button"
+                      [attr.aria-label]="t('ribbonSettings.removeWidget')">
+                <i [nzTheme]="'outline'" nz-icon nzType="close-circle"></i>
+              </button>
+              <button (click)="skeleton.toggleSettings()" nz-button nzSize="small" type="button"
+                      [attr.aria-label]="t('ribbonSettings.dialogTitle')">
+                <i nz-icon nzType="setting"></i>
+              </button>
+            </div>
+          }
+          <div class="content">
+            <ats-ribbon [displayItems]="settings.displayItems ?? null" [layout]="settings.layout ?? defaultLayout"
+                        [refreshIntervalSec]="settings.refreshIntervalSec ?? defaultRefreshIntervalSec"/>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-ribbon-settings [guid]="guid" [widgetInstance]="widgetInstance()"
+                             (closeRequested)="skeleton.closeSettings()"/>
+      </ng-template>
+    </ats-widget-skeleton>
   }
-  <div class="widget-body">
-    @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
-    @if (!isDashboardLocked) {
-      <div (mousedown)="$event.stopPropagation()" class="manage-block">
-        <button (click)="removeWidget($event)" nz-button nzSize="small">
-          <i [nzTheme]="'outline'" nz-icon nzType="close-circle"></i>
-        </button>
-      </div>
-    }
-    <div class="content">
-      <ats-ribbon [displayItems]="settings.displayItems ?? null"
-      />
-    </div>
-  </div>
-}
+</ng-container>

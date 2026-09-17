@@ -3,6 +3,7 @@ import {
   Component,
   OnDestroy,
   output,
+  signal,
   viewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -47,6 +48,7 @@ class LifecycleProbe implements OnDestroy {
   ],
   template: `
     <ats-widget-skeleton
+      [allowContentDrag]="allowContentDrag()"
       [content]="contentRef"
       [header]="headerRef"
       [isBlockWidget]="false"
@@ -63,6 +65,7 @@ class LifecycleProbe implements OnDestroy {
   encapsulation: ViewEncapsulation.None
 })
 class TestHost {
+  readonly allowContentDrag = signal(false);
   readonly widgetSkeleton = viewChild.required(WidgetSkeleton);
 
   destroyCount = 0;
@@ -101,6 +104,31 @@ describe('WidgetSkeleton', () => {
 
   afterEach(() => {
     deviceInfo$.complete();
+  });
+
+  it('should allow dragging from content only when enabled and always isolate settings', () => {
+    const fixture = TestBed.createComponent(TestHost);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const onMouseDown = vi.fn();
+    host.addEventListener('mousedown', onMouseDown);
+
+    host.querySelector('ats-lifecycle-probe')!.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}));
+
+    expect(onMouseDown).not.toHaveBeenCalled();
+
+    fixture.componentInstance.allowContentDrag.set(true);
+    fixture.detectChanges();
+    host.querySelector('ats-lifecycle-probe')!.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}));
+
+    expect(onMouseDown).toHaveBeenCalledTimes(1);
+
+    fixture.componentInstance.widgetSkeleton().toggleSettings();
+    fixture.detectChanges();
+    host.querySelector('.settings')!.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}));
+
+    expect(onMouseDown).toHaveBeenCalledTimes(1);
+    host.removeEventListener('mousedown', onMouseDown);
   });
 
   it('should own the lifecycle of regular content while keeping the header rendered', () => {
