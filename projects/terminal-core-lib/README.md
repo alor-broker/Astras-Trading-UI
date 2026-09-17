@@ -107,6 +107,8 @@ Feature должна объединять файлы одной функцион
 
 ## Связанные документы
 
+- [FloatingWindow](src/features/floating-window/README.md) — немодальные плавающие окна, сервис открытия, декларативный API и правила владения.
+
 - `AGENTS.md` — общие правила для AI агентов.
 - [STATE_MANAGEMENT.md](../../STATE_MANAGEMENT.md) — правила выбора механизма состояния.
 - `projects/terminal-core-lib/CORE_SERVICES.md` — каталог ключевых сервисов.

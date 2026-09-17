@@ -1,33 +1,22 @@
-@import 'scrollable';
-
-.ats-ai-signal-details-dialog {
-  max-width: calc(100vw - 16px);
-
-  .ant-modal-content .ant-modal-body {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+ats-floating-window-shell.ats-ai-signal-details-dialog {
+  .window-body {
     padding-bottom: 6px;
-
-    .dialog-content {
-      // Nested analysis tabs must not take over scrolling from the dialog body.
-      .scrollable(var(--ats-scrollbar-color));
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-x: hidden;
-    }
 
     .ant-tabs-content-holder {
       overflow: visible;
     }
 
+  }
+
+  .window-footer {
+    padding: 8px 24px 12px;
+
     .dialog-actions {
       flex-direction: column;
       align-items: stretch;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       gap: 10px;
       min-width: 0;
-      margin-top: 8px;
       padding-top: 8px;
       border-top: 1px solid var(--ats-border-color-split);
 
@@ -42,7 +31,7 @@
     }
   }
 
-  .ant-modal-title {
+  .window-title {
     margin-right: 10px;
 
     .title-date {
@@ -76,7 +65,7 @@
 }
 
 @media (max-width: 480px) {
-  .ats-ai-signal-details-dialog .ant-modal-content .ant-modal-body .dialog-actions {
+  ats-floating-window-shell.ats-ai-signal-details-dialog .window-footer .dialog-actions {
     gap: 20px;
 
     > button {

@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   inject,
   input,
@@ -56,7 +55,8 @@ import {
 } from '../../types/ai-signals-view.types';
 import {TickerListManager} from '../ticker-list-manager/ticker-list-manager';
 import {SignalListItem} from '../signal-list-item/signal-list-item';
-import {SignalDetailsDialog} from '../signal-details-dialog/signal-details-dialog';
+import {SignalDetailsWindowService} from '../../services/signal-details-window.service';
+import {signalDetailsWindowProviders} from '../../services/signal-details-window.providers';
 import {SignalInstrumentKey} from '../../services/ai-signals-service.types';
 
 interface ContentState {
@@ -66,6 +66,7 @@ interface ContentState {
 
 @Component({
   selector: 'ats-ai-signals-content',
+  providers: signalDetailsWindowProviders,
   imports: [
     TranslocoDirective,
     AsyncPipe,
@@ -76,8 +77,7 @@ interface ContentState {
     NzIconDirective,
     NzTooltipDirective,
     TickerListManager,
-    SignalListItem,
-    SignalDetailsDialog
+    SignalListItem
   ],
   templateUrl: './ai-signals-content.html',
   styleUrl: './ai-signals-content.less',
@@ -98,9 +98,9 @@ export class AiSignalsContent implements OnInit {
 
   protected readonly lastUpdatedAt = signal<Date | null>(null);
 
-  protected readonly selectedSignal = signal<SignalRowViewModel | null>(null);
+  private readonly detailsWindow = inject(SignalDetailsWindowService);
 
-  protected readonly isDetailsOpen = computed(() => this.selectedSignal() != null);
+  protected readonly isDetailsOpen = this.detailsWindow.isOpen;
 
   private readonly widgetLocalStateService = inject(WidgetLocalStateService);
 
@@ -164,7 +164,7 @@ export class AiSignalsContent implements OnInit {
 
   protected openDetails(row: SignalRowViewModel): void {
     if (AiSignalsViewModelHelper.canOpenDetails(row)) {
-      this.selectedSignal.set(row);
+      this.detailsWindow.open(row);
     }
   }
 
