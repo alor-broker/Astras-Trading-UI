@@ -15,6 +15,7 @@ import {
 } from "@angular/core";
 import {
   debounceTime,
+  defaultIfEmpty,
   map,
   startWith
 } from "rxjs/operators";
@@ -288,7 +289,7 @@ export class OrdersDisplayExtension extends BaseExtension {
               return;
             }
 
-            this.editLimitOrderPrice(order, newPrice);
+            this.editLimitOrderPrice(order, newPrice, () => orderLineAdapter.setPrice(order.price));
           } else {
             const params = {
               ...getEditCommand(),
@@ -354,7 +355,7 @@ export class OrdersDisplayExtension extends BaseExtension {
               return;
             }
 
-            this.editStopOrderPrice(order, newPrice);
+            this.editStopOrderPrice(order, newPrice, () => orderLineAdapter.setPrice(order.triggerPrice));
           } else {
             const params = {
               ...getEditCommand(),
@@ -383,7 +384,7 @@ export class OrdersDisplayExtension extends BaseExtension {
     }
   }
 
-  private editLimitOrderPrice(order: Order, newPrice: number): void {
+  private editLimitOrderPrice(order: Order, newPrice: number, cancelCallback: () => void): void {
     this.orderCommandService.submitLimitOrderEdit(
       {
         orderId: order.id,
@@ -395,11 +396,16 @@ export class OrdersDisplayExtension extends BaseExtension {
       },
       order.ownedPortfolio
     ).pipe(
-      take(1)
-    ).subscribe();
+      take(1),
+      defaultIfEmpty(null)
+    ).subscribe(result => {
+      if (result === null) {
+        cancelCallback();
+      }
+    });
   }
 
-  private editStopOrderPrice(order: StopOrder, newPrice: number): void {
+  private editStopOrderPrice(order: StopOrder, newPrice: number, cancelCallback: () => void): void {
     const editOrder: StopMarketOrderEdit = {
       orderId: order.id,
       side: order.side,
@@ -415,8 +421,13 @@ export class OrdersDisplayExtension extends BaseExtension {
         editOrder,
         order.ownedPortfolio
       ).pipe(
-        take(1)
-      ).subscribe();
+        take(1),
+        defaultIfEmpty(null)
+      ).subscribe(result => {
+        if (result === null) {
+          cancelCallback();
+        }
+      });
 
       return;
     }
@@ -435,8 +446,13 @@ export class OrdersDisplayExtension extends BaseExtension {
         },
         order.ownedPortfolio
       ).pipe(
-        take(1)
-      ).subscribe();
+        take(1),
+        defaultIfEmpty(null)
+      ).subscribe(result => {
+        if (result === null) {
+          cancelCallback();
+        }
+      });
     }
   }
 }

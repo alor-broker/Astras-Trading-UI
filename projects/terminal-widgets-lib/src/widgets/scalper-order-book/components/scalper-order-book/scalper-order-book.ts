@@ -125,7 +125,7 @@ export class ScalperOrderBook implements ScalperOrderBookSharedContext, OnInit, 
       );
 
     this.showMarginWarning$ = settings$.pipe(
-      map(settings => settings.enableMouseClickSilentOrders && settings.allowMargin === true),
+      map(settings => (settings.enableMouseClickSilentOrders || !settings.disableHotkeys) && settings.allowMargin === true),
       distinctUntilChanged(),
       switchMap(enabled => enabled
         ? this.dataContextService.getOrderBookPortfolio().pipe(
