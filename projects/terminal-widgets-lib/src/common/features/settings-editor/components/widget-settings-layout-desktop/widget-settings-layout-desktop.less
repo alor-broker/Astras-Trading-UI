@@ -1,0 +1,16 @@
+@import '../../styles/widget-settings-layout.mixins.less';
+
+ats-widget-settings-layout-desktop {
+  display: contents;
+
+  .layout {
+    .widget-settings-layout();
+    min-height: min(392px, calc(80vh - 48px));
+    max-height: calc(80vh - 48px);
+
+    .body {
+      flex-direction: row;
+      gap: 12px;
+    }
+  }
+}

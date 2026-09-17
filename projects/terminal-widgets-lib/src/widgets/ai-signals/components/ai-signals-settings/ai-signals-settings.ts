@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  input,
   ViewEncapsulation
 } from '@angular/core';
 import {Observable} from 'rxjs';
@@ -14,10 +15,12 @@ import {
   NzMarks,
   NzSliderComponent
 } from 'ng-zorro-antd/slider';
-import {NzFormModule} from 'ng-zorro-antd/form';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.base';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
 import {
   AiSignalsWidgetSettings,
   defaultAiSignalsWidgetSettings
@@ -28,15 +31,18 @@ import {
   imports: [
     TranslocoDirective,
     ReactiveFormsModule,
-    NzFormModule,
     NzSliderComponent,
-    WidgetSettings
+    WidgetSettingsEditor,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem
   ],
   templateUrl: './ai-signals-settings.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiSignalsSettings extends WidgetSettingsBase<AiSignalsWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   readonly validationOptions = {
     refreshIntervalSec: {
       min: 30,
@@ -53,7 +59,7 @@ export class AiSignalsSettings extends WidgetSettingsBase<AiSignalsWidgetSetting
 
   private readonly formBuilder = inject(FormBuilder);
 
-  form = this.formBuilder.group({
+  readonly form = this.formBuilder.group({
     refreshIntervalSec: this.formBuilder.nonNullable.control(
       defaultAiSignalsWidgetSettings.refreshIntervalSec,
       {
@@ -80,7 +86,7 @@ export class AiSignalsSettings extends WidgetSettingsBase<AiSignalsWidgetSetting
 
   protected getUpdatedSettings(): Partial<AiSignalsWidgetSettings> {
     return {
-      refreshIntervalSec: this.form.value.refreshIntervalSec!
+      refreshIntervalSec: this.form.controls.refreshIntervalSec.value
     };
   }
 }

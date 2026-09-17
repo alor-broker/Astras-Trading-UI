@@ -22,5 +22,10 @@
   "showTradesLabel": "Show trades",
   "showRepoTradesLabel": "Show repo trades",
   "showHistoryTradesLabel": "Show trades history",
-  "showNotificationsLabel": "Show notifications"
+  "showNotificationsLabel": "Show notifications",
+  "generalGroupLabel": "General",
+  "ordersGroupLabel": "Orders",
+  "positionsGroupLabel": "Positions",
+  "tradesGroupLabel": "Trades",
+  "notificationsGroupLabel": "Notifications"
 }

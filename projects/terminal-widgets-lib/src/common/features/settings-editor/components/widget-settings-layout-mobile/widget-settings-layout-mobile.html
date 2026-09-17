@@ -1,0 +1,27 @@
+<ng-container *transloco="let t; scope: 'shared/widget-settings'">
+  <div class="layout">
+    <div class="body">
+      @if (hasGroups()) {
+        <div class="sections">
+          @for (group of groups(); track group.groupId()) {
+            <section class="section">
+              <h4 class="section-title">{{ group.title() }}</h4>
+              <ng-container *ngTemplateOutlet="group.fieldsTpl()"/>
+            </section>
+          }
+        </div>
+      } @else {
+        <div class="simple">
+          <ng-container *ngTemplateOutlet="defaultContent()"/>
+        </div>
+      }
+    </div>
+
+    <footer class="footer">
+      <span class="spacer"></span>
+      <button (click)="saveClick.emit()" [disabled]="!canSave()" nz-button nzType="primary">
+        {{ t('saveBtnText') }}
+      </button>
+    </footer>
+  </div>
+</ng-container>

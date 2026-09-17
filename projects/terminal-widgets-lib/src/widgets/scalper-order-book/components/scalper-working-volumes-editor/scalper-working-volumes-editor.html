@@ -1,0 +1,36 @@
+<ng-container *transloco="let t; scope: 'scalper-order-book/settings'">
+  @for (control of volumes().controls; track control; let i = $index) {
+    <ats-widget-settings-form-item
+      [label]="t('scalperOrderBookSettings.workingVolumeLabel') + ' ' + (i + 1)"
+      [required]="true"
+      [controlId]="'working-volume-' + i"
+      [errorTip]="t('scalperOrderBookSettings.intervalError', validationOptions())"
+    >
+      <div class="d-flex align-items-center flex-gap-8">
+        <ats-input-number class="volume-value" [allowDecimal]="false" [formControl]="control" />
+        <button
+          type="button"
+          class="flex-shrink-0"
+          nz-button
+          nzType="dashed"
+          [attr.aria-label]="t('scalperOrderBookSettings.removeWorkingVolume') + ' ' + (i + 1)"
+          [disabled]="volumes().disabled || volumes().length < 2"
+          (click)="removeClick.emit(i)"
+        >
+          <i nz-icon nzType="minus"></i>
+        </button>
+      </div>
+    </ats-widget-settings-form-item>
+  }
+  <button
+    type="button"
+    nz-button
+    nzType="dashed"
+    class="w-100"
+    [disabled]="!volumes().valid"
+    (click)="addClick.emit()"
+  >
+    <i nz-icon nzType="plus"></i>
+    {{ t('scalperOrderBookSettings.addWorkingVolume') }}
+  </button>
+</ng-container>

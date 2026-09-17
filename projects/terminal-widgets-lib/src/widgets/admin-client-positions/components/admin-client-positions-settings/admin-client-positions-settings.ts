@@ -2,12 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  input,
   OnInit,
   ViewEncapsulation
 } from '@angular/core';
 import {
   FormBuilder,
-  FormsModule,
   ReactiveFormsModule,
   Validators
 } from "@angular/forms";
@@ -16,16 +16,6 @@ import {
   NzSliderComponent
 } from "ng-zorro-antd/slider";
 import {Observable} from "rxjs";
-import {
-  NzColDirective,
-  NzRowDirective
-} from "ng-zorro-antd/grid";
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from "ng-zorro-antd/form";
 import {
   NzOptionComponent,
   NzSelectComponent
@@ -41,24 +31,22 @@ import {
   ColumnDisplaySettings,
   TableDisplaySettings
 } from '@terminal-core-lib/features/tables/types/table-display-settings.types';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
 
 @Component({
   selector: 'ats-admin-client-positions-settings',
   imports: [
-    FormsModule,
-    NzColDirective,
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
     NzOptionComponent,
-    NzRowDirective,
     NzSelectComponent,
     NzSliderComponent,
     ReactiveFormsModule,
     TranslocoDirective,
-    WidgetSettings
+    WidgetSettingsEditor,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem
   ],
   templateUrl: './admin-client-positions-settings.html',
   styleUrl: './admin-client-positions-settings.less',
@@ -66,6 +54,8 @@ import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-set
   encapsulation: ViewEncapsulation.None
 })
 export class AdminClientPositionsSettings extends WidgetSettingsBase<AdminClientPositionsWidgetSettings> implements OnInit {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   readonly validation = {
     refreshIntervalSec: {
       min: 30,

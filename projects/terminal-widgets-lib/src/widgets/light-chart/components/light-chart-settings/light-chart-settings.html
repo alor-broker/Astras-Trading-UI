@@ -1,36 +1,63 @@
-<ats-widget-settings
+<ats-widget-settings-editor
+  (cancelClick)="requestClose()"
   (copyClick)="createWidgetCopy()"
   (saveClick)="updateSettings()"
   [canCopy]="canCopy"
   [canSave]="canSave"
   [showCopy]="showCopy"
+  [widgetInstance]="widgetInstance()"
 >
   <ng-container *transloco="let t; scope: 'light-chart/settings'">
     <ng-container *transloco="let tChart; scope: 'light-chart'">
-      @if (deviceInfo$ | async; as deviceInfo) {
-        <form [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
-          @if (!deviceInfo.isMobile) {
-            <nz-form-item>
-              <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
-                <nz-form-label nzFor="instrument" nzRequired>{{ t('lightChartSettings.tickerLabel') }}</nz-form-label>
-                <ats-inline-instrument-search (instrumentSelected)="instrumentSelected($event)"
-                                              formControlName="instrument"/>
-              </nz-form-control>
-            </nz-form-item>
-          }
-          @if (!deviceInfo.isMobile) {
-            <nz-form-item>
-              <nz-form-control>
-                <nz-form-label nzFor="exchange" nzRequired>{{ t('lightChartSettings.exchangeLabel') }}</nz-form-label>
-                <input [value]="form.value.instrument?.exchange ?? ''" disabled nz-input type="text"/>
-              </nz-form-control>
-            </nz-form-item>
-          }
-          <nz-form-item>
-            <nz-form-control [nzErrorTip]="t('lightChartSettings.selectTimeframesError')">
-              <nz-form-label nzFor="availableTimeFrames" nzRequired>
-                {{ t('lightChartSettings.availableTimeFramesLabel') }}
-              </nz-form-label>
+      @if (settings$ | async) {
+        <ats-widget-settings-group
+          [device]="DeviceVisibility.DesktopOnly"
+          [isValid]="form.controls.instrument.valid"
+          [title]="t('lightChartSettings.instrumentSelectionHeader')"
+          groupId="instrument"
+        >
+          <ats-widget-settings-form [formGroup]="form.controls.instrument">
+            <ats-widget-settings-form-item
+              [errorTip]="t('lightChartSettings.tickerError')"
+              [label]="t('lightChartSettings.tickerLabel')"
+              [required]="true"
+            >
+              <ats-inline-instrument-search
+                (instrumentSelected)="instrumentSelected($event)"
+                formControlName="instrumentKey"
+              />
+            </ats-widget-settings-form-item>
+            <ats-widget-settings-form-item
+              [label]="t('lightChartSettings.exchangeLabel')"
+              [required]="true"
+              controlId="exchange"
+            >
+              <input [value]="instrument?.exchange ?? ''" disabled id="exchange" nz-input type="text"/>
+            </ats-widget-settings-form-item>
+            <ats-widget-settings-form-item
+              [errorTip]="t('lightChartSettings.instrumentGroupError')"
+              [label]="t('lightChartSettings.instrumentGroupLabel')"
+            >
+              <ats-instrument-board-select
+                [instrument]="instrument"
+                [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
+                formControlName="instrumentGroup"
+              />
+            </ats-widget-settings-form-item>
+          </ats-widget-settings-form>
+        </ats-widget-settings-group>
+
+        <ats-widget-settings-group
+          [isValid]="form.controls.timeframes.valid"
+          [title]="t('lightChartSettings.timeframesGroupLabel')"
+          groupId="timeframes"
+        >
+          <ats-widget-settings-form [formGroup]="form.controls.timeframes">
+            <ats-widget-settings-form-item
+              [errorTip]="t('lightChartSettings.selectTimeframesError')"
+              [label]="t('lightChartSettings.availableTimeFramesLabel')"
+              [required]="true"
+            >
               <nz-select
                 (ngModelChange)="checkCurrentTimeFrame()"
                 [nzMaxTagCount]="10"
@@ -43,53 +70,42 @@
                   <nz-option [nzLabel]="tChart('lightChart.timeframes.' + tf)" [nzValue]="tf"/>
                 }
               </nz-select>
-              <ng-template #tagPlaceHolder let-selectedList>{{ t('maxTagPlaceholder', {count: selectedList.length}) }}
+              <ng-template #tagPlaceHolder let-selectedList>
+                {{ t('maxTagPlaceholder', {count: selectedList.length}) }}
               </ng-template>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-control>
-              <nz-form-label nzFor="timeFrame" nzRequired>{{ t('lightChartSettings.timeframeLabel') }}</nz-form-label>
-              <nz-select formControlName='timeFrame'>
-                @for (tf of this.form.controls.availableTimeFrames.value; track tf) {
-                  <nz-option [nzLabel]="tChart('lightChart.timeframes.' + tf)"
-                             [nzValue]="tf"/>
+            </ats-widget-settings-form-item>
+            <ats-widget-settings-form-item
+              [label]="t('lightChartSettings.timeframeLabel')"
+              [required]="true"
+            >
+              <nz-select formControlName="timeFrame">
+                @for (tf of form.controls.timeframes.controls.availableTimeFrames.value; track tf) {
+                  <nz-option [nzLabel]="tChart('lightChart.timeframes.' + tf)" [nzValue]="tf"/>
                 }
               </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-control>
-              <nz-form-label nzFor="timeFrameDisplayMode"
-                             nzRequired>{{ t('lightChartSettings.timeframeDisplayLabel') }}
-              </nz-form-label>
-              <nz-select formControlName='timeFrameDisplayMode'>
-                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayButtons')"
-                           [nzValue]="timeFrameDisplayModes.Buttons"/>
-                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayMenu')"
-                           [nzValue]="timeFrameDisplayModes.Menu"/>
-                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayHide')"
-                           [nzValue]="timeFrameDisplayModes.Hide"/>
+            </ats-widget-settings-form-item>
+            <ats-widget-settings-form-item
+              [label]="t('lightChartSettings.timeframeDisplayLabel')"
+              [required]="true"
+            >
+              <nz-select formControlName="timeFrameDisplayMode">
+                <nz-option
+                  [nzLabel]="t('lightChartSettings.timeframeDisplayButtons')"
+                  [nzValue]="timeFrameDisplayModes.Buttons"
+                />
+                <nz-option
+                  [nzLabel]="t('lightChartSettings.timeframeDisplayMenu')"
+                  [nzValue]="timeFrameDisplayModes.Menu"
+                />
+                <nz-option
+                  [nzLabel]="t('lightChartSettings.timeframeDisplayHide')"
+                  [nzValue]="timeFrameDisplayModes.Hide"
+                />
               </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-          @if (!deviceInfo.isMobile) {
-            <nz-form-item>
-              <nz-collapse [nzBordered]="false" nzGhost>
-                <nz-collapse-panel [nzHeader]="t('lightChartSettings.advanced')">
-                  <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">
-                    <nz-form-label nzFor="instrumentGroup">{{ t('lightChartSettings.instrumentGroupLabel') }}
-                    </nz-form-label>
-                    <ats-instrument-board-select [instrument]="form.value.instrument ?? null"
-                                                 [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
-                                                 formControlName="instrumentGroup"/>
-                  </nz-form-control>
-                </nz-collapse-panel>
-              </nz-collapse>
-            </nz-form-item>
-          }
-        </form>
+            </ats-widget-settings-form-item>
+          </ats-widget-settings-form>
+        </ats-widget-settings-group>
       }
     </ng-container>
   </ng-container>
-</ats-widget-settings>
+</ats-widget-settings-editor>

@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from '@angular/core';
 import {Observable} from "rxjs";
@@ -15,16 +15,6 @@ import {
   NzMarks,
   NzSliderComponent
 } from "ng-zorro-antd/slider";
-import {
-  NzColDirective,
-  NzRowDirective
-} from "ng-zorro-antd/grid";
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from "ng-zorro-antd/form";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {
   NzOptionComponent,
@@ -37,30 +27,31 @@ import {
   ExtendedFilter,
   MarketSector
 } from '@terminal-widgets-lib/widgets/market-trends/types/market-trends.types';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
 
 @Component({
   selector: 'ats-market-trends-settings',
   imports: [
-    NzColDirective,
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    NzRowDirective,
     NzSliderComponent,
     ReactiveFormsModule,
     TranslocoDirective,
     NzSelectComponent,
     AsyncPipe,
     NzOptionComponent,
-    WidgetSettings
+    WidgetSettingsEditor,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem
   ],
   templateUrl: './market-trends-settings.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class MarketTrendsSettingsComponent extends WidgetSettingsBase<MarketTrendsWidgetSettings> implements OnInit {
+export class MarketTrendsSettingsComponent extends WidgetSettingsBase<MarketTrendsWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   readonly validation = {
     itemsCount: {
       min: 5,

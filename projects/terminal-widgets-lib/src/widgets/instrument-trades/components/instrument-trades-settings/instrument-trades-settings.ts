@@ -2,32 +2,20 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
+  input,
   ViewEncapsulation
 } from '@angular/core';
 import {
   FormBuilder,
-  FormsModule,
   ReactiveFormsModule,
   Validators
 } from "@angular/forms";
 import {Observable} from "rxjs";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from 'ng-zorro-antd/form';
-import {
-  NzColDirective,
-  NzRowDirective
-} from 'ng-zorro-antd/grid';
-import {
   NzOptionComponent,
   NzSelectComponent
 } from 'ng-zorro-antd/select';
-import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 import {WidgetSettingsBase} from '@terminal-widgets-lib/common/widget-settings.base';
 import {
   BaseColumnId,
@@ -38,30 +26,31 @@ import {
   instrumentTradesWidgetColumns,
   InstrumentTradesWidgetSettings
 } from '@terminal-widgets-lib/widgets/instrument-trades/widget-settings.types';
-import {WidgetSettings} from '@terminal-widgets-lib/common/components/widget-settings/widget-settings';
+import {WidgetInstance} from '@terminal-core-lib/features/dashboard/types/dashboard-item.types';
+import {WidgetSettingsEditor} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-editor/widget-settings-editor';
+import {WidgetSettingsForm} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form/widget-settings-form';
+import {WidgetSettingsFormItem} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-form-item/widget-settings-form-item';
+import {WidgetSettingsSwitch} from '@terminal-widgets-lib/common/features/settings-editor/components/widget-settings-switch/widget-settings-switch';
 
 @Component({
   selector: 'ats-instrument-trades-settings',
   templateUrl: './instrument-trades-settings.html',
   imports: [
     TranslocoDirective,
-    FormsModule,
-    NzFormDirective,
     ReactiveFormsModule,
-    NzRowDirective,
-    NzFormItemComponent,
-    NzColDirective,
-    NzFormControlComponent,
-    NzFormLabelComponent,
     NzSelectComponent,
     NzOptionComponent,
-    NzSwitchComponent,
-    WidgetSettings
+    WidgetSettingsEditor,
+    WidgetSettingsForm,
+    WidgetSettingsFormItem,
+    WidgetSettingsSwitch
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class InstrumentTradesSettings extends WidgetSettingsBase<InstrumentTradesWidgetSettings> implements OnInit {
+export class InstrumentTradesSettings extends WidgetSettingsBase<InstrumentTradesWidgetSettings> {
+  readonly widgetInstance = input.required<WidgetInstance>();
+
   allTradesColumns: BaseColumnId[] = instrumentTradesWidgetColumns;
 
   protected settings$!: Observable<InstrumentTradesWidgetSettings>;
@@ -78,14 +67,12 @@ export class InstrumentTradesSettings extends WidgetSettingsBase<InstrumentTrade
   }
 
   protected getUpdatedSettings(initialSettings: InstrumentTradesWidgetSettings): Partial<InstrumentTradesWidgetSettings> {
-    const newSettings = {
-      ...this.form.value,
-    } as Partial<InstrumentTradesWidgetSettings>;
+    const formValue = this.form.getRawValue();
 
-    newSettings.allTradesTable = this.updateTableSettings(newSettings.allTradesColumns ?? [], initialSettings.allTradesTable);
-    delete newSettings.allTradesColumns;
-
-    return newSettings;
+    return {
+      allTradesTable: this.updateTableSettings(formValue.allTradesColumns, initialSettings.allTradesTable),
+      highlightRowsBySide: formValue.highlightRowsBySide
+    };
   }
 
   protected setCurrentFormValues(settings: InstrumentTradesWidgetSettings): void {

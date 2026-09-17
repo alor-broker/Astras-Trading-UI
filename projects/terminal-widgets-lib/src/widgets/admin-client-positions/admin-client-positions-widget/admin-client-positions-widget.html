@@ -1,14 +1,14 @@
 @if (settings$ | async; as settings) {
   <ats-widget-skeleton
+    #widgetSkeleton
     [content]="contentRef"
     [header]="headerRef"
     [isBlockWidget]="isBlockWidget()"
-    [settings]="settingsRef"
+    [settingsEditorContent]="settingsEditorRef"
     [showContentScroll]="false"
-    [showSettings]="showSettings()"
   >
     <ng-template #headerRef>
-      <ats-widget-header (switchSettings)="toggleSettings()"
+      <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                          [guid]="guid"
                          [hasSettings]="true"
                          [widgetMeta]="widgetInstance().widgetMeta"
@@ -17,8 +17,12 @@
     <ng-template #contentRef>
       <ats-admin-client-positions [guid]="guid"/>
     </ng-template>
-    <ng-template #settingsRef>
-      <ats-admin-client-positions-settings (settingsChange)="toggleSettings()" [guid]='guid'/>
+    <ng-template #settingsEditorRef>
+      <ats-admin-client-positions-settings
+        (closeRequested)="widgetSkeleton.closeSettings()"
+        [guid]="guid"
+        [widgetInstance]="widgetInstance()"
+      />
     </ng-template>
   </ats-widget-skeleton>
 }

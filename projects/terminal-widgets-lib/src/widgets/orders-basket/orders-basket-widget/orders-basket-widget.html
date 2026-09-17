@@ -1,15 +1,15 @@
 <ng-container *transloco="let t;">
   @let settings = settings$ | async;
   <ats-widget-skeleton
+    #widgetSkeleton
     [content]="contentRef"
     [header]="headerRef"
     [isBlockWidget]="isBlockWidget()"
-    [settings]="settingsRef"
+    [settingsEditorContent]="settingsEditorRef"
     [showContentScroll]="true"
-    [showSettings]="showSettings()"
   >
     <ng-template #headerRef>
-      <ats-widget-header (switchSettings)="toggleSettings()"
+      <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                          [customTitle]="title$ | async"
                          [guid]="guid"
                          [hasSettings]="settings != null"
@@ -20,8 +20,12 @@
     <ng-template #contentRef>
       <ats-orders-basket [guid]="guid"/>
     </ng-template>
-    <ng-template #settingsRef>
-      <ats-orders-basket-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+    <ng-template #settingsEditorRef>
+      <ats-orders-basket-settings
+        (closeRequested)="widgetSkeleton.closeSettings()"
+        [guid]="guid"
+        [widgetInstance]="widgetInstance()"
+      />
     </ng-template>
   </ats-widget-skeleton>
 

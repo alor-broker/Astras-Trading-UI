@@ -1,14 +1,14 @@
 <ng-container *transloco="let t; scope: 'bond-screener'">
   @if (settings$ | async; as settings) {
     <ats-widget-skeleton
+      #widgetSkeleton
       [content]="contentRef"
       [header]="headerRef"
       [isBlockWidget]="isBlockWidget()"
-      [settings]="settingsRef"
-      [showSettings]="showSettings()"
+      [settingsEditorContent]="settingsEditorRef"
     >
       <ng-template #headerRef>
-        <ats-widget-header (switchSettings)="toggleSettings()"
+        <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                            [guid]="guid"
                            [hasSettings]="true"
                            [selectedBadgeColor]="settings.badgeColor"
@@ -27,9 +27,10 @@
           </nz-tab>
         </nz-tabs>
       </ng-template>
-      <ng-template #settingsRef>
-        <ats-bond-screener-settings (settingsChange)="toggleSettings()"
+      <ng-template #settingsEditorRef>
+        <ats-bond-screener-settings (closeRequested)="widgetSkeleton.closeSettings()"
                                     [guid]="guid"
+                                    [widgetInstance]="widgetInstance()"
         />
       </ng-template>
     </ats-widget-skeleton>

@@ -1,3 +1,6 @@
 ﻿{
-  "copyTooltip": "Create a new widget with a copy of the current settings"
+  "copyTooltip": "Create a new widget with a copy of the current settings",
+  "dialogTitle": "Settings: {{ widgetName }}",
+  "invalidGroupTooltip": "Fill in the required fields of the current group",
+  "editingContentPlaceholder": "Editing settings"
 }

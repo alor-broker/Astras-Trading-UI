@@ -1,15 +1,15 @@
 <ng-container *transloco="let t;">
   @if (settings$ | async; as settings) {
     <ats-widget-skeleton
+      #widgetSkeleton
       [content]="contentRef"
       [header]="headerRef"
       [isBlockWidget]="isBlockWidget()"
-      [settings]="settingsRef"
+      [settingsEditorContent]="settingsEditorRef"
       [showContentScroll]="false"
-      [showSettings]="showSettings()"
     >
       <ng-template #headerRef>
-        <ats-widget-header (switchSettings)="toggleSettings()"
+        <ats-widget-header (switchSettings)="widgetSkeleton.toggleSettings()"
                            [customTitle]="widgetName() + ' ' + (titleSuffix$ | async)"
                            [guid]="guid"
                            [hasSettings]="true"
@@ -22,8 +22,12 @@
       <ng-template #contentRef>
         <ats-news (sectionChange)="sectionChange($event)" [guid]="guid"/>
       </ng-template>
-      <ng-template #settingsRef>
-        <ats-news-settings (settingsChange)="toggleSettings()" [guid]="guid"/>
+      <ng-template #settingsEditorRef>
+        <ats-news-settings
+          (closeRequested)="widgetSkeleton.closeSettings()"
+          [guid]="guid"
+          [widgetInstance]="widgetInstance()"
+        />
       </ng-template>
     </ats-widget-skeleton>
   }
