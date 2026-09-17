@@ -4,5 +4,6 @@
   "stopOrderTabTitle": "Conditional",
   "notificationsTabTitle": "Notifications",
   "marginOrderConfirmationTitle": "Confirmation",
-  "marginOrderConfirmationContent": "I am aware that this order may result in an uncovered position."
+  "marginOrderConfirmationContent": "I am aware that this order may result in an uncovered position.",
+  "marginOrderWarning": "Order execution may create or increase an uncovered position"
 }

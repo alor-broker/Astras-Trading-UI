@@ -18,6 +18,14 @@
     </div>
   }
 
+  @if (showMarginWarning$ | async) {
+    <ng-container *transloco="let tOrders; scope: 'order-commands'">
+      <div class="warning-color mt-2" role="status">
+        {{ tOrders('orderCommands.marginOrderWarning') }}
+      </div>
+    </ng-container>
+  }
+
   <ng-template #buttonsGroup let-disabled="disabled" let-disabledTooltip="disabledTooltip" let-side="side">
     <div [nzTooltipPlacement]="['left', 'right', 'bottom']"
          [nzTooltipTitle]="disabledTooltip"
@@ -34,4 +42,3 @@
     </div>
   </ng-template>
 </ng-container>
-
