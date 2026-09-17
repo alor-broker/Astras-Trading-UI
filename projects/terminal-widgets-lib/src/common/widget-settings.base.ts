@@ -100,7 +100,7 @@ export abstract class WidgetSettingsBase<T extends WidgetSettings> implements Wi
 
   protected initSettingsStream(): void {
     this.settings$ = this.settingsService.getSettings<T>(this.guid()).pipe(
-      shareReplay(1)
+      shareReplay({bufferSize: 1, refCount: true})
     );
   }
 
