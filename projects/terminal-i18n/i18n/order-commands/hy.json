@@ -4,5 +4,6 @@
   "stopOrderTabTitle": "Պայմանական",
   "notificationsTabTitle": "Ծանուցումներ",
   "marginOrderConfirmationTitle": "Հաստատում",
-  "marginOrderConfirmationContent": "Ես տեղեկացված եմ, որ այս գործարքը կարող է հանգեցնել չծածկված դիրքի բացմանը:"
+  "marginOrderConfirmationContent": "Ես տեղեկացված եմ, որ այս գործարքը կարող է հանգեցնել չծածկված դիրքի բացմանը:",
+  "marginOrderWarning": "Հայտի կատարումը կարող է հանգեցնել չծածկված դիրքի առաջացմանը կամ ավելացմանը"
 }

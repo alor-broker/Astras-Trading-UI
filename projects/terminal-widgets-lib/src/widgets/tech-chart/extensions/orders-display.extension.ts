@@ -15,6 +15,7 @@ import {
 } from "@angular/core";
 import {
   debounceTime,
+  defaultIfEmpty,
   map,
   startWith
 } from "rxjs/operators";
@@ -24,7 +25,6 @@ import {
 } from "@terminal-widgets-lib/assets/charting_library/charting_library";
 import {DASHBOARD_CONTEXT_SERVICE} from '@terminal-core-lib/features/dashboard/services/dashboard-context-service.types';
 import {PortfolioSubscriptionsService} from "@terminal-core-lib/features/portfolios/services/portfolio-subscriptions";
-import {ORDER_COMMAND_SERVICE_TOKEN} from "@terminal-core-lib/features/orders/types/order-command-service.types";
 import {OrdersDialogService} from "@terminal-core-lib/features/orders/services/orders-dialog.service";
 import {TranslatorService} from "@terminal-core-lib/features/translations/services/translator.service";
 import {TranslatorFn} from '@terminal-core-lib/features/translations/services/translator-service.types';
@@ -45,6 +45,7 @@ import {Condition} from '@terminal-core-lib/common/types/condition.types';
 import {ConditionHelper} from '@terminal-core-lib/common/utils/condition.helper';
 import {StopMarketOrderEdit} from '@terminal-core-lib/features/orders/types/edit-order.types';
 import {MathHelper} from '@terminal-core-lib/common/utils/math.helper';
+import {ConfirmableOrderCommandsService} from '@terminal-core-lib/features/orders/services/confirmable-order-commands.service';
 
 class OrdersState {
   readonly limitOrders = new Map<string, IOrderLineAdapter>();
@@ -88,7 +89,7 @@ export class OrdersDisplayExtension extends BaseExtension {
 
   private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
 
-  private readonly orderCommandService = inject(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
 
   private readonly ordersDialogService = inject(OrdersDialogService);
 
@@ -288,7 +289,7 @@ export class OrdersDisplayExtension extends BaseExtension {
               return;
             }
 
-            this.editLimitOrderPrice(order, newPrice);
+            this.editLimitOrderPrice(order, newPrice, () => orderLineAdapter.setPrice(order.price));
           } else {
             const params = {
               ...getEditCommand(),
@@ -354,7 +355,7 @@ export class OrdersDisplayExtension extends BaseExtension {
               return;
             }
 
-            this.editStopOrderPrice(order, newPrice);
+            this.editStopOrderPrice(order, newPrice, () => orderLineAdapter.setPrice(order.triggerPrice));
           } else {
             const params = {
               ...getEditCommand(),
@@ -383,7 +384,7 @@ export class OrdersDisplayExtension extends BaseExtension {
     }
   }
 
-  private editLimitOrderPrice(order: Order, newPrice: number): void {
+  private editLimitOrderPrice(order: Order, newPrice: number, cancelCallback: () => void): void {
     this.orderCommandService.submitLimitOrderEdit(
       {
         orderId: order.id,
@@ -393,13 +394,18 @@ export class OrdersDisplayExtension extends BaseExtension {
         instrument: order.targetInstrument,
         allowMargin: true
       },
-      order.ownedPortfolio.portfolio
+      order.ownedPortfolio
     ).pipe(
-      take(1)
-    ).subscribe();
+      take(1),
+      defaultIfEmpty(null)
+    ).subscribe(result => {
+      if (result === null) {
+        cancelCallback();
+      }
+    });
   }
 
-  private editStopOrderPrice(order: StopOrder, newPrice: number): void {
+  private editStopOrderPrice(order: StopOrder, newPrice: number, cancelCallback: () => void): void {
     const editOrder: StopMarketOrderEdit = {
       orderId: order.id,
       side: order.side,
@@ -413,10 +419,15 @@ export class OrdersDisplayExtension extends BaseExtension {
     if (order.type === OrderType.StopMarket) {
       this.orderCommandService.submitStopMarketOrderEdit(
         editOrder,
-        order.ownedPortfolio.portfolio
+        order.ownedPortfolio
       ).pipe(
-        take(1)
-      ).subscribe();
+        take(1),
+        defaultIfEmpty(null)
+      ).subscribe(result => {
+        if (result === null) {
+          cancelCallback();
+        }
+      });
 
       return;
     }
@@ -433,10 +444,15 @@ export class OrdersDisplayExtension extends BaseExtension {
             )
           )
         },
-        order.ownedPortfolio.portfolio
+        order.ownedPortfolio
       ).pipe(
-        take(1)
-      ).subscribe();
+        take(1),
+        defaultIfEmpty(null)
+      ).subscribe(result => {
+        if (result === null) {
+          cancelCallback();
+        }
+      });
     }
   }
 }
