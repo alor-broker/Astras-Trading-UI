@@ -2,6 +2,8 @@ import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {cwd} from 'node:process';
 import * as ts from 'typescript';
+import {WidgetCategory, WidgetMetaConfig} from '@terminal-core-lib/features/widgets-gallery/services/widgets-meta-service.types';
+import {WIDGETS_GALLERY_DEFAULTS} from '@terminal-core-lib/features/widgets-gallery/types/widgets-gallery-defaults';
 
 interface WidgetMetaConfigItem {
   typeId: string;
@@ -126,6 +128,40 @@ class WidgetsMetaConfigSpecHelper {
 }
 
 describe('WidgetsMetaConfig', () => {
+  it('should follow UI category order and ascending desktop gallery order within category ranges', () => {
+    const widgets = JSON.parse(readFileSync(widgetsMetaConfigPath, 'utf-8').replace(/^\uFEFF/, '')) as WidgetMetaConfig[];
+    const categories = Object.values(WidgetCategory);
+    const categoryOrder = widgets.map(widget => categories.indexOf(widget.category));
+    const desktopOrder = widgets.filter(widget => widget.desktopMeta != null).map(widget => widget.desktopMeta!.galleryOrder ?? Number.NaN);
+
+    expect(categoryOrder.every(index => index >= 0)).toBe(true);
+    expect(categoryOrder).toEqual([...categoryOrder].sort((left, right) => left - right));
+    expect(desktopOrder).toEqual([...desktopOrder].sort((left, right) => left - right));
+    expect(new Set(desktopOrder).size).toBe(desktopOrder.length);
+    for (const widget of widgets.filter(item => item.desktopMeta != null)) {
+      const categoryStart = categories.indexOf(widget.category) * 1000;
+      expect(widget.desktopMeta!.galleryOrder).toBeGreaterThan(categoryStart);
+      expect(widget.desktopMeta!.galleryOrder).toBeLessThan(categoryStart + 1000);
+    }
+  });
+
+  it('should provide localized descriptions, valid expirations and existing default favorites', () => {
+    const widgets = JSON.parse(readFileSync(widgetsMetaConfigPath, 'utf-8').replace(/^\uFEFF/, '')) as WidgetMetaConfig[];
+    for (const widget of widgets) {
+      expect(widget.description?.default, widget.typeId).toBeTruthy();
+      for (const language of ['ru', 'en', 'hy']) {
+        expect(widget.description?.translations?.[language], `${widget.typeId}: ${language}`).toBeTruthy();
+      }
+      if (widget.newUntil != null) {
+        expect(Number.isFinite(Date.parse(widget.newUntil)), widget.typeId).toBe(true);
+      }
+    }
+    const ids = new Set(widgets.map(widget => widget.typeId));
+    for (const preferences of Object.values(WIDGETS_GALLERY_DEFAULTS)) {
+      expect(preferences.favoriteWidgets.every(widget => ids.has(widget.typeId))).toBe(true);
+    }
+  });
+
   it('should contain metadata for every widget registered in applications', () => {
     const missingWidgetMeta = widgetRegistryPaths
       .flatMap(registryPath => WidgetsMetaConfigSpecHelper.getMissingWidgetMeta(registryPath))

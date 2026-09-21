@@ -1,0 +1,62 @@
+@import 'scrollable';
+
+ats-widgets-gallery-settings-dialog, .ats-widgets-gallery-settings-dialog {
+  .ant-modal-body {
+    max-height: 70vh;
+    .scrollable(var(--ats-scrollbar-color));
+  }
+
+  .gallery-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .ant-checkbox-wrapper { margin-inline-start: 0; }
+  }
+
+  .gallery-categories section { margin-top: 20px; }
+  .gallery-settings-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    .ant-btn { margin-inline-start: 0; }
+    .gallery-reset-defaults { margin-inline-end: auto; }
+  }
+  .gallery-cards { display: flex; flex-wrap: wrap; gap: 12px; }
+  .gallery-card {
+    flex: 0 0 calc((100% - 12px) / 2);
+    box-sizing: border-box;
+    height: 120px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--ats-border-color-base);
+    border-radius: var(--ats-border-radius-base);
+    background: var(--ats-component-background);
+
+    p {
+      margin: 8px 0 0;
+      color: var(--ats-text-color-secondary);
+      line-height: 18px;
+      overflow-wrap: anywhere;
+    }
+  }
+  .gallery-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 48px;
+    > nz-icon, > .ant-btn { flex-shrink: 0; }
+  }
+  .gallery-card-name { flex: 1; min-width: 0; overflow-wrap: anywhere; line-height: 24px; }
+  .gallery-card p, .gallery-card-name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  @media (max-width: 600px) {
+    .gallery-card { flex-basis: 100%; }
+  }
+}

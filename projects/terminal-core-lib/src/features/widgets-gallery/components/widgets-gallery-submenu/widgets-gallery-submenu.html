@@ -1,0 +1,18 @@
+<button #trigger cdkOverlayOrigin #origin="cdkOverlayOrigin" type="button" class="gallery-submenu-trigger"
+        [class.gallery-submenu-highlighted]="highlighted()" [class.gallery-submenu-prominent]="prominent()"
+        [disabled]="disabled()" [attr.aria-expanded]="opened()"
+        (click)="opened.set(!opened())" (keydown.arrowright)="openFromKeyboard($event)" (keydown.arrowdown)="openFromKeyboard($event)">
+  @if (highlighted()) { <nz-icon nzType="thunderbolt" nzTheme="fill" aria-hidden="true"/> }
+  @else if (prominent()) { <nz-icon nzType="appstore" aria-hidden="true"/> }
+  <span>{{ label() }}</span><nz-icon nzType="right"/>
+</button>
+<ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="origin" [cdkConnectedOverlayOpen]="opened()"
+             [cdkConnectedOverlayPositions]="positions" [cdkConnectedOverlayPush]="true"
+             [cdkConnectedOverlayViewportMargin]="16" [cdkConnectedOverlayFlexibleDimensions]="true"
+             (attach)="focusFirst()" (detach)="opened.set(false)" (overlayOutsideClick)="opened.set(false)"
+             (overlayKeydown)="handleKey($event)">
+  <div #panel cdkTrapFocus class="ats-widgets-gallery-submenu-panel" [attr.aria-label]="label()" role="group">
+    <ats-widgets-gallery-list [widgets]="widgets()" [categories]="categories()" [disabled]="disabled()"
+      [showNewBadge]="showNewBadge()" (selected)="selected.emit($event)"/>
+  </div>
+</ng-template>

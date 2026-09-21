@@ -61,6 +61,7 @@
 | `WidgetLocalStateService` | `projects/terminal-core-lib/src/features/widget-local-state/widget-local-state.service.ts` | Читает и записывает локальное состояние виджета | Когда состояние виджета не является пользовательскими настройками |
 | `WidgetSettingsService` | `projects/terminal-core-lib/src/features/widget-settings/services/widget-settings.service.ts` | Читает и записывает текущие настройки виджета | Когда нужно сохранять настройки виджета |
 | `WidgetsMetaService` | `projects/terminal-core-lib/src/features/widgets-gallery/services/widgets-meta.service.ts` | Читает metadata виджетов для галереи и дашборда | Когда нужна информация о доступности или представлении виджетов |
+| `WidgetsGallerySettingsService` | `features/widgets-gallery/services/widgets-gallery-settings.service.ts` | Фасад NgRx настроек галереи по типу дашборда; чтение и подтверждённое сохранение через storage token | Для настраиваемой галереи; подключается через desktop `app.config.ts` с feature/effects и storage provider |
 
 ## Рыночные данные и инструменты
 

@@ -1,0 +1,61 @@
+<ng-container *transloco="let t; scope: 'dashboard/widgets-gallery'">
+  <nz-drawer [nzVisible]="atsVisible()" (nzOnClose)="close()" [nzWidth]="310" nzPlacement="left"
+             [nzTitle]="t('dashboardWidgetsGallery.title')" [nzClosable]="false"
+             [nzExtra]="extra" [nzFooter]="footer" nzWrapClassName="ats-customizable-widgets-gallery"
+             [nzKeyboard]="!settingsVisible()" [nzMaskClosable]="!settingsVisible()">
+    <ng-container *nzDrawerContent>
+      <div class="gallery-scroll" (scroll)="closeSubmenus()">
+        @if (settings.state().status === status.Loading) {
+          <nz-spin nzSimple/>
+        } @else if (settings.state().status === status.Failure) {
+          <nz-alert nzType="error" nzShowIcon [nzMessage]="t('dashboardWidgetsGallery.loadError')"/>
+          <button nz-button type="button" (click)="settings.load()">{{ t('dashboardWidgetsGallery.retry') }}</button>
+        } @else if (settings.state().status === status.Success) {
+          @if (sections().favorites.length === 0) {
+            <p class="gallery-empty">{{ t('dashboardWidgetsGallery.emptyFavorites') }}</p>
+          }
+          <ats-widgets-gallery-list [widgets]="sections().favorites" [categories]="preferences().showFavoriteCategories"
+            [disabled]="disabled()" (selected)="select($event)"/>
+          @if (sections().others.length > 0) {
+            <ats-widgets-gallery-submenu [label]="t('dashboardWidgetsGallery.otherWidgets')"
+              [prominent]="true"
+              [widgets]="sections().others" [categories]="preferences().showOtherCategories" [disabled]="disabled()"
+              [(opened)]="othersOpen" (openedChange)="newOpen.set(false)" (selected)="select($event)"/>
+          }
+          @if (sections().newWidgets.length > 0) {
+            <section class="gallery-new-section">
+              @if (sections().newWidgetsSubmenu) {
+                <ats-widgets-gallery-submenu [label]="t('dashboardWidgetsGallery.newWidgets')"
+                  [widgets]="sections().newWidgets" [highlighted]="true" [disabled]="disabled()"
+                  [showNewBadge]="false"
+                  [(opened)]="newOpen" (openedChange)="othersOpen.set(false)" (selected)="select($event)"/>
+              } @else {
+                <h3><nz-icon nzType="thunderbolt" nzTheme="fill" aria-hidden="true"/> {{ t('dashboardWidgetsGallery.newWidgets') }}</h3>
+                <ats-widgets-gallery-list [widgets]="sections().newWidgets" [disabled]="disabled()"
+                  [showNewBadge]="false" (selected)="select($event)"/>
+              }
+            </section>
+          }
+        }
+      </div>
+    </ng-container>
+  </nz-drawer>
+  <ng-template #extra>
+    <button nz-button nzType="text" type="button" [disabled]="disabled()" (click)="reset()">
+      <nz-icon nzType="appstore" nzTheme="outline" aria-hidden="true"/>
+      {{ t('dashboardWidgetsGallery.standardView') }}
+    </button>
+  </ng-template>
+  <ng-template #footer>
+    <button #settingsButton nz-button nzType="text" nzBlock type="button"
+            [disabled]="settings.state().status !== status.Success || settings.state().saving || disabled()" (click)="openSettings()">
+      <nz-icon nzType="setting"/> {{ t('dashboardWidgetsGallery.configure') }}
+    </button>
+  </ng-template>
+  @if (settingsVisible()) {
+    <ats-widgets-gallery-settings-dialog [widgets]="display()" [preferences]="preferences()"
+      [dashboardType]="dashboardType()"
+      [saving]="settings.state().saving" [saveFailed]="saveFailed()" [closeRequested]="settingsClosing()"
+      (closed)="closeSettings()" (saved)="save($event)"/>
+  }
+</ng-container>
