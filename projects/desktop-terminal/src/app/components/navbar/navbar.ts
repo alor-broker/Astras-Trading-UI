@@ -17,7 +17,7 @@ import {AsyncPipe} from '@angular/common';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {DesktopNavbar} from '@terminal-core-lib/features/dashboard/desktop/components/desktop-navbar/desktop-navbar';
 import {DesktopDashboardContextService} from '@terminal-core-lib/features/dashboard/desktop/services/desktop-dashboard-context.service';
-import {WidgetsGalleryNavBtn} from '@terminal-core-lib/features/widgets-gallery/components/widgets-gallery-nav-btn/widgets-gallery-nav-btn';
+import {CustomizableWidgetsGalleryNavBtn} from '@terminal-core-lib/features/widgets-gallery/components/customizable-widgets-gallery-nav-btn/customizable-widgets-gallery-nav-btn';
 import {OpenOrdersDialogNavBtn} from '@terminal-core-lib/features/orders/components/open-orders-dialog-nav-btn/open-orders-dialog-nav-btn';
 import {SelectPortfolioMenuNavBtn} from '@terminal-core-lib/features/dashboard/common/components/select-portfolio-menu-nav-btn/select-portfolio-menu-nav-btn';
 import {DashboardsPanel} from '../dashboards-panel/dashboards-panel';
@@ -33,7 +33,7 @@ import {ProfileMenuNavBtn} from '../profile-menu-nav-btn/profile-menu-nav-btn';
     AsyncPipe,
     TranslocoDirective,
     DesktopNavbar,
-    WidgetsGalleryNavBtn,
+    CustomizableWidgetsGalleryNavBtn,
     OpenOrdersDialogNavBtn,
     SelectPortfolioMenuNavBtn,
     DashboardsPanel,

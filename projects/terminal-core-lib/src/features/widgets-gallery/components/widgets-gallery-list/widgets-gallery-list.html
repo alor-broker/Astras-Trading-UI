@@ -1,0 +1,31 @@
+<ng-container *transloco="let t; scope: 'dashboard/widgets-gallery'">
+  <ul nz-menu nzMode="vertical" [nzSelectable]="false">
+    @if (categories()) {
+      @for (group of groups(); track group.category) {
+        <li nz-menu-group [nzTitle]="t('dashboardWidgetsGallery.categories.' + group.category)">
+          <ul>
+            @for (widget of group.widgets; track widget.typeId) {
+              <li nz-menu-item><ng-container [ngTemplateOutlet]="widgetButton" [ngTemplateOutletContext]="{widget}"/></li>
+            }
+          </ul>
+        </li>
+      }
+    } @else {
+      @for (widget of widgets(); track widget.typeId) {
+        <li nz-menu-item><ng-container [ngTemplateOutlet]="widgetButton" [ngTemplateOutletContext]="{widget}"/></li>
+      }
+    }
+  </ul>
+  <ng-template #widgetButton let-widget="widget">
+    <button type="button" class="gallery-widget-button heading-color" [disabled]="disabled()" (click)="selected.emit(widget.typeId)">
+      <nz-icon [nzType]="widget.icon" class="gallery-widget-icon"/>
+      <span class="gallery-widget-name">{{ widget.name }}</span>
+      @if (showNewBadge() && widget.isNew) {
+        <span class="primary-color" role="img" nz-tooltip [nzTooltipTitle]="t('dashboardWidgetsGallery.newBadge')"
+              [attr.aria-label]="t('dashboardWidgetsGallery.newBadge')">
+          <nz-icon nzType="thunderbolt" nzTheme="fill" aria-hidden="true"/>
+        </span>
+      }
+    </button>
+  </ng-template>
+</ng-container>

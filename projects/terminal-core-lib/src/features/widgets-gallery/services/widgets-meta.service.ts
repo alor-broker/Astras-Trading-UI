@@ -3,7 +3,7 @@
   Injectable
 } from '@angular/core';
 import {Location} from '@angular/common';
-import {WidgetMeta} from './widgets-meta-service.types';
+import {WidgetMeta, WidgetMetaConfig} from './widgets-meta-service.types';
 import {
   HttpClient,
   HttpContext
@@ -11,6 +11,7 @@ import {
 import {HttpContextTokens} from '../../http-requests/constants/http.constants';
 import {
   Observable,
+  map,
   shareReplay
 } from 'rxjs';
 import {catchHttpError} from '@terminal-core-lib/common/utils/observable/catch-http-error';
@@ -34,7 +35,7 @@ export class WidgetsMetaService {
   }
 
   private readMeta(): void {
-    this.meta$ = this.httpClient.get<WidgetMeta[]>(
+    this.meta$ = this.httpClient.get<WidgetMetaConfig[]>(
       this.location.prepareExternalUrl('/assets/widgets-meta-config.json'),
       {
         headers: {
@@ -45,6 +46,10 @@ export class WidgetsMetaService {
       }
     )
       .pipe(
+        map(widgets => widgets.map(widget => ({
+          ...widget,
+          newUntil: widget.newUntil == null ? widget.newUntil : new Date(widget.newUntil)
+        }))),
         catchHttpError<WidgetMeta[] | null>(null, this.errorHandlerService),
         shareReplay(1)
       );

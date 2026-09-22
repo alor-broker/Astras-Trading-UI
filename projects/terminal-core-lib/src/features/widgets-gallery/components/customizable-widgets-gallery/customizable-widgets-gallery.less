@@ -1,0 +1,17 @@
+@import 'scrollable';
+
+ats-customizable-widgets-gallery, .ats-customizable-widgets-gallery {
+  .ant-drawer-body { display: flex; flex-direction: column; min-height: 0; padding: 0; overflow: hidden; }
+  .gallery-scroll { flex: 1; min-height: 0; padding: 16px 12px; .scrollable(var(--ats-scrollbar-color)); }
+  .gallery-scroll .ant-menu-item-group-title { padding-inline: 4px; }
+  .ant-drawer-footer { flex-shrink: 0; }
+  .ant-drawer-header { padding: 12px; }
+  .gallery-empty { color: var(--ats-text-color-secondary); }
+  .gallery-new-section {
+    margin-top: 16px;
+    padding: 12px;
+    border: 1px solid color-mix(in srgb, var(--ats-primary-color) 35%, var(--ats-border-color-base));
+    border-radius: var(--ats-border-radius-base);
+    h3 { color: var(--ats-primary-color); }
+  }
+}

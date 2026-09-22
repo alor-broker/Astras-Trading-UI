@@ -10,6 +10,7 @@ import {provideClientUserContext} from '@terminal-core-lib/features/user-context
 import {TerminalApplicationProvidersBuilder} from '@terminal-core-lib/terminal-providers/terminal-application.providers';
 import {provideTerminalServiceWorker} from '@terminal-core-lib/terminal-providers/terminal-application-service-worker.providers';
 import {provideWatchlist} from '@terminal-core-lib/features/watchlist/watchlist.providers';
+import {provideWidgetsGallerySettings} from './settings-brokers/widgets-gallery-settings.providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
         provideEnvironmentConfig(),
         provideClientUserContext(),
         provideDesktopDashboardsStorage(),
+        provideWidgetsGallerySettings(),
         provideTerminalServiceWorker({
           enabled: !isDevMode(),
         }),

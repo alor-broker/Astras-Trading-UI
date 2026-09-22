@@ -7,5 +7,22 @@
     "positionsTradesOrders": "Positions, Trades and Orders",
     "info": "Information Resources",
     "details": "Detailed"
-  }
+  },
+  "settingsTitle": "Gallery settings",
+  "resetDefaults": "Reset to defaults",
+  "documentation": "Documentation: {{name}}",
+  "showOtherCategories": "Show categories in Other widgets",
+  "showFavoriteCategories": "Show categories in favorites",
+  "newBadge": "NEW",
+  "addFavorite": "Add {{name}} to favorites",
+  "removeFavorite": "Remove {{name}} from favorites",
+  "cancel": "Cancel",
+  "save": "Save",
+  "saveError": "Could not save settings. Please try again.",
+  "loadError": "Could not load gallery settings.",
+  "retry": "Retry",
+  "emptyFavorites": "No favorite widgets yet. Add them in gallery settings.",
+  "configure": "Configure gallery",
+  "otherWidgets": "Other widgets",
+  "newWidgets": "New widgets"
 }

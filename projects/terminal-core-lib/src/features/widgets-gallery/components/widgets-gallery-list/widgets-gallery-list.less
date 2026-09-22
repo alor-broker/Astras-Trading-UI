@@ -1,0 +1,28 @@
+ats-widgets-gallery-list {
+  display: block;
+  .ant-menu { border-inline-end: 0; background: transparent; }
+  .ant-menu .ant-menu-item {
+    padding: 0;
+    height: auto;
+    min-height: 36px;
+    line-height: normal;
+
+    &:hover { background-color: var(--ats-select-item-selected-bg); }
+  }
+  .gallery-widget-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 36px;
+    padding: 6px 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    .gallery-widget-icon { flex-shrink: 0; font-size: 1.25rem; }
+    .gallery-widget-name { margin-left: 0; }
+  }
+  .gallery-widget-name { flex: 1; min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+}

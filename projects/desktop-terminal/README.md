@@ -35,7 +35,14 @@ pnpm build:desktop --configuration devContour
 
 Provider registry подключается в `projects/desktop-terminal/src/app/dashboard.providers.ts`.
 
-В этом же scope подключён `provideDesktopSubmitOrderContext()`: `SUBMIT_ORDER_CONTEXT.submitOrder(...)`
+Navbar использует отдельный `CustomizableWidgetsGalleryNavBtn`. Провайдеры NgRx и хранения галереи
+подключены через `provideWidgetsGallerySettings()` в `app.config.ts`.
+`WidgetsGallerySettingsBrokerService` хранит предпочтения типов дашбордов через
+`RemoteStorageService` в отдельной записи `widgets-gallery-settings`.
+Поведение, дефолты и обработка ошибок описаны в
+[`widgets-gallery/README.md`](../terminal-core-lib/src/features/widgets-gallery/README.md).
+
+В scope dashboard подключён `provideDesktopSubmitOrderContext()`: `SUBMIT_ORDER_CONTEXT.submitOrder(...)`
 передаёт параметры существующему `OrdersDialogService`. Это открытие формы, а не автоматическая отправка заявки.
 Сторона сделки передаётся в лимитную, рыночную и стоп-форму; противоположная сторона скрыта и заблокирована в обработчике.
 

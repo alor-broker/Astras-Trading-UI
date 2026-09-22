@@ -1,4 +1,4 @@
-﻿import {DashboardType} from '../../dashboard//types/dashboard.types';
+﻿import {DashboardType} from '../../dashboard/types/dashboard.types';
 
 export interface WidgetName {
   default: string;
@@ -13,6 +13,8 @@ export enum WidgetCategory {
   Details = 'details'
 }
 
+export type WidgetMetaConfig = Omit<WidgetMeta, 'newUntil'> & {newUntil?: string | null};
+
 export interface WidgetMeta {
   /**
    * Widget's unique internal ID
@@ -20,6 +22,11 @@ export interface WidgetMeta {
   typeId: string;
 
   widgetName: WidgetName;
+
+  description?: WidgetName;
+
+  /** Exclusive expiry date for the new-widget badge. */
+  newUntil?: Date | null;
 
   hasInstrumentBind?: boolean;
 

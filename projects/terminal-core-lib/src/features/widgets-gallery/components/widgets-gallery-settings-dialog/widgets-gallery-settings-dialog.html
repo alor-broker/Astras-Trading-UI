@@ -1,0 +1,66 @@
+<ng-container *transloco="let t; scope: 'dashboard/widgets-gallery'">
+  <nz-modal [nzVisible]="!closing()" [nzTitle]="t('dashboardWidgetsGallery.settingsTitle')"
+            [nzWidth]="800" nzClassName="ats-widgets-gallery-settings-dialog"
+            [nzFooter]="footer" [nzMaskClosable]="false" [nzClosable]="!saving()"
+            [nzKeyboard]="!saving()" (nzOnCancel)="cancel()" (nzAfterClose)="closed.emit()">
+    <ng-container *nzModalContent>
+      <form [formGroup]="form" class="gallery-options">
+        <label nz-checkbox formControlName="showFavoriteCategories">{{ t('dashboardWidgetsGallery.showFavoriteCategories') }}</label>
+        <label nz-checkbox formControlName="showOtherCategories">{{ t('dashboardWidgetsGallery.showOtherCategories') }}</label>
+      </form>
+      @if (saveFailed()) {
+        <nz-alert nzType="error" nzShowIcon [nzMessage]="t('dashboardWidgetsGallery.saveError')"/>
+      }
+      <div class="gallery-categories">
+        @for (group of groups(); track group.category) {
+          <section>
+            <h3>{{ t('dashboardWidgetsGallery.categories.' + group.category) }}</h3>
+            <div class="gallery-cards">
+              @for (widget of group.widgets; track widget.typeId) {
+                <article class="gallery-card">
+                  <div class="gallery-card-heading">
+                    <nz-icon [nzType]="widget.icon" class="heading-color fs-5"/>
+                    <span class="gallery-card-name heading-color fs-6" [title]="widget.name">{{ widget.name }}</span>
+                    @if (widget.isNew) {
+                      <span class="primary-color" role="img" nz-tooltip [nzTooltipTitle]="t('dashboardWidgetsGallery.newBadge')"
+                            [attr.aria-label]="t('dashboardWidgetsGallery.newBadge')">
+                        <nz-icon nzType="thunderbolt" nzTheme="fill" aria-hidden="true"/>
+                      </span>
+                    }
+                    @if (widget.helpUrl$ | async; as helpUrl) {
+                      <a nz-button nzType="text" [href]="helpUrl" target="_blank" rel="noopener noreferrer"
+                         nz-tooltip [nzTooltipTitle]="t('dashboardWidgetsGallery.documentation', {name: widget.name})"
+                         [attr.aria-label]="t('dashboardWidgetsGallery.documentation', {name: widget.name})">
+                        <nz-icon nzType="question-circle" nzTheme="outline" aria-hidden="true"/>
+                      </a>
+                    }
+                    @let favoriteActionLabel = t(favorites().has(widget.typeId) ? 'dashboardWidgetsGallery.removeFavorite' : 'dashboardWidgetsGallery.addFavorite', {name: widget.name});
+                    <button nz-button nzType="text" type="button" [disabled]="saving()"
+                            nz-tooltip [nzTooltipTitle]="favoriteActionLabel"
+                            [attr.aria-pressed]="favorites().has(widget.typeId)"
+                            [attr.aria-label]="favoriteActionLabel"
+                            (click)="toggleFavorite(widget.typeId)">
+                      <nz-icon nzType="star" [class.primary-color]="favorites().has(widget.typeId)"
+                               [nzTheme]="favorites().has(widget.typeId) ? 'fill' : 'outline'"/>
+                    </button>
+                  </div>
+                  <p [title]="widget.description">{{ widget.description }}</p>
+                </article>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    </ng-container>
+  </nz-modal>
+  <ng-template #footer>
+    <div class="gallery-settings-footer">
+      <button nz-button type="button" class="gallery-reset-defaults" [disabled]="saving()" (click)="resetDefaults()">
+        <nz-icon nzType="undo" aria-hidden="true"/>
+        {{ t('dashboardWidgetsGallery.resetDefaults') }}
+      </button>
+      <button nz-button type="button" [disabled]="saving()" (click)="cancel()">{{ t('dashboardWidgetsGallery.cancel') }}</button>
+      <button nz-button nzType="primary" type="button" [nzLoading]="saving()" (click)="save()">{{ t('dashboardWidgetsGallery.save') }}</button>
+    </div>
+  </ng-template>
+</ng-container>
