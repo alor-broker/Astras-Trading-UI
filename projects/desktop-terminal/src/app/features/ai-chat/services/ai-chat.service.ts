@@ -111,6 +111,7 @@ export class AiChatService {
         return {
           tradingTerminal: 'Astras',
           portfolio: x.selectedDashboard.selectedPortfolio?.portfolio ?? '',
+          exchange: x.selectedDashboard.selectedPortfolio?.exchange ?? '',
           instruments: [...selectedInstruments.values()],
           openWidgets: [...widgets.values()],
           // Use ISO format to send info about user timezone
