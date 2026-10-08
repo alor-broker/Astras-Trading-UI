@@ -6,3 +6,11 @@
 export interface ReplyResponse {
   text: string;
 }
+
+export enum AiChatErrorCode {
+  ContextTooLarge = 'context_too_large'
+}
+
+export interface MessageErrorResponse {
+  errorCode: AiChatErrorCode;
+}

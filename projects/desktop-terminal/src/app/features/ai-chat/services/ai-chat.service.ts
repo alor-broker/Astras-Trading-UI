@@ -21,6 +21,8 @@ import {TerminalSettingsService} from '@terminal-core-lib/features/terminal-sett
 import {DesktopDashboardContextService} from '@terminal-core-lib/features/dashboard/desktop/services/desktop-dashboard-context.service';
 import {LoggerService} from "@terminal-core-lib/features/logging/services/logger-service";
 import {
+  AiChatErrorCode,
+  MessageErrorResponse,
   NewMessageRequest,
   ReplyResponse
 } from './ai-chat-service.types';
@@ -51,9 +53,10 @@ export class AiChatService {
 
   private readonly loggerService = inject(LoggerService);
 
-  private readonly baseUrl = `${this.environmentService.apiUrl}/aichat`;
+  private readonly baseUrl = `http://localhost:5080/aichat`;
 
-  sendMessage(message: NewMessageRequest): Observable<ReplyResponse | null> {
+  // null represents an HTTP error without a dedicated user-facing message.
+  sendMessage(message: NewMessageRequest): Observable<ReplyResponse | MessageErrorResponse | null> {
     return this.getTerminalContext().pipe(
       switchMap(terminalContext => {
         return this.httpClient.post<PostMessageResponse>(
@@ -68,18 +71,22 @@ export class AiChatService {
           }
         );
       }),
-      catchHttpError<PostMessageResponse | null>(null, this.getErrorHandler()),
-      map(r => {
-        if (!r) {
-          return null;
-        }
-
-        return {
-          text: r.answer
-        } as ReplyResponse;
-      }),
+      map((r): ReplyResponse => ({text: r.answer})),
+      catchHttpError<ReplyResponse | MessageErrorResponse | null>(
+        error => this.getMessageError(error),
+        this.getErrorHandler()
+      ),
       take(1)
     );
+  }
+
+  private getMessageError(error: HttpErrorResponse): MessageErrorResponse | null {
+    const body: unknown = error.error;
+    if (typeof body === 'object' && body !== null && 'code' in body && body.code === AiChatErrorCode.ContextTooLarge) {
+      return {errorCode: AiChatErrorCode.ContextTooLarge};
+    }
+
+    return null;
   }
 
   private getTerminalContext(): Observable<TerminalContext> {
