@@ -28,6 +28,7 @@ import {
 } from './ai-chat-service.types';
 import {GuidGenerator} from '@terminal-core-lib/common/utils/guid-generator';
 import {catchHttpError} from '@terminal-core-lib/common/utils/observable/catch-http-error';
+import {TranslatorService} from '@terminal-core-lib/features/translations/services/translator.service';
 
 interface PostMessageResponse {
   answer: string;
@@ -53,7 +54,9 @@ export class AiChatService {
 
   private readonly loggerService = inject(LoggerService);
 
-  private readonly baseUrl = `http://localhost:5080/aichat`;
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly baseUrl = `${this.environmentService.apiUrl}/aichat`;
 
   // null represents an HTTP error without a dedicated user-facing message.
   sendMessage(message: NewMessageRequest): Observable<ReplyResponse | MessageErrorResponse | null> {
@@ -68,6 +71,11 @@ export class AiChatService {
             meta: terminalContext,
             messageGuid: GuidGenerator.newGuid(),
             collectionName: "Astras"
+          },
+          {
+            headers: {
+              'X-Response-Language': this.translatorService.getActiveLang()
+            }
           }
         );
       }),
@@ -82,8 +90,12 @@ export class AiChatService {
 
   private getMessageError(error: HttpErrorResponse): MessageErrorResponse | null {
     const body: unknown = error.error;
-    if (typeof body === 'object' && body !== null && 'code' in body && body.code === AiChatErrorCode.ContextTooLarge) {
-      return {errorCode: AiChatErrorCode.ContextTooLarge};
+    if (typeof body !== 'object' || body === null || !('code' in body)) {
+      return null;
+    }
+
+    if (body.code === AiChatErrorCode.ContextTooLarge || body.code === AiChatErrorCode.ContextCompactionFailed) {
+      return {errorCode: body.code};
     }
 
     return null;

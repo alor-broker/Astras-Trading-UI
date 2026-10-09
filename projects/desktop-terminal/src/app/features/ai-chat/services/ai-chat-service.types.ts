@@ -8,7 +8,8 @@ export interface ReplyResponse {
 }
 
 export enum AiChatErrorCode {
-  ContextTooLarge = 'context_too_large'
+  ContextTooLarge = 'context_too_large',
+  ContextCompactionFailed = 'context_compaction_failed'
 }
 
 export interface MessageErrorResponse {

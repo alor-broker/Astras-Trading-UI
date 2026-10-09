@@ -144,9 +144,11 @@ export class AiChat implements OnInit, OnDestroy {
         take(1)
       ).subscribe(response => {
         if (response == null || 'errorCode' in response) {
-          const errorMessage = response?.errorCode === AiChatErrorCode.ContextTooLarge
-            ? 'contextTooLarge'
-            : 'requestError';
+          const errorMessages: Record<AiChatErrorCode, string> = {
+            [AiChatErrorCode.ContextTooLarge]: 'contextTooLarge',
+            [AiChatErrorCode.ContextCompactionFailed]: 'contextTooLarge'
+          };
+          const errorMessage = response == null ? 'requestError' : errorMessages[response.errorCode];
 
           this.displayMessages.push(this.createBotMessage<TextMessageContent>(
             MessageType.Text,
