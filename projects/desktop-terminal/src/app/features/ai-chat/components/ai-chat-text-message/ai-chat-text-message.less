@@ -1,13 +1,61 @@
 atsd-ai-chat-text-message {
+  display: block;
+  min-width: 0;
   word-break: break-word;
   white-space: pre-wrap;
   max-width: 100%;
 
   .markdown {
+    display: block;
+    min-width: 0;
     white-space: normal;
 
     p {
       margin: 0;
+    }
+
+    .markdown-table-scroll {
+      max-width: 100%;
+      margin: 8px 0;
+      overflow-x: auto;
+
+      &:focus-visible {
+        outline: 2px solid var(--ats-primary-color);
+        outline-offset: -2px;
+      }
+    }
+
+    table {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: collapse;
+      background: var(--ats-component-background);
+      color: var(--ats-text-color);
+      word-break: normal;
+
+      th,
+      td {
+        max-width: 24rem;
+        padding: 8px;
+        border: 1px solid var(--ats-table-border-color);
+        vertical-align: top;
+        overflow-wrap: break-word;
+      }
+
+      thead th {
+        background: var(--ats-background-color-light);
+        color: var(--ats-heading-color);
+        font-weight: var(--ats-font-weight-bold);
+        border-bottom-width: 2px;
+      }
+
+      th:not([align]) {
+        text-align: start;
+      }
+
+      tbody tr:hover {
+        background: var(--ats-table-row-hover-bg);
+      }
     }
   }
 }

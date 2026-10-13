@@ -1,4 +1,7 @@
 ﻿{
+  "chart": {
+    "invalidData": "The chart could not be displayed: invalid data or unsupported format."
+  },
   "messages": {
     "botGreeting": "Hello! Ask me a question and I'll try to answer it...",
     "botThinking": "Bot is thinking",

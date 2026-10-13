@@ -1,6 +1,15 @@
 atsd-ai-chat-message-container {
   animation: flyIn 100ms ease-out;
 
+  .content {
+    min-width: 0;
+    max-width: 100%;
+
+    &:has(atsd-ai-chat-chart, table) {
+      flex: 1;
+    }
+  }
+
   @keyframes flyIn {
     from {
       transform: translateX(-100%);
