@@ -10,6 +10,7 @@ import {DisplayStatus} from '../../ai-chat.types';
   selector: 'atsd-ai-chat-status',
   imports: [],
   templateUrl: './ai-chat-status.html',
+  styleUrl: './ai-chat-status.less',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

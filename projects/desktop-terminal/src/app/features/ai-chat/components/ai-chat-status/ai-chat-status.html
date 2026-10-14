@@ -1,3 +1,10 @@
-<div [style.visibility]="status() ? 'visible' : 'hidden'">
-  <i>{{ status()?.text }} ...</i>
+<div class="status d-flex align-items-center flex-gap-5" role="status" aria-atomic="true">
+  @if (status(); as currentStatus) {
+    <i>{{ currentStatus.text }}</i>
+    <span class="d-flex align-items-center flex-gap-3 primary-color" aria-hidden="true">
+      <span class="status-dot"></span>
+      <span class="status-dot"></span>
+      <span class="status-dot"></span>
+    </span>
+  }
 </div>

@@ -1,7 +1,15 @@
-﻿[
+[
   {
     "lang": "ru",
-    "text": "Что такое облигации?"
+    "text": "Какие данные показывает виджет «Блоттер»?"
+  },
+  {
+    "lang": "ru",
+    "text": "Как настроить список избранных инструментов?"
+  },
+  {
+    "lang": "ru",
+    "text": "Какие сейчас показатели риска и маржи у моего портфеля?"
   },
   {
     "lang": "ru",
@@ -9,11 +17,23 @@
   },
   {
     "lang": "ru",
-    "text": "За что отвечает виджет блоттер?"
+    "text": "Какие валютные пары доступны на Московской бирже?"
+  },
+  {
+    "lang": "ru",
+    "text": "Приведи примеры вопросов, на которые ты можешь ответить."
   },
   {
     "lang": "en",
-    "text": "What are bonds?"
+    "text": "What data does the Blotter widget display?"
+  },
+  {
+    "lang": "en",
+    "text": "How can I set up my list of favorite instruments?"
+  },
+  {
+    "lang": "en",
+    "text": "What are the current risk and margin indicators for my portfolio?"
   },
   {
     "lang": "en",
@@ -21,18 +41,34 @@
   },
   {
     "lang": "en",
-    "text": "What does the blotter widget do?"
+    "text": "Which currency pairs are available on the Moscow Exchange?"
+  },
+  {
+    "lang": "en",
+    "text": "Give examples of questions you can answer."
   },
   {
     "lang": "hy",
-    "text": "Ինչ են պարտատոմսերը"
+    "text": "Ի՞նչ տվյալներ է ցուցադրում «Բլոտեր» վիջետը։"
   },
   {
     "lang": "hy",
-    "text": "Ցույց տուր {{today}}-ի համար հանձնաժողովը"
+    "text": "Ինչպե՞ս կարգավորել նախընտրած գործիքների ցանկը։"
   },
   {
     "lang": "hy",
-    "text": "Ինչ է անում «բլոտեր» վիջետը"
+    "text": "Որո՞նք են իմ պորտֆելի ռիսկի և մարժայի ընթացիկ ցուցանիշները։"
+  },
+  {
+    "lang": "hy",
+    "text": "Ցույց տուր {{today}}-ի միջնորդավճարը"
+  },
+  {
+    "lang": "hy",
+    "text": "Ի՞նչ արժութային զույգեր են հասանելի Մոսկվայի բորսայում։"
+  },
+  {
+    "lang": "hy",
+    "text": "Բեր հարցերի օրինակներ, որոնց կարող ես պատասխանել։"
   }
 ]

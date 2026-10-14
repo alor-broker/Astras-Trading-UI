@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import {TranslatorService} from "@terminal-core-lib/features/translations/services/translator.service";
 import {AiChatService} from '../../services/ai-chat.service';
+import {AiChatErrorCode} from '../../services/ai-chat-service.types';
 import {AiChatSuggestionsService} from '../../services/ai-chat-suggestions.service';
 import {
   DisplayStatus,
@@ -103,9 +104,7 @@ export class AiChat implements OnInit, OnDestroy {
           return [];
         }
 
-        return r
-          .sort((a, b) => a.length - b.length)
-          .map(s => ({text: s}));
+        return r.map(s => ({text: s}));
       })
     );
 
@@ -144,11 +143,17 @@ export class AiChat implements OnInit, OnDestroy {
       }).pipe(
         take(1)
       ).subscribe(response => {
-        if (!response) {
+        if (response == null || 'errorCode' in response) {
+          const errorMessages: Record<AiChatErrorCode, string> = {
+            [AiChatErrorCode.ContextTooLarge]: 'contextTooLarge',
+            [AiChatErrorCode.ContextCompactionFailed]: 'contextTooLarge'
+          };
+          const errorMessage = response == null ? 'requestError' : errorMessages[response.errorCode];
+
           this.displayMessages.push(this.createBotMessage<TextMessageContent>(
             MessageType.Text,
             {
-              text: translator(['messages', 'requestError'])
+              text: translator(['messages', errorMessage])
             }
           ));
         } else {

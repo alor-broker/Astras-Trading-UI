@@ -1,0 +1,20 @@
+<ng-container *transloco="let t; scope: 'ai-chat'">
+  @if (definition(); as chart) {
+    <figure class="m-0">
+      <figcaption class="chart-title">{{ chart.title }}</figcaption>
+      @if (chartSettings(); as settings) {
+        <div class="chart-canvas">
+          <canvas baseChart
+                  [type]="chart.type"
+                  [data]="settings.data"
+                  [options]="settings.options"
+                  role="img"
+                  [attr.aria-label]="chart.title">
+          </canvas>
+        </div>
+      }
+    </figure>
+  } @else {
+    <nz-alert nzType="warning" [nzMessage]="t('aiChat.chart.invalidData')" nzShowIcon />
+  }
+</ng-container>
