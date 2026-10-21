@@ -1,13 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
-  OnInit,
   output,
   ViewEncapsulation
 } from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -16,16 +17,11 @@ import {
 import {DesktopManageDashboardsService} from "@terminal-core-lib/features/dashboard/desktop/services/desktop-manage-dashboards.service";
 import {NzModalService} from "ng-zorro-antd/modal";
 import {TranslatorService} from '@terminal-core-lib/features/translations/services/translator.service';
-import {
-  map,
-  Observable,
-  take
-} from "rxjs";
+import {take} from "rxjs";
 import {Dashboard} from '@terminal-core-lib/features/dashboard/types/dashboard.types';
 import {mapWith} from '@terminal-core-lib/common/utils/observable/map-with';
 import {DashboardTitleHelper} from '@terminal-core-lib/features/dashboard/utils/dashboard-title.helper';
 import {TranslocoDirective} from '@jsverse/transloco';
-import {AsyncPipe} from '@angular/common';
 import {
   NzMenuDirective,
   NzMenuDividerDirective,
@@ -33,28 +29,27 @@ import {
 } from 'ng-zorro-antd/menu';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzFormModule} from 'ng-zorro-antd/form';
 import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent
-} from 'ng-zorro-antd/form';
-import {NzInputDirective} from 'ng-zorro-antd/input';
+  NzInputDirective,
+  NzInputWrapperComponent
+} from 'ng-zorro-antd/input';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {EditableString} from '@terminal-core-lib/common/components/editable-string/editable-string';
 
 @Component({
   selector: 'atsd-select-dashboard-menu',
   imports: [
     TranslocoDirective,
-    AsyncPipe,
     NzMenuDirective,
     NzButtonComponent,
     NzIconDirective,
     NzMenuDividerDirective,
-    NzFormItemComponent,
-    NzFormControlComponent,
+    NzFormModule,
     ReactiveFormsModule,
-    NzFormDirective,
     NzInputDirective,
+    NzInputWrapperComponent,
+    NzEmptyComponent,
     EditableString,
     NzMenuItemComponent
   ],
@@ -63,7 +58,7 @@ import {EditableString} from '@terminal-core-lib/common/components/editable-stri
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class SelectDashboardMenu implements OnInit {
+export class SelectDashboardMenu {
   readonly validationOptions = {
     title: {
       minLength: 1,
@@ -71,15 +66,17 @@ export class SelectDashboardMenu implements OnInit {
     }
   };
 
-  allDashboards$!: Observable<Dashboard[]>;
-
   readonly hideMenu = output();
 
-  readonly isNewDashboardFocused = output<boolean>();
+  readonly isInputFocused = output<boolean>();
 
   readonly visibilityChange = input<boolean>();
 
   private readonly formBuilder = inject(FormBuilder);
+
+  readonly searchControl = this.formBuilder.nonNullable.control('');
+
+  private readonly searchQuery = toSignal(this.searchControl.valueChanges, {initialValue: ''});
 
   newDashboardForm = this.formBuilder.group({
     title: this.formBuilder.nonNullable.control(
@@ -98,10 +95,34 @@ export class SelectDashboardMenu implements OnInit {
 
   private readonly translatorService = inject(TranslatorService);
 
+  readonly allDashboards = toSignal(
+    this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
+      mapWith(
+        () => this.desktopManageDashboardsService.allDashboards$,
+        (translator, allDashboards) => allDashboards.map(dashboard => ({
+          ...dashboard,
+          title: DashboardTitleHelper.getDisplayTitle(dashboard, translator)
+        }))
+      )
+    ),
+    {initialValue: []}
+  );
+
+  readonly isSearchVisible = computed(() => this.allDashboards().length > 10);
+
+  readonly filteredDashboards = computed(() => {
+    const dashboards = this.allDashboards();
+    const query = this.isSearchVisible() ? this.searchQuery().trim().toLowerCase() : '';
+    return query.length === 0
+      ? dashboards
+      : dashboards.filter(dashboard => dashboard.title.toLowerCase().includes(query));
+  });
+
   constructor() {
     effect(() => {
       this.visibilityChange();
       this.newDashboardForm.reset();
+      this.searchControl.reset();
     });
   }
 
@@ -109,19 +130,6 @@ export class SelectDashboardMenu implements OnInit {
     if (event.key === 'Enter') {
       this.addDashboard();
     }
-  }
-
-  ngOnInit(): void {
-    this.allDashboards$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
-      mapWith(() => this.desktopManageDashboardsService.allDashboards$, (translator, allDashboards) => ({
-        t: translator,
-        allDashboards
-      })),
-      map(({t, allDashboards}) => allDashboards.map(d => ({
-        ...d,
-        title: DashboardTitleHelper.getDisplayTitle(d, t)
-      })))
-    );
   }
 
   addDashboard(): void {

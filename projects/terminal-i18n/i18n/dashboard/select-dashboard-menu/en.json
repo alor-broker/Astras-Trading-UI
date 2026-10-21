@@ -1,4 +1,6 @@
 {
+  "searchPlaceholder": "Search dashboards",
+  "noDashboardsFound": "No dashboards found",
   "newDashboardTitlePlaceholder": "New Dashboard Name",
   "stringLenghtError": "Enter from {{min}} to {{max}} characters",
   "actionConfirmationTitle": "Confirm action",

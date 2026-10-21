@@ -1,7 +1,22 @@
 <ng-container *transloco="let t; scope: 'dashboard/select-dashboard-menu'">
-  @if ((allDashboards$ | async); as allDashboards) {
-    <ul class="dashboard-selection" nz-menu>
-      @for (dashboard of allDashboards; track dashboard.guid) {
+  <div class="dashboard-selection d-flex flex-column" nz-menu>
+    @if (isSearchVisible()) {
+      <div class="flex-shrink-0 px-10 py-5">
+        @let searchLabel = t('dashboardSelectDashboardMenu.searchPlaceholder');
+        <nz-input-wrapper (nzClear)="searchInput.focus()" nzAllowClear>
+          <input #searchInput
+                 (blur)="isInputFocused.emit(false)"
+                 (focus)="isInputFocused.emit(true)"
+                 [formControl]="searchControl"
+                 [placeholder]="searchLabel"
+                 [attr.aria-label]="searchLabel"
+                 nz-input
+                 type="search"/>
+        </nz-input-wrapper>
+      </div>
+    }
+    <ul class="dashboard-list m-0 p-0">
+      @for (dashboard of filteredDashboards(); track dashboard.guid) {
         <li (click)="selectDashboard(dashboard.guid)" nz-menu-item>
           <div class="dashboard-selection-row">
             <div class="title heading-color">
@@ -41,7 +56,7 @@
               >
                 <i [class.active]="dashboard.isLocked ?? false" nz-icon nzTheme="outline" nzType="lock"></i>
               </button>
-              @if (allDashboards.length > 1) {
+              @if (allDashboards().length > 1) {
                 <button
                   (click)="removeDashboard(dashboard); $event.stopPropagation();"
                   nz-button
@@ -54,39 +69,41 @@
             </span>
           </div>
         </li>
+      } @empty {
+        <li role="status">
+          <nz-empty [nzNotFoundContent]="t('dashboardSelectDashboardMenu.noDashboardsFound')" nzNotFoundImage="simple"/>
+        </li>
       }
-      <li nz-menu-divider></li>
-      <li>
-        <div class="new-dashboard-menu-item">
-          <form [formGroup]="newDashboardForm" [nzLayout]="'inline'" nz-form>
-            <nz-form-item>
-              <nz-form-control [nzErrorTip]="titleError">
-                <input (blur)="isNewDashboardFocused.emit(false)"
-                       (focus)="isNewDashboardFocused.emit(true)"
-                       (keyup)="checkInputComplete($event)"
-                       [placeholder]="t('dashboardSelectDashboardMenu.newDashboardTitlePlaceholder')"
-                       class="title-input"
-                       formControlName="title"
-                       nz-input
-                       type="text"/>
-              </nz-form-control>
-              <ng-template #titleError>
-                <span>{{
-                    t(
-                      'dashboardSelectDashboardMenu.stringLenghtError',
-                      {
-                        min: validationOptions.title.minLength,
-                        max: validationOptions.title.maxLength
-                      })
-                  }}</span>
-              </ng-template>
-            </nz-form-item>
-          </form>
-          <button (click)="addDashboard()" [disabled]="!newDashboardForm.valid" nz-button nzSize='small' nzType="link">
-            <span nz-icon nzType="plus"></span></button>
-        </div>
-      </li>
     </ul>
-  }
+    <div class="flex-shrink-0" nz-menu-divider></div>
+    <div class="new-dashboard-menu-item flex-shrink-0 px-10">
+      <form [formGroup]="newDashboardForm" [nzLayout]="'inline'" nz-form>
+        <nz-form-item>
+          <nz-form-control [nzErrorTip]="titleError">
+            <input (blur)="isInputFocused.emit(false)"
+                   (focus)="isInputFocused.emit(true)"
+                   (keyup)="checkInputComplete($event)"
+                   [placeholder]="t('dashboardSelectDashboardMenu.newDashboardTitlePlaceholder')"
+                   class="title-input"
+                   formControlName="title"
+                   nz-input
+                   type="text"/>
+          </nz-form-control>
+          <ng-template #titleError>
+            <span>{{
+                t(
+                  'dashboardSelectDashboardMenu.stringLenghtError',
+                  {
+                    min: validationOptions.title.minLength,
+                    max: validationOptions.title.maxLength
+                  })
+              }}</span>
+          </ng-template>
+        </nz-form-item>
+      </form>
+      <button (click)="addDashboard()" [disabled]="!newDashboardForm.valid" nz-button nzSize='small' nzType="link">
+        <span nz-icon nzType="plus"></span></button>
+    </div>
+  </div>
 </ng-container>
 
