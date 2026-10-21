@@ -62,9 +62,7 @@
                     [id]="panelIds.ordersTable"
                     [minWidthPx]="75"
                   >
-                    <ats-scalper-order-book-table (mouseenter)="isTableHovered$.next(true)"
-                                                  (mouseleave)="isTableHovered$.next(false)"
-                                                  [dataContext]="dataContext"
+                    <ats-scalper-order-book-table [dataContext]="dataContext"
                                                   [hideTooltips]="vm.extendedSettings.widgetSettings.hideTooltips ?? false"
                                                   [isActive]="isActive()"
                                                   [rowHeight]="shared.rowHeight"

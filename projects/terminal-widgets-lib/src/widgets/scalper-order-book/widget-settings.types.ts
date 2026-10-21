@@ -71,6 +71,7 @@ export interface VolumeHighlightOption {
 
 export interface InstrumentLinkedSettings {
   depth?: number;
+  scaleFactor?: number;
   showZeroVolumeItems: boolean;
   showSpreadItems: boolean;
   volumeHighlightMode?: VolumeHighlightMode;
