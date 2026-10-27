@@ -195,6 +195,11 @@ describe('Badge', () => {
 
 ## Доступные хелперы
 
+`@testing-lib/fixtures/manager-config` предоставляет `ManagerConfigFixtures.createConfig()`
+с синтетическими токенами для проверок отдельной Windows-оболочки `manager-shell`.
+Её Vitest-проверки запускаются командой `npm run check` из `projects/manager-shell`;
+Angular TestBed для кода Electron и чистых функций не требуется.
+
 `@testing-lib/helpers/floating-window-testing.helper` предоставляет реальные уничтожаемые DI owners и детерминированные Overlay stubs для проверки реестра окон и адаптеров виджетов без создания сложного UI.
 
 Импорт — через alias `@testing-lib/*` (правило 11). Наполняется по факту переиспользования (правило 9).

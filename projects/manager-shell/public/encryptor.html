@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>Astras</title>
+  <link rel="stylesheet" href="encryptor.css">
+  <script defer src="../dist/encryptor-renderer.js"></script>
+</head>
+<body class="encryptor">
+  <header>
+    <h1 data-key="encryptorTitle"></h1>
+    <label for="language" data-key="language"></label>
+    <select id="language">
+      <option value="en">English</option>
+      <option value="ru">Русский</option>
+      <option value="hy">Հայերեն</option>
+    </select>
+  </header>
+  <main>
+    <p class="intro" data-key="encryptorIntro"></p>
+    <form id="encrypt-form" autocomplete="off">
+      <fieldset id="fields">
+        <section class="panel" aria-labelledby="connection-title">
+          <h2 id="connection-title" data-key="encryptorConnection"></h2>
+          <div class="field-row">
+            <div class="field">
+              <label for="terminal-url" data-key="encryptorTerminalUrl"></label>
+              <input id="terminal-url" type="url" required maxlength="2048" pattern="https://.*" spellcheck="false">
+            </div>
+            <div class="field">
+              <label for="api-url" data-key="encryptorApiUrl"></label>
+              <input id="api-url" type="url" required maxlength="2048" pattern="https://.*" spellcheck="false">
+            </div>
+          </div>
+        </section>
+        <section class="panel" aria-labelledby="clients-title">
+          <div class="section-heading">
+            <h2 id="clients-title" data-key="encryptorClients"></h2>
+            <button id="add-client" type="button" data-key="encryptorAddClient"></button>
+          </div>
+          <p class="hint" id="client-hint" data-key="encryptorClientHint"></p>
+          <div id="client-rows"></div>
+          <label class="checkbox"><input type="checkbox" id="show-tokens"><span data-key="encryptorShowTokens"></span></label>
+        </section>
+        <section class="panel" aria-labelledby="password-title">
+          <h2 id="password-title" data-key="encryptorProtect"></h2>
+          <div class="field-row">
+            <div class="field">
+              <label for="password" data-key="password"></label>
+              <input id="password" type="password" autocomplete="new-password" required aria-describedby="password-hint">
+            </div>
+            <div class="field">
+              <label for="confirmation" data-key="confirmPassword"></label>
+              <input id="confirmation" type="password" autocomplete="new-password" required aria-describedby="password-hint">
+            </div>
+          </div>
+          <p id="password-hint" class="hint" data-key="encryptorPasswordHint"></p>
+        </section>
+        <div class="actions">
+          <button type="button" id="clear" data-key="encryptorClear"></button>
+          <button type="submit" id="generate" class="primary" data-key="encryptorGenerate"></button>
+        </div>
+      </fieldset>
+    </form>
+    <p id="result" role="status" aria-live="polite" tabindex="-1"></p>
+    <p id="error" role="alert"></p>
+  </main>
+  <template id="client-template">
+    <fieldset class="client-row">
+      <legend></legend>
+      <div class="field-row">
+        <div class="field"><label data-key="encryptorName"></label><input class="client-name" required maxlength="200" autocomplete="off"></div>
+        <div class="field"><label data-key="encryptorClientId"></label><input class="client-id" required maxlength="200" autocomplete="off" spellcheck="false" aria-describedby="client-hint"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label data-key="encryptorRefreshToken"></label><input class="client-token" type="password" required maxlength="16384" autocomplete="off" spellcheck="false"></div>
+        <button class="remove-client" type="button" data-key="encryptorRemove"></button>
+      </div>
+    </fieldset>
+  </template>
+</body>
+</html>

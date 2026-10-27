@@ -1,0 +1,37 @@
+{
+  "name": "astras-manager",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portable Windows shell for the Astras client terminal",
+  "author": "Astras",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc && node scripts/build.cjs",
+    "start": "npm run build && electron .",
+    "encrypt": "node dist/encrypt.js",
+    "start:encryptor": "npm run build && electron dist/encryptor-main.js",
+    "check": "tsc --noEmit && eslint src --max-warnings 0 && vitest run",
+    "smoke": "npm run build && vitest run --config vitest.smoke.config.mts",
+    "portable": "npm run build && electron-builder --win portable --x64",
+    "portable:encryptor": "npm run build && electron-builder --config encryptor-builder.cjs --win portable --x64 && node scripts/copy-encryptor.cjs"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "electron": "45.0.0",
+    "electron-builder": "26.18.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.8.1",
+    "typescript-eslint": "8.66.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.9"
+  },
+  "build": {
+    "appId": "com.astras.manager",
+    "productName": "Astras Manager",
+    "directories": { "output": "release" },
+    "files": ["dist/**/*", "public/**/*", "package.json", "!dist/**/*.spec.js", "!dist/encryptor-*.js", "!public/encryptor.*"],
+    "asar": true,
+    "win": { "target": "portable", "artifactName": "AstrasManager.exe" },
+    "portable": { "requestExecutionLevel": "user" }
+  }
+}

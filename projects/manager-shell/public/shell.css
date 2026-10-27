@@ -1,0 +1,57 @@
+.manager-shell {
+  /* Local defaults for the same CSS variable names used by css-vars-mapping.less.
+     This separate document does not load the hosted Angular theme bundles. */
+  --ats-body-background: #111820;
+  --ats-component-background: #1c2733;
+  --ats-text-color: #edf2f7;
+  --ats-text-color-secondary: #b6c2ce;
+  --ats-primary-color: #70b8ff;
+  --ats-error-color: #ff9797;
+  --ats-border-color-base: #526273;
+  margin: 0;
+  font: 15px/1.5 "Segoe UI", sans-serif;
+  background: var(--ats-body-background);
+  color: var(--ats-text-color);
+}
+.manager-shell * { box-sizing: border-box; }
+.manager-shell [hidden] { display: none !important; }
+.manager-shell .toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  padding: 12px 20px;
+  background: var(--ats-component-background);
+}
+.manager-shell #title { margin-right: auto; white-space: nowrap; }
+.manager-shell #accounts { display: flex; align-items: center; gap: 12px; }
+.manager-shell input, .manager-shell select, .manager-shell button {
+  font: inherit;
+  padding: 7px 10px;
+  border: 1px solid var(--ats-border-color-base);
+  border-radius: 6px;
+  color: var(--ats-text-color);
+  background: var(--ats-component-background);
+}
+.manager-shell #client { max-width: 300px; }
+.manager-shell button { cursor: pointer; border-color: var(--ats-primary-color); }
+.manager-shell :focus-visible { outline: 2px solid var(--ats-primary-color); outline-offset: 3px; }
+.manager-shell :disabled { opacity: 0.55; cursor: wait; }
+.manager-shell .status-line {
+  height: 48px;
+  padding: 12px 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ats-text-color-secondary);
+}
+.manager-shell main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 112px);
+  padding: 32px;
+}
+.manager-shell form { display: flex; flex-direction: column; gap: 16px; width: 360px; max-width: 100%; }
+.manager-shell #error { color: var(--ats-error-color); max-width: 600px; text-align: center; }

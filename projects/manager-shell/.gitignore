@@ -1,0 +1,7 @@
+/node_modules/
+/dist/
+/release/
+/private/
+*.enc
+clients.json
+*.log

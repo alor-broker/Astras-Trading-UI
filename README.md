@@ -18,6 +18,7 @@
 ## Документация
 
 - [Desktop terminal](projects/desktop-terminal/README.md)
+- [Windows manager wrapper](projects/manager-shell/README.md) — portable shell for switching between authorized client accounts.
 - [Mobile terminal](projects/mobile-terminal/README.md)
 - [Admin terminal](projects/admin-terminal/README.md)
 - [Core library](projects/terminal-core-lib/README.md)

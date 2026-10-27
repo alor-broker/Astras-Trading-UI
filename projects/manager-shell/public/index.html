@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>Astras</title>
+  <link rel="stylesheet" href="shell.css">
+  <script defer src="../dist/renderer.js"></script>
+</head>
+<body class="manager-shell">
+  <header class="toolbar">
+    <strong id="title"></strong>
+    <div id="accounts" hidden>
+      <label for="client" id="client-label"></label>
+      <select id="client"></select>
+      <button id="lock" type="button"></button>
+    </div>
+    <label for="language" id="language-label"></label>
+    <select id="language">
+      <option value="en">English</option>
+      <option value="ru">Русский</option>
+      <option value="hy">Հայերեն</option>
+    </select>
+  </header>
+  <div class="status-line" role="status" aria-live="polite" id="status"></div>
+  <main id="welcome">
+    <form id="unlock-form">
+      <label for="password" id="password-label"></label>
+      <input id="password" type="password" autocomplete="off" maxlength="1024" required>
+      <button id="unlock" type="submit"></button>
+    </form>
+    <p id="error" role="alert"></p>
+  </main>
+</body>
+</html>

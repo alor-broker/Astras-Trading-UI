@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "terminalUrl": "https://terminal.example.com",
+  "clientDataUrl": "https://lk-api.alor.ru",
+  "clients": [
+    {
+      "clientId": "100001",
+      "displayName": "John Smith",
+      "refreshToken": "REPLACE_WITH_MANAGER_ISSUED_TOKEN"
+    },
+    {
+      "clientId": "100002",
+      "displayName": "Bill Johnson",
+      "refreshToken": "REPLACE_WITH_ANOTHER_MANAGER_ISSUED_TOKEN"
+    }
+  ]
+}
