@@ -18,6 +18,7 @@ import {MobileActionsContextService} from "../../services/mobile-actions-context
 import {SettingsBrokerService} from '../../settings-brokers/settings-broker.service';
 import {WidgetLocalStateService} from '@terminal-core-lib/features/widget-local-state/widget-local-state.service';
 import {AccountService} from '@terminal-core-lib/features/client-info/services/account-service';
+import {MarketService} from '@terminal-core-lib/features/market-config/market.service';
 import {AllPositionsService} from '@terminal-core-lib/features/client-info/services/all-positions.service';
 import {PortfoliosStoreFacade} from '@terminal-core-lib/features/portfolios/store/portfolios-store-facade';
 import {UserPortfoliosHelper} from '@terminal-core-lib/features/portfolios/utils/user-portfolios.helper';
@@ -92,6 +93,8 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   private readonly allPositionsService = inject(AllPositionsService);
 
+  private readonly marketService = inject(MarketService);
+
   private readonly portfoliosStoreFacade = inject(PortfoliosStoreFacade);
 
   private readonly loadingId = GuidGenerator.newGuid();
@@ -144,7 +147,8 @@ export class DashboardPage implements OnInit, OnDestroy {
   private loadPortfolios(onComplete: () => void): void {
     UserPortfoliosHelper.loadActiveUserPortfolios(
       this.accountService,
-      this.allPositionsService
+      this.allPositionsService,
+      this.marketService
     ).pipe(
       take(1)
     ).subscribe(result => {

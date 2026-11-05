@@ -10,15 +10,18 @@ import {AllPositionsService} from '../../client-info/services/all-positions.serv
 import {ArrayHelper} from '../../../common/utils/array.helper';
 import {Exchange} from '../../instruments/graphql/schema/graphql.types';
 import {PortfolioKeyHelper} from '../../../common/utils/portfolio-key.helper';
+import {MarketService} from '../../market-config/market.service';
 
 export class UserPortfoliosHelper {
   static loadActiveUserPortfolios(
     accountService: AccountService,
-    allPositionsService: AllPositionsService
+    allPositionsService: AllPositionsService,
+    marketService: MarketService
   ): Observable<PortfolioExtended[] | null> {
     return combineLatest({
       allPortfolios: accountService.getAllPortfolios(),
-      allPositions: allPositionsService.getAllUserPositions()
+      allPositions: allPositionsService.getAllUserPositions(),
+      exchanges: marketService.getAllExchanges()
     }).pipe(
       take(1),
       map(result => {
@@ -31,8 +34,7 @@ export class UserPortfoliosHelper {
             })
           );
 
-          // return only portfolios with at least one position
-          return portfolioWithPositions.reduce((prev, curr) => {
+          const activePortfolios = portfolioWithPositions.reduce((prev, curr) => {
             const portfolio = result.allPortfolios!.find(p => p.portfolio === curr.portfolio);
 
             if (portfolio != null) {
@@ -51,6 +53,24 @@ export class UserPortfoliosHelper {
 
             return prev;
           }, [] as PortfolioExtended[]);
+
+          if (activePortfolios.length > 0 || result.allPortfolios.length === 0) {
+            return activePortfolios;
+          }
+
+          const portfolio = result.allPortfolios[0];
+          const exchange = portfolio.isVirtual
+            ? Exchange.United
+            : result.exchanges.find(e => e.settings.isDefault ?? false)?.exchange ?? result.exchanges[0]?.exchange;
+
+          return exchange != null
+            ? [{
+              ...portfolio,
+              exchange,
+              market: this.formatPortfolioMarket(portfolio.market, exchange),
+              marketType: PortfolioKeyHelper.getMarketTypeByPortfolio(portfolio.portfolio)
+            }]
+            : [];
         }
 
         return null;

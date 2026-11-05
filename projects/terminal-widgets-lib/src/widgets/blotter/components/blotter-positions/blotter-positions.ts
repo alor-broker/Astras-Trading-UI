@@ -442,7 +442,7 @@ export class BlotterPositions extends BlotterBaseTable<PositionDisplay, Position
     return this.settings$.pipe(
       distinctUntilChanged((previous, current) => WidgetSettingsHelper.isEqualPortfolioDependedSettings(previous, current)),
       switchMap(
-        settings => this.service.getPositions(settings)
+        settings => this.service.getPositions(settings, true)
           .pipe(
             map((positions) => positions.map(p => ({
               ...p,

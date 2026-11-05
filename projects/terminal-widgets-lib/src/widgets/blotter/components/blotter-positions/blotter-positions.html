@@ -146,13 +146,13 @@
           @for (column of td.tableConfig.columns; track column) {
             @if (column.id === "icon") {
               <td>
-                <ats-instrument-icon [size]="'default'" [symbol]="pos.symbol"/>
+                <ats-instrument-icon [size]="'default'" [symbol]="pos.targetInstrument.symbol"/>
               </td>
             }
             @if (column.id === "symbol") {
               <td class='fw-bold'>
-                <span class="symbol-name">{{ pos.symbol }}</span>
-                <ats-instrument-badge-display [instrumentKey]="pos"/>
+                <span class="symbol-name">{{ pos.targetInstrument.symbol }}</span>
+                <ats-instrument-badge-display [instrumentKey]="pos.targetInstrument"/>
               </td>
             }
             @if (column.id === "shortName") {

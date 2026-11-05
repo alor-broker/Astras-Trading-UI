@@ -7,6 +7,7 @@ import {
   BehaviorSubject,
   interval,
   Observable,
+  of,
   switchMap,
   take,
   tap,
@@ -107,9 +108,43 @@ export class BlotterService {
     );
   }
 
-  getPositions(settings: BlotterWidgetSettings): Observable<Position[]> {
+  getPositions(settings: BlotterWidgetSettings, showEmptyCurrencyPosition = false): Observable<Position[]> {
     return this.portfolioSubscriptionsService.getAllPositionsSubscription(settings.portfolio, settings.exchange).pipe(
-      map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses),
+      switchMap(positions => {
+        if (positions.length > 0 || !showEmptyCurrencyPosition) {
+          return of(settings.isSoldPositionsHidden ? positions.filter(p => p.qtyTFuture !== 0) : positions);
+        }
+
+        return this.marketService.getMarketSettings().pipe(
+          map(marketSettings => [{
+            ownedPortfolio: {portfolio: settings.portfolio, exchange: settings.exchange},
+            targetInstrument: {symbol: marketSettings.currencies.baseCurrency, exchange: settings.exchange},
+            brokerSymbol: `${settings.exchange}:${marketSettings.currencies.baseCurrency}`,
+            shortName: marketSettings.currencies.baseCurrency,
+            isCurrency: true,
+            lotSize: 1,
+            avgPrice: 0,
+            qtyUnits: 0,
+            openUnits: 0,
+            qtyT0: 0,
+            qtyT1: 0,
+            qtyT2: 0,
+            qtyTFuture: 0,
+            qtyT0Batch: 0,
+            qtyT1Batch: 0,
+            qtyT2Batch: 0,
+            qtyTFutureBatch: 0,
+            qtyBatch: 0,
+            openQtyBatch: 0,
+            qty: 0,
+            open: 0,
+            dailyUnrealisedPl: 0,
+            unrealisedPl: 0,
+            volume: 0,
+            currentVolume: 0
+          } satisfies Position])
+        );
+      }),
     );
   }
 

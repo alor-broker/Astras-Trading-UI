@@ -33,6 +33,7 @@ import {GlobalLoadingIndicatorService} from '@terminal-core-lib/common/services/
 import {GuidGenerator} from '@terminal-core-lib/common/utils/guid-generator';
 import {AllPositionsService} from '@terminal-core-lib/features/client-info/services/all-positions.service';
 import {AccountService} from '@terminal-core-lib/features/client-info/services/account-service';
+import {MarketService} from '@terminal-core-lib/features/market-config/market.service';
 import {Hook} from '@terminal-core-lib/common/types/hook.types';
 import {CustomizableDashboard} from '@terminal-core-lib/features/dashboard/desktop/components/customizable-dashboard/customizable-dashboard';
 import {
@@ -152,6 +153,8 @@ export class DashboardPage implements OnInit, OnDestroy, ActionsContext {
 
   private readonly allPositionsService = inject(AllPositionsService);
 
+  private readonly marketService = inject(MarketService);
+
   private readonly accountService = inject(AccountService);
 
   private readonly loadingId = GuidGenerator.newGuid();
@@ -207,7 +210,8 @@ export class DashboardPage implements OnInit, OnDestroy, ActionsContext {
   private loadPortfolios(onComplete: () => void): void {
     UserPortfoliosHelper.loadActiveUserPortfolios(
       this.accountService,
-      this.allPositionsService
+      this.allPositionsService,
+      this.marketService
     ).pipe(
       take(1)
     ).subscribe(result => {
