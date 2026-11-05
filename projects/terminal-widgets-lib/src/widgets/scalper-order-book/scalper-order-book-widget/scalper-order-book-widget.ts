@@ -52,6 +52,7 @@ export class ScalperOrderBookWidget extends WidgetBase<ScalperOrderBookWidgetSet
       settings => ({
         ...settings,
         depth: ValueHelper.getValueOrDefault(settings.depth, 10),
+        scaleFactor: ValueHelper.getValueOrDefault(settings.scaleFactor, ScalperOrderBookConstants.defaultScaleFactor),
         showZeroVolumeItems: ValueHelper.getValueOrDefault(settings.showZeroVolumeItems, true),
         showSpreadItems: ValueHelper.getValueOrDefault(settings.showSpreadItems, true),
         volumeHighlightMode: ValueHelper.getValueOrDefault(settings.volumeHighlightMode, VolumeHighlightMode.BiggestVolume),

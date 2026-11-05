@@ -85,6 +85,7 @@ import {
   ScalperOrderBookRowType
 } from '@terminal-widgets-lib/widgets/scalper-order-book/types/scalper-order-book.types';
 import {SCALPER_ORDERBOOK_SHARED_CONTEXT} from '@terminal-widgets-lib/widgets/scalper-order-book/components/scalper-order-book/scalper-order-book';
+import {ScalperOrderBookConstants} from '@terminal-widgets-lib/widgets/scalper-order-book/constants/scalper-order-book.constants';
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -98,10 +99,6 @@ export interface RulerContext {
 
 export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBodyRef>('ScalperOrderBookBodyRef');
 export const RULER_CONTEX = new InjectionToken<RulerContext>('RulerContext');
-
-interface ScaleState {
-  scaleFactor: number;
-}
 
 @Component({
   selector: 'ats-scalper-order-book-body',
@@ -179,8 +176,6 @@ export class ScalperOrderBookBody implements OnInit,
   readonly topFloatingPanelPositionStateKey = 'top-floating-panel-position';
 
   readonly bottomFloatingPanelPositionStateKey = 'bottom-floating-panel-position';
-
-  readonly isTableHovered$ = new BehaviorSubject(false);
 
   private readonly scalperOrderBookSharedContext = inject(SCALPER_ORDERBOOK_SHARED_CONTEXT, {skipSelf: true});
 
@@ -273,7 +268,6 @@ export class ScalperOrderBookBody implements OnInit,
 
   ngOnDestroy(): void {
     this.isLoading$.complete();
-    this.isTableHovered$.complete();
     this.renderItemsRange$.complete();
     this.contentSize$.complete();
     this.hoveredPriceRow$.complete();
@@ -410,30 +404,22 @@ export class ScalperOrderBookBody implements OnInit,
       shareReplay({bufferSize: 1, refCount: true})
     );
 
-    const getStorageKey = (instrumentKey: InstrumentKey): string => {
-      return `scale_${instrumentKey.exchange}_${instrumentKey.symbol}_${instrumentKey.instrumentGroup}`;
-    };
-
     const setScaleFactor = (scaleFactor: number, instrumentKey: InstrumentKey): void => {
       this.scalperOrderBookSharedContext.setScaleFactor(scaleFactor);
-      this.widgetLocalStateService.setStateRecord<ScaleState>(
-        this.guid(),
-        getStorageKey(instrumentKey),
-        {
-          scaleFactor
-        },
-        false
+      this.settingsWriteService.updateInstrumentLinkedSettings(
+        {scaleFactor},
+        instrumentKey
       );
     };
 
-    this.isTableHovered$.pipe(
-      switchMap(isHovered => {
-        if (isHovered) {
-          return this.hotkeysService.commands$;
-        }
+    this.widgetSettings$.pipe(
+      map(settings => settings.scaleFactor ?? ScalperOrderBookConstants.defaultScaleFactor),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(scaleFactor => this.scalperOrderBookSharedContext.setScaleFactor(scaleFactor));
 
-        return NEVER;
-      }),
+    this.hotkeysService.commands$.pipe(
+      filter(() => this.isActive()),
       withLatestFrom(this.scalperOrderBookSharedContext.scaleFactor$, instrumentKey$),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([command, scaleFactor, instrumentKey]) => {
@@ -448,22 +434,6 @@ export class ScalperOrderBookBody implements OnInit,
         setScaleFactor(newScaleFactor, instrumentKey);
         return;
       }
-    });
-
-    instrumentKey$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      const storageKey = getStorageKey(settings);
-
-      this.widgetLocalStateService.getStateRecord<ScaleState>(this.guid(), storageKey).pipe(
-        take(1)
-      ).subscribe(savedValue => {
-        if (savedValue != null) {
-          this.scalperOrderBookSharedContext.setScaleFactor(savedValue.scaleFactor);
-        } else {
-          this.scalperOrderBookSharedContext.setScaleFactor(1);
-        }
-      });
     });
   }
 

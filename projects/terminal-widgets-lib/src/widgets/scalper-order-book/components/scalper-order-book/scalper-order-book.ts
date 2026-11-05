@@ -36,6 +36,7 @@ import {GetBestOfferCommand} from "../../commands/get-best-offer-command";
 import {UpdateOrdersCommand} from "../../commands/update-orders-command";
 import {CurrentPositionPanel} from '@terminal-widgets-lib/widgets/scalper-order-book/components/current-position-panel/current-position-panel';
 import {ScalperOrderBookBody} from '@terminal-widgets-lib/widgets/scalper-order-book/components/scalper-order-book-body/scalper-order-book-body';
+import {ScalperOrderBookConstants} from '@terminal-widgets-lib/widgets/scalper-order-book/constants/scalper-order-book.constants';
 
 export interface ScalperOrderBookSharedContext {
   readonly workingVolume$: Observable<number | null>;
@@ -87,7 +88,7 @@ export class ScalperOrderBook implements ScalperOrderBookSharedContext, OnInit, 
 
   workingVolume$ = new BehaviorSubject<number>(1);
 
-  scaleFactor$ = new BehaviorSubject<number>(1);
+  scaleFactor$ = new BehaviorSubject<number>(ScalperOrderBookConstants.defaultScaleFactor);
 
   gridSettings$!: Observable<{ rowHeight: number, fontSize: number }>;
 
