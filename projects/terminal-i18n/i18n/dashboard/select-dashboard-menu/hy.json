@@ -1,4 +1,6 @@
 {
+  "searchPlaceholder": "Վահանակների որոնում",
+  "noDashboardsFound": "Վահանակներ չեն գտնվել",
   "newDashboardTitlePlaceholder": "Նոր վահանակի անվանում",
   "stringLenghtError": "Մուտքագրեք {{min}}-ից մինչև {{max}} նիշ",
   "actionConfirmationTitle": "Հաստատեք գործողությունը",

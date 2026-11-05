@@ -1,4 +1,6 @@
 {
+  "searchPlaceholder": "Поиск дашбордов",
+  "noDashboardsFound": "Дашборды не найдены",
   "newDashboardTitlePlaceholder": "Название нового дашборда",
   "stringLenghtError": "Введите от {{min}} до {{max}} символов",
   "actionConfirmationTitle": "Подтвердите действие",

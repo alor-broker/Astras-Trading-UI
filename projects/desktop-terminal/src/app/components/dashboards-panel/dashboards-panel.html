@@ -51,7 +51,7 @@
               <span><i class="arrow-icon" nz-icon nzTheme="outline" nzType="down"></i></span>
               <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
                 <atsd-select-dashboard-menu (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
-                                            (isNewDashboardFocused)="dropdownTrigger.set($event ? 'click' : 'hover')"
+                                            (isInputFocused)="dropdownTrigger.set($event ? 'click' : 'hover')"
                                             [visibilityChange]="isDashboardSelectionMenuVisible()"
                 />
               </nz-dropdown-menu>

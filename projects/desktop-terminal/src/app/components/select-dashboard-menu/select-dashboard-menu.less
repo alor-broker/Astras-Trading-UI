@@ -1,4 +1,19 @@
+@import 'scrollable';
+
 atsd-select-dashboard-menu {
+  .dashboard-selection {
+    max-height: min(600px, calc(100dvh - 80px));
+    min-width: 320px;
+    max-width: calc(100vw - 32px);
+  }
+
+  .dashboard-list {
+    min-height: 0;
+    list-style: none;
+    overscroll-behavior-y: contain;
+    .scrollable(var(--ats-scrollbar-color));
+  }
+
   li {
     padding-left: 10px;
     padding-right: 10px;
@@ -33,7 +48,7 @@ atsd-select-dashboard-menu {
     }
   }
 
-  .ant-input-affix-wrapper {
+  ats-editable-string .ant-input-affix-wrapper {
     border-radius: 0;
     border-top: none;
     border-left: none;
@@ -45,6 +60,7 @@ atsd-select-dashboard-menu {
 
     .edit-title-input {
       &.ant-input {
+        border-radius: 0;
         background: transparent;
 
         &.ant-input-status-error.ant-input:focus,
