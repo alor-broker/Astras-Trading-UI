@@ -11,7 +11,8 @@ import {
 import {NzNotificationService} from "ng-zorro-antd/notification";
 import {
   take,
-  timer
+  timer,
+  withLatestFrom
 } from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {switchMap} from "rxjs/operators";
@@ -23,6 +24,7 @@ import {
 import {LocalStorageService} from '../../../local-storage/local-storage.service';
 import {TranslatorService} from '../../../translations/services/translator.service';
 import {ExternalLink} from '../../../external-links/components/external-link/external-link';
+import {USER_CONTEXT} from '../../../user-context/user-context.types';
 
 @Component({
   selector: 'ats-urgent-notification-dialog',
@@ -50,6 +52,8 @@ export class UrgentNotificationDialogComponent implements OnInit {
 
   private readonly urgentNotificationsService = inject(UrgentNotificationsService);
 
+  private readonly userContext = inject(USER_CONTEXT);
+
   private readonly nzNotificationService = inject(NzNotificationService);
 
   private readonly localStorageService = inject(LocalStorageService);
@@ -66,10 +70,11 @@ export class UrgentNotificationDialogComponent implements OnInit {
 
   ngOnInit(): void {
     timer(10_000, this.poolIntervalSec * 1000).pipe(
-      switchMap(() => this.urgentNotificationsService.getNotifications()),
+      withLatestFrom(this.userContext.getUser()),
+      switchMap(([, user]) => this.urgentNotificationsService.getNotifications(user.clientType)),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(response => {
-      if (response == null || !response.active || response.cards.length === 0) {
+      if (response == null || !response.active) {
         return;
       }
 
