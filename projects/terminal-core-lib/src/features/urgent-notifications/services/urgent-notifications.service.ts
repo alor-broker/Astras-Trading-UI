@@ -15,6 +15,7 @@ import {
   NotificationsResponse
 } from '../types/urgent-notifications.types';
 import {catchHttpError} from '../../../common/utils/observable/catch-http-error';
+import {ClientType} from '../../user-context/user.types';
 
 @Injectable()
 export class UrgentNotificationsService {
@@ -24,7 +25,7 @@ export class UrgentNotificationsService {
 
   private readonly urgentNotificationsUrlProvider = inject(URGENT_NOTIFICATIONS_URL_PROVIDER);
 
-  getNotifications(): Observable<NotificationsResponse | null> {
+  getNotifications(clientType: ClientType | undefined): Observable<NotificationsResponse | null> {
     if (this.urgentNotificationsUrlProvider.urgentNotificationsUrl == null) {
       return of(null);
     }
@@ -38,15 +39,26 @@ export class UrgentNotificationsService {
 
         return {
           ...r,
-          cards: (r.cards ?? []).map((card: Notification) => {
-            return {
+          cards: (r.cards ?? [])
+            .filter(card => card.visibility.isAstras && this.matchesClientType(card, clientType))
+            .map(card => ({
               ...card,
               activeFrom: card.activeFrom != null ? new Date(card.activeFrom) : null,
               activeTo: card.activeTo != null ? new Date(card.activeTo) : null
-            } satisfies Notification;
-          })
+            }))
         } satisfies NotificationsResponse;
       })
     );
+  }
+
+  private matchesClientType(card: Notification, clientType: ClientType | undefined): boolean {
+    switch (clientType) {
+      case ClientType.Individual:
+        return card.clientTypes.isPhysWithoutIIS || card.clientTypes.isPhysWithIIS;
+      case ClientType.LegalEntity:
+        return card.clientTypes.isJur;
+      default:
+        return true;
+    }
   }
 }
