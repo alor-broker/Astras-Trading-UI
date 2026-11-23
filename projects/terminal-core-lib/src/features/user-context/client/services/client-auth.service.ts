@@ -33,6 +33,7 @@ import {
   JwtState
 } from "./client-auth.types";
 import {
+  ClientType,
   Permission,
   Role,
   User
@@ -241,6 +242,7 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
           jwt: r.jwt,
           user: {
             clientId: jwtBody.clientid,
+            clientType: this.parseClientType(jwtBody.clientType),
             login: jwtBody.sub,
             portfolios: (jwtBody.portfolios as string | undefined)?.split(' ') ?? [],
             roles: [Role.Client],
@@ -257,6 +259,19 @@ export class ClientAuthService implements UserContext, SessionContext, OnDestroy
       catchHttpError<JwtState | null>(null),
       take(1)
     );
+  }
+
+  private parseClientType(clientType: string | undefined): ClientType | undefined {
+    switch (clientType) {
+      case undefined:
+        return undefined;
+      case 'P':
+        return ClientType.Individual;
+      case 'J':
+        return ClientType.LegalEntity;
+      default:
+        return ClientType.NotSpecified;
+    }
   }
 
   private getIdentityUrl(): string {

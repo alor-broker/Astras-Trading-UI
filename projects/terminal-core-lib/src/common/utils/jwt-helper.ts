@@ -2,6 +2,7 @@
   exp: number;
   portfolios: string;
   clientid: string;
+  clientType?: string;
   ein: string;
   agreements: string;
   sub: string;
